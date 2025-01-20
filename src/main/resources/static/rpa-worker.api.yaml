@@ -1,0 +1,219 @@
+openapi: 3.1.0
+info:
+  title: RPA Worker
+  version: 1.0.0
+  
+tags:
+  - name: Local Script Library
+    description: >- 
+      Management of the Local Script Library. 
+      Temporary functionality until Zeebe manages the Robot scripts
+  - name: Sandbox
+    description: >-
+      Direct evaluation of Robot scripts.
+      Used by the Modeler for local script development and testing
+  - name: File Management
+    description: >-
+      Upload and download files to/from Zeebe.
+      Used by the Camunda Robot Python Library to fulfil document management keywords
+
+paths:
+  /script/deploy:
+    post:
+      tags:
+        - Local Script Library
+      summary: Deploy a script to this RPA Worker's local library
+      requestBody: 
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeployScriptRequest'
+      responses: 
+        204:
+          description: Script was persisted successfully
+        422:
+          description: Request body was invalid
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ValidationFailedResponse'
+    
+  /script/evaluate:
+    post: 
+      tags:
+        - Sandbox
+      summary: Immediately evaluate a raw Robot script
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateScriptRequest'
+      responses:
+        200:
+          description: Script was executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluateScriptResponse'
+        422:
+          description: Request body was invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationFailedResponse'
+                
+  /file/store/{executionId}:
+    post: 
+      tags:
+        - File Management
+      summary: Store files from a Robot workspace in Zeebe
+      parameters:
+        - in: path
+          name: executionId
+          required: true
+          schema: 
+            type: string
+          description: The Robot execution ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreFilesRequest'
+            example: 
+              files: 'outputs/**/*.pdf'
+      responses:
+        200:
+          description: Files were successfully uploaded to Zeebe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreFilesResponse'
+              example: 
+                'output_2024-07_invoice-july-2024.pdf': 'output/2024-07/invoice-july-2024.pdf'
+                'output_2024-08_invoice-aug-2024.pdf': 'output/2024-08/invoice-aug-2024.pdf'
+        404:
+          description: The Robot execution specified by the ID was not found
+        422:
+          description: Request body was invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationFailedResponse'
+                
+  /file/retrieve/{executionId}:
+    post:
+      tags:
+        - File Management
+      summary: Retrieve files from Zeebe and make them available in the Robot workspace
+      parameters:
+        - in: path
+          name: executionId
+          required: true
+          schema:
+            type: string
+          description: The Robot execution ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/RetrieveFileRequest'
+      responses:
+        200:
+          description: The request was processed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RetrieveFileResponse'
+        404:
+          description: The Robot execution specified by the ID was not found
+        422:
+          description: Request body was invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationFailedResponse'
+
+components:
+  schemas: 
+    DeployScriptRequest:
+      type: object
+      properties: 
+        id:
+          type: string
+          description: The unique identifier of the script
+          required: true
+        script:
+          type: string
+          description: The body of the raw Robot script to be executed
+          required: true
+    
+    ValidationFailedResponse:
+      type: object
+      properties: 
+        fieldErrors:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/FieldError'
+            
+    FieldError:
+      type: object
+      properties: 
+        code: 
+          type: string
+        message: 
+          type: string
+        rejectedValue: 
+          type: any
+      
+    EvaluateScriptRequest:
+      type: object
+      properties: 
+        script:
+          type: string
+          description: The contents of the raw Robot script to be executed
+        variables:
+          type: object
+          description: Input variables for the execution
+          additionalProperties: {}
+    
+    EvaluateScriptResponse:
+      type: object
+      properties: 
+        stdout:
+          type: string
+          description: The raw output from the script execution
+          
+    StoreFilesRequest: 
+      type: object
+      properties: 
+        files:
+          type: string
+          required: true
+          description: A glob pattern (relative to the Robot execution workspace) of files to store
+          
+    StoreFilesResponse: 
+      type: object
+      description: A map of Zeebe `documentId`s to the original workspace path of the file
+      additionalProperties: 
+        type: string
+        description: The path to the file in the workspace
+        
+    RetrieveFileRequest: 
+      type: object
+      properties:
+        documentId:
+          type: string
+          description: The Zeebe `documentId` for the stored file
+        path:
+          type: string
+          description: The relative workspace path at which the file is to be made available
+          
+    RetrieveFileResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          enum:
+            - OK
+            - NOT_FOUND
