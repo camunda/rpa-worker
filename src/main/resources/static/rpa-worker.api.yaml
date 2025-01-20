@@ -62,18 +62,18 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationFailedResponse'
                 
-  /file/store/{executionId}:
+  /file/store/{jobKey}:
     post: 
       tags:
         - File Management
       summary: Store files from a Robot workspace in Zeebe
       parameters:
         - in: path
-          name: executionId
+          name: jobKey
           required: true
           schema: 
             type: string
-          description: The Robot execution ID
+          description: The Job Key for the Robot execution
       requestBody:
         content:
           application/json:
@@ -92,7 +92,7 @@ paths:
                 'output_2024-07_invoice-july-2024.pdf': 'output/2024-07/invoice-july-2024.pdf'
                 'output_2024-08_invoice-aug-2024.pdf': 'output/2024-08/invoice-aug-2024.pdf'
         404:
-          description: The Robot execution specified by the ID was not found
+          description: The Job Key, or its associated workspace, was not found
         422:
           description: Request body was invalid
           content:
@@ -100,7 +100,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationFailedResponse'
                 
-  /file/retrieve/{executionId}:
+  /file/retrieve/{jobKey}:
     post:
       tags:
         - File Management
@@ -111,7 +111,7 @@ paths:
           required: true
           schema:
             type: string
-          description: The Robot execution ID
+          description: The Job Key for the Robot execution
       requestBody:
         content:
           application/json:
@@ -126,7 +126,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/RetrieveFileResponse'
         404:
-          description: The Robot execution specified by the ID was not found
+          description: The Job Key, or its associated workspace, was not found
         422:
           description: Request body was invalid
           content:
@@ -179,10 +179,24 @@ components:
     
     EvaluateScriptResponse:
       type: object
-      properties: 
-        stdout:
+      properties:
+        result:
+          type: string
+          enum: [PASS, FAIL]
+          description: The result of the *task* execution (not the *Robot* execution)
+        log:
           type: string
           description: The raw output from the script execution
+        outputHtml:
+          type: string
+          description: The HTML report for the execution
+        outputXml:
+          type: string
+          description: The xUnit XML report the execution
+        variables:
+          type: object
+          additionalProperties: {}
+          description: The output variables returned by the execution
           
     StoreFilesRequest: 
       type: object
