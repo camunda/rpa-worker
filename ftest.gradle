@@ -1,0 +1,32 @@
+
+configurations {
+	functionalTestImplementation.extendsFrom testImplementation
+	functionalTestImplementation.extendsFrom compileOnly
+	functionalTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+sourceSets {
+	functionalTest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+	}
+}
+
+tasks.register('functionalTest', Test) {
+	description = 'Runs functional tests.'
+	group = 'verification'
+
+	testClassesDirs = sourceSets.functionalTest.output.classesDirs
+	classpath = sourceSets.functionalTest.runtimeClasspath
+	shouldRunAfter test
+}
+
+check.dependsOn functionalTest
+
+idea {
+	module {
+		testSourceDirs += project.sourceSets.functionalTest.java.srcDirs
+		testSourceDirs += project.sourceSets.functionalTest.groovy.srcDirs
+		testResourceDirs += project.sourceSets.functionalTest.resources.srcDirs
+	}
+}
