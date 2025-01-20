@@ -89,8 +89,20 @@ paths:
               schema:
                 $ref: '#/components/schemas/StoreFilesResponse'
               example: 
-                'output_2024-07_invoice-july-2024.pdf': 'output/2024-07/invoice-july-2024.pdf'
-                'output_2024-08_invoice-aug-2024.pdf': 'output/2024-08/invoice-aug-2024.pdf'
+                'output/2023-07/invoice-july-2024.pdf': 
+                  'camunda.document.type': 'camunda'
+                  storeId: 'gcp'
+                  documentId: 'output__2023-07__invoice-july-2024'
+                  metadata:
+                    fileName: 'invoice-july-2024.pdf'
+                    customProperties: {}
+                'output/2024-08/invoice-aug-2024.pdf':
+                  'camunda.document.type': 'camunda'
+                  storeId: 'gcp'
+                  documentId: 'output__2023-08__invoice-aug-2024'
+                  metadata:
+                    fileName: 'invoice-aug-2024.pdf'
+                    customProperties: { }
         404:
           description: The Job Key, or its associated workspace, was not found
         422:
@@ -118,13 +130,29 @@ paths:
             schema:
               type: object
               $ref: '#/components/schemas/RetrieveFileRequest'
+            example: 
+              'input/data.csv':
+                'camunda.document.type': 'camunda'
+                storeId: 'gcp'
+                documentId: 'the-input-data'
+              'input/optional-data.csv':
+                'camunda.document.type': 'camunda'
+                storeId: 'gcp'
+                documentId: 'more-input-data'
       responses:
         200:
           description: The request was processed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RetrieveFileResponse'
+                type: object
+                additionalProperties: 
+                  $ref: '#/components/schemas/RetrieveFileResponse'
+              example: 
+                'input/data.csv':
+                  result: OK
+                'input/optional-data.csv':
+                  result: NOT_FOUND
         404:
           description: The Job Key, or its associated workspace, was not found
         422:
@@ -208,21 +236,17 @@ components:
           
     StoreFilesResponse: 
       type: object
-      description: A map of Zeebe `documentId`s to the original workspace path of the file
+      description: A map of stored workspace file to ZeebeDocumentDescriptor
       additionalProperties: 
-        type: string
-        description: The path to the file in the workspace
+        type: object
+        $ref: '#/components/schemas/ZeebeDocumentDescriptor'
         
     RetrieveFileRequest: 
       type: object
-      properties:
-        documentId:
-          type: string
-          description: The Zeebe `documentId` for the stored file
-        path:
-          type: string
-          description: The relative workspace path at which the file is to be made available
-          
+      description: A map of workspace destination path to ZeebeDocumentDescriptor
+      additionalProperties: 
+        $ref: '#/components/schemas/ZeebeDocumentDescriptor'
+    
     RetrieveFileResponse:
       type: object
       properties:
@@ -231,3 +255,22 @@ components:
           enum:
             - OK
             - NOT_FOUND
+    
+    ZeebeDocumentDescriptor: 
+      type: object
+      properties:
+        'camunda.document.type':
+          type: string
+          enum: ['camunda']
+        storeId:
+          type: string
+        documentId:
+          type: string
+        metadata:
+          type: object
+          properties: 
+            fileName:
+              type: string
+            customProperties:
+              type: object
+              additionalProperties: {}
