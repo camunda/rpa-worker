@@ -1,0 +1,5 @@
+robotframework
+camunda @ git+https://github.com/camunda/rpa-runtime.git@wip/camunda-python-module-structure#subdirectory=Camunda
+#camunda @ file:///home/pounder/workspace/scratch/rpa-runtime-python-mod/Camunda/
+
+PyYAML

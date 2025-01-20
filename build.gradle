@@ -1,0 +1,102 @@
+plugins {
+	id 'java'
+	id 'groovy'
+	id 'idea'
+	id 'org.springframework.boot' version '3.4.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.graalvm.buildtools.native' version '0.10.4'
+}
+
+apply from: "ftest.gradle"
+apply from: "enable-preview.gradle"
+
+group = 'io.camunda.rpa'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(23)
+	}
+}
+
+springBoot {
+	mainClass = "io.camunda.rpa.worker.RpaWorkerApplication"
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url 'https://gitlab.com/api/v4/projects/50731191/packages/maven'
+	}
+}
+
+dependencies {
+	implementation libs.spring.boot.starter.webflux
+	implementation libs.spring.boot.starter.actuator
+	implementation libs.spring.boot.starter.validation
+	implementation libs.springDocStarter
+
+	implementation libs.camundaStarter
+	implementation libs.vavr
+	implementation libs.commons.exec
+	implementation libs.jackson.dataFormatYaml
+	implementation libs.reactiveFeign
+	implementation libs.javaSemver
+
+	developmentOnly libs.spring.boot.devtools
+	annotationProcessor libs.spring.boot.configurationProcessor
+	
+	compileOnly libs.lombok
+	annotationProcessor libs.lombok
+
+	testImplementation libs.reactor.test
+	testImplementation libs.spock.core
+
+	testRuntimeOnly libs.junit.platformLauncher
+	testRuntimeOnly libs.byteBuddy
+	testRuntimeOnly libs.objenesis
+
+	functionalTestImplementation libs.spring.boot.starter.test
+	functionalTestImplementation libs.spock.spring
+	functionalTestImplementation libs.groovy.nio
+}
+
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
+}
+
+processTestAot.enabled = false
+
+graalvmNative {
+	binaries {
+		main {
+			mainClass = "io.camunda.rpa.worker.RpaWorkerApplication"
+			imageName = "rpa-runtime"
+			javaLauncher = javaToolchains.launcherFor {
+				languageVersion = JavaLanguageVersion.of(23)
+				
+				if( ! System.properties['os.name'].contains("Windows"))
+					vendor = JvmVendorSpec.GRAAL_VM
+			}
+			quickBuild = false
+			buildArgs.add("--initialize-at-build-time=org.slf4j.jul.JDK14LoggerAdapter")
+			buildArgs.add("--initialize-at-run-time=sun.net.dns.ResolverConfigurationImpl")
+			buildArgs.add("--enable-preview")
+		}
+	}
+}
+
+tasks.getByName("bootRun").tap { Task it ->
+	it.outputs.upToDateWhen { false }
+}
+
+tasks.getByName("processAot").tap { Task it ->
+	it.onlyIf {
+		gradle.getStartParameter().getTaskNames().contains("nativeCompile")
+	}
+}

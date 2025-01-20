@@ -1,0 +1,39 @@
+[versions]
+springDoc = "2.8.3"
+camundaStarter = "8.6.6"
+vavr = "0.10.5"
+commons-exec = "1.4.0"
+reactiveFeign = "4.2.1"
+javaSemver = "0.10.2"
+
+spock = "2.4-M5-groovy-4.0"
+byteBuddy = "1.15.11"
+objenesis = "3.4"
+groovy = "4.0.24"
+
+[libraries]
+spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
+spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
+spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+
+spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
+spring-boot-configurationProcessor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
+
+springDocStarter = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springDoc" }
+camundaStarter = { module = "io.camunda:spring-boot-starter-camunda-sdk", version.ref = "camundaStarter" }
+vavr = { module = "io.vavr:vavr", version.ref = "vavr" }
+commons-exec = { module = "org.apache.commons:commons-exec", version.ref = "commons-exec" }
+jackson-dataFormatYaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml" }
+reactiveFeign = { module = "com.playtika.reactivefeign:feign-reactor-webclient", version.ref = "reactiveFeign" }
+javaSemver = { module = "com.github.zafarkhaja:java-semver", version.ref = "javaSemver" }
+lombok = { module = "org.projectlombok:lombok" }
+
+reactor-test = { module = "io.projectreactor:reactor-test" }
+spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
+junit-platformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
+byteBuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "byteBuddy" }
+objenesis = { module = "org.objenesis:objenesis", version.ref = "objenesis" }
+
+spock-spring = { module = "org.spockframework:spock-spring", version.ref = "spock" }
+spring-boot-starter-test = { module  = "org.springframework.boot:spring-boot-starter-test" }
+groovy-nio = { module = "org.apache.groovy:groovy-nio", version.ref = "groovy" }
