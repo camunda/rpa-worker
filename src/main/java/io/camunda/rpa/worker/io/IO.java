@@ -29,7 +29,7 @@ public interface IO {
 //
 	Path writeString(Path path, CharSequence csq, OpenOption... options);
 //
-//	String readString(Path path);
+	String readString(Path path);
 //
 //	Stream<String> lines(Path path);
 //
