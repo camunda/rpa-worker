@@ -7,11 +7,8 @@ import io.camunda.rpa.worker.robot.ExecutionResult
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.reactive.function.BodyInserters
-import org.springframework.web.reactive.function.client.ClientResponse
-import reactor.core.publisher.Mono
 
 import java.time.Duration
-import java.util.function.Function
 
 class ScriptSandboxFunctionalSpec extends AbstractFunctionalSpec implements PublisherUtils {
 
@@ -96,10 +93,5 @@ Nothing
 		then:
 		r.result() == ExecutionResult.Result.ERROR
 		r.log().contains("[ ERROR ] Suite 'Script' contains no tests or tasks")
-	}
-
-	private static <T> Function<ClientResponse, Mono<ResponseEntity<T>>> toResponseEntity(Class<T> klass) {
-		return (cr) -> cr.bodyToMono(klass)
-				.map { str -> ResponseEntity.status(cr.statusCode()).body(str) }
 	}
 }

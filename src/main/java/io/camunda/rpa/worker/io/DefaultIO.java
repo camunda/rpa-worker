@@ -51,7 +51,16 @@ class DefaultIO implements IO {
 		catch (IOException ioex) {
 			throw new UncheckedIOException(ioex);
 		}
+	}
 
+	@Override
+	public String readString(Path path) {
+		try {
+			return Files.readString(path);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
 	}
 
 	@Override
@@ -62,7 +71,6 @@ class DefaultIO implements IO {
 		catch (IOException ioex) {
 			throw new UncheckedIOException(ioex);
 		}
-
 	}
 
 	@Override

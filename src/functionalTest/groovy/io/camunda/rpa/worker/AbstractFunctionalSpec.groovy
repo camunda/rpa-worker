@@ -3,10 +3,15 @@ package io.camunda.rpa.worker
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.server.LocalServerPort
+import org.springframework.http.ResponseEntity
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Mono
 import spock.lang.Specification
+
+import java.util.function.Function
 
 @SpringBootTest(
 		classes = [ RpaWorkerApplication, FunctionalTestConfiguration ],
@@ -29,4 +34,10 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 		
 		return $$webClient
 	}
+
+	protected static <T> Function<ClientResponse, Mono<ResponseEntity<T>>> toResponseEntity(Class<T> klass) {
+		return (cr) -> cr.bodyToMono(klass)
+				.map { str -> ResponseEntity.status(cr.statusCode()).body(str) }
+	}
+
 }
