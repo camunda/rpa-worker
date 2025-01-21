@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import io.camunda.rpa.worker.python.PythonInterpreter;
-import io.camunda.rpa.worker.script.ScriptMetadata;
+import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.util.YamlMapper;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class RobotService {
 
 	private record RobotEnvironment(Path workDir, Path scriptFile, Path varsFile, Path outputDir, Path artifactsDir) { }
 
-	public Mono<ExecutionResult> execute(ScriptMetadata script, Map<String, Object> variables, Map<String, String> secrets) {
+	public Mono<ExecutionResult> execute(RobotScript script, Map<String, Object> variables, Map<String, String> secrets) {
 		return newRobotEnvironment(script, variables)
 				.flatMap(renv -> processService.execute(pythonInterpreter.path(), c -> c
 
@@ -61,7 +61,7 @@ public class RobotService {
 										mergeOutput(xr.stdout(), xr.stderr()), vars)));
 	}
 
-	private Mono<RobotEnvironment> newRobotEnvironment(ScriptMetadata script, Map<String, Object> variables) {
+	private Mono<RobotEnvironment> newRobotEnvironment(RobotScript script, Map<String, Object> variables) {
 		return io.supply(() -> {
 			Path workDir = io.createTempDirectory("robot");
 			Path scriptFile = workDir.resolve("script.robot");
@@ -71,7 +71,7 @@ public class RobotService {
 			Path artifactsDir = workDir.resolve("robot_artifacts");
 			io.createDirectories(artifactsDir);
 
-			io.copy(script.path(), scriptFile);
+			io.writeString(scriptFile, script.body());
 			io.write(varsFile, Try.of(() -> objectMapper.writeValueAsBytes(variables)).get());
 			return new RobotEnvironment(workDir, scriptFile, varsFile, outputDir, artifactsDir);
 		});

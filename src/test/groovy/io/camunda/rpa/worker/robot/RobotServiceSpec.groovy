@@ -3,10 +3,9 @@ package io.camunda.rpa.worker.robot
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.io.IO
-import io.camunda.rpa.worker.io.IoCheckedSupplier
 import io.camunda.rpa.worker.pexec.ProcessService
 import io.camunda.rpa.worker.python.PythonInterpreter
-import io.camunda.rpa.worker.script.ScriptMetadata
+import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.util.YamlMapper
 import reactor.core.publisher.Mono
 import spock.lang.Specification
@@ -14,12 +13,13 @@ import spock.lang.Subject
 
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.function.Supplier
 import java.util.function.UnaryOperator
 
 class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	IO io = Mock() {
-		supply(_) >> { IoCheckedSupplier fn -> Mono.fromSupplier(() -> fn()) }
+		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
 	}
 	ObjectMapper objectMapper = new ObjectMapper()
 	Path pythonExe = Paths.get("/path/to/python/bin/python")
@@ -32,8 +32,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Correctly configures and executes a Robot process"() {
 		given:
-		Path scriptPath = Paths.get("/path/to/script.robot")
-		ScriptMetadata script = new ScriptMetadata("the-script", scriptPath)
+		RobotScript script = new RobotScript("some-script", "some-script-body")
 		ProcessService.ExecutionCustomizer executionCustomizer = Mock()
 		io.notExists(_) >> true
 
@@ -47,7 +46,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * io.createTempDirectory("robot") >> workDir
 		1 * io.createDirectories(workDir.resolve("output"))
 		1 * io.createDirectories(workDir.resolve("robot_artifacts"))
-		1 * io.copy(scriptPath, workDir.resolve("script.robot"))
+		1 * io.writeString(workDir.resolve("script.robot"), "some-script-body", _)
 		1 * io.write(workDir.resolve("variables.json"), objectMapper.writeValueAsBytes([rpaVar: 'rpa-var-value']), [])
 
 		and:
@@ -83,7 +82,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Returns output variables"() {
 		given:
-		ScriptMetadata script = new ScriptMetadata("the-script", null)
+		RobotScript script = new RobotScript("some-script", "some-script-body")
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -116,7 +115,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Returns correct ExecutionResult for Robot task failure"() {
 		given:
-		ScriptMetadata script = new ScriptMetadata("the-script", null)
+		RobotScript script = new RobotScript("some-script", "some-script-body")
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -138,7 +137,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Throws correct exception for Robot failure"() {
 		given:
-		ScriptMetadata script = new ScriptMetadata("the-script", null)
+		RobotScript script = new RobotScript("some-script", "some-script-body")
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -159,7 +158,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	
 	void "Throws correct exception for Robot execution failure"() {
 		given:
-		ScriptMetadata script = new ScriptMetadata("the-script", null)
+		RobotScript script = new RobotScript("some-script", "some-script-body")
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")

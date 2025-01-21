@@ -10,9 +10,10 @@ import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
+import java.util.function.Supplier;
 
 public interface IO {
-	<T> Mono<T> supply(IoCheckedSupplier<T> fn);
+	<T> Mono<T> supply(Supplier<T> fn);
 
 	<T> T withReader(Path path, IoCheckedFunction<Reader, T> fn);
 //
@@ -26,7 +27,7 @@ public interface IO {
 //
 //	void close(Closeable closeable);
 //
-//	Path writeString(Path path, CharSequence csq, OpenOption... options);
+	Path writeString(Path path, CharSequence csq, OpenOption... options);
 //
 //	String readString(Path path);
 //
