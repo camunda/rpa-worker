@@ -3,6 +3,7 @@ package io.camunda.rpa.worker.pexec
 import io.camunda.rpa.worker.PublisherUtils
 import org.apache.commons.exec.CommandLine
 import org.apache.commons.exec.DefaultExecutor
+import org.apache.commons.exec.ExecuteException
 import reactor.core.scheduler.Schedulers
 import spock.lang.Specification
 import spock.lang.Subject
@@ -114,5 +115,16 @@ class ProcessServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		thrown(Exception)
+	}
+
+	void "Return correct ExecutionResult for process failure"() {
+		given:
+		defaultExecutor.execute(_, _) >> { throw new ExecuteException("Bang!", 127) }
+
+		when:
+		ProcessService.ExecutionResult result = block service.execute("someExe", c -> c)
+
+		then:
+		result.exitCode() == 127
 	}
 }

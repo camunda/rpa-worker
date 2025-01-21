@@ -4,6 +4,7 @@ import io.vavr.control.Try;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,16 +107,17 @@ public class ProcessService {
 		defaultExecutor.setStreamHandler(streamHandler);
 
 		return Mono.defer(() -> Try.of(() -> defaultExecutor.execute(cmdLine, environment))
-				.onFailure(thrown -> log.atError()
-						.setCause(thrown)
-						.addKeyValue("stderr", streamHandler.getErrString())
-						.addKeyValue("stdout", streamHandler.getOutString())
-						.log("Process execution failed"))
-				.map(exitCode -> Mono.just(new ExecutionResult(
-						exitCode, 
-						streamHandler.getOutString(), 
-						streamHandler.getErrString())))
-				.recover(Mono::error).get())
+						.onFailure(thrown -> log.atError()
+								.setCause(thrown)
+								.addKeyValue("stderr", streamHandler.getErrString())
+								.addKeyValue("stdout", streamHandler.getOutString())
+								.log("Process execution failed"))
+						.recover(ExecuteException.class, ExecuteException::getExitValue)
+						.map(exitCode -> Mono.just(new ExecutionResult(
+								exitCode,
+								streamHandler.getOutString(),
+								streamHandler.getErrString())))
+						.recover(Mono::error).get())
 				.subscribeOn(robotWorkScheduler);
 	}
 	
