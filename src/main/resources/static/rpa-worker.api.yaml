@@ -61,6 +61,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationFailedResponse'
+        500:
+          description: >-
+            A server-side error occurred while executing the Robot script.
+            This signifies a low-level process execution failure, in other words the Worker failed to either configure 
+            or execute the Robot process to run the script. It does not mean that Robot reported an error, in which 
+            case the response would be 200, with `result` set to `ERROR`. 
                 
   /file/store/{jobKey}:
     post: 
@@ -210,8 +216,12 @@ components:
       properties:
         result:
           type: string
-          enum: [PASS, FAIL]
-          description: The result of the *task* execution (not the *Robot* execution)
+          enum: [PASS, FAIL, ERROR]
+          description: >- 
+            The result of the Robot execution. `PASS` signifies that the Robot execution was successful, 
+            and there were no task failures or errors. `FAIL` signifies that there were task failures, and `ERROR`
+            signifies that although the *process* execution was successful, the *Robot* execution was not (ie Robot
+            reported errors).
         log:
           type: string
           description: The raw output from the script execution
