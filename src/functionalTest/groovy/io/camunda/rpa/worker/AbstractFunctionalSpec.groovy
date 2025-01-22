@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.blockhound.BlockHound
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
@@ -19,6 +20,12 @@ import java.util.function.Function
 @ActiveProfiles("ftest")
 @ContextConfiguration(initializers = [ FunctionalTestConfiguration.StaticPropertyProvidingInitializer ])
 abstract class AbstractFunctionalSpec extends Specification implements PublisherUtils {
+
+	static {
+		BlockHound.builder()
+				.allowBlockingCallsInside(ResourceBundle.class.name, "getBundle")
+				.install()
+	}
 	
 	@Autowired
 	private WebClient.Builder webClientBuilder

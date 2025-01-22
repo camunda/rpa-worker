@@ -37,7 +37,8 @@ out/
 .vscode/
 
 tags
-python/venv
+python/
+python_ftest/
 scripts/
 scripts_ftest/
 application-my-c8-cluster.properties
