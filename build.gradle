@@ -47,6 +47,7 @@ dependencies {
 	implementation libs.jackson.dataFormatYaml
 	implementation libs.reactiveFeign
 	implementation libs.javaSemver
+	implementation libs.slf4j.api
 
 	developmentOnly libs.spring.boot.devtools
 	annotationProcessor libs.spring.boot.configurationProcessor
@@ -64,10 +65,16 @@ dependencies {
 	functionalTestImplementation libs.spring.boot.starter.test
 	functionalTestImplementation libs.spock.spring
 	functionalTestImplementation libs.groovy.nio
+	functionalTestImplementation libs.blockhound
+
 }
 
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
+}
+
+tasks.named("functionalTest", Test).configure { Test task ->
+	task.jvmArgs("-XX:+AllowRedefinitionToAddDeleteMethods")
 }
 
 processTestAot.enabled = false
