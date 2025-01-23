@@ -37,9 +37,9 @@ out/
 .vscode/
 
 tags
-python/
+/python/
 python_ftest/
-scripts/
+/scripts/
 scripts_ftest/
 application-my-c8-cluster.properties
 satest.properties
