@@ -40,4 +40,5 @@ objenesis = { module = "org.objenesis:objenesis", version.ref = "objenesis" }
 spock-spring = { module = "org.spockframework:spock-spring", version.ref = "spock" }
 spring-boot-starter-test = { module  = "org.springframework.boot:spring-boot-starter-test" }
 groovy-nio = { module = "org.apache.groovy:groovy-nio", version.ref = "groovy" }
+groovy-json = { module = "org.apache.groovy:groovy-json", version.ref = "groovy" }
 blockhound = { module = "io.projectreactor.tools:blockhound", version.ref = "blockhound" }
