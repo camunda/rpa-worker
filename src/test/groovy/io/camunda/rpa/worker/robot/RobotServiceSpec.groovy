@@ -52,12 +52,12 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		and:
 		1 * processService.execute(pythonExe, _) >> { _, UnaryOperator<ProcessService.ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
-			return Mono.just(new ProcessService.ExecutionResult(0, "stdout-content", "stderr-content"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
 		}
 
 		and:
 		1 * executionCustomizer.workDir(workDir) >> executionCustomizer
-		1 * executionCustomizer.allowExitCode(1) >> executionCustomizer
+		1 * executionCustomizer.allowExitCodes(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES) >> executionCustomizer
 		1 * executionCustomizer.env("ROBOT_ARTIFACTS", workDir.resolve("robot_artifacts").toAbsolutePath().toString()) >> executionCustomizer
 		1 * executionCustomizer.env([secretVar: 'secret-var-value']) >> executionCustomizer
 		1 * executionCustomizer.arg("-m") >> executionCustomizer
@@ -90,7 +90,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		processService.execute(_, _) >> { _, __ ->
-			return Mono.just(new ProcessService.ExecutionResult(0, "stdout-content", "stderr-content"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
 		}
 
 		when:
@@ -125,7 +125,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		and:
 		processService.execute(_, _) >> { _, __ ->
 			return Mono.just(new ProcessService.ExecutionResult(
-					RobotService.ROBOT_TASK_FAILURE_EXIT_CODE, "stdout-content", "stderr-content"))
+					RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content"))
 		}
 
 		when:
@@ -146,7 +146,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		processService.execute(_, _) >> { _, __ ->
-			Mono.just(new ProcessService.ExecutionResult(127, "", ""))
+			Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INVALID_INVOKE, "", ""))
 		}
 
 		when:

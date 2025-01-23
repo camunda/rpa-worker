@@ -48,6 +48,8 @@ dependencies {
 	implementation libs.reactiveFeign
 	implementation libs.javaSemver
 	implementation libs.slf4j.api
+	
+	runtimeOnly libs.springJsonLog
 
 	developmentOnly libs.spring.boot.devtools
 	annotationProcessor libs.spring.boot.configurationProcessor
@@ -67,7 +69,6 @@ dependencies {
 	functionalTestImplementation libs.spock.spring
 	functionalTestImplementation libs.groovy.nio
 	functionalTestImplementation libs.blockhound
-
 }
 
 tasks.withType(Test).configureEach {

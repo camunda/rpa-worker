@@ -16,13 +16,19 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 public class RobotService {
 
-	static final int ROBOT_TASK_FAILURE_EXIT_CODE = 1;
+	static final int ROBOT_EXIT_INTERNAL_ERROR = 255;
+	static final int ROBOT_EXIT_INTERRUPTED = 253;
+	static final int ROBOT_EXIT_INVALID_INVOKE = 252;
+	static final int ROBOT_EXIT_HELP_OR_VERSION_REQUEST = 251;
+	static final int[] ROBOT_TASK_FAILURE_EXIT_CODES = IntStream.rangeClosed(1, 250).toArray();
+	static final int ROBOT_EXIT_SUCCESS = 0;
 
 	private final IO io;
 	private final ObjectMapper objectMapper;
@@ -37,7 +43,7 @@ public class RobotService {
 				.flatMap(renv -> processService.execute(pythonInterpreter.path(), c -> c
 
 								.workDir(renv.workDir())
-								.allowExitCode(ROBOT_TASK_FAILURE_EXIT_CODE)
+								.allowExitCodes(ROBOT_TASK_FAILURE_EXIT_CODES)
 								.env("ROBOT_ARTIFACTS", renv.artifactsDir().toAbsolutePath().toString())
 								.env(secrets)
 
@@ -54,9 +60,13 @@ public class RobotService {
 						.zipWhen(_ -> getOutputVariables(renv),
 								(xr, vars) -> new ExecutionResult(
 										switch (xr.exitCode()) {
-											case 0 -> ExecutionResult.Result.PASS;
-											case ROBOT_TASK_FAILURE_EXIT_CODE -> ExecutionResult.Result.FAIL;
-											default -> ExecutionResult.Result.ERROR;
+											case ROBOT_EXIT_SUCCESS -> ExecutionResult.Result.PASS;
+											
+											case ROBOT_EXIT_INTERNAL_ERROR, 
+											     ROBOT_EXIT_INTERRUPTED,
+											     ROBOT_EXIT_INVALID_INVOKE -> ExecutionResult.Result.ERROR;
+											
+											default -> ExecutionResult.Result.FAIL;
 										},
 										mergeOutput(xr.stdout(), xr.stderr()), vars)));
 	}

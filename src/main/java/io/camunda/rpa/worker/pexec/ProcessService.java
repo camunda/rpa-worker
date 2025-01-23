@@ -14,6 +14,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -81,6 +82,12 @@ public class ProcessService {
 			}
 
 			@Override
+			public ExecutionCustomizer allowExitCodes(int[] codes) {
+				Arrays.stream(codes).forEach(allowedExitCodes::add);
+				return this;
+			}
+
+			@Override
 			public ExecutionCustomizer env(String name, String value) {
 				environment.put(name, value);
 				return this;
@@ -96,11 +103,18 @@ public class ProcessService {
 			public ExecutionCustomizer inheritEnv() {
 				return env(System.getenv());
 			}
+
+			@Override
+			public ExecutionCustomizer noFail() {
+				return allowExitCode(Integer.MIN_VALUE);
+			}
 		});
 
 		cmdLine.setSubstitutionMap(bindings);
 		DefaultExecutor defaultExecutor = executorBuilder.get();
-		defaultExecutor.setExitValues(allowedExitCodes.stream().mapToInt(i -> i).toArray());
+		defaultExecutor.setExitValues(allowedExitCodes.contains(Integer.MIN_VALUE) 
+				? null 
+				: allowedExitCodes.stream().mapToInt(i -> i).toArray());
 //		defaultExecutor.setWatchdog(watchdogBuilder.get());
 
 		StreamHandler streamHandler = new StreamHandler();
@@ -126,9 +140,11 @@ public class ProcessService {
 		ExecutionCustomizer bindArg(String arg, Object value);
 		ExecutionCustomizer workDir(Path path);
 		ExecutionCustomizer allowExitCode(int code);
+		ExecutionCustomizer allowExitCodes(int[] codes);
 		ExecutionCustomizer env(String name, String value);
 		ExecutionCustomizer env(Map<String, String> map);
 		ExecutionCustomizer inheritEnv();
+		ExecutionCustomizer noFail();
 	}
 	
 	static class StreamHandler extends PumpStreamHandler {

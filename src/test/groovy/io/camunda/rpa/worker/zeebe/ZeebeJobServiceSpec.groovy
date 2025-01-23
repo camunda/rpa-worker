@@ -51,6 +51,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	RobotScript script = new RobotScript("this_script", null)
 	ScriptRepository scriptRepository = Stub() {
 		findById("this_script_latest") >> Mono.just(script)
+		getById("this_script_latest") >> Mono.just(script)
 	}
 	ObjectMapper objectMapper = new ObjectMapper()
 

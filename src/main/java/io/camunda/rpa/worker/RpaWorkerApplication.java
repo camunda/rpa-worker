@@ -13,6 +13,8 @@ import reactor.netty.http.client.HttpClient;
 public class RpaWorkerApplication {
 	
 	public static final int EXIT_NO_ZEEBE_CONNECTION = 199;
+	public static final int EXIT_NO_PYTHON = 198;
+	public static final int EXIT_NO_ROBOT = 197;
 
 	public static void main(String[] args) {
 		System.setProperty("spring.config.name", "application,rpa-runtime");

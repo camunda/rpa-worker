@@ -11,6 +11,7 @@ import io.vavr.control.Try;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-class ZeebeJobService {
+class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	
 	static final String LINKED_RESOURCES_HEADER_NAME = "camunda::linkedResources";
 
@@ -36,6 +37,11 @@ class ZeebeJobService {
 	private final ObjectMapper objectMapper;
 
 	private final Map<String, JobWorker> jobWorkers = new ConcurrentHashMap<>();
+
+	@Override
+	public void onApplicationEvent(ZeebeReadyEvent ignored) {
+		doInit();
+	}
 
 	ZeebeJobService doInit() {
 		jobWorkers.putAll(zeebeProperties.workerTags().stream()
@@ -69,7 +75,7 @@ class ZeebeJobService {
 					.log("Received Job from Zeebe");
 
 			Mono.fromSupplier(() -> getScriptKey(job))
-					.flatMap(scriptKey -> scriptRepository.findById(scriptKey)
+					.flatMap(scriptKey -> scriptRepository.getById(scriptKey)
 							.flatMap(script -> getSecretsAsEnv(job)
 									.flatMap(secrets ->
 											robotService.execute(script, getVariables(job), secrets)))
@@ -107,7 +113,8 @@ class ZeebeJobService {
 							.kv("job", job.getKey())
 							.setCause(thrown)
 							.log("Error while executing Job"))
-
+					
+					.onErrorComplete()
 					.subscribe();
 		};
 	}
