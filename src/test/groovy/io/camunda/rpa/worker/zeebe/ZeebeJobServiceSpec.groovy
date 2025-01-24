@@ -8,6 +8,7 @@ import io.camunda.rpa.worker.robot.ExecutionResult.Result
 import io.camunda.rpa.worker.robot.RobotService
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.script.ScriptRepository
+import io.camunda.rpa.worker.secrets.SecretsService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
@@ -45,9 +46,9 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	
 	ZeebeProperties zeebeProperties = new ZeebeProperties(TASK_PREFIX, ["tag-one", "tag-two"].toSet())
 	RobotService robotService = Mock()
-//	SecretsService secretsService = Stub() {
-//		getSecrets() >> Mono.just([secretVar: 'secret-value'])
-//	}
+	SecretsService secretsService = Stub() {
+		getSecrets() >> Mono.just([secretVar: 'secret-value'])
+	}
 	RobotScript script = new RobotScript("this_script", null)
 	ScriptRepository scriptRepository = Stub() {
 		findById("this_script_latest") >> Mono.just(script)
@@ -61,7 +62,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 			zeebeProperties,
 			robotService,
 			scriptRepository,
-			objectMapper)
+			objectMapper, 
+			secretsService)
 
 	JobClient jobClient = Mock()
 
@@ -151,16 +153,14 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		theJobHandler.handle(jobClient, job1)
 
 		then: "The RPA Input Variables are passed to the Robot execution"
-//		1 * robotService.execute(script, [rpaVar: 'the-value'], [SECRET_SECRETVAR: 'secret-value']) >> Mono.empty()
-		1 * robotService.execute(script, [rpaVar: 'the-value'], [:]) >> Mono.empty()
+		1 * robotService.execute(script, [rpaVar: 'the-value'], [SECRET_SECRETVAR: 'secret-value']) >> Mono.empty()
 
 		when: "There are NO specific RPA Input Variables available"
 		ActivatedJob job2 = anRpaJob([otherVar: 'other-val'])
 		theJobHandler.handle(jobClient, job2)
 
 		then: "The Job's main variables are passed to the Robot execution"
-//		1 * robotService.execute(script, [otherVar: 'other-val'], [SECRET_SECRETVAR: 'secret-value']) >> Mono.empty()
-		1 * robotService.execute(script, [otherVar: 'other-val'], [:]) >> Mono.empty()
+		1 * robotService.execute(script, [otherVar: 'other-val'], [SECRET_SECRETVAR: 'secret-value']) >> Mono.empty()
 	}
 	
 	void "Errors when can't find script in headers"() {

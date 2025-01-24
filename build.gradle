@@ -69,6 +69,7 @@ dependencies {
 	functionalTestImplementation libs.spock.spring
 	functionalTestImplementation libs.groovy.nio
 	functionalTestImplementation libs.blockhound
+	functionalTestImplementation libs.mockwebserver
 }
 
 tasks.withType(Test).configureEach {

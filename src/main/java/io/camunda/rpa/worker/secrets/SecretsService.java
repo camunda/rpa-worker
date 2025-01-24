@@ -24,11 +24,11 @@ public class SecretsService {
 	
 	@PostConstruct
 	SecretsService init() {
-		authToken = authClient.authenticate(new AuthClient.AuthenticationRequest(
+		authToken = Mono.defer(() -> authClient.authenticate(new AuthClient.AuthenticationRequest(
 						zeebeAuthProperties.clientId(),
 						zeebeAuthProperties.clientSecret(),
 						"secrets.camunda.io",
-						"client_credentials"))
+						"client_credentials")))
 				.doOnSubscribe(_ -> log.atInfo().log("Refreshing auth token for secrets"))
 				.map(resp -> new TokenWithAbsoluteExpiry(resp.accessToken(),
 						Instant.now().minusSeconds(60).plusSeconds(resp.expiresIn())))
