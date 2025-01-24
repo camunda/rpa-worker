@@ -167,7 +167,7 @@ Nothing
 									ZeebeBindingType.latest,
 									"RPA",
 									"?",
-									"RPAScript",
+									ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
 									scriptKey)
 					])
 			)]

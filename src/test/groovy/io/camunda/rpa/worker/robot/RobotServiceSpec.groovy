@@ -40,13 +40,13 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		Path workDir = Paths.get("/path/to/workDir/")
 
 		when:
-		ExecutionResult r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'])
+		ExecutionResults r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'])
 
 		then:
 		1 * io.createTempDirectory("robot") >> workDir
 		1 * io.createDirectories(workDir.resolve("output"))
 		1 * io.createDirectories(workDir.resolve("robot_artifacts"))
-		1 * io.writeString(workDir.resolve("script.robot"), "some-script-body", _)
+		1 * io.writeString(workDir.resolve("main.robot"), "some-script-body", _)
 		1 * io.write(workDir.resolve("variables.json"), objectMapper.writeValueAsBytes([rpaVar: 'rpa-var-value']), [])
 
 		and:
@@ -64,18 +64,18 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.arg("robot") >> executionCustomizer
 		1 * executionCustomizer.arg("--rpa") >> executionCustomizer
 		1 * executionCustomizer.arg("--outputdir") >> executionCustomizer
-		1 * executionCustomizer.bindArg("outputDir", workDir.resolve("output")) >> executionCustomizer
+		1 * executionCustomizer.bindArg("outputDir", workDir.resolve("output/main/")) >> executionCustomizer
 		1 * executionCustomizer.arg("--variablefile") >> executionCustomizer
 		1 * executionCustomizer.bindArg("varsFile", workDir.resolve("variables.json")) >> executionCustomizer
 		1 * executionCustomizer.arg("--report") >> executionCustomizer
 		1 * executionCustomizer.arg("none") >> executionCustomizer
 		1 * executionCustomizer.arg("--logtitle") >> executionCustomizer
 		1 * executionCustomizer.arg("Task log") >> executionCustomizer
-		1 * executionCustomizer.bindArg("script", workDir.resolve("script.robot")) >> executionCustomizer
+		1 * executionCustomizer.bindArg("script", workDir.resolve("main.robot")) >> executionCustomizer
 
 		and:
-		r.result() == ExecutionResult.Result.PASS
-		r.output() == """\
+		r.results().values().first().result() == ExecutionResults.Result.PASS
+		r.results().values().first().output() == """\
 [STDOUT] stdout-content
 [STDERR] stderr-content"""
 	}
@@ -94,7 +94,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResult result = block service.execute(script, [:], [:])
+		ExecutionResults result = block service.execute(script, [:], [:])
 
 		then:
 		1 * io.notExists(workDir.resolve("outputs.yml")) >> false
@@ -104,7 +104,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		result.outputVariables() == [foo: 'bar']
 
 		when:
-		ExecutionResult result2 = block service.execute(script, [:], [:])
+		ExecutionResults result2 = block service.execute(script, [:], [:])
 
 		then:
 		1 * io.notExists(workDir.resolve("outputs.yml")) >> true
@@ -129,10 +129,10 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResult result = block service.execute(script, [:], [:])
+		ExecutionResults result = block service.execute(script, [:], [:])
 
 		then:
-		result.result() == ExecutionResult.Result.FAIL
+		result.results().values().first().result() == ExecutionResults.Result.FAIL
 	}
 
 	void "Throws correct exception for Robot failure"() {
@@ -150,10 +150,10 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResult result = block service.execute(script, [:], [:])
+		ExecutionResults result = block service.execute(script, [:], [:])
 
 		then:
-		result.result() == ExecutionResult.Result.ERROR
+		result.results().values().first().result() == ExecutionResults.Result.ERROR
 	}
 	
 	void "Throws correct exception for Robot execution failure"() {

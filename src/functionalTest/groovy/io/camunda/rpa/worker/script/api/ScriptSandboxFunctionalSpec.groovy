@@ -3,7 +3,7 @@ package io.camunda.rpa.worker.script.api
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.api.ValidationFailureDto
-import io.camunda.rpa.worker.robot.ExecutionResult
+import io.camunda.rpa.worker.robot.ExecutionResults
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.reactive.function.BodyInserters
@@ -50,7 +50,7 @@ Set an output variable
 				.block(Duration.ofMinutes(1))
 
 		then:
-		r.result() == ExecutionResult.Result.PASS
+		r.result() == ExecutionResults.Result.PASS
 		r.log().contains("[STDOUT] Assert input variable")
 		r.variables() == [anOutputVariable: 'output-variable-value']
 	}
@@ -71,7 +71,7 @@ Assert input variable
 				.block(Duration.ofMinutes(1))
 
 		then:
-		r.result() == ExecutionResult.Result.FAIL
+		r.result() == ExecutionResults.Result.FAIL
 		r.log().contains('Variable \'${thisWasNeverSet}\' not found')
 		r.variables() == [:]
 	}
@@ -91,7 +91,7 @@ Nothing
 				.block(Duration.ofMinutes(1))
 
 		then:
-		r.result() == ExecutionResult.Result.ERROR
-		r.log().contains("[ ERROR ] Suite 'Script' contains no tests or tasks")
+		r.result() == ExecutionResults.Result.ERROR
+		r.log().contains("contains no tests or tasks")
 	}
 }
