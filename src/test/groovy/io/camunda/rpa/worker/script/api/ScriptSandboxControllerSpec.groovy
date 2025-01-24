@@ -1,7 +1,7 @@
 package io.camunda.rpa.worker.script.api
 
 import io.camunda.rpa.worker.PublisherUtils
-import io.camunda.rpa.worker.robot.ExecutionResult
+import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.robot.RobotService
 import io.camunda.rpa.worker.script.RobotScript
 import reactor.core.publisher.Mono
@@ -25,11 +25,13 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		EvaluateScriptResponse response = block controller.evaluateScript(new EvaluateScriptRequest(scriptBody, inputVariables))
 		
 		then:
-		1 * robotService.execute(new RobotScript("<eval>", scriptBody), inputVariables, [:]) >> Mono.just(
-				new ExecutionResult(ExecutionResult.Result.PASS, "the-output", outputVariables))
+		1 * robotService.execute(new RobotScript("_eval_", scriptBody), inputVariables, [:]) >> Mono.just(
+				new ExecutionResults(
+						[main: new ExecutionResults.ExecutionResult("main", ExecutionResults.Result.PASS, "the-output", outputVariables)], null,
+						outputVariables))
 		
 		and:
-		response.result() == ExecutionResult.Result.PASS
+		response.result() == ExecutionResults.Result.PASS
 		response.variables() == outputVariables
 	}
 }

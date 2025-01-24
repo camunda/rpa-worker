@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.zeebe;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.robot.RobotService;
+import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.secrets.SecretsService;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -14,10 +15,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -28,6 +31,9 @@ import java.util.stream.Collectors;
 class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	
 	static final String LINKED_RESOURCES_HEADER_NAME = "camunda::linkedResources";
+	static final String MAIN_SCRIPT_LINK_NAME = "RPAScript";
+	static final String BEFORE_SCRIPT_LINK_NAME = "Before";
+	static final String AFTER_SCRIPT_LINK_NAME = "After";
 
 	private final ZeebeClient zeebeClient;
 	private final ZeebeProperties zeebeProperties;
@@ -74,12 +80,28 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 					.kv("job", job.getKey())
 					.log("Received Job from Zeebe");
 
-			Mono.fromSupplier(() -> getScriptKey(job))
-					.flatMap(scriptKey -> scriptRepository.getById(scriptKey)
-							.flatMap(script -> getSecretsAsEnv(job)
-									.flatMap(secrets ->
-											robotService.execute(script, getVariables(job), secrets)))
+			Flux<RobotScript> before = getScriptKeys(job, BEFORE_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
+			Mono<RobotScript> main = getScriptKeys(job, MAIN_SCRIPT_LINK_NAME)
+					.single()
+					.onErrorMap(thrown ->
+							thrown instanceof IndexOutOfBoundsException
+									|| thrown instanceof NoSuchElementException, 
+							thrown -> new IllegalStateException(
+									"Failed to find exactly 1 LinkedResource providing the main script", thrown))
+					.flatMap(scriptRepository::getById);
+			Flux<RobotScript> after = getScriptKeys(job, AFTER_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
 
+			Flux.zip(before.collectList(), main, after.collectList())
+					.flatMap(scriptSet -> getSecretsAsEnv(job)
+							.flatMap(secrets ->
+
+									robotService.execute(
+											scriptSet.getT2(), 
+											scriptSet.getT1(),
+											scriptSet.getT3(), 
+											getVariables(job), 
+											secrets))
+							
 							.doOnSuccess(xr -> (switch (xr.result()) {
 								case PASS -> client
 										.newCompleteCommand(job)
@@ -99,7 +121,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 							.doOnSuccess(xr -> log.atInfo()
 									.kv("task", subKey)
 									.kv("job", job.getKey())
-									.kv("result", xr.result())
+									.kv("results", xr.results())
 									.log("Job complete")))
 
 					.doOnError(thrown -> client
@@ -113,28 +135,23 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 							.kv("job", job.getKey())
 							.setCause(thrown)
 							.log("Error while executing Job"))
-					
+
 					.onErrorComplete()
 					.subscribe();
 		};
 	}
 
-	private String getScriptKey(ActivatedJob job) {
+	private Flux<String> getScriptKeys(ActivatedJob job, String linkName) {
 		List<ZeebeLinkedResources.ZeebeLinkedResource> linkedResources = Optional.ofNullable(
 						job.getCustomHeaders().get(LINKED_RESOURCES_HEADER_NAME))
 				.map(rawHeader -> Try.of(() -> objectMapper.readValue(rawHeader, ZeebeLinkedResources.class)).get())
 				.stream()
 				.flatMap(rs -> rs.linkedResources().stream())
 				.filter(r -> r.resourceType().equals("RPA"))
-				.filter(r -> r.linkName().equals("RPAScript"))
+				.filter(r -> r.linkName().equals(linkName))
 				.toList();
 
-		if (linkedResources.size() != 1)
-			throw new IllegalStateException("Expected to find exactly 1 LinkedResource providing the RPA Script, found %s [%s]".formatted(
-					linkedResources.size(),
-					linkedResources));
-		
-		return linkedResources.getFirst().key();
+		return Flux.fromStream(linkedResources.stream().map(ZeebeLinkedResources.ZeebeLinkedResource::key));
 	}
 
 	@SuppressWarnings("unchecked")
@@ -151,4 +168,5 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 								kv.getValue()))
 						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 	}
+
 }

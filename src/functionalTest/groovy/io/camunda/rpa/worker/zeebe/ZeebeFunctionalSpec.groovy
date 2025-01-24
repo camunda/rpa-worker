@@ -41,6 +41,18 @@ Set an output variable
 *** Nothing ***
 Nothing
 '''
+	static final Closure<String> COMPANION_ROBOT_SCRIPT_TEMPLATE = { id -> """\
+*** Settings ***
+Library             Camunda
+Library             OperatingSystem
+
+*** Tasks ***
+The tasks
+	Create File    ${id}.txt    ${id}
+    Set Output Variable     anOutputVariableFrom_${id}      output-value-from-companion
+    Set Output Variable     anOutputVariableSameName       output-value-from-companion-${id}
+"""
+	}
 
 	@Autowired
 	ZeebeJobService service
@@ -75,6 +87,10 @@ Nothing
 		Files.createDirectories(scriptsDir)
 		scriptsDir.resolve("existing_1.robot").text = SAMPLE_ROBOT_SCRIPT
 		scriptsDir.resolve("erroring_1.robot").text = ERRORING_ROBOT_SCRIPT
+		scriptsDir.resolve("companion_1.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("pre0")
+		scriptsDir.resolve("companion_2.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("pre1")
+		scriptsDir.resolve("companion_3.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("post0")
+		scriptsDir.resolve("companion_4.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("post1")
 	}
 	
 	void "Subscribes on init"() {
@@ -157,6 +173,39 @@ Nothing
 			}
 		}
 	}
+	
+	void "Runs pre and post scripts, in order, and aggregates results"() {
+		given:
+		service.doInit()
+		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
+		
+		and:
+		ActivatedJob jobWithPreAndPostScripts = anRpaJobWithPreAndPostScripts(
+				["companion_1", "companion_2"],
+				"existing_1",
+				["companion_3", "companion_4"], 
+				[anInputVariable: 'input-variable-value'])
+
+		when:
+		theJobHandler.handle(jobClient, jobWithPreAndPostScripts)
+		handlerDidFinish.await(2, TimeUnit.SECONDS)
+
+		then:
+		1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			1 * variables([
+					anOutputVariableFrom_pre0: "output-value-from-companion",
+					anOutputVariableSameName: "output-value-from-companion-post1",
+					anOutputVariableFrom_pre1: "output-value-from-companion",
+					anOutputVariable: "output-variable-value",
+					anOutputVariableFrom_post0: "output-value-from-companion",
+					anOutputVariableFrom_post1: "output-value-from-companion",
+			]) >> it
+			1 * send() >> {
+				handlerDidFinish.countDown()
+				return null
+			}
+		}
+	}
 
 	private ActivatedJob anRpaJob(Map<String, Object> variables = [:], String scriptKey = "existing_1") {
 		return Stub(ActivatedJob) {
@@ -167,13 +216,57 @@ Nothing
 									ZeebeBindingType.latest,
 									"RPA",
 									"?",
-									"RPAScript",
+									ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
 									scriptKey)
 					])
 			)]
 
 			getVariablesAsMap() >> variables
 		}
+	}
+	
+	private ActivatedJob anRpaJobWithPreAndPostScripts(
+			List<String> preScripts,
+			String mainScript,
+			List<String> postScripts, 
+			Map<String, Object> inputVariables = [:]) {
+		
+		return Stub(ActivatedJob) {
+			getCustomHeaders() >> [(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson(
+					new ZeebeLinkedResources(
+							preScripts.collect { s -> 
+								new ZeebeLinkedResources.ZeebeLinkedResource(
+										s,
+										ZeebeBindingType.latest,
+										"RPA",
+										"?",
+										ZeebeJobService.BEFORE_SCRIPT_LINK_NAME,
+										s)
+							}
+							+
+							[
+								new ZeebeLinkedResources.ZeebeLinkedResource(
+										mainScript,
+										ZeebeBindingType.latest,
+										"RPA",
+										"?",
+										ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
+										mainScript)
+							]
+							+
+							postScripts.collect { s ->
+								new ZeebeLinkedResources.ZeebeLinkedResource(
+										s,
+										ZeebeBindingType.latest,
+										"RPA",
+										"?",
+										ZeebeJobService.AFTER_SCRIPT_LINK_NAME,
+										s)
+							}))]
+
+			getVariablesAsMap() >> inputVariables
+		}
+
 	}
 
 }
