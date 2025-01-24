@@ -13,6 +13,7 @@ byteBuddy = "1.15.11"
 objenesis = "3.4"
 groovy = "4.0.24"
 blockhound = "1.0.10.RELEASE"
+mockwebserver = "4.12.0"
 
 [libraries]
 spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
@@ -44,3 +45,4 @@ spring-boot-starter-test = { module  = "org.springframework.boot:spring-boot-sta
 groovy-nio = { module = "org.apache.groovy:groovy-nio", version.ref = "groovy" }
 groovy-json = { module = "org.apache.groovy:groovy-json", version.ref = "groovy" }
 blockhound = { module = "io.projectreactor.tools:blockhound", version.ref = "blockhound" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }

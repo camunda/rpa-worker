@@ -31,7 +31,7 @@ Library             Camunda
 *** Tasks ***
 Assert input variable
     Should Be Equal    ${anInputVariable}    input-variable-value
-    #Should Be Equal    %{SECRET_TEST_SECRET_KEY}    TEST_SECRET_VALUE
+    Should Be Equal    %{SECRET_TEST_SECRET_KEY}    TEST_SECRET_VALUE
 
 Set an output variable
     Set Output Variable     anOutputVariable      output-variable-value
@@ -86,9 +86,10 @@ Nothing
 		1 * builder3.open() >> Stub(JobWorker)
 	}
 	
-	void "Runs Robot task from Zeebe, passing in input variables, reports success with output variables"() {
+	void "Runs Robot task from Zeebe, passing in input variables and secrets, reports success with output variables"() {
 		given:
 		service.doInit()
+		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'input-variable-value']))
@@ -107,6 +108,7 @@ Nothing
 	void "Runs Robot task from Zeebe, passing in input variables, reports fail"() {
 		given:
 		service.doInit()
+		withNoSecrets()
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'UNEXPECTED-input-variable-value']))
@@ -124,6 +126,7 @@ Nothing
 	void "Runs Robot task from Zeebe, passing in input variables, reports Robot error"() {
 		given:
 		service.doInit()
+		withNoSecrets()
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([:], "erroring_1"))

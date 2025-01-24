@@ -3,6 +3,7 @@ package io.camunda.rpa.worker.zeebe;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.ScriptRepository;
+import io.camunda.rpa.worker.secrets.SecretsService;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobHandler;
@@ -15,7 +16,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,8 +33,8 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	private final ZeebeProperties zeebeProperties;
 	private final RobotService robotService;
 	private final ScriptRepository scriptRepository;
-//	private final SecretsService secretsService;
 	private final ObjectMapper objectMapper;
+	private final SecretsService secretsService;
 
 	private final Map<String, JobWorker> jobWorkers = new ConcurrentHashMap<>();
 
@@ -144,7 +144,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	}
 
 	private Mono<Map<String, String>> getSecretsAsEnv(ActivatedJob job) {
-		return Mono.just(Collections.<String, String>emptyMap()) // TODO: No Secrets yet
+		return secretsService.getSecrets()
 				.map(m -> m.entrySet().stream()
 						.map(kv -> Map.entry(
 								"SECRET_%s".formatted(kv.getKey().toUpperCase()),
