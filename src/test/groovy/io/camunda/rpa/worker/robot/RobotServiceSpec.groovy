@@ -40,13 +40,13 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		Path workDir = Paths.get("/path/to/workDir/")
 
 		when:
-		ExecutionResult r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'])
+		ExecutionResults r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'])
 
 		then:
 		1 * io.createTempDirectory("robot") >> workDir
 		1 * io.createDirectories(workDir.resolve("output"))
 		1 * io.createDirectories(workDir.resolve("robot_artifacts"))
-		1 * io.writeString(workDir.resolve("script.robot"), "some-script-body", _)
+		1 * io.writeString(workDir.resolve("main.robot"), "some-script-body", _)
 		1 * io.write(workDir.resolve("variables.json"), objectMapper.writeValueAsBytes([rpaVar: 'rpa-var-value']), [])
 
 		and:
@@ -64,18 +64,18 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.arg("robot") >> executionCustomizer
 		1 * executionCustomizer.arg("--rpa") >> executionCustomizer
 		1 * executionCustomizer.arg("--outputdir") >> executionCustomizer
-		1 * executionCustomizer.bindArg("outputDir", workDir.resolve("output")) >> executionCustomizer
+		1 * executionCustomizer.bindArg("outputDir", workDir.resolve("output/main/")) >> executionCustomizer
 		1 * executionCustomizer.arg("--variablefile") >> executionCustomizer
 		1 * executionCustomizer.bindArg("varsFile", workDir.resolve("variables.json")) >> executionCustomizer
 		1 * executionCustomizer.arg("--report") >> executionCustomizer
 		1 * executionCustomizer.arg("none") >> executionCustomizer
 		1 * executionCustomizer.arg("--logtitle") >> executionCustomizer
 		1 * executionCustomizer.arg("Task log") >> executionCustomizer
-		1 * executionCustomizer.bindArg("script", workDir.resolve("script.robot")) >> executionCustomizer
+		1 * executionCustomizer.bindArg("script", workDir.resolve("main.robot")) >> executionCustomizer
 
 		and:
-		r.result() == ExecutionResult.Result.PASS
-		r.output() == """\
+		r.results().values().first().result() == ExecutionResults.Result.PASS
+		r.results().values().first().output() == """\
 [STDOUT] stdout-content
 [STDERR] stderr-content"""
 	}
@@ -94,7 +94,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResult result = block service.execute(script, [:], [:])
+		ExecutionResults result = block service.execute(script, [:], [:])
 
 		then:
 		1 * io.notExists(workDir.resolve("outputs.yml")) >> false
@@ -104,7 +104,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		result.outputVariables() == [foo: 'bar']
 
 		when:
-		ExecutionResult result2 = block service.execute(script, [:], [:])
+		ExecutionResults result2 = block service.execute(script, [:], [:])
 
 		then:
 		1 * io.notExists(workDir.resolve("outputs.yml")) >> true
@@ -129,10 +129,10 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResult result = block service.execute(script, [:], [:])
+		ExecutionResults result = block service.execute(script, [:], [:])
 
 		then:
-		result.result() == ExecutionResult.Result.FAIL
+		result.results().values().first().result() == ExecutionResults.Result.FAIL
 	}
 
 	void "Throws correct exception for Robot failure"() {
@@ -150,10 +150,10 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResult result = block service.execute(script, [:], [:])
+		ExecutionResults result = block service.execute(script, [:], [:])
 
 		then:
-		result.result() == ExecutionResult.Result.ERROR
+		result.results().values().first().result() == ExecutionResults.Result.ERROR
 	}
 	
 	void "Throws correct exception for Robot execution failure"() {
@@ -174,6 +174,146 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		block service.execute(script, [:], [:])
 
 		then:
-		thrown(RobotFailureException)
+		thrown(RobotErrorException)
+	}
+	
+	void "Runs before and after scripts and aggregates results"() {
+		given:
+		RobotScript before1 = new RobotScript("some-script", "some-script-body")
+		RobotScript before2 = new RobotScript("some-script", "some-script-body")
+		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript after1 = new RobotScript("some-script", "some-script-body")
+		RobotScript after2 = new RobotScript("some-script", "some-script-body")
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		io.createTempDirectory("robot") >> workDir
+		io.notExists(workDir.resolve("outputs.yml")) >> false
+		ProcessService.ExecutionCustomizer executionCustomizer = Mock() {
+			_ >> it
+		}
+
+		and:
+		processService.execute(_, _) >> { _, UnaryOperator<ProcessService.ExecutionCustomizer> customizer ->
+			customizer.apply(executionCustomizer)
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
+		}
+
+		when:
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:])
+		
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var1: 'val1']
+
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_1") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var2: 'val2']
+
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("main") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var3: 'val3']
+
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("post_0") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var4: 'val4']
+
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("post_1") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var5: 'val5']
+
+		and:
+		["pre_0", "pre_1", "main", "post_0", "post_1"].each { sc ->
+			with(result.results().keySet().find { k -> k.startsWith(sc) }) { rr ->
+				result.results()[rr].result() == ExecutionResults.Result.PASS
+				result.results()[rr].outputVariables()
+			}
+		}
+		
+		result.result() == ExecutionResults.Result.PASS
+		
+		result.outputVariables() == [
+				var1: 'val1',
+				var2: 'val2',
+				var3: 'val3',
+				var4: 'val4',
+				var5: 'val5'
+		]
+	}
+
+	void "Stops execution and returns correct aggregate results for pre/post script failure"() {
+		given:
+		RobotScript before1 = new RobotScript("some-script", "some-script-body")
+		RobotScript before2 = new RobotScript("some-script", "some-script-body")
+		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript after1 = new RobotScript("some-script", "some-script-body")
+		RobotScript after2 = new RobotScript("some-script", "some-script-body")
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		io.createTempDirectory("robot") >> workDir
+		io.notExists(workDir.resolve("outputs.yml")) >> false
+		ProcessService.ExecutionCustomizer executionCustomizer = Mock() {
+			_ >> it
+		}
+
+		when:
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:])
+
+		then:
+		1 * processService.execute(_, _) >> { _, UnaryOperator<ProcessService.ExecutionCustomizer> customizer ->
+			customizer.apply(executionCustomizer)
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content"))
+		}
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var1: 'val1']
+
+		then:
+		0 * processService._
+
+		and:
+		result.results().size() == 1
+		result.result() == ExecutionResults.Result.FAIL
+		result.outputVariables() == [var1: 'val1']
+	}
+
+	void "Stops execution and returns correct aggregate results for pre/post script error"() {
+		given:
+		RobotScript before1 = new RobotScript("some-script", "some-script-body")
+		RobotScript before2 = new RobotScript("some-script", "some-script-body")
+		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript after1 = new RobotScript("some-script", "some-script-body")
+		RobotScript after2 = new RobotScript("some-script", "some-script-body")
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		io.createTempDirectory("robot") >> workDir
+		io.notExists(workDir.resolve("outputs.yml")) >> false
+
+		when:
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:])
+
+		then:
+		3 * processService.execute(_, _) >> { _, __ ->
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
+		}
+		3 * io.withReader(workDir.resolve("outputs.yml"), _) >>> [
+				[var1: 'val1'], 
+				[var2: 'val2'], 
+				[var3: 'val3']]
+		
+		then:
+		1 * processService.execute(_, _) >> { _, __ ->
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INVALID_INVOKE, "stdout-content", "stderr-content"))
+		}
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var3: 'val3']
+
+		then:
+		0 * processService._
+
+		and:
+		result.results().size() == 4
+		result.result() == ExecutionResults.Result.ERROR
+		result.outputVariables() == [var1: 'val1', var2: 'val2', var3: 'val3']
 	}
 }
