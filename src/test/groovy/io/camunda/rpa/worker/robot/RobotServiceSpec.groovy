@@ -174,7 +174,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		block service.execute(script, [:], [:])
 
 		then:
-		thrown(RobotFailureException)
+		thrown(RobotErrorException)
 	}
 	
 	void "Runs before and after scripts and aggregates results"() {
@@ -241,7 +241,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		]
 	}
 
-	void "???? fail 1 "() {
+	void "Stops execution and returns correct aggregate results for pre/post script failure"() {
 		given:
 		RobotScript before1 = new RobotScript("some-script", "some-script-body")
 		RobotScript before2 = new RobotScript("some-script", "some-script-body")
@@ -275,5 +275,45 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		result.results().size() == 1
 		result.result() == ExecutionResults.Result.FAIL
 		result.outputVariables() == [var1: 'val1']
+	}
+
+	void "Stops execution and returns correct aggregate results for pre/post script error"() {
+		given:
+		RobotScript before1 = new RobotScript("some-script", "some-script-body")
+		RobotScript before2 = new RobotScript("some-script", "some-script-body")
+		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript after1 = new RobotScript("some-script", "some-script-body")
+		RobotScript after2 = new RobotScript("some-script", "some-script-body")
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		io.createTempDirectory("robot") >> workDir
+		io.notExists(workDir.resolve("outputs.yml")) >> false
+
+		when:
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:])
+
+		then:
+		3 * processService.execute(_, _) >> { _, __ ->
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
+		}
+		3 * io.withReader(workDir.resolve("outputs.yml"), _) >>> [
+				[var1: 'val1'], 
+				[var2: 'val2'], 
+				[var3: 'val3']]
+		
+		then:
+		1 * processService.execute(_, _) >> { _, __ ->
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INVALID_INVOKE, "stdout-content", "stderr-content"))
+		}
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var3: 'val3']
+
+		then:
+		0 * processService._
+
+		and:
+		result.results().size() == 4
+		result.result() == ExecutionResults.Result.ERROR
+		result.outputVariables() == [var1: 'val1', var2: 'val2', var3: 'val3']
 	}
 }

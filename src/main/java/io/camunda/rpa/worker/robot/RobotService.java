@@ -6,6 +6,7 @@ import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.script.RobotScript;
+import io.camunda.rpa.worker.util.MoreCollectors;
 import io.camunda.rpa.worker.util.YamlMapper;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
@@ -13,15 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.util.function.Tuples;
 
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -96,27 +96,36 @@ public class RobotService {
 										.arg("--report").arg("none")
 										.arg("--logtitle").arg("Task log")
 										.bindArg("script", renv.workDir().resolve("%s.robot".formatted(script.executionKey()))))
+
 								.flatMap(xr -> getOutputVariables(renv)
-										.map(outputVariables -> Map.entry(
+										.map(outputVariables -> toRobotExecutionResult(
 												script.executionKey(), 
-												Tuples.of(xr, outputVariables)))))
+												xr, 
+												outputVariables)))
+								
+								.flatMap(xr -> xr.result() != ExecutionResults.Result.PASS 
+										? Mono.error(new RobotFailureException(xr)) 
+										: Mono.just(xr)))
 
-						.onErrorMap(thrown -> new RobotFailureException(thrown))
-
-						.collect(Collectors.toMap(Map.Entry::getKey,
-								kv -> toRobotExecutionResult(kv.getKey(), kv.getValue().getT1(), kv.getValue().getT2()),
-								(l, _) -> l, 
-								LinkedHashMap::new))
+						.onErrorResume(RobotFailureException.class, thrown -> 
+								Mono.just(thrown.getExecutionResult()))
 						
-						.map(resultsMap -> new ExecutionResults(resultsMap,
-								getWorstCase(resultsMap.values()),
-								resultsMap.values().stream()
-										.flatMap(s -> s.outputVariables().entrySet().stream())
-										.collect(Collectors.toMap(
-												Map.Entry::getKey, 
-												Map.Entry::getValue,
-												(_, r) -> r, 
-												LinkedHashMap::new)))));
+						.onErrorMap(thrown -> new RobotErrorException(thrown))
+
+						.collect(MoreCollectors.toSequencedMap(
+								ExecutionResults.ExecutionResult::executionId,
+								kv -> kv,
+								MoreCollectors.MergeStrategy.noDuplicatesExpected())))
+
+				.map(resultsMap -> new ExecutionResults(
+						resultsMap,
+						getWorstCase(resultsMap.values()),
+						resultsMap.values().stream()
+								.flatMap(s -> s.outputVariables().entrySet().stream())
+								.collect(MoreCollectors.toSequencedMap(
+										Map.Entry::getKey, 
+										Map.Entry::getValue, 
+										MoreCollectors.MergeStrategy.rightPrecedence()))));
 	}
 
 	private Mono<RobotEnvironment> newRobotEnvironment(List<PreparedScript> scripts, Map<String, Object> variables) {
@@ -171,6 +180,6 @@ public class RobotService {
 		return results.stream()
 				.map(ExecutionResults.ExecutionResult::result)
 				.max(Comparator.naturalOrder())
-				.orElseThrow();
+				.orElseThrow(() -> new NoSuchElementException("The result set contained no results"));
 	}
 }
