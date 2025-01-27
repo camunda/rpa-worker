@@ -84,17 +84,20 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		given:
 		ActivatedJob job = anRpaJob()
 		service.doInit()
+		Map<String, String> expectedOutputVars = [outputVar: 'output-var-value']
 
 		when:
 		theJobHandler.handle(jobClient, job)
 
 		then:
 		1 * robotService.execute(script, [], [], _, _) >> Mono.just(new ExecutionResults(
-				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "")], [outputVar: 'output-var-value']))
+				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", expectedOutputVars)], 
+				Result.PASS,
+				expectedOutputVars))
 
 		and:
 		1 * jobClient.newCompleteCommand(job) >> Mock(CompleteJobCommandStep1) {
-			1 * variables([outputVar: 'output-var-value']) >> it
+			1 * variables(expectedOutputVars) >> it
 			1 * send()
 		}
 	}
@@ -103,12 +106,16 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		given:
 		ActivatedJob job = anRpaJob()
 		service.doInit()
+		Map<String, String> expectedOutputVars = [outputVar: 'output-var-value']
+
 
 		when:
 		theJobHandler.handle(jobClient, job)
 
 		then:
-		1 * robotService.execute(script, [], [], _, _) >> Mono.just(new ExecutionResults([main: new ExecutionResults.ExecutionResult("main", result, "")], [outputVar: 'output-var-value']))
+		1 * robotService.execute(script, [], [], _, _) >> Mono.just(new ExecutionResults([main: new ExecutionResults.ExecutionResult("main", result, "", expectedOutputVars)], 
+				result, 
+				expectedOutputVars))
 
 		and:
 		1 * jobClient.newThrowErrorCommand(job) >> Mock(ThrowErrorCommandStep1) {
@@ -228,7 +235,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * robotService.execute(script, [expectedBefore], [expectedAfter], _, _) >> Mono.just(new ExecutionResults(
-				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "")], [:]))
+				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:])], null, [:]))
 	}
 
 	private ActivatedJob anRpaJob(Map<String, Object> variables = [:], List additionalResources = []) {

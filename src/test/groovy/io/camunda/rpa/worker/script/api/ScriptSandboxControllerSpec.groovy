@@ -27,7 +27,7 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		then:
 		1 * robotService.execute(new RobotScript("_eval_", scriptBody), inputVariables, [:]) >> Mono.just(
 				new ExecutionResults(
-						[main: new ExecutionResults.ExecutionResult("main", ExecutionResults.Result.PASS, "the-output")], 
+						[main: new ExecutionResults.ExecutionResult("main", ExecutionResults.Result.PASS, "the-output", outputVariables)], null,
 						outputVariables))
 		
 		and:

@@ -9,12 +9,17 @@ import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.util.YamlMapper;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuples;
 
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -24,6 +29,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class RobotService {
 
 	static final int ROBOT_EXIT_INTERNAL_ERROR = 255;
@@ -90,16 +96,27 @@ public class RobotService {
 										.arg("--report").arg("none")
 										.arg("--logtitle").arg("Task log")
 										.bindArg("script", renv.workDir().resolve("%s.robot".formatted(script.executionKey()))))
-								.map(xr -> Map.entry(script.executionKey(), xr)))
+								.flatMap(xr -> getOutputVariables(renv)
+										.map(outputVariables -> Map.entry(
+												script.executionKey(), 
+												Tuples.of(xr, outputVariables)))))
 
 						.onErrorMap(thrown -> new RobotFailureException(thrown))
 
 						.collect(Collectors.toMap(Map.Entry::getKey,
-								kv -> toRobotExecutionResult(kv.getKey(), kv.getValue())))
-
-						.zipWhen(_ -> getOutputVariables(renv),
-								(resultsMap, vars) ->
-										new ExecutionResults(resultsMap, vars)));
+								kv -> toRobotExecutionResult(kv.getKey(), kv.getValue().getT1(), kv.getValue().getT2()),
+								(l, _) -> l, 
+								LinkedHashMap::new))
+						
+						.map(resultsMap -> new ExecutionResults(resultsMap,
+								getWorstCase(resultsMap.values()),
+								resultsMap.values().stream()
+										.flatMap(s -> s.outputVariables().entrySet().stream())
+										.collect(Collectors.toMap(
+												Map.Entry::getKey, 
+												Map.Entry::getValue,
+												(_, r) -> r, 
+												LinkedHashMap::new)))));
 	}
 
 	private Mono<RobotEnvironment> newRobotEnvironment(List<PreparedScript> scripts, Map<String, Object> variables) {
@@ -134,7 +151,11 @@ public class RobotService {
 				.collect(Collectors.joining("\n"));
 	}
 	
-	private ExecutionResults.ExecutionResult toRobotExecutionResult(String executionId, ProcessService.ExecutionResult xr) {
+	private ExecutionResults.ExecutionResult toRobotExecutionResult(
+			String executionId, 
+			ProcessService.ExecutionResult xr, 
+			Map<String, Object> outputVariables) {
+		
 		return new ExecutionResults.ExecutionResult(executionId, switch (xr.exitCode()) {
 			case ROBOT_EXIT_SUCCESS -> ExecutionResults.Result.PASS;
 
@@ -143,6 +164,13 @@ public class RobotService {
 			     ROBOT_EXIT_INVALID_INVOKE -> ExecutionResults.Result.ERROR;
 
 			default -> ExecutionResults.Result.FAIL;
-		}, mergeOutput(xr.stdout(), xr.stderr()));
+		}, mergeOutput(xr.stdout(), xr.stderr()), outputVariables);
+	}
+
+	private ExecutionResults.Result getWorstCase(Collection<ExecutionResults.ExecutionResult> results) {
+		return results.stream()
+				.map(ExecutionResults.ExecutionResult::result)
+				.max(Comparator.naturalOrder())
+				.orElseThrow();
 	}
 }

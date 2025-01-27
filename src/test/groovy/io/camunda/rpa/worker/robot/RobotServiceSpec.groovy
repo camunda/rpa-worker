@@ -176,4 +176,104 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		then:
 		thrown(RobotFailureException)
 	}
+	
+	void "Runs before and after scripts and aggregates results"() {
+		given:
+		RobotScript before1 = new RobotScript("some-script", "some-script-body")
+		RobotScript before2 = new RobotScript("some-script", "some-script-body")
+		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript after1 = new RobotScript("some-script", "some-script-body")
+		RobotScript after2 = new RobotScript("some-script", "some-script-body")
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		io.createTempDirectory("robot") >> workDir
+		io.notExists(workDir.resolve("outputs.yml")) >> false
+		ProcessService.ExecutionCustomizer executionCustomizer = Mock() {
+			_ >> it
+		}
+
+		and:
+		processService.execute(_, _) >> { _, UnaryOperator<ProcessService.ExecutionCustomizer> customizer ->
+			customizer.apply(executionCustomizer)
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
+		}
+
+		when:
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:])
+		
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var1: 'val1']
+
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_1") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var2: 'val2']
+
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("main") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var3: 'val3']
+
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("post_0") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var4: 'val4']
+
+		then:
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("post_1") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var5: 'val5']
+
+		and:
+		["pre_0", "pre_1", "main", "post_0", "post_1"].each { sc ->
+			with(result.results().keySet().find { k -> k.startsWith(sc) }) { rr ->
+				result.results()[rr].result() == ExecutionResults.Result.PASS
+				result.results()[rr].outputVariables()
+			}
+		}
+		
+		result.result() == ExecutionResults.Result.PASS
+		
+		result.outputVariables() == [
+				var1: 'val1',
+				var2: 'val2',
+				var3: 'val3',
+				var4: 'val4',
+				var5: 'val5'
+		]
+	}
+
+	void "???? fail 1 "() {
+		given:
+		RobotScript before1 = new RobotScript("some-script", "some-script-body")
+		RobotScript before2 = new RobotScript("some-script", "some-script-body")
+		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript after1 = new RobotScript("some-script", "some-script-body")
+		RobotScript after2 = new RobotScript("some-script", "some-script-body")
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		io.createTempDirectory("robot") >> workDir
+		io.notExists(workDir.resolve("outputs.yml")) >> false
+		ProcessService.ExecutionCustomizer executionCustomizer = Mock() {
+			_ >> it
+		}
+
+		when:
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:])
+
+		then:
+		1 * processService.execute(_, _) >> { _, UnaryOperator<ProcessService.ExecutionCustomizer> customizer ->
+			customizer.apply(executionCustomizer)
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content"))
+		}
+		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
+		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var1: 'val1']
+
+		then:
+		0 * processService._
+
+		and:
+		result.results().size() == 1
+		result.result() == ExecutionResults.Result.FAIL
+		result.outputVariables() == [var1: 'val1']
+	}
 }

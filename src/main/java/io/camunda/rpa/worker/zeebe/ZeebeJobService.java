@@ -1,7 +1,6 @@
 package io.camunda.rpa.worker.zeebe;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.camunda.rpa.worker.robot.ExecutionResults;
 import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -82,7 +80,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 					.kv("job", job.getKey())
 					.log("Received Job from Zeebe");
 
-			Flux<RobotScript> before = getScriptKeys(job, BEFORE_SCRIPT_LINK_NAME).flatMap(scriptRepository::getById);
+			Flux<RobotScript> before = getScriptKeys(job, BEFORE_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
 			Mono<RobotScript> main = getScriptKeys(job, MAIN_SCRIPT_LINK_NAME)
 					.single()
 					.onErrorMap(thrown ->
@@ -91,7 +89,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 							thrown -> new IllegalStateException(
 									"Failed to find exactly 1 LinkedResource providing the main script", thrown))
 					.flatMap(scriptRepository::getById);
-			Flux<RobotScript> after = getScriptKeys(job, AFTER_SCRIPT_LINK_NAME).flatMap(scriptRepository::getById);
+			Flux<RobotScript> after = getScriptKeys(job, AFTER_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
 
 			Flux.zip(before.collectList(), main, after.collectList())
 					.flatMap(scriptSet -> getSecretsAsEnv(job)
@@ -104,7 +102,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 											getVariables(job), 
 											secrets))
 							
-							.doOnSuccess(xr -> (switch (getWorstCase(xr)) {
+							.doOnSuccess(xr -> (switch (xr.result()) {
 								case PASS -> client
 										.newCompleteCommand(job)
 										.variables(xr.outputVariables());
@@ -171,11 +169,4 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 	}
 
-	private ExecutionResults.Result getWorstCase(ExecutionResults results) {
-		return results.results().values().stream()
-				.map(ExecutionResults.ExecutionResult::result)
-				.sorted(Comparator.naturalOrder())
-				.toList()
-				.getLast();
-	}
 }
