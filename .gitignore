@@ -43,3 +43,4 @@ python_ftest/
 scripts_ftest/
 application-my-c8-cluster.properties
 satest.properties
+version.txt

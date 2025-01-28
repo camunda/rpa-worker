@@ -1,3 +1,5 @@
+import autoversion.AutoVersionPlugin
+
 plugins {
 	id 'java'
 	id 'groovy'
@@ -9,6 +11,7 @@ plugins {
 
 apply from: "ftest.gradle"
 apply from: "enable-preview.gradle"
+apply plugin: AutoVersionPlugin
 
 group = 'io.camunda.rpa'
 
