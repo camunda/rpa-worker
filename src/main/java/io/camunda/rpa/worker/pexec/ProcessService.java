@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.pexec;
 
 import io.vavr.control.Try;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
@@ -14,6 +15,7 @@ import reactor.core.scheduler.Scheduler;
 
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,7 +43,7 @@ public class ProcessService {
 		this.executorBuilderFactory = executorBuilderFactory;
 	}
 	
-	public Mono<ExecutionResult> execute(Object executable, UnaryOperator<ExecutionCustomizer> executionCustomizer) {
+	public Mono<ExecutionResult> execute(Object executable, UnaryOperator<ExecutionCustomizer> customization) {
 
 		Map<String, Object> bindings = new HashMap<>();
 		Set<Integer> allowedExitCodes = new HashSet<>();
@@ -51,11 +53,14 @@ public class ProcessService {
 				? new CommandLine(p.toFile()) 
 				: new CommandLine(executable.toString());
 		DefaultExecutor.Builder<?> executorBuilder = executorBuilderFactory.get();
-//		ExecuteWatchdog.Builder watchdogBuilder = ExecuteWatchdog.builder();
 
 		allowedExitCodes.add(0);
 
-		executionCustomizer.apply(new ExecutionCustomizer() {
+		IntrospectableExecutionCustomizer executionCustomizer = new IntrospectableExecutionCustomizer() {
+			
+			@Getter
+			private Duration timeout;
+			
 			@Override
 			public ExecutionCustomizer arg(String arg) {
 				cmdLine.addArgument(arg);
@@ -108,45 +113,50 @@ public class ProcessService {
 			public ExecutionCustomizer noFail() {
 				return allowExitCode(Integer.MIN_VALUE);
 			}
-		});
+
+			@Override
+			public ExecutionCustomizer timeout(Duration newTimeout) {
+				this.timeout = newTimeout;
+				return this;
+			}
+		};
+		customization.apply(executionCustomizer);
 
 		cmdLine.setSubstitutionMap(bindings);
 		DefaultExecutor defaultExecutor = executorBuilder.get();
 		defaultExecutor.setExitValues(allowedExitCodes.contains(Integer.MIN_VALUE) 
 				? null 
 				: allowedExitCodes.stream().mapToInt(i -> i).toArray());
-//		defaultExecutor.setWatchdog(watchdogBuilder.get());
+		ExecuteWatchdog2 watchdog = new ExecuteWatchdog2();
+		defaultExecutor.setWatchdog(watchdog);
 
 		StreamHandler streamHandler = new StreamHandler();
 		defaultExecutor.setStreamHandler(streamHandler);
 
-		return Mono.defer(() -> Try.of(() -> defaultExecutor.execute(cmdLine, environment))
+		return Mono.fromSupplier(() -> Try.of(() -> defaultExecutor.execute(cmdLine, environment))
 						.onFailure(thrown -> log.atError()
 								.setCause(thrown)
 								.addKeyValue("stderr", streamHandler.getErrString())
 								.addKeyValue("stdout", streamHandler.getOutString())
 								.log("Process execution failed"))
 						.recover(ExecuteException.class, ExecuteException::getExitValue)
-						.map(exitCode -> Mono.just(new ExecutionResult(
+						.map(exitCode -> new ExecutionResult(
 								exitCode,
 								streamHandler.getOutString(),
-								streamHandler.getErrString())))
-						.recover(Mono::error).get())
-				.subscribeOn(robotWorkScheduler);
+								streamHandler.getErrString()))
+						.get())
+				.subscribeOn(robotWorkScheduler)
+				.as(p -> executionCustomizer.getTimeout() != null 
+						? p.timeout(executionCustomizer.getTimeout(),
+								Mono.<ExecutionResult>error(() -> new ProcessTimeoutException(streamHandler.getOutString(), streamHandler.getErrString()))
+							.doOnSubscribe(_ -> watchdog.getProcess().toHandle().destroy()))
+						: p);
 	}
 	
-	public interface ExecutionCustomizer {
-		ExecutionCustomizer arg(String arg);
-		ExecutionCustomizer bindArg(String arg, Object value);
-		ExecutionCustomizer workDir(Path path);
-		ExecutionCustomizer allowExitCode(int code);
-		ExecutionCustomizer allowExitCodes(int[] codes);
-		ExecutionCustomizer env(String name, String value);
-		ExecutionCustomizer env(Map<String, String> map);
-		ExecutionCustomizer inheritEnv();
-		ExecutionCustomizer noFail();
+	private interface IntrospectableExecutionCustomizer extends ExecutionCustomizer {
+		Duration getTimeout();
 	}
-	
+
 	static class StreamHandler extends PumpStreamHandler {
 		
 		private final StringBuilder out;

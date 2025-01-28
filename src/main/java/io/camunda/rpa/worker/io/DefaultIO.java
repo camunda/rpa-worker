@@ -1,11 +1,12 @@
 package io.camunda.rpa.worker.io;
 
+import lombok.RequiredArgsConstructor;
 import org.reactivestreams.Publisher;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
+import reactor.core.scheduler.Scheduler;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,16 +27,19 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Component
+@RequiredArgsConstructor
 class DefaultIO implements IO {
-	
+
+	private final Scheduler ioScheduler;
+
 	@Override
 	public <T> Mono<T> supply(Supplier<T> fn) {
-		return Mono.fromSupplier(fn).subscribeOn(Schedulers.boundedElastic());
+		return Mono.fromSupplier(fn).subscribeOn(ioScheduler);
 	}
 
 	@Override
 	public Mono<Void> run(Runnable fn) {
-		return Mono.fromRunnable(fn).subscribeOn(Schedulers.boundedElastic()).then();
+		return Mono.fromRunnable(fn).subscribeOn(ioScheduler).then();
 	}
 
 	@Override

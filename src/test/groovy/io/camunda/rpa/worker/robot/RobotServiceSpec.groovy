@@ -3,6 +3,7 @@ package io.camunda.rpa.worker.robot
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.io.IO
+import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
 import io.camunda.rpa.worker.python.PythonInterpreter
 import io.camunda.rpa.worker.script.RobotScript
@@ -13,6 +14,7 @@ import spock.lang.Subject
 
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.Duration
 import java.util.function.Supplier
 import java.util.function.UnaryOperator
 
@@ -26,21 +28,22 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	PythonInterpreter pythonInterpreter = new PythonInterpreter(pythonExe)
 	ProcessService processService = Mock()
 	YamlMapper yamlMapper = new YamlMapper(objectMapper)
+	RobotProperties robotProperties = new RobotProperties(1, Duration.ofSeconds(3))
 
 	@Subject
-	RobotService service = new RobotService(io, objectMapper, pythonInterpreter, processService, yamlMapper)
+	RobotService service = new RobotService(io, objectMapper, pythonInterpreter, processService, yamlMapper, robotProperties)
 
 	void "Correctly configures and executes a Robot process"() {
 		given:
 		RobotScript script = new RobotScript("some-script", "some-script-body")
-		ProcessService.ExecutionCustomizer executionCustomizer = Mock()
+		ExecutionCustomizer executionCustomizer = Mock()
 		io.notExists(_) >> true
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
 
 		when:
-		ExecutionResults r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'])
+		ExecutionResults r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'], null)
 
 		then:
 		1 * io.createTempDirectory("robot") >> workDir
@@ -50,7 +53,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * io.write(workDir.resolve("variables.json"), objectMapper.writeValueAsBytes([rpaVar: 'rpa-var-value']), [])
 
 		and:
-		1 * processService.execute(pythonExe, _) >> { _, UnaryOperator<ProcessService.ExecutionCustomizer> customizer ->
+		1 * processService.execute(pythonExe, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
 		}
@@ -71,6 +74,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.arg("none") >> executionCustomizer
 		1 * executionCustomizer.arg("--logtitle") >> executionCustomizer
 		1 * executionCustomizer.arg("Task log") >> executionCustomizer
+		1 * executionCustomizer.timeout(robotProperties.defaultTimeout()) >> executionCustomizer
 		1 * executionCustomizer.bindArg("script", workDir.resolve("main.robot")) >> executionCustomizer
 
 		and:
@@ -94,7 +98,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [:], [:])
+		ExecutionResults result = block service.execute(script, [:], [:], null)
 
 		then:
 		1 * io.notExists(workDir.resolve("outputs.yml")) >> false
@@ -104,7 +108,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		result.outputVariables() == [foo: 'bar']
 
 		when:
-		ExecutionResults result2 = block service.execute(script, [:], [:])
+		ExecutionResults result2 = block service.execute(script, [:], [:], null)
 
 		then:
 		1 * io.notExists(workDir.resolve("outputs.yml")) >> true
@@ -129,7 +133,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [:], [:])
+		ExecutionResults result = block service.execute(script, [:], [:], null)
 
 		then:
 		result.results().values().first().result() == ExecutionResults.Result.FAIL
@@ -150,7 +154,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [:], [:])
+		ExecutionResults result = block service.execute(script, [:], [:], null)
 
 		then:
 		result.results().values().first().result() == ExecutionResults.Result.ERROR
@@ -171,7 +175,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		block service.execute(script, [:], [:])
+		block service.execute(script, [:], [:], null)
 
 		then:
 		thrown(RobotErrorException)
@@ -189,18 +193,18 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		Path workDir = Paths.get("/path/to/workDir/")
 		io.createTempDirectory("robot") >> workDir
 		io.notExists(workDir.resolve("outputs.yml")) >> false
-		ProcessService.ExecutionCustomizer executionCustomizer = Mock() {
+		ExecutionCustomizer executionCustomizer = Mock() {
 			_ >> it
 		}
 
 		and:
-		processService.execute(_, _) >> { _, UnaryOperator<ProcessService.ExecutionCustomizer> customizer ->
+		processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:])
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null)
 		
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
@@ -253,15 +257,15 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		Path workDir = Paths.get("/path/to/workDir/")
 		io.createTempDirectory("robot") >> workDir
 		io.notExists(workDir.resolve("outputs.yml")) >> false
-		ProcessService.ExecutionCustomizer executionCustomizer = Mock() {
+		ExecutionCustomizer executionCustomizer = Mock() {
 			_ >> it
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:])
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null)
 
 		then:
-		1 * processService.execute(_, _) >> { _, UnaryOperator<ProcessService.ExecutionCustomizer> customizer ->
+		1 * processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content"))
 		}
@@ -291,7 +295,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		io.notExists(workDir.resolve("outputs.yml")) >> false
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:])
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null)
 
 		then:
 		3 * processService.execute(_, _) >> { _, __ ->
@@ -315,5 +319,30 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		result.results().size() == 4
 		result.result() == ExecutionResults.Result.ERROR
 		result.outputVariables() == [var1: 'val1', var2: 'val2', var3: 'val3']
+	}
+
+	void "Configures timeout when set"() {
+		given:
+		RobotScript script = new RobotScript("some-script", "some-script-body")
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		io.createTempDirectory("robot") >> workDir
+		io.notExists(workDir.resolve("outputs.yml")) >> true
+		ExecutionCustomizer executionCustomizer = Mock() {
+			_ >> it
+		}
+
+		and:
+		processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
+			customizer.apply(executionCustomizer)
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content"))
+		}
+
+		when:
+		block service.execute(script, [:], [:], Duration.ofMinutes(3))
+
+		then:
+		1 * executionCustomizer.timeout(Duration.ofMinutes(3)) >> executionCustomizer
 	}
 }

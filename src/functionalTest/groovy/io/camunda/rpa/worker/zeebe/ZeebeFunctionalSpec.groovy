@@ -14,6 +14,7 @@ import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
 import org.spockframework.spring.SpringBean
 import org.springframework.beans.factory.annotation.Autowired
+import spock.lang.Tag
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -51,6 +52,14 @@ The tasks
 	Create File    ${id}.txt    ${id}
     Set Output Variable     anOutputVariableFrom_${id}      output-value-from-companion
     Set Output Variable     anOutputVariableSameName       output-value-from-companion-${id}
+"""
+	}
+	
+	static final Closure<String> SLOW_ROBOT_SCRIPT_TEMPLATE = { time ->
+		"""\
+*** Tasks ***
+The tasks
+    Sleep    ${time}s
 """
 	}
 
@@ -91,6 +100,8 @@ The tasks
 		scriptsDir.resolve("companion_2.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("pre1")
 		scriptsDir.resolve("companion_3.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("post0")
 		scriptsDir.resolve("companion_4.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("post1")
+		scriptsDir.resolve("slow_15s.robot").text = SLOW_ROBOT_SCRIPT_TEMPLATE(15)
+		scriptsDir.resolve("slow_8s.robot").text = SLOW_ROBOT_SCRIPT_TEMPLATE(8)
 	}
 	
 	void "Subscribes on init"() {
@@ -207,19 +218,66 @@ The tasks
 		}
 	}
 
-	private ActivatedJob anRpaJob(Map<String, Object> variables = [:], String scriptKey = "existing_1") {
+	@Tag("slow")
+	void "Applies default timeout to jobs, aborts when exceeded, reports correct error"() {
+		given:
+		service.doInit()
+		withNoSecrets()
+
+		when:
+		theJobHandler.handle(jobClient, anRpaJob([:], "slow_15s"))
+		handlerDidFinish.await(14, TimeUnit.SECONDS)
+
+		then:
+		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
+			1 * errorCode("ROBOT_TIMEOUT") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
+				1 * errorMessage(_) >> it
+				1 * send() >> {
+					handlerDidFinish.countDown()
+					return null
+				}
+			}
+		}
+	}
+
+	@Tag("slow")
+	void "Applies custom timeout to jobs, aborts when exceeded, reports correct error"() {
+		given:
+		service.doInit()
+		withNoSecrets()
+
+		when:
+		theJobHandler.handle(jobClient, anRpaJob([:], "slow_8s", [(ZeebeJobService.TIMEOUT_HEADER_NAME): "PT3S"]))
+		handlerDidFinish.await(7, TimeUnit.SECONDS)
+
+		then:
+		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
+			1 * errorCode("ROBOT_TIMEOUT") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
+				1 * errorMessage(_) >> it
+				1 * send() >> {
+					handlerDidFinish.countDown()
+					return null
+				}
+			}
+		}
+	}
+
+	private ActivatedJob anRpaJob(Map<String, Object> variables = [:], String scriptKey = "existing_1", Map additionalHeaders = [:]) {
 		return Stub(ActivatedJob) {
-			getCustomHeaders() >> [(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson(
-					new ZeebeLinkedResources([
-							new ZeebeLinkedResources.ZeebeLinkedResource(
-									scriptKey,
-									ZeebeBindingType.latest,
-									"RPA",
-									"?",
-									ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
-									scriptKey)
-					])
-			)]
+			getCustomHeaders() >> [
+					(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson(
+							new ZeebeLinkedResources([
+									new ZeebeLinkedResources.ZeebeLinkedResource(
+											scriptKey,
+											ZeebeBindingType.latest,
+											"RPA",
+											"?",
+											ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
+											scriptKey)
+							])),
+
+					*: additionalHeaders
+			]
 
 			getVariablesAsMap() >> variables
 		}
@@ -268,5 +326,4 @@ The tasks
 		}
 
 	}
-
 }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
+import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.util.MoreCollectors;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,20 +46,23 @@ public class RobotService {
 	private final PythonInterpreter pythonInterpreter;
 	private final ProcessService processService;
 	private final YamlMapper yamlMapper;
+	private final RobotProperties robotProperties;
 
 	private record RobotEnvironment(Path workDir, Path varsFile, Path outputDir, Path artifactsDir) { }
 	private record PreparedScript(String executionKey, RobotScript script) {}
-
-	public Mono<ExecutionResults> execute(RobotScript script, Map<String, Object> variables, Map<String, String> secrets) {
-		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, secrets);
+	
+	
+	public Mono<ExecutionResults> execute(RobotScript script, Map<String, Object> variables, Map<String, String> secrets, Duration timeout) {
+		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, secrets, timeout);
 	}
 	
 	public Mono<ExecutionResults> execute(
-			RobotScript script, 
-			List<RobotScript> beforeScripts, 
-			List<RobotScript> afterScripts, 
-			Map<String, Object> variables, 
-			Map<String, String> secrets) {
+			RobotScript script,
+			List<RobotScript> beforeScripts,
+			List<RobotScript> afterScripts,
+			Map<String, Object> variables,
+			Map<String, String> secrets,
+			Duration timeout) {
 
 		AtomicInteger beforeCounter = new AtomicInteger(0);
 		AtomicInteger afterCounter = new AtomicInteger(0);
@@ -75,10 +80,10 @@ public class RobotService {
 				.flatMap(s -> s)
 				.toList();
 
-		return doExecute(scripts, variables, secrets);
+		return doExecute(scripts, variables, secrets, timeout != null ? timeout : robotProperties.defaultTimeout());
 	}
 	
-	private Mono<ExecutionResults> doExecute(List<PreparedScript> scripts, Map<String, Object> variables, Map<String, String> secrets) {
+	private Mono<ExecutionResults> doExecute(List<PreparedScript> scripts, Map<String, Object> variables, Map<String, String> secrets, Duration timeout) {
 
 		return newRobotEnvironment(scripts, variables)
 				.flatMap(renv -> Flux.fromIterable(scripts)
@@ -95,8 +100,9 @@ public class RobotService {
 										.arg("--variablefile").bindArg("varsFile", renv.varsFile())
 										.arg("--report").arg("none")
 										.arg("--logtitle").arg("Task log")
+										.timeout(timeout)
 										.bindArg("script", renv.workDir().resolve("%s.robot".formatted(script.executionKey()))))
-
+								
 								.flatMap(xr -> getOutputVariables(renv)
 										.map(outputVariables -> toRobotExecutionResult(
 												script.executionKey(), 
@@ -110,7 +116,8 @@ public class RobotService {
 						.onErrorResume(RobotFailureException.class, thrown -> 
 								Mono.just(thrown.getExecutionResult()))
 						
-						.onErrorMap(thrown -> new RobotErrorException(thrown))
+						.onErrorMap(thrown -> ! (thrown instanceof ProcessTimeoutException),
+								thrown -> new RobotErrorException(thrown))
 
 						.collect(MoreCollectors.toSequencedMap(
 								ExecutionResults.ExecutionResult::executionId,

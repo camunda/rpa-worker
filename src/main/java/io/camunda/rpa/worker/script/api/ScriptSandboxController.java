@@ -23,7 +23,7 @@ class ScriptSandboxController {
 	@PostMapping
 	public Mono<EvaluateScriptResponse> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request) {
 		RobotScript robotScript = new RobotScript("_eval_", request.script());
-		return robotService.execute(robotScript, request.variables(), Collections.emptyMap())
+		return robotService.execute(robotScript, request.variables(), Collections.emptyMap(), null)
 				.map(xr -> {
 					ExecutionResults.ExecutionResult r = xr.results().entrySet().iterator().next().getValue();
 					return new EvaluateScriptResponse(r.result(), r.output(), xr.outputVariables());

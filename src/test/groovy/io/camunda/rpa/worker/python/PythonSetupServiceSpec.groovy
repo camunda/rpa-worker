@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.python
 
 import io.camunda.rpa.worker.io.IO
+import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
 import org.apache.commons.exec.CommandLine
 import org.springframework.core.io.buffer.DataBuffer
@@ -61,16 +62,16 @@ class PythonSetupServiceSpec extends Specification {
 
 		then:
 		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
-		1 * processService.execute("python", _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> fn ->
-			fn.apply(Mock(ProcessService.ExecutionCustomizer) {
+		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))
 		}
 		
 		and:
-		1 * processService.execute("python", _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> fn ->
-			fn.apply(Mock(ProcessService.ExecutionCustomizer) {
+		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("-m") >> it
 				1 * arg("venv") >> it
 				1 * bindArg("pyEnvPath", pythonProperties.path()) >> it
@@ -82,8 +83,8 @@ class PythonSetupServiceSpec extends Specification {
 		and:
 		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
-		1 * processService.execute(pythonProperties.path().resolve("bin/pip"), _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> fn ->
-			fn.apply(Mock(ProcessService.ExecutionCustomizer) {
+		1 * processService.execute(pythonProperties.path().resolve("bin/pip"), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
 				1 * arg("-r") >> it
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
@@ -114,7 +115,7 @@ class PythonSetupServiceSpec extends Specification {
 
 		then: "Existing Python venv is checked (not there) and system Python is checked (not there)"
 		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
-		1 * processService.execute("python", _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> fn ->
+		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			return Mono.error(new IOException("No Python here"))
 		}
 		
