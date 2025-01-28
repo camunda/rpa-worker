@@ -7,7 +7,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    container: "ghcr.io/camunda/rpa-worker-base-image:202501281444"
+    container: "ghcr.io/camunda/rpa-worker-base-image:202501281531"
     permissions:
       contents: read
       packages: write
