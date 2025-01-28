@@ -279,6 +279,7 @@ The tasks
 		workspaceService.deleteWorkspace(_) >> { Path p ->
 			workspaces.add(p)
 			Mono<Void> r = callRealMethod()
+			r.block()
 			handlersDidFinish.countDown()
 			return r
 		}
