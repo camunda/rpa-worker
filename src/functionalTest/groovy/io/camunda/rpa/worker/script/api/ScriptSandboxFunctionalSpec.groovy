@@ -4,13 +4,20 @@ import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.api.ValidationFailureDto
 import io.camunda.rpa.worker.robot.ExecutionResults
+import io.camunda.rpa.worker.robot.WorkspaceService
+import org.spockframework.spring.SpringSpy
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.reactive.function.BodyInserters
 
+import java.nio.file.Files
+import java.nio.file.Path
 import java.time.Duration
 
 class ScriptSandboxFunctionalSpec extends AbstractFunctionalSpec implements PublisherUtils {
+	
+	@SpringSpy
+	WorkspaceService workspaceService
 
 	void "Evaluate script fails on missing required data"() {
 		when:
@@ -93,5 +100,40 @@ Nothing
 		then:
 		r.result() == ExecutionResults.Result.ERROR
 		r.log().contains("contains no tests or tasks")
+	}
+
+	void "Cleans up workspaces after evaluate, leaving the last one"() {
+		given:
+		String script = '''\
+*** Nothing ***
+Nothing
+'''
+		and:
+		Queue<Path> workspaces = new LinkedList<>()
+		workspaceService.preserveLast(_) >> { Path workspace -> 
+			workspaces.add(workspace)
+			return callRealMethod()
+		}
+		
+		when:
+		2.times {
+			post()
+					.uri("/script/evaluate")
+					.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+							.script(script)
+							.build()))
+					.retrieve()
+					.bodyToMono(EvaluateScriptResponse)
+					.block(Duration.ofMinutes(1))
+		}
+		
+		then:
+		workspaces.size() == 2
+
+		and: "First workspace deleted"
+		Files.notExists(workspaces.remove())
+		
+		and: "Second workspace remains"
+		Files.exists(workspaces.remove())
 	}
 }

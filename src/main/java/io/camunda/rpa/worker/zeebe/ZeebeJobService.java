@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.robot.ExecutionResults;
 import io.camunda.rpa.worker.robot.RobotService;
+import io.camunda.rpa.worker.robot.WorkspaceService;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.secrets.SecretsService;
@@ -45,6 +46,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	private final ScriptRepository scriptRepository;
 	private final ObjectMapper objectMapper;
 	private final SecretsService secretsService;
+	private final WorkspaceService workspaceService;
 
 	private final Map<String, JobWorker> jobWorkers = new ConcurrentHashMap<>();
 
@@ -107,7 +109,8 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 											secrets, 
 											Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
 													.map(Duration::parse)
-													.orElse(null)))
+													.orElse(null),
+											workspaceService::deleteWorkspace))
 							
 							.doOnSuccess(xr -> (switch (xr.result()) {
 								case PASS -> client

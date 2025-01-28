@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -52,8 +53,14 @@ public class RobotService {
 	private record PreparedScript(String executionKey, RobotScript script) {}
 	
 	
-	public Mono<ExecutionResults> execute(RobotScript script, Map<String, Object> variables, Map<String, String> secrets, Duration timeout) {
-		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, secrets, timeout);
+	public Mono<ExecutionResults> execute(
+			RobotScript script, 
+			Map<String, Object> variables, 
+			Map<String, String> secrets, 
+			Duration timeout, 
+			RobotExecutionListener executionListener) {
+		
+		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, secrets, timeout, executionListener);
 	}
 	
 	public Mono<ExecutionResults> execute(
@@ -62,7 +69,8 @@ public class RobotService {
 			List<RobotScript> afterScripts,
 			Map<String, Object> variables,
 			Map<String, String> secrets,
-			Duration timeout) {
+			Duration timeout, 
+			RobotExecutionListener executionListener) {
 
 		AtomicInteger beforeCounter = new AtomicInteger(0);
 		AtomicInteger afterCounter = new AtomicInteger(0);
@@ -80,10 +88,15 @@ public class RobotService {
 				.flatMap(s -> s)
 				.toList();
 
-		return doExecute(scripts, variables, secrets, timeout != null ? timeout : robotProperties.defaultTimeout());
+		return doExecute(scripts, variables, secrets, timeout != null ? timeout : robotProperties.defaultTimeout(), Optional.ofNullable(executionListener));
 	}
 	
-	private Mono<ExecutionResults> doExecute(List<PreparedScript> scripts, Map<String, Object> variables, Map<String, String> secrets, Duration timeout) {
+	private Mono<ExecutionResults> doExecute(
+			List<PreparedScript> scripts, 
+			Map<String, Object> variables, 
+			Map<String, String> secrets, 
+			Duration timeout, 
+			Optional<RobotExecutionListener> executionListener) {
 
 		return newRobotEnvironment(scripts, variables)
 				.flatMap(renv -> Flux.fromIterable(scripts)
@@ -122,7 +135,10 @@ public class RobotService {
 						.collect(MoreCollectors.toSequencedMap(
 								ExecutionResults.ExecutionResult::executionId,
 								kv -> kv,
-								MoreCollectors.MergeStrategy.noDuplicatesExpected())))
+								MoreCollectors.MergeStrategy.noDuplicatesExpected()))
+				
+				.doFinally(_ -> executionListener.ifPresent(
+						l -> l.afterRobotExecution(renv.workDir()))))
 
 				.map(resultsMap -> new ExecutionResults(
 						resultsMap,
