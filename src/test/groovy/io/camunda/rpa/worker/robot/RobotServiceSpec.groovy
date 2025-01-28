@@ -32,6 +32,8 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	@Subject
 	RobotService service = new RobotService(io, objectMapper, pythonInterpreter, processService, yamlMapper, robotProperties)
+	
+	RobotExecutionListener executionListener = Mock()
 
 	void "Correctly configures and executes a Robot process"() {
 		given:
@@ -43,7 +45,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		Path workDir = Paths.get("/path/to/workDir/")
 
 		when:
-		ExecutionResults r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'], null)
+		ExecutionResults r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'], null, executionListener)
 
 		then:
 		1 * io.createTempDirectory("robot") >> workDir
@@ -82,6 +84,9 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		r.results().values().first().output() == """\
 [STDOUT] stdout-content
 [STDERR] stderr-content"""
+		
+		and:
+		1 * executionListener.afterRobotExecution(workDir)
 	}
 
 	void "Returns output variables"() {
@@ -98,7 +103,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [:], [:], null)
+		ExecutionResults result = block service.execute(script, [:], [:], null, null)
 
 		then:
 		1 * io.notExists(workDir.resolve("outputs.yml")) >> false
@@ -108,7 +113,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		result.outputVariables() == [foo: 'bar']
 
 		when:
-		ExecutionResults result2 = block service.execute(script, [:], [:], null)
+		ExecutionResults result2 = block service.execute(script, [:], [:], null, null)
 
 		then:
 		1 * io.notExists(workDir.resolve("outputs.yml")) >> true
@@ -133,10 +138,13 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [:], [:], null)
+		ExecutionResults result = block service.execute(script, [:], [:], null, executionListener)
 
 		then:
 		result.results().values().first().result() == ExecutionResults.Result.FAIL
+		
+		and:
+		1 * executionListener.afterRobotExecution(workDir)
 	}
 
 	void "Throws correct exception for Robot failure"() {
@@ -154,10 +162,13 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [:], [:], null)
+		ExecutionResults result = block service.execute(script, [:], [:], null, executionListener)
 
 		then:
 		result.results().values().first().result() == ExecutionResults.Result.ERROR
+		
+		and:
+		1 * executionListener.afterRobotExecution(workDir)
 	}
 	
 	void "Throws correct exception for Robot execution failure"() {
@@ -175,10 +186,13 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		block service.execute(script, [:], [:], null)
+		block service.execute(script, [:], [:], null, executionListener)
 
 		then:
 		thrown(RobotErrorException)
+		
+		and:
+		1 * executionListener.afterRobotExecution(workDir)
 	}
 	
 	void "Runs before and after scripts and aggregates results"() {
@@ -204,7 +218,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null)
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null)
 		
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
@@ -262,7 +276,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null)
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null)
 
 		then:
 		1 * processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
@@ -295,7 +309,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		io.notExists(workDir.resolve("outputs.yml")) >> false
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null)
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null)
 
 		then:
 		3 * processService.execute(_, _) >> { _, __ ->
@@ -340,7 +354,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		block service.execute(script, [:], [:], Duration.ofMinutes(3))
+		block service.execute(script, [:], [:], Duration.ofMinutes(3), null)
 
 		then:
 		1 * executionCustomizer.timeout(Duration.ofMinutes(3)) >> executionCustomizer

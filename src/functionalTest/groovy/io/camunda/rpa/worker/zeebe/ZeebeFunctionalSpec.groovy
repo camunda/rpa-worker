@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.zeebe
 
 import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
+import io.camunda.rpa.worker.robot.WorkspaceService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
@@ -13,7 +14,9 @@ import io.camunda.zeebe.client.api.worker.JobWorker
 import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
 import org.spockframework.spring.SpringBean
+import org.spockframework.spring.SpringSpy
 import org.springframework.beans.factory.annotation.Autowired
+import reactor.core.publisher.Mono
 import spock.lang.Tag
 
 import java.nio.file.Files
@@ -84,6 +87,9 @@ The tasks
 	ZeebeClient zeebeClient = Stub() {
 		newWorker() >> builder1
 	}
+	
+	@SpringSpy
+	WorkspaceService workspaceService
 
 	JobClient jobClient = Mock()
 	CountDownLatch handlerDidFinish = new CountDownLatch(1)
@@ -260,6 +266,39 @@ The tasks
 				}
 			}
 		}
+	}
+
+	void "Cleans up workspace after running job"() {
+		given:
+		service.doInit()
+		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
+		CountDownLatch handlersDidFinish = new CountDownLatch(2)
+		
+		and:
+		Queue<Path> workspaces = new LinkedList<>()
+		workspaceService.deleteWorkspace(_) >> { Path p ->
+			workspaces.add(p)
+			Mono<Void> r = callRealMethod()
+			handlersDidFinish.countDown()
+			return r
+		}
+		
+		and:
+		jobClient.newCompleteCommand(_ as ActivatedJob) >> Stub(CompleteJobCommandStep1) {
+			variables(_) >> it
+			send() >> {
+				handlersDidFinish.countDown()
+				return null
+			}
+		}
+
+		when:
+		theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'input-variable-value']))
+		handlersDidFinish.await(2, TimeUnit.SECONDS)
+
+		then: "Workspace deleted immediately"
+		workspaces.size() == 1
+		Files.notExists(workspaces.remove())
 	}
 
 	private ActivatedJob anRpaJob(Map<String, Object> variables = [:], String scriptKey = "existing_1", Map additionalHeaders = [:]) {

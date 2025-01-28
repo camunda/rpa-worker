@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.nio.file.CopyOption;
 import java.nio.file.FileSystem;
 import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitor;
 import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
@@ -64,4 +65,10 @@ public interface IO {
 	Mono<Void> write(Publisher<DataBuffer> source, Path destination, OpenOption... openOptions);
 
 	boolean isRegularFile(Path path, LinkOption... linkOptions);
+
+	void delete(Path path);
+
+	void deleteDirectoryRecursively(Path p);
+	
+	Path walkFileTree(Path start, FileVisitor<Path> visitor);
 }

@@ -17,10 +17,14 @@ import java.nio.file.CopyOption;
 import java.nio.file.FileSystem;
 import java.nio.file.FileSystems;
 import java.nio.file.FileVisitOption;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -174,5 +178,43 @@ class DefaultIO implements IO {
 	@Override
 	public boolean isRegularFile(Path path, LinkOption... linkOptions) {
 		return Files.isRegularFile(path, linkOptions);
+	}
+
+	@Override
+	public Path walkFileTree(Path start, FileVisitor<Path> visitor) {
+		try {
+			return Files.walkFileTree(start, visitor);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+	
+	@Override
+	public void delete(Path path) {
+		try {
+			Files.delete(path);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
+	public void deleteDirectoryRecursively(Path path) {
+		walkFileTree(path, new SimpleFileVisitor<>() {
+			@Override
+			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+				delete(file);
+				return FileVisitResult.CONTINUE;
+			}
+
+			@Override
+			public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+				super.postVisitDirectory(dir, exc);
+				delete(dir);
+				return FileVisitResult.CONTINUE;
+			}
+		});
 	}
 }
