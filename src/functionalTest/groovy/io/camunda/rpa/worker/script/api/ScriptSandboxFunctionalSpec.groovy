@@ -9,6 +9,7 @@ import org.spockframework.spring.SpringSpy
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.reactive.function.BodyInserters
+import reactor.core.publisher.Mono
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -112,7 +113,9 @@ Nothing
 		Queue<Path> workspaces = new LinkedList<>()
 		workspaceService.preserveLast(_) >> { Path workspace -> 
 			workspaces.add(workspace)
-			return callRealMethod()
+			Mono<Void> r =  callRealMethod()
+			r.block()
+			return r
 		}
 		
 		when:
