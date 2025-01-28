@@ -1,6 +1,8 @@
 package io.camunda.rpa.worker.zeebe;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
+import io.camunda.rpa.worker.robot.ExecutionResults;
 import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	
 	static final String LINKED_RESOURCES_HEADER_NAME = "camunda::linkedResources";
+	static final String TIMEOUT_HEADER_NAME = "camunda::timeout";
 	static final String MAIN_SCRIPT_LINK_NAME = "RPAScript";
 	static final String BEFORE_SCRIPT_LINK_NAME = "Before";
 	static final String AFTER_SCRIPT_LINK_NAME = "After";
@@ -100,7 +104,10 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 											scriptSet.getT1(),
 											scriptSet.getT3(), 
 											getVariables(job), 
-											secrets))
+											secrets, 
+											Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
+													.map(Duration::parse)
+													.orElse(null)))
 							
 							.doOnSuccess(xr -> (switch (xr.result()) {
 								case PASS -> client
@@ -117,12 +124,25 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 										.errorCode("ROBOT_ERROR")
 										.errorMessage("There were task errors");
 							}).send())
+							
 
 							.doOnSuccess(xr -> log.atInfo()
 									.kv("task", subKey)
 									.kv("job", job.getKey())
 									.kv("results", xr.results())
 									.log("Job complete")))
+					
+					.onErrorResume(ProcessTimeoutException.class, 
+							_ -> Mono.<ExecutionResults>empty()
+									.doOnSubscribe(_ -> client
+											.newThrowErrorCommand(job)
+											.errorCode("ROBOT_TIMEOUT")
+											.errorMessage("The execution timed out")
+											.send())
+							
+									.doOnSubscribe(_ -> log.atWarn()
+											.kv("job", job)
+											.log("Execution aborted, timeout exceeded")))
 
 					.doOnError(thrown -> client
 							.newFailCommand(job)

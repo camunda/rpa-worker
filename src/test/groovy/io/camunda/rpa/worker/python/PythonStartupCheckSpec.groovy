@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.python
 
 import io.camunda.rpa.worker.PublisherUtils
+import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
 import reactor.core.publisher.Mono
 import spock.lang.Specification
@@ -16,8 +17,8 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 	
 	@Subject
 	PythonStartupCheck check = new PythonStartupCheck(processService, pythonInterpreter)
-	
-	ProcessService.ExecutionCustomizer executionCustomizer = Mock() {
+
+	ExecutionCustomizer executionCustomizer = Mock() {
 		_ >> it
 	}
 
@@ -26,7 +27,7 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 		PythonReadyEvent event = block check.check()
 		
 		then:
-		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> c ->
+		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			c.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))
 		}
@@ -43,7 +44,7 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 		block check.check()
 
 		then:
-		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> c ->
+		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			c.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(255, "", "Python is poorly"))
 		}
@@ -57,7 +58,7 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 		block check.check()
 
 		then:
-		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> c ->
+		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			return Mono.error(new IOException("No Python"))
 		}
 

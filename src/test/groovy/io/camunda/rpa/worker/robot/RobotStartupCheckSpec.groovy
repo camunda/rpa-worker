@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.robot
 
 import io.camunda.rpa.worker.PublisherUtils
+import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
 import io.camunda.rpa.worker.python.PythonInterpreter
 import reactor.core.publisher.Mono
@@ -17,8 +18,8 @@ class RobotStartupCheckSpec extends Specification implements PublisherUtils {
 	
 	@Subject
 	RobotStartupCheck check = new RobotStartupCheck(processService, pythonInterpreter)
-	
-	ProcessService.ExecutionCustomizer executionCustomizer = Mock() {
+
+	ExecutionCustomizer executionCustomizer = Mock() {
 		_ >> it
 	}
 
@@ -27,7 +28,7 @@ class RobotStartupCheckSpec extends Specification implements PublisherUtils {
 		RobotReadyEvent event = block check.check()
 		
 		then:
-		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> c ->
+		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			c.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_HELP_OR_VERSION_REQUEST, "Robot Framework 7.2", ""))
 		}
@@ -44,7 +45,7 @@ class RobotStartupCheckSpec extends Specification implements PublisherUtils {
 		block check.check()
 
 		then:
-		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> c ->
+		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			c.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INTERNAL_ERROR, "", "Robot is poorly"))
 		}
@@ -58,7 +59,7 @@ class RobotStartupCheckSpec extends Specification implements PublisherUtils {
 		block check.check()
 
 		then:
-		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ProcessService.ExecutionCustomizer> c ->
+		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			return Mono.error(new IOException("No Python"))
 		}
 

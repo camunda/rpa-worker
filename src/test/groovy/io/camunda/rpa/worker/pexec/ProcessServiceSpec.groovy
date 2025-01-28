@@ -7,9 +7,11 @@ import org.apache.commons.exec.ExecuteException
 import reactor.core.scheduler.Schedulers
 import spock.lang.Specification
 import spock.lang.Subject
+import spock.lang.Timeout
 
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.Duration
 
 class ProcessServiceSpec extends Specification implements PublisherUtils {
 	
@@ -127,4 +129,36 @@ class ProcessServiceSpec extends Specification implements PublisherUtils {
 		then:
 		result.exitCode() == 127
 	}
+
+	
+	@Timeout(3)
+	void "Applies timeout, aborting execution and throwing when exceeded"() {
+		given:
+		Path someExe = Paths.get("/path/to/exe")
+		
+		and:
+		Process process = Mock()
+		ExecuteWatchdog2 watchdog
+		defaultExecutor.setWatchdog(_) >> { ExecuteWatchdog2 w -> 
+			w.start(process)
+			watchdog = w 
+		}
+		defaultExecutor.execute(_, _) >> {
+			Thread.sleep(3_500)
+			return 1
+		}
+
+		when:
+		block service.execute(someExe, c -> c
+				.timeout(Duration.ofSeconds(1)))
+
+		then:
+		1 * process.toHandle() >> Mock(ProcessHandle) {
+			1 * destroy() >> true
+		}
+		
+		and:
+		thrown(ProcessTimeoutException)
+	}
+
 }

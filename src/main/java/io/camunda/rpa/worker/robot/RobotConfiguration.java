@@ -10,6 +10,7 @@ import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Configuration
 @RequiredArgsConstructor
@@ -19,7 +20,12 @@ class RobotConfiguration {
 	
 	@Bean
 	public Scheduler robotWorkScheduler() {
-		return Schedulers.fromExecutorService(Executors.newFixedThreadPool(properties.maxConcurrentJobs()), "robot");
+		AtomicInteger threadNum = new AtomicInteger(1);
+		return Schedulers.fromExecutorService(Executors.newFixedThreadPool(properties.maxConcurrentJobs(), r -> {
+			Thread thread = Executors.defaultThreadFactory().newThread(r);
+			thread.setName("robot-%s".formatted(threadNum.getAndIncrement()));
+			return thread;
+		}), "robot");
 	}
 
 	@Bean
