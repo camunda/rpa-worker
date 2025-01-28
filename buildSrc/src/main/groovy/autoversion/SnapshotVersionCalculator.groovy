@@ -5,6 +5,7 @@ import io.vavr.collection.Traversable
 import io.vavr.control.Option
 import io.vavr.control.Try
 import org.eclipse.jgit.api.Git
+import org.eclipse.jgit.lib.ObjectId
 import org.eclipse.jgit.lib.Ref
 
 import java.nio.file.Path
@@ -51,7 +52,7 @@ class SnapshotVersionCalculator implements VersionCalculator {
 		return lastTag.map(Map.Entry::getKey).getOrElse("0.0.1") +
 				"-" + currentBranch +
 				commitsSinceLastTag.map(n -> ".c" + n).getOrElse("") +
-				".g" + System.getenv("GITHUB_SHA")
+				".g" + ObjectId.fromString(System.getenv("GITHUB_SHA")).abbreviate(7).name()
 	}
 
 	private String cleanBranchForVersion(String branch) {
