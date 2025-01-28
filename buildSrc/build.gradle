@@ -1,0 +1,18 @@
+apply plugin: "java"
+apply plugin: "groovy"
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.eclipse.jgit:org.eclipse.jgit:7.1.0.202411261347-r'
+	implementation "io.vavr:vavr:0.10.4"
+	implementation "com.github.zafarkhaja:java-semver:0.10.2"
+
+	implementation 'org.codehaus.groovy:groovy:3.0.22'
+	implementation 'org.codehaus.groovy:groovy-nio:3.0.22'
+
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.36'
+	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.36'
+}
