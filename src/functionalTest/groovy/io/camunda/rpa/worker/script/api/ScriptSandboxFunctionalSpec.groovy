@@ -14,6 +14,8 @@ import reactor.core.publisher.Mono
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Duration
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class ScriptSandboxFunctionalSpec extends AbstractFunctionalSpec implements PublisherUtils {
 	
@@ -110,11 +112,13 @@ Nothing
 Nothing
 '''
 		and:
+		CountDownLatch latch = new CountDownLatch(2)
 		Queue<Path> workspaces = new LinkedList<>()
 		workspaceService.preserveLast(_) >> { Path workspace -> 
 			workspaces.add(workspace)
 			Mono<Void> r =  callRealMethod()
 			r.block()
+			latch.countDown()
 			return r
 		}
 		
@@ -129,6 +133,7 @@ Nothing
 					.bodyToMono(EvaluateScriptResponse)
 					.block(Duration.ofMinutes(1))
 		}
+		latch.await(20, TimeUnit.SECONDS)
 		
 		then:
 		workspaces.size() == 2
