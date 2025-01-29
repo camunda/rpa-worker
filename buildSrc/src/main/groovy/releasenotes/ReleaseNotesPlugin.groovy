@@ -37,7 +37,8 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 			TemplateEngine te = new GStringTemplateEngine()
 			Writable cooked = te.createTemplate(template).make([
 					jarFilename: bootJar.outputs.files.singleFile.name,
-					jarHash    : sha256(bootJar.outputs.files.singleFile.toPath())
+					jarHash    : sha256(bootJar.outputs.files.singleFile.toPath()),
+					version    : project.version.toString()
 			])
 			Path out = project.layout.buildDirectory.getAsFile().get().toPath().resolve("releasenotes_header.md")
 			out.withWriter { w -> cooked.writeTo(w) }
