@@ -10,7 +10,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container: "ghcr.io/camunda/rpa-worker-base-image:202501281531"
+    container: "ghcr.io/camunda/rpa-worker-base-image:202501291438"
     permissions:
       contents: read
       packages: write
@@ -19,6 +19,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with: 
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
@@ -27,10 +30,7 @@ jobs:
         run: |
           ./gradlew setVersion
           ./gradlew -console plain --build-cache build
-          
-      - name: Generate Release Header
-        run: ./gradlew generateReleaseHeader
-        if: github.ref_type == 'tag'
+          ./gradlew deletePlainJar
           
       - name: Upload JAR
         uses: actions/upload-artifact@v4
@@ -38,14 +38,6 @@ jobs:
         with:
           name: executable-application-jar
           path: build/libs/*.jar
-          retention-days: 1
-          
-      - name: Upload Release Header
-        uses: actions/upload-artifact@v4
-        if: github.ref_type == 'tag'
-        with:
-          name: release-header
-          path: build/releasenotes_header.md
           retention-days: 1
       
       - name: Publish Test Results
@@ -116,11 +108,72 @@ jobs:
           TAGS: ${{ steps.meta.outputs.tags }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+        
+  native_linux_amd64:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'tag'
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
-  release:
-    needs: 
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      - name: Build
+        run: |
+          ./gradlew setVersion
+          ./gradlew -console plain --build-cache -PnativePlatform=linux -PnativeArch=amd64 nativeCompile
+
+      - name: Upload Native Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-linux-amd64
+          path: build/native/nativeCompile/rpa-worker*
+          retention-days: 1
+  
+  pre_release:
+    needs:
       - build
       - images
+      - native_linux_amd64
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    container: "ghcr.io/camunda/rpa-worker-base-image:202501291438"
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        
+      - name: Download Artefacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+
+      - name: Build
+        run: |
+          ./gradlew setVersion
+          ./gradlew -console plain generateReleaseHeader
+
+      - name: Upload Release Header
+        uses: actions/upload-artifact@v4
+        if: github.ref_type == 'tag'
+        with:
+          name: release-header
+          path: build/releasenotes_header.md
+          retention-days: 1
+  
+  release:
+    needs: pre_release
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     steps:
@@ -128,11 +181,13 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
+          
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
           files: |
+            rpa-worker*linux_amd64
             *.jar
           prerelease: ${{ contains(github.ref_name, '-') }}
           preserve_order: true
