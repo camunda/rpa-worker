@@ -1,12 +1,10 @@
 ## Assets in This Release
 
-### Executable JAR
+## Native Binaries
 
-For Java 23 or newer.
-
-| Asset          | SHA-256 Hash |
-|----------------|--------------|
-| ${jarFilename} | ${jarHash}   |
+| Platform / Arch | SHA-256 Hash            |
+|-----------------|-------------------------|
+| Linux / amd64   | ${nativeLinuxAmd64Hash} |
 
 
 ### Container Images
@@ -15,3 +13,13 @@ For Java 23 or newer.
 |-----------------|----------------------------|------------|
 | Linux / amd64   | ghcr.io/camunda/rpa-worker | ${version} |
 | Linux / aarch64 | ghcr.io/camunda/rpa-worker | ${version} |
+
+
+### Executable JAR
+
+For Java 23 or newer.
+
+| Asset          | SHA-256 Hash |
+|----------------|--------------|
+| ${jarFilename} | ${jarHash}   |
+

@@ -1,6 +1,9 @@
 import autoversion.AutoVersionPlugin
 import releasenotes.ReleaseNotesPlugin
 
+import java.nio.file.Files
+import java.nio.file.LinkOption
+
 plugins {
 	id 'java'
 	id 'groovy'
@@ -91,7 +94,12 @@ graalvmNative {
 	binaries {
 		main {
 			mainClass = "io.camunda.rpa.worker.RpaWorkerApplication"
-			imageName = "rpa-runtime"
+			imageName = "rpa-worker_${project.version}"
+			if(project.hasProperty("nativePlatform"))
+				imageName = "${imageName.get()}_${project.properties.nativePlatform}"
+			if (project.hasProperty("nativeArch"))
+				imageName = "${imageName.get()}_${project.properties.nativeArch}"
+			
 			javaLauncher = javaToolchains.launcherFor {
 				languageVersion = JavaLanguageVersion.of(23)
 				
@@ -116,4 +124,50 @@ tasks.getByName("processAot").tap { Task it ->
 	}
 }
 
-jar.enabled = false
+tasks.register("fixProvisionedToolchainIfNecessary") {
+	
+	onlyIf { ! System.properties['os.name'].contains("Windows") }
+
+	JavaLauncher javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(23)
+		vendor = JvmVendorSpec.GRAAL_VM
+	}.get()
+	
+	doLast {
+		java.nio.file.Path binDir = javaLauncher.executablePath.asFile.toPath().parent
+
+		java.nio.file.Path nativeImagePath = binDir.resolve("native-image")
+		java.nio.file.Path nativeImageConfigurePath = binDir.resolve("native-image-configure")
+		
+		if(Files.isRegularFile(nativeImagePath, LinkOption.NOFOLLOW_LINKS) 
+				&& Files.size(nativeImagePath) != 0 
+				&& Files.isExecutable(nativeImagePath)) 
+			return
+		
+		if(Files.isSymbolicLink(nativeImagePath)
+				&& Files.isRegularFile(binDir.resolve(Files.readSymbolicLink(nativeImagePath))) 
+				&& Files.isExecutable(binDir.resolve(Files.readSymbolicLink(nativeImagePath))))
+			return
+		
+		logger.quiet("Toolchain repair is necessary")
+		
+		Files.deleteIfExists(nativeImagePath)
+		Files.deleteIfExists(nativeImageConfigurePath)
+		
+		Files.createSymbolicLink(nativeImagePath, binDir.resolve("../lib/svm/bin/native-image"))
+		Files.createSymbolicLink(nativeImageConfigurePath, binDir.resolve("../lib/svm/bin/native-image-configure"))
+	}
+}
+nativeCompile.dependsOn(fixProvisionedToolchainIfNecessary)
+
+tasks.register("deletePlainJar") {
+	doLast {
+		java.nio.file.Path libsDir = project.layout.buildDirectory.asFile.get().toPath().resolve("libs/")
+		println libsDir.toAbsolutePath()
+		Files.walk(libsDir)
+				.filter(Files::isRegularFile)
+				.filter(p -> p.toString().contains("plain"))
+				.findFirst()
+				.ifPresentOrElse(Files::delete, { throw new RuntimeException("No plain jar") })
+	}
+}
