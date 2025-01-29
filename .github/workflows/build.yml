@@ -5,7 +5,6 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
     container: "ghcr.io/camunda/rpa-worker-base-image:202501281531"
     permissions:
@@ -20,22 +19,55 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
-      - name: Build with Gradle
+      - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew -console plain build
+          ./gradlew -console plain --build-cache build
           
+      - name: Generate Release Header
+        run: ./gradlew generateReleaseHeader
+        if: github.ref_type == 'tag'
+          
+      - name: Upload JAR
+        uses: actions/upload-artifact@v4
+        if: github.ref_type == 'tag'
+        with:
+          name: executable-application-jar
+          path: build/libs/*.jar
+          retention-days: 1
+          
+      - name: Upload Release Header
+        uses: actions/upload-artifact@v4
+        if: github.ref_type == 'tag'
+        with:
+          name: release-header
+          path: build/releasenotes_header.md
+          retention-days: 1
+      
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
           files: |
             build/test-results/**/*.xml
-      
-#      # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
-#      # the publishing section of your build.gradle
-#      - name: Publish to GitHub Packages
-#        run: ./gradlew publish
-#        env:
-#          USERNAME: ${{ github.actor }}
-#          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            
+  release:
+    needs: build
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Artefacts
+        uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: |
+            *.jar
+          prerelease: ${{ contains(github.ref_name, '-') }}
+          preserve_order: true
+          generate_release_notes: true
+          body_path: releasenotes_header.md
+    

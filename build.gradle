@@ -1,4 +1,5 @@
 import autoversion.AutoVersionPlugin
+import releasenotes.ReleaseNotesPlugin
 
 plugins {
 	id 'java'
@@ -12,6 +13,7 @@ plugins {
 apply from: "ftest.gradle"
 apply from: "enable-preview.gradle"
 apply plugin: AutoVersionPlugin
+apply plugin: ReleaseNotesPlugin
 
 group = 'io.camunda.rpa'
 
@@ -113,3 +115,5 @@ tasks.getByName("processAot").tap { Task it ->
 		gradle.getStartParameter().getTaskNames().contains("nativeCompile")
 	}
 }
+
+jar.enabled = false
