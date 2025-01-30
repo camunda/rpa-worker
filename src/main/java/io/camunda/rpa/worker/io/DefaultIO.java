@@ -117,12 +117,22 @@ class DefaultIO implements IO {
 
 	@Override
 	public Path copy(Path source, Path target, CopyOption... copyOptions) {
-		throw new UnsupportedOperationException();
+		try {
+			return Files.copy(source, target, copyOptions);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
 	}
 
 	@Override
 	public long copy(Path source, OutputStream out) {
-		throw new UnsupportedOperationException();
+		try {
+			return Files.copy(source, out);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
 	}
 
 	@Override

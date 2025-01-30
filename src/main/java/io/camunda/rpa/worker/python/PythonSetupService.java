@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,6 +23,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 @Slf4j
 public class PythonSetupService implements FactoryBean<PythonInterpreter> {
+	
+	static final Set<Integer> WINDOWS_NO_PYTHON_EXIT_CODES = Set.of(49, 9009);
 	
 	private static final Version MINIMUM_PYTHON_VERSION = Version.of(3, 8);
 	private static final Pattern PYTHON_VERSION_PATTERN = Pattern.compile("Python (?<version>[0-9a-zA-Z-.+]+)");
@@ -85,6 +88,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	private Mono<Object> systemPython() {
 		return processService.execute("python", c -> c.arg("--version"))
 				.onErrorComplete(IOException.class)
+				.filter(xr -> ! WINDOWS_NO_PYTHON_EXIT_CODES.contains(xr.exitCode()))
 				.filter(xr -> {
 					Matcher matcher = PYTHON_VERSION_PATTERN.matcher(xr.stdout());
 					matcher.find();
