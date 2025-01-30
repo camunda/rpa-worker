@@ -50,13 +50,16 @@ class PythonSetupServiceSpec extends Specification {
 		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> false
 		
 		and:
-		r.path() == pythonProperties.path().resolve("bin/python")
+		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 		
 		and:
 		0 * io._(*_)
 	}
 	
-	void "Creates new environment using system Python"() {
+	void "Creates new environment using system Python (exe name is python)"() {
+		given:
+		processService.execute("python3", _) >> Mono.error(new IOException())
+		
 		when:
 		PythonInterpreter r = service.getObject()
 
@@ -83,7 +86,7 @@ class PythonSetupServiceSpec extends Specification {
 		and:
 		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
-		1 * processService.execute(pythonProperties.path().resolve("bin/pip"), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+		1 * processService.execute(pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
 				1 * arg("-r") >> it
@@ -94,9 +97,53 @@ class PythonSetupServiceSpec extends Specification {
 		}
 
 		and:
-		r.path() == pythonProperties.path().resolve("bin/python")
+		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 	}
-	
+
+	void "Creates new environment using system Python (exe name is python3)"() {
+		given:
+		processService.execute("python", _) >> Mono.error(new IOException())
+		
+		when:
+		PythonInterpreter r = service.getObject()
+
+		then:
+		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		1 * processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))
+		}
+
+		and:
+		1 * processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * bindArg("pyEnvPath", pythonProperties.path()) >> it
+				1 * inheritEnv() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+		}
+
+		and:
+		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
+		1 * processService.execute(pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("install") >> it
+				1 * arg("-r") >> it
+				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
+				1 * inheritEnv() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+		}
+
+		and:
+		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
+	}
+
 	@RestoreSystemProperties
 	void "Downloads Python if no system Python available"() {
 		given:
@@ -115,7 +162,7 @@ class PythonSetupServiceSpec extends Specification {
 
 		then: "Existing Python venv is checked (not there) and system Python is checked (not there)"
 		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
-		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+		2 * processService.execute({ it == "python" || it == "python3" }, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			return Mono.error(new IOException("No Python here"))
 		}
 		
@@ -148,7 +195,7 @@ class PythonSetupServiceSpec extends Specification {
 		1 * io.list(pythonExtractDir) >> Stream.of(Paths.get("aDir/"))
 		
 		and:
-		r.path() == pythonProperties.path().resolve("bin/python")
+		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 
 		then:
 		processService.execute(_, _) >> Mono.empty()

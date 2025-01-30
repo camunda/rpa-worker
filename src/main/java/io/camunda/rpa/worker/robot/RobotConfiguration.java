@@ -24,6 +24,7 @@ class RobotConfiguration {
 		return Schedulers.fromExecutorService(Executors.newFixedThreadPool(properties.maxConcurrentJobs(), r -> {
 			Thread thread = Executors.defaultThreadFactory().newThread(r);
 			thread.setName("robot-%s".formatted(threadNum.getAndIncrement()));
+			thread.setDaemon(true);
 			return thread;
 		}), "robot");
 	}
