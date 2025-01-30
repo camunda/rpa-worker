@@ -82,7 +82,7 @@ dependencies {
 
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
-	testLogging.showStandardStreams = true
+//	testLogging.showStandardStreams = true
 }
 
 tasks.named("functionalTest", Test).configure { Test task ->
