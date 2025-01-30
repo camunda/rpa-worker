@@ -153,4 +153,36 @@ class PythonSetupServiceSpec extends Specification {
 		then:
 		processService.execute(_, _) >> Mono.empty()
 	}
+
+	@RestoreSystemProperties
+	void "Fake Windows Python is ignored"() {
+		given:
+		System.setProperty("os.name", "Windows")
+		
+		and: "The Python on the path is some fake Windows store launcher thing"
+		io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		processService.execute("python", _) >> Mono.just(
+				new ProcessService.ExecutionResult(PythonSetupService.WINDOWS_NO_PYTHON_EXIT_CODES.first(), "", ""))
+		processService.execute(_, _) >> Mono.empty()
+
+		and:
+		Path pythonExtractDir = Paths.get("/tmp/python/")
+		Path pythonArchive = Paths.get("/tmp/python.zip")
+
+		when:
+		PythonInterpreter r = service.getObject()
+
+		then: "Fake Python is ignored and Python is downloaded as normal"
+		1 * io.createTempDirectory(_) >> pythonExtractDir
+		1 * io.createTempFile(_, ".zip") >> pythonArchive
+		1 * webClient.get() >> Mock(WebClient.RequestHeadersUriSpec) {
+			1 * uri(pythonProperties.downloadUrl()) >> Mock(WebClient.RequestHeadersSpec) {
+				1 * retrieve() >> Mock(WebClient.ResponseSpec) {
+					1 * bodyToFlux(DataBuffer.class) >> Flux.empty()
+				}
+			}
+		}
+		1 * io.write(_, _) >> Mono.empty()
+		1 * io.list(_) >> Stream.of(Paths.get("aDir/"))
+	}
 }
