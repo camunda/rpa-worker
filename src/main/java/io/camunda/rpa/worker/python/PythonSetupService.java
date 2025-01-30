@@ -9,6 +9,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -86,22 +87,24 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	}
 
 	private Mono<Object> systemPython() {
-		return processService.execute("python", c -> c.arg("--version"))
-				.onErrorComplete(IOException.class)
-				.filter(xr -> ! WINDOWS_NO_PYTHON_EXIT_CODES.contains(xr.exitCode()))
-				.filter(xr -> {
-					Matcher matcher = PYTHON_VERSION_PATTERN.matcher(xr.stdout());
-					matcher.find();
-					Version version = Version.parse(matcher.group("version"));
-					return version.isHigherThan(MINIMUM_PYTHON_VERSION);
-				})
-				.map(_ -> "python");
+		return Flux.<Object>just("python3", "python")
+				.flatMap(exeName -> processService.execute(exeName, c -> c.arg("--version"))
+						.onErrorComplete(IOException.class)
+						.filter(xr -> ! WINDOWS_NO_PYTHON_EXIT_CODES.contains(xr.exitCode()))
+						.filter(xr -> {
+							Matcher matcher = PYTHON_VERSION_PATTERN.matcher(xr.stdout());
+							matcher.find();
+							Version version = Version.parse(matcher.group("version"));
+							return version.isHigherThan(MINIMUM_PYTHON_VERSION);
+						})
+						.map(_ -> exeName))
+				.next();
 	}
 
 	private Mono<Object> installPython() {
 
 		if ( ! System.getProperty("os.name").contains("Windows"))
-			return Mono.error(new RuntimeException("Can't install Python on this platform"));
+			return Mono.error(new RuntimeException("No suitable Python installation was found, and automatic installation is not supported on this platform"));
 
 		Path basePythonDir = io.createTempDirectory("python");
 		Path pythonArchive = io.createTempFile("python", ".zip");
