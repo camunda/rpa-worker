@@ -1,6 +1,6 @@
 ## Assets in This Release
 
-## Native Binaries
+### Native Binaries
 
 | Platform / Arch | SHA-256 Hash            |
 |-----------------|-------------------------|

@@ -32,6 +32,22 @@ jobs:
           ./gradlew build
           ./gradlew deletePlainJar
           
+      - name: Upload Unit Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-reports
+          path: build/reports/tests/test/
+          retention-days: 1
+          
+      - name: Upload Functional Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: functional-test-reports
+          path: build/reports/tests/functionalTest/
+          retention-days: 1
+      
       - name: Upload JAR
         uses: actions/upload-artifact@v4
         if: github.ref_type == 'tag'
@@ -136,8 +152,6 @@ jobs:
           path: build/native/nativeCompile/rpa-worker*
           retention-days: 1
           
-          
-          
   native_win32_amd64:
     needs: build
     runs-on: windows-2025
@@ -166,7 +180,7 @@ jobs:
           path: build/native/nativeCompile/rpa-worker*
           retention-days: 1
   
-  pre_release:
+  release:
     needs:
       - build
       - images
@@ -181,38 +195,20 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-
+          
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
-        
-      - name: Download Artefacts
-        uses: actions/download-artifact@v4
-        with:
-          merge-multiple: true
-
-      - name: Build
-        run: |
-          ./gradlew setVersion
-          ./gradlew generateReleaseHeader
-
-      - name: Upload Release Header
-        uses: actions/upload-artifact@v4
-        if: github.ref_type == 'tag'
-        with:
-          name: release-header
-          path: build/releasenotes_header.md
-          retention-days: 1
-  
-  release:
-    needs: pre_release
-    if: github.ref_type == 'tag'
-    runs-on: ubuntu-latest
-    steps:
+      
       - name: Download Artefacts
         uses: actions/download-artifact@v4
         with:
           merge-multiple: true
           
+      - name: Generate Release Header
+        run: |
+          ./gradlew setVersion
+          ./gradlew generateReleaseHeader
+      
       - name: Release
         uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
@@ -224,5 +220,5 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }}
           preserve_order: true
           generate_release_notes: true
-          body_path: releasenotes_header.md
+          body_path: build/releasenotes_header.md
     
