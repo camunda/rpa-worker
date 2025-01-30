@@ -5,7 +5,7 @@
 | Platform / Arch | SHA-256 Hash            |
 |-----------------|-------------------------|
 | Linux / amd64   | ${nativeLinuxAmd64Hash} |
-
+| Win32 / amd64   | ${nativeWin32Amd64Hash} |
 
 ### Container Images
 
