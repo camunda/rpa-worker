@@ -29,7 +29,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew -console plain --build-cache build
+          ./gradlew build
           ./gradlew deletePlainJar
           
       - name: Upload JAR
@@ -127,7 +127,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew -console plain --build-cache -PnativePlatform=linux -PnativeArch=amd64 nativeCompile
+          ./gradlew -PnativePlatform=linux -PnativeArch=amd64 nativeCompile
 
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
@@ -157,7 +157,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew -console plain --build-cache -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile
+          ./gradlew check -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile
 
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
@@ -193,7 +193,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew -console plain generateReleaseHeader
+          ./gradlew generateReleaseHeader
 
       - name: Upload Release Header
         uses: actions/upload-artifact@v4

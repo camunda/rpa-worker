@@ -1,0 +1,3 @@
+moduleName=test-extensions-module
+moduleVersion=1.0
+extensionClasses=io.camunda.rpa.worker.TestExtension

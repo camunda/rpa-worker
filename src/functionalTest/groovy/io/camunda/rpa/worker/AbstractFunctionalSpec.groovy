@@ -2,6 +2,8 @@ package io.camunda.rpa.worker
 
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import groovy.transform.Memoized
+import io.camunda.rpa.worker.io.DefaultIO
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -19,6 +21,7 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.blockhound.BlockHound
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import spock.lang.Specification
 
 import java.util.function.Function
@@ -130,6 +133,12 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	protected static <T> Function<ClientResponse, Mono<ResponseEntity<T>>> toResponseEntity(Class<T> klass) {
 		return (cr) -> cr.bodyToMono(klass)
 				.map { str -> ResponseEntity.status(cr.statusCode()).body(str) }
+	}
+
+	@SuppressWarnings('GroovyAccessibility')
+	@Memoized
+	protected static io.camunda.rpa.worker.io.IO getAlwaysRealIO() {
+		return new DefaultIO(Schedulers.boundedElastic())
 	}
 
 }

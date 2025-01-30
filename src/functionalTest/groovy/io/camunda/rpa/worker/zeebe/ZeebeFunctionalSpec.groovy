@@ -126,7 +126,7 @@ The tasks
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'input-variable-value']))
-		handlerDidFinish.await(2, TimeUnit.SECONDS)
+		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 		
 		then:
 		1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
@@ -145,13 +145,16 @@ The tasks
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'UNEXPECTED-input-variable-value']))
-		handlerDidFinish.await(2, TimeUnit.SECONDS)
+		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
 		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
 			1 * errorCode("ROBOT_TASKFAIL") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
 				1 * errorMessage(_) >> it
-				1 * send()
+				1 * send() >> {
+					handlerDidFinish.countDown()
+					return null
+				}
 			}
 		}
 	}
@@ -163,13 +166,16 @@ The tasks
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([:], "erroring_1"))
-		handlerDidFinish.await(2, TimeUnit.SECONDS)
+		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
 		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
 			1 * errorCode("ROBOT_ERROR") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
 				1 * errorMessage(_) >> it
-				1 * send()
+				1 * send() >> {
+					handlerDidFinish.countDown()
+					return null
+				}
 			}
 		}
 	}
@@ -180,13 +186,16 @@ The tasks
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([:], "fake_script"))
-		handlerDidFinish.await(2, TimeUnit.SECONDS)
+		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
 		1 * jobClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(_) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("Script not found") }) >> it
-				1 * send()
+				1 * send() >> {
+					handlerDidFinish.countDown()
+					return null
+				}
 			}
 		}
 	}
@@ -205,7 +214,7 @@ The tasks
 
 		when:
 		theJobHandler.handle(jobClient, jobWithPreAndPostScripts)
-		handlerDidFinish.await(2, TimeUnit.SECONDS)
+		handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
 		then:
 		1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
@@ -232,7 +241,7 @@ The tasks
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([:], "slow_15s"))
-		handlerDidFinish.await(14, TimeUnit.SECONDS)
+		handlerDidFinish.awaitRequired(14, TimeUnit.SECONDS)
 
 		then:
 		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
@@ -254,7 +263,7 @@ The tasks
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([:], "slow_8s", [(ZeebeJobService.TIMEOUT_HEADER_NAME): "PT3S"]))
-		handlerDidFinish.await(7, TimeUnit.SECONDS)
+		handlerDidFinish.awaitRequired(7, TimeUnit.SECONDS)
 
 		then:
 		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
@@ -295,7 +304,7 @@ The tasks
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'input-variable-value']))
-		handlersDidFinish.await(2, TimeUnit.SECONDS)
+		handlersDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then: "Workspace deleted immediately"
 		workspaces.size() == 1

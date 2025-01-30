@@ -50,7 +50,7 @@ class PythonSetupServiceSpec extends Specification {
 		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> false
 		
 		and:
-		r.path() == pythonProperties.path().resolve("bin/python")
+		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 		
 		and:
 		0 * io._(*_)
@@ -86,7 +86,7 @@ class PythonSetupServiceSpec extends Specification {
 		and:
 		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
-		1 * processService.execute(pythonProperties.path().resolve("bin/pip"), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+		1 * processService.execute(pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
 				1 * arg("-r") >> it
@@ -97,7 +97,7 @@ class PythonSetupServiceSpec extends Specification {
 		}
 
 		and:
-		r.path() == pythonProperties.path().resolve("bin/python")
+		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 	}
 
 	void "Creates new environment using system Python (exe name is python3)"() {
@@ -130,7 +130,7 @@ class PythonSetupServiceSpec extends Specification {
 		and:
 		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
-		1 * processService.execute(pythonProperties.path().resolve("bin/pip"), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+		1 * processService.execute(pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
 				1 * arg("-r") >> it
@@ -141,7 +141,7 @@ class PythonSetupServiceSpec extends Specification {
 		}
 
 		and:
-		r.path() == pythonProperties.path().resolve("bin/python")
+		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 	}
 
 	@RestoreSystemProperties
@@ -195,7 +195,7 @@ class PythonSetupServiceSpec extends Specification {
 		1 * io.list(pythonExtractDir) >> Stream.of(Paths.get("aDir/"))
 		
 		and:
-		r.path() == pythonProperties.path().resolve("bin/python")
+		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 
 		then:
 		processService.execute(_, _) >> Mono.empty()

@@ -23,19 +23,19 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 	void setupSpec() {
 		ftestPythonEnv = Paths.get("python_ftest/venv/").toAbsolutePath()
 		assert ftestPythonEnv.toString().contains("python_ftest")
-		"rm -rf ${ftestPythonEnv}".execute().waitFor()
+		alwaysRealIO.deleteDirectoryRecursively(ftestPythonEnv)
 	}
 
 	void "A new Python environment is created (from system Python) and the correct dependencies are available"() {
 		expect: "There is a Python environment in the configured directory"
 		Files.isDirectory(ftestPythonEnv)
-		Files.isRegularFile(ftestPythonEnv.resolve("bin/python"))
+		Files.isRegularFile(ftestPythonEnv.resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe())))
 		
 		and: "That is the environment which is made available to the application"
-		pythonInterpreter.path().toAbsolutePath() == ftestPythonEnv.resolve("bin/python")
+		pythonInterpreter.path().toAbsolutePath() == ftestPythonEnv.resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 
 		when:
-		ProcessService.ExecutionResult deps = block processService.execute(ftestPythonEnv.resolve("bin/pip"), c -> c
+		ProcessService.ExecutionResult deps = block processService.execute(ftestPythonEnv.resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), c -> c
 				.arg("list")
 				.inheritEnv())
 		

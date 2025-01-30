@@ -116,7 +116,7 @@ Nothing
 		Queue<Path> workspaces = new LinkedList<>()
 		workspaceService.preserveLast(_) >> { Path workspace -> 
 			workspaces.add(workspace)
-			Mono<Void> r =  callRealMethod()
+			Mono<Void> r = callRealMethod()
 			r.block()
 			latch.countDown()
 			return r
@@ -133,7 +133,7 @@ Nothing
 					.bodyToMono(EvaluateScriptResponse)
 					.block(Duration.ofMinutes(1))
 		}
-		latch.await(20, TimeUnit.SECONDS)
+		latch.awaitRequired(40, TimeUnit.SECONDS)
 		
 		then:
 		workspaces.size() == 2

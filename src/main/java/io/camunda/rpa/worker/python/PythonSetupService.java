@@ -14,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Optional;
 import java.util.Set;
@@ -30,7 +31,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	private static final Version MINIMUM_PYTHON_VERSION = Version.of(3, 8);
 	private static final Pattern PYTHON_VERSION_PATTERN = Pattern.compile("Python (?<version>[0-9a-zA-Z-.+]+)");
 
-	private static final PythonExecutionEnvironment pyExeEnv = PythonExecutionEnvironment.get();
+	static final PythonExecutionEnvironment pyExeEnv = PythonExecutionEnvironment.get();
 	
 	private final PythonProperties pythonProperties;
 	private final IO io;
@@ -149,12 +150,12 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		});
 	}
 
-	private record PythonExecutionEnvironment(String binDir, String exeSuffix) {
+	record PythonExecutionEnvironment(Path binDir, String exeSuffix) {
 
 		public static PythonExecutionEnvironment get() {
 			if (System.getProperty("os.name").contains("Windows"))
-				return new PythonExecutionEnvironment("Scripts/", ".exe");
-			return new PythonExecutionEnvironment("bin/", "");
+				return new PythonExecutionEnvironment(Paths.get("Scripts/"), ".exe");
+			return new PythonExecutionEnvironment(Paths.get("bin/"), "");
 		}
 
 		public String pythonExe() {

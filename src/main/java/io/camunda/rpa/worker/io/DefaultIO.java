@@ -212,6 +212,9 @@ class DefaultIO implements IO {
 
 	@Override
 	public void deleteDirectoryRecursively(Path path) {
+		
+		if(notExists(path)) return;
+		
 		walkFileTree(path, new SimpleFileVisitor<>() {
 			@Override
 			public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
