@@ -30,7 +30,7 @@ class ZeebeStartupCheck implements StartupCheck<ZeebeReadyEvent> {
 				.doOnError(thrown -> log.atError()
 						.setCause(thrown)
 						.log(("Failed to communicate with Zeebe after %s attempts, please verify all necessary configuration is provided. " +
-								"If using a configuration file to configure the RPA Runtime ensure it contains all required properties, " +
+								"If using a configuration file to configure the RPA Worker ensure it contains all required properties, " +
 								"is named rpa-config.properties, rpa-config.yaml, application.properties, or application.yaml, and " +
 								"is either in the current directory or the config/ directory. ").formatted(NUM_ATTEMPTS)))
 
