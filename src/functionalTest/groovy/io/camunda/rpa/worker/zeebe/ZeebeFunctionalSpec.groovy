@@ -2,7 +2,7 @@ package io.camunda.rpa.worker.zeebe
 
 import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
-import io.camunda.rpa.worker.robot.WorkspaceService
+import io.camunda.rpa.worker.workspace.WorkspaceService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1

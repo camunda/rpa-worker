@@ -4,8 +4,8 @@ import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.robot.RobotExecutionListener
 import io.camunda.rpa.worker.robot.RobotService
-import io.camunda.rpa.worker.robot.WorkspaceService
 import io.camunda.rpa.worker.script.RobotScript
+import io.camunda.rpa.worker.workspace.WorkspaceService
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject

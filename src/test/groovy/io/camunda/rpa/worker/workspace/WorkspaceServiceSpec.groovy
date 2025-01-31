@@ -1,4 +1,4 @@
-package io.camunda.rpa.worker.robot
+package io.camunda.rpa.worker.workspace
 
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.io.IO
