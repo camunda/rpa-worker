@@ -8,10 +8,10 @@ import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.robot.ExecutionResults.Result
 import io.camunda.rpa.worker.robot.RobotExecutionListener
 import io.camunda.rpa.worker.robot.RobotService
-import io.camunda.rpa.worker.robot.WorkspaceService
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.script.ScriptRepository
 import io.camunda.rpa.worker.secrets.SecretsService
+import io.camunda.rpa.worker.workspace.WorkspaceService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1

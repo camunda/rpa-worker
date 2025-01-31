@@ -4,7 +4,7 @@ import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.api.ValidationFailureDto
 import io.camunda.rpa.worker.robot.ExecutionResults
-import io.camunda.rpa.worker.robot.WorkspaceService
+import io.camunda.rpa.worker.workspace.WorkspaceService
 import org.spockframework.spring.SpringSpy
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

@@ -2,8 +2,8 @@ package io.camunda.rpa.worker.script.api;
 
 import io.camunda.rpa.worker.robot.ExecutionResults;
 import io.camunda.rpa.worker.robot.RobotService;
-import io.camunda.rpa.worker.robot.WorkspaceService;
 import io.camunda.rpa.worker.script.RobotScript;
+import io.camunda.rpa.worker.workspace.WorkspaceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
