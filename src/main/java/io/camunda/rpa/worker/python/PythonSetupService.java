@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -146,6 +147,11 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		return io.supply(() -> {
 			Path requirementsTxt = io.createTempFile("python_requirements", ".txt");
 			io.copy(getClass().getClassLoader().getResourceAsStream("python/requirements.txt"), requirementsTxt, StandardCopyOption.REPLACE_EXISTING);
+			
+			Optional.ofNullable(pythonProperties.extraRequirements())
+					.map(io::readString)
+					.ifPresent(txt -> io.writeString(requirementsTxt, "\n\n" + txt, StandardOpenOption.APPEND));
+					
 			return requirementsTxt;
 		});
 	}
