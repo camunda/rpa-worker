@@ -225,9 +225,6 @@ components:
         log:
           type: string
           description: The raw output from the script execution
-        outputHtml:
-          type: string
-          description: The HTML report for the execution
         outputXml:
           type: string
           description: The xUnit XML report the execution
@@ -235,7 +232,12 @@ components:
           type: object
           additionalProperties: {}
           description: The output variables returned by the execution
-          
+        workspace:
+          type: object
+          description: A map of files in the workspace to URLs providing proxies to their contents
+          additionalProperties: 
+            type: string
+    
     StoreFilesRequest: 
       type: object
       properties: 
