@@ -15,6 +15,7 @@ import spock.util.environment.RestoreSystemProperties
 import java.nio.file.FileSystem
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
 import java.util.function.Consumer
 import java.util.function.Supplier
 import java.util.function.UnaryOperator
@@ -22,7 +23,7 @@ import java.util.stream.Stream
 
 class PythonSetupServiceSpec extends Specification {
 	
-	PythonProperties pythonProperties = new PythonProperties(Paths.get("/path/to/python/"), "https://python/python".toURI())
+	PythonProperties pythonProperties = new PythonProperties(Paths.get("/path/to/python/"), "https://python/python".toURI(), null)
 	IO io = Mock() {
 		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
 		run(_) >> { Runnable fn -> Mono.fromRunnable(fn) }
@@ -231,5 +232,51 @@ class PythonSetupServiceSpec extends Specification {
 		}
 		1 * io.write(_, _) >> Mono.empty()
 		1 * io.list(_) >> Stream.of(Paths.get("aDir/"))
+	}
+
+	void "Installs user requirements when provided"() {
+		given:
+		io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Stub(ExecutionCustomizer) {
+				arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))
+		}
+		
+		and:
+		processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Stub(ExecutionCustomizer) {
+				_ >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+		}
+		
+		and:
+		Path extraRequirements = Stub()
+		
+		and:
+		@Subject
+		PythonSetupService serviceWithExtraRequirements = 
+				new PythonSetupService(
+						pythonProperties.toBuilder().extraRequirements(extraRequirements).build(), 
+						io, 
+						processService, 
+						webClient)
+
+		when:
+		serviceWithExtraRequirements.getObject()
+
+		then:
+		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
+		1 * io.readString(extraRequirements) >> "extra-requirements"
+		1 * io.writeString(Paths.get("/tmp/requirements.txt"), "\n\nextra-requirements", StandardOpenOption.APPEND)
+		1 * processService.execute(pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				_ >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+		}
 	}
 }
