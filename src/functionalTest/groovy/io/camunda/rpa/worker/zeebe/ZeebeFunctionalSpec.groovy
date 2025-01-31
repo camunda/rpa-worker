@@ -2,7 +2,7 @@ package io.camunda.rpa.worker.zeebe
 
 import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
-import io.camunda.rpa.worker.workspace.WorkspaceService
+import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
@@ -89,7 +89,7 @@ The tasks
 	}
 	
 	@SpringSpy
-	WorkspaceService workspaceService
+	WorkspaceCleanupService workspaceCleanupService
 
 	JobClient jobClient = Mock()
 	CountDownLatch handlerDidFinish = new CountDownLatch(1)
@@ -285,7 +285,7 @@ The tasks
 		
 		and:
 		Queue<Path> workspaces = new LinkedList<>()
-		workspaceService.deleteWorkspace(_) >> { Path p ->
+		workspaceCleanupService.deleteWorkspace(_) >> { Path p ->
 			workspaces.add(p)
 			Mono<Void> r = callRealMethod()
 			r.block()

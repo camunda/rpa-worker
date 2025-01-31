@@ -5,7 +5,7 @@ import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.robot.RobotExecutionListener
 import io.camunda.rpa.worker.robot.RobotService
 import io.camunda.rpa.worker.script.RobotScript
-import io.camunda.rpa.worker.workspace.WorkspaceService
+import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -15,10 +15,10 @@ import java.nio.file.Path
 class ScriptSandboxControllerSpec extends Specification implements PublisherUtils {
 	
 	RobotService robotService = Mock()
-	WorkspaceService workspaceService = Mock()
+	WorkspaceCleanupService workspaceCleanupService = Mock()
 	
 	@Subject
-	ScriptSandboxController controller = new ScriptSandboxController(robotService, workspaceService)
+	ScriptSandboxController controller = new ScriptSandboxController(robotService, workspaceCleanupService)
 	
 	void "Executes script from passed-in body and returns result"() {
 		given:
@@ -44,6 +44,6 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		response.variables() == outputVariables
 		
 		and:
-		1 * workspaceService.preserveLast(workspace)
+		1 * workspaceCleanupService.preserveLast(workspace)
 	}
 }

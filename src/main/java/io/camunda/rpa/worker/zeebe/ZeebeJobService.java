@@ -7,7 +7,7 @@ import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.secrets.SecretsService;
-import io.camunda.rpa.worker.workspace.WorkspaceService;
+import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.client.api.worker.JobHandler;
@@ -46,7 +46,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	private final ScriptRepository scriptRepository;
 	private final ObjectMapper objectMapper;
 	private final SecretsService secretsService;
-	private final WorkspaceService workspaceService;
+	private final WorkspaceCleanupService workspaceCleanupService;
 
 	private final Map<String, JobWorker> jobWorkers = new ConcurrentHashMap<>();
 
@@ -110,7 +110,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 											Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
 													.map(Duration::parse)
 													.orElse(null),
-											workspaceService::deleteWorkspace))
+											workspaceCleanupService::deleteWorkspace))
 							
 							.doOnSuccess(xr -> (switch (xr.result()) {
 								case PASS -> client
