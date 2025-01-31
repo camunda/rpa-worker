@@ -67,7 +67,7 @@ Don't do very much
 			withNoSecrets()
 			CountDownLatch handlerDidFinish = new CountDownLatch(2)
 			List<Path> workspaces = []
-			workspaceService.deleteWorkspace(_) >> { Path w ->
+			workspaceCleanupService.deleteWorkspace(_) >> { Path w ->
 				workspaces << w
 				handlerDidFinish.countDown()
 				return null
@@ -104,7 +104,7 @@ Don't do very much
 			
 			and:
 			CountDownLatch handlersDidFinish = new CountDownLatch(2)
-			workspaceService.deleteWorkspace(_) >> {
+			workspaceCleanupService.deleteWorkspace(_) >> {
 				handlersDidFinish.countDown()
 			}
 
@@ -135,7 +135,7 @@ Don't do very much
 			withNoSecrets()
 			CountDownLatch handlerDidFinish = new CountDownLatch(2)
 			List<Path> workspaces = []
-			workspaceService.deleteWorkspace(_) >> { Path w ->
+			workspaceCleanupService.deleteWorkspace(_) >> { Path w ->
 				workspaces << w
 				handlerDidFinish.countDown()
 				return null
@@ -181,7 +181,7 @@ Don't do very much
 			withNoSecrets()
 			CountDownLatch handlerDidFinish = new CountDownLatch(256)
 			List<Path> workspaces = []
-			workspaceService.deleteWorkspace(_) >> { Path w ->
+			workspaceCleanupService.deleteWorkspace(_) >> { Path w ->
 				workspaces << w
 				handlerDidFinish.countDown()
 				return null

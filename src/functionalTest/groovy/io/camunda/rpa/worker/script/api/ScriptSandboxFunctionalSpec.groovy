@@ -4,7 +4,7 @@ import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.api.ValidationFailureDto
 import io.camunda.rpa.worker.robot.ExecutionResults
-import io.camunda.rpa.worker.workspace.WorkspaceService
+import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import org.spockframework.spring.SpringSpy
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 class ScriptSandboxFunctionalSpec extends AbstractFunctionalSpec implements PublisherUtils {
 	
 	@SpringSpy
-	WorkspaceService workspaceService
+	WorkspaceCleanupService workspaceCleanupService
 
 	void "Evaluate script fails on missing required data"() {
 		when:
@@ -114,7 +114,7 @@ Nothing
 		and:
 		CountDownLatch latch = new CountDownLatch(2)
 		Queue<Path> workspaces = new LinkedList<>()
-		workspaceService.preserveLast(_) >> { Path workspace -> 
+		workspaceCleanupService.preserveLast(_) >> { Path workspace -> 
 			workspaces.add(workspace)
 			Mono<Void> r = callRealMethod()
 			r.doFinally { latch.countDown() }.subscribe()

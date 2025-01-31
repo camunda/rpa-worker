@@ -1,11 +1,19 @@
 package io.camunda.rpa.worker.zeebe
 
 
+import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
+import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
 import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
+import io.camunda.zeebe.client.api.worker.JobClient
+import io.camunda.zeebe.client.api.worker.JobHandler
 import io.camunda.zeebe.client.api.worker.JobWorker
+import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1
+import org.spockframework.spring.SpringBean
+import org.spockframework.spring.SpringSpy
+import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Mono
 import spock.lang.Tag
 
@@ -54,6 +62,32 @@ The tasks
 """
 	}
 
+	@Autowired
+	ZeebeJobService service
+
+	JobWorkerBuilderStep1 builder1 = Mock() {
+		jobType(_) >> { builder2 }
+	}
+	JobHandler theJobHandler
+	JobWorkerBuilderStep1.JobWorkerBuilderStep2 builder2 = Stub() {
+		handler(_) >> { JobHandler jh -> 
+			theJobHandler = jh
+			return builder3 
+		}
+	}
+	JobWorkerBuilderStep1.JobWorkerBuilderStep3 builder3 = Mock() {
+		open() >> Stub(JobWorker)
+	}
+	
+	@SpringBean
+	ZeebeClient zeebeClient = Stub() {
+		newWorker() >> builder1
+	}
+	
+	@SpringSpy
+	WorkspaceCleanupService workspaceCleanupService
+
+	JobClient jobClient = Mock()
 	CountDownLatch handlerDidFinish = new CountDownLatch(1)
 
 	@Override
@@ -245,7 +279,7 @@ The tasks
 		
 		and:
 		Queue<Path> workspaces = new LinkedList<>()
-		workspaceService.deleteWorkspace(_) >> { Path p ->
+		workspaceCleanupService.deleteWorkspace(_) >> { Path p ->
 			workspaces.add(p)
 			Mono<Void> r = callRealMethod()
 			r.block()

@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class WorkspaceService {
+public class WorkspaceCleanupService {
 
 	private static final Scheduler cleanupScheduler = Schedulers.newSingle("cleanup");
 	

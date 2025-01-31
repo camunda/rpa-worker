@@ -7,12 +7,12 @@ import spock.lang.Subject
 
 import java.nio.file.Path
 
-class WorkspaceServiceSpec extends Specification implements PublisherUtils {
+class WorkspaceCleanupServiceSpec extends Specification implements PublisherUtils {
 	
 	IO io = Mock()
 	
 	@Subject
-	WorkspaceService service = new WorkspaceService(io)
+	WorkspaceCleanupService service = new WorkspaceCleanupService(io)
 
 	void "Immediately deletes directory"() {
 		given:

@@ -3,7 +3,7 @@ package io.camunda.rpa.worker.script.api;
 import io.camunda.rpa.worker.robot.ExecutionResults;
 import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.RobotScript;
-import io.camunda.rpa.worker.workspace.WorkspaceService;
+import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,12 +20,12 @@ import java.util.Collections;
 class ScriptSandboxController {
 	
 	private final RobotService robotService;
-	private final WorkspaceService workspaceService;
+	private final WorkspaceCleanupService workspaceCleanupService;
 	
 	@PostMapping
 	public Mono<EvaluateScriptResponse> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request) {
 		RobotScript robotScript = new RobotScript("_eval_", request.script());
-		return robotService.execute(robotScript, request.variables(), Collections.emptyMap(), null, workspaceService::preserveLast)
+		return robotService.execute(robotScript, request.variables(), Collections.emptyMap(), null, workspaceCleanupService::preserveLast)
 				.map(xr -> {
 					ExecutionResults.ExecutionResult r = xr.results().entrySet().iterator().next().getValue();
 					return new EvaluateScriptResponse(r.result(), r.output(), xr.outputVariables());
