@@ -54,8 +54,11 @@ public interface IO {
 	long copy(InputStream in, Path target, CopyOption... copyOptions);
 //
 	Path createTempDirectory(String prefix, FileAttribute<?>... attrs);
-//
-//	boolean exists(Path path, LinkOption... linkOptions);
+
+	Path createTempDirectory(Path dir, String prefix, FileAttribute<?>... attrs);
+
+	//
+	boolean exists(Path path, LinkOption... linkOptions);
 //
 	boolean notExists(Path path, LinkOption... linkOptions);
 
@@ -74,6 +77,12 @@ public interface IO {
 	void deleteDirectoryRecursively(Path p);
 	
 	Path walkFileTree(Path start, FileVisitor<Path> visitor);
+
+	String probeContentType(Path path);
+
+	long size(Path path);
+
+	boolean isDirectory(Path path, LinkOption... linkOptions);
 
 	OutputStream newOutputStream(Path destination, OpenOption... openOptions);
 }
