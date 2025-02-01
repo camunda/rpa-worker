@@ -46,9 +46,10 @@ class ScriptSandboxController {
 						.map(wsFiles -> {
 							URI serverUrl = getServerUrlBestGuess(exchange);
 							Map<String, URI> workspace = wsFiles.collect(Collectors.toMap(
-									p -> "/" + xr.workspace().relativize(p.path()), 
-									p -> attachIfNecessary(p, serverUrl.resolve("/workspace/%s/".formatted(xr.workspace().getFileName().toString()))
-											.resolve(xr.workspace().relativize(p.path()).toString()))));
+									p -> "/" + xr.workspace().relativize(p.path()).toString().replaceAll("\\\\", "/"),
+									p -> attachIfNecessary(p, serverUrl
+											.resolve("/workspace/%s/".formatted(xr.workspace().getFileName().toString()))
+											.resolve(xr.workspace().relativize(p.path()).toString().replaceAll("\\\\", "/")))));
 
 							ExecutionResults.ExecutionResult r = xr.results().entrySet().iterator().next().getValue();
 							return new EvaluateScriptResponse(r.result(), r.output(), xr.outputVariables(), workspace);

@@ -16,12 +16,14 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 
 	IO io = Mock() {
 		supply(_) >> { Supplier fn -> return Mono.fromSupplier(fn) }
-		createTempDirectory(_) >> Paths.get("/path/to/workspaces/")
+		createTempDirectory(_) >> Paths.get("/path/to/workspaces/").toAbsolutePath()
 	}
 	
 	@Subject
 	WorkspaceService service = new WorkspaceService(io)
 	
+	Path theWorkspace = Paths.get("/path/to/workspaces/workspace123456/").toAbsolutePath()
+
 	void "Creates workspaces root dir on init"() {
 		when:
 		service.doInit()
@@ -34,7 +36,6 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 		given:
 		service.doInit()
 		Path rootDir = service.workspacesDir
-		Path theWorkspace = Paths.get("/path/to/workspace123456/")
 
 		when:
 		Path workspace = service.createWorkspace()
@@ -50,9 +51,6 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	void "Returns workspace by ID"() {
 		given:
 		service.doInit()
-		
-		and:
-		Path theWorkspace = Paths.get("/path/to/workspaces/workspace123456/")
 		
 		when:
 		Optional<Path> workspace = service.getById("workspace123456")
@@ -82,9 +80,6 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 		given:
 		service.doInit()
 
-		and:
-		Path theWorkspace = Paths.get("/path/to/workspaces/workspace123456/")
-
 		when:
 		Optional<Path> workspace = service.getById("workspace123456")
 
@@ -108,7 +103,6 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	void "Returns empty when no correct workspace ID file"() {
 		given:
 		service.doInit()
-		Path theWorkspace = Paths.get("/path/to/workspaces/workspace123456/")
 		io.notExists(theWorkspace) >> false
 		io.isDirectory(theWorkspace) >> true
 		Path workspaceIdFile = theWorkspace.resolve(".workspace")
@@ -136,16 +130,15 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	void "Resolves workspace file and returns correct details"() {
 		given:
 		service.doInit()
-		Path theWorkspace = Paths.get("/path/to/workspaces/workspace123/")
 		Path theFile = theWorkspace.resolve("path/to/file.txt")
 		
 		and:
 		io.notExists(theWorkspace) >> false
 		io.isDirectory(theWorkspace) >> true
-		io.readString(theWorkspace.resolve(".workspace")) >> "workspace123"
+		io.readString(theWorkspace.resolve(".workspace")) >> "workspace123456"
 
 		when:
-		Optional<WorkspaceFile> result = service.getWorkspaceFile("workspace123", "path/to/file.txt")
+		Optional<WorkspaceFile> result = service.getWorkspaceFile("workspace123456", "path/to/file.txt")
 
 		then:
 		1 * io.exists(theFile) >> true
@@ -163,12 +156,11 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	void "Lists workspace files and returns correct details"() {
 		given:
 		service.doInit()
-		Path theWorkspace = Paths.get("/path/to/workspaces/workspace123/")
 
 		and:
 		io.notExists(theWorkspace) >> false
 		io.isDirectory(theWorkspace) >> true
-		io.readString(theWorkspace.resolve(".workspace")) >> "workspace123"
+		io.readString(theWorkspace.resolve(".workspace")) >> "workspace123456"
 		
 		and:
 		Path workspaceFile1 = theWorkspace.resolve("outputs/file1.txt")
@@ -176,7 +168,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 		Path workspaceFile3 = theWorkspace.resolve("outputs/.otherfile")
 
 		when:
-		List<WorkspaceFile> result = service.getWorkspaceFiles("workspace123").toList()
+		List<WorkspaceFile> result = service.getWorkspaceFiles("workspace123456").toList()
 
 		then:
 		1 * io.walk(theWorkspace) >> {
