@@ -9,6 +9,7 @@ import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.util.MoreCollectors;
 import io.camunda.rpa.worker.util.YamlMapper;
+import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,7 @@ public class RobotService {
 	private final ProcessService processService;
 	private final YamlMapper yamlMapper;
 	private final RobotProperties robotProperties;
+	private final WorkspaceService workspaceService;
 
 	private record RobotEnvironment(Path workDir, Path varsFile, Path outputDir, Path artifactsDir) { }
 	private record PreparedScript(String executionKey, RobotScript script) {}
@@ -115,20 +117,20 @@ public class RobotService {
 										.arg("--logtitle").arg("Task log")
 										.timeout(timeout)
 										.bindArg("script", renv.workDir().resolve("%s.robot".formatted(script.executionKey()))))
-								
+
 								.flatMap(xr -> getOutputVariables(renv)
 										.map(outputVariables -> toRobotExecutionResult(
-												script.executionKey(), 
-												xr, 
+												script.executionKey(),
+												xr,
 												outputVariables)))
-								
-								.flatMap(xr -> xr.result() != ExecutionResults.Result.PASS 
-										? Mono.error(new RobotFailureException(xr)) 
+
+								.flatMap(xr -> xr.result() != ExecutionResults.Result.PASS
+										? Mono.error(new RobotFailureException(xr))
 										: Mono.just(xr)))
 
-						.onErrorResume(RobotFailureException.class, thrown -> 
+						.onErrorResume(RobotFailureException.class, thrown ->
 								Mono.just(thrown.getExecutionResult()))
-						
+
 						.onErrorMap(thrown -> ! (thrown instanceof ProcessTimeoutException),
 								thrown -> new RobotErrorException(thrown))
 
@@ -136,24 +138,25 @@ public class RobotService {
 								ExecutionResults.ExecutionResult::executionId,
 								kv -> kv,
 								MoreCollectors.MergeStrategy.noDuplicatesExpected()))
-				
-				.doFinally(_ -> executionListener.ifPresent(
-						l -> l.afterRobotExecution(renv.workDir()))))
 
-				.map(resultsMap -> new ExecutionResults(
-						resultsMap,
-						getWorstCase(resultsMap.values()),
-						resultsMap.values().stream()
-								.flatMap(s -> s.outputVariables().entrySet().stream())
-								.collect(MoreCollectors.toSequencedMap(
-										Map.Entry::getKey, 
-										Map.Entry::getValue, 
-										MoreCollectors.MergeStrategy.rightPrecedence()))));
+						.doFinally(_ -> executionListener.ifPresent(
+								l -> l.afterRobotExecution(renv.workDir())))
+
+						.map(resultsMap -> new ExecutionResults(
+								resultsMap,
+								getWorstCase(resultsMap.values()),
+								resultsMap.values().stream()
+										.flatMap(s -> s.outputVariables().entrySet().stream())
+										.collect(MoreCollectors.toSequencedMap(
+												Map.Entry::getKey,
+												Map.Entry::getValue,
+												MoreCollectors.MergeStrategy.rightPrecedence())),
+								renv.workDir())));
 	}
 
 	private Mono<RobotEnvironment> newRobotEnvironment(List<PreparedScript> scripts, Map<String, Object> variables) {
 		return io.supply(() -> {
-			Path workDir = io.createTempDirectory("robot");
+			Path workDir = workspaceService.createWorkspace();
 			Path varsFile = workDir.resolve("variables.json");
 			Path outputDir = workDir.resolve("output");
 			io.createDirectories(outputDir);

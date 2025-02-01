@@ -6,9 +6,11 @@ import io.camunda.rpa.worker.api.ValidationFailureDto
 import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import org.spockframework.spring.SpringSpy
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.web.reactive.function.client.ClientResponse
 import reactor.core.publisher.Mono
 
 import java.nio.file.Files
@@ -143,5 +145,112 @@ Nothing
 		
 		and: "Second workspace remains"
 		Files.exists(workspaces.remove())
+	}
+
+	void "Serves workspace files after run"() {
+		when:
+		EvaluateScriptResponse r = post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+						.script('''\
+*** Settings ***
+Library    OperatingSystem
+
+*** Tasks ***
+Assert input variable
+    Create File    outputs/file1.txt    File 1 contents
+    Create File    outputs/file2.xlsx    File 2 contents
+''')
+						.build()))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+				.block(Duration.ofMinutes(1))
+
+		then:
+		r.workspace().keySet().find { it.endsWith("/file1.txt") }
+		r.workspace().values().find { it.toString().endsWith("/file2.xlsx?attachment") }
+
+		when:
+		String file1 = block get()
+				.uri(r.workspace().entrySet().find { kv -> kv.key.endsWith("/file1.txt") }.value)
+				.exchangeToMono { cr -> cr.bodyToMono(String) }
+		
+		then:
+		file1 == "File 1 contents"
+
+		when:
+		ClientResponse response = block get()
+				.uri(r.workspace().entrySet().find { kv -> kv.key.endsWith("/file2.xlsx") }.value)
+				.exchangeToMono(cr -> Mono.just(cr))
+
+		then:
+		with(response.headers().asHttpHeaders()) {
+			getFirst(HttpHeaders.CONTENT_TYPE) == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+			getFirst(HttpHeaders.CONTENT_LENGTH) == "15"
+			getContentDisposition().type == "attachment"
+			getContentDisposition().filename == "file2.xlsx"
+		}
+	}
+	
+	void "Not found when workspace does not exist"() {
+		when:
+		ClientResponse response = block get()
+				.uri("/workspace/fake-workspace/file.txt")
+				.exchangeToMono { cr -> Mono.just(cr) }
+		
+		then:
+		response.statusCode() == HttpStatus.NOT_FOUND
+	}
+
+	void "Not found when workspace file does not exist"() {
+		when:
+		EvaluateScriptResponse response = block post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+						.script('''\
+*** Settings ***
+Library    OperatingSystem
+
+*** Tasks ***
+Assert input variable
+    Create File    outputs/file1.txt    File 1 contents
+    Create File    outputs/file2.xlsx    File 2 contents
+''')
+						.build()))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+
+		and:
+		ClientResponse response2 = block get().uri(response.workspace().entrySet().first().value.resolve("fake-file.txt"))
+				.exchangeToMono { cr -> Mono.just(cr) }
+		
+		then:
+		response2.statusCode() == HttpStatus.NOT_FOUND
+	}
+
+	void "Not found when not a workspace file"() {
+		when:
+		EvaluateScriptResponse response = block post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+						.script('''\
+*** Settings ***
+Library    OperatingSystem
+
+*** Tasks ***
+Assert input variable
+    Create File    outputs/file1.txt    File 1 contents
+    Create File    outputs/file2.xlsx    File 2 contents
+''')
+						.build()))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+
+		and:
+		ClientResponse response2 = block get().uri(response.workspace().entrySet().first().value.resolve("../").toString() + "../../somefile.txt")
+				.exchangeToMono { cr -> Mono.just(cr) }
+
+		then:
+		response2.statusCode() == HttpStatus.NOT_FOUND
 	}
 }

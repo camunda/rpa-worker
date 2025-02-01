@@ -104,7 +104,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 			Mono.just(new ExecutionResults(
 					[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", expectedOutputVars)],
 					Result.PASS,
-					expectedOutputVars))
+					expectedOutputVars, 
+					Stub(Path)))
 		}
 
 		and:
@@ -129,7 +130,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		then:
 		1 * robotService.execute(script, [], [], _, _, null, _) >> Mono.just(new ExecutionResults([main: new ExecutionResults.ExecutionResult("main", result, "", expectedOutputVars)], 
 				result, 
-				expectedOutputVars))
+				expectedOutputVars, 
+				Stub(Path)))
 
 		and:
 		1 * jobClient.newThrowErrorCommand(job) >> Mock(ThrowErrorCommandStep1) {
@@ -249,7 +251,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * robotService.execute(script, [expectedBefore], [expectedAfter], _, _, null, _) >> Mono.just(new ExecutionResults(
-				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:])], null, [:]))
+				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:])], null, [:], Stub(Path)))
 	}
 	
 	void "Sets timeout when present, reports correct error when exceeded"() {

@@ -156,6 +156,21 @@ class DefaultIO implements IO {
 	}
 
 	@Override
+	public Path createTempDirectory(Path dir, String prefix, FileAttribute<?>... attrs) {
+		try {
+			return Files.createTempDirectory(dir, prefix, attrs);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
+	public boolean exists(Path path, LinkOption... linkOptions) {
+		return Files.exists(path, linkOptions);
+	}
+
+	@Override
 	public boolean notExists(Path path, LinkOption... linkOptions) {
 		return Files.notExists(path, linkOptions);
 	}
@@ -199,7 +214,32 @@ class DefaultIO implements IO {
 			throw new UncheckedIOException(ioex);
 		}
 	}
-	
+
+	@Override
+	public String probeContentType(Path path) {
+		try {
+			return Files.probeContentType(path);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
+	public long size(Path path) {
+		try {
+			return Files.size(path);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
+	public boolean isDirectory(Path path, LinkOption... linkOptions) {
+		return Files.isDirectory(path, linkOptions);
+	}
+
 	@Override
 	public void delete(Path path) {
 		try {

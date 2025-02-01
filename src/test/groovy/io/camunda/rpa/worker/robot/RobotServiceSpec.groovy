@@ -8,6 +8,7 @@ import io.camunda.rpa.worker.pexec.ProcessService
 import io.camunda.rpa.worker.python.PythonInterpreter
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.util.YamlMapper
+import io.camunda.rpa.worker.workspace.WorkspaceService
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -29,9 +30,10 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	ProcessService processService = Mock()
 	YamlMapper yamlMapper = new YamlMapper(objectMapper)
 	RobotProperties robotProperties = new RobotProperties(1, Duration.ofSeconds(3))
+	WorkspaceService workspaceService = Mock()
 
 	@Subject
-	RobotService service = new RobotService(io, objectMapper, pythonInterpreter, processService, yamlMapper, robotProperties)
+	RobotService service = new RobotService(io, objectMapper, pythonInterpreter, processService, yamlMapper, robotProperties, workspaceService)
 	
 	RobotExecutionListener executionListener = Mock()
 
@@ -48,7 +50,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		ExecutionResults r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'], null, executionListener)
 
 		then:
-		1 * io.createTempDirectory("robot") >> workDir
+		1 * workspaceService.createWorkspace() >> workDir
 		1 * io.createDirectories(workDir.resolve("output"))
 		1 * io.createDirectories(workDir.resolve("robot_artifacts"))
 		1 * io.writeString(workDir.resolve("main.robot"), "some-script-body", _)
@@ -95,7 +97,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		io.createTempDirectory("robot") >> workDir
+		workspaceService.createWorkspace() >> workDir
 
 		and:
 		processService.execute(_, _) >> { _, __ ->
@@ -128,7 +130,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		io.createTempDirectory("robot") >> workDir
+		workspaceService.createWorkspace() >> workDir
 		io.notExists(workDir.resolve("outputs.yml")) >> true
 
 		and:
@@ -153,7 +155,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		io.createTempDirectory("robot") >> workDir
+		workspaceService.createWorkspace() >> workDir
 		io.notExists(workDir.resolve("outputs.yml")) >> true
 
 		and:
@@ -177,7 +179,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		io.createTempDirectory("robot") >> workDir
+		workspaceService.createWorkspace() >> workDir
 		io.notExists(workDir.resolve("outputs.yml")) >> true
 
 		and:
@@ -205,7 +207,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		io.createTempDirectory("robot") >> workDir
+		workspaceService.createWorkspace() >> workDir
 		io.notExists(workDir.resolve("outputs.yml")) >> false
 		ExecutionCustomizer executionCustomizer = Mock() {
 			_ >> it
@@ -269,7 +271,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		io.createTempDirectory("robot") >> workDir
+		workspaceService.createWorkspace() >> workDir
 		io.notExists(workDir.resolve("outputs.yml")) >> false
 		ExecutionCustomizer executionCustomizer = Mock() {
 			_ >> it
@@ -305,7 +307,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		io.createTempDirectory("robot") >> workDir
+		workspaceService.createWorkspace() >> workDir
 		io.notExists(workDir.resolve("outputs.yml")) >> false
 
 		when:
@@ -341,7 +343,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		io.createTempDirectory("robot") >> workDir
+		workspaceService.createWorkspace() >> workDir
 		io.notExists(workDir.resolve("outputs.yml")) >> true
 		ExecutionCustomizer executionCustomizer = Mock() {
 			_ >> it
