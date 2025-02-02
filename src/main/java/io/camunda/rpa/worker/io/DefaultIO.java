@@ -5,6 +5,7 @@ import org.reactivestreams.Publisher;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
@@ -186,6 +187,11 @@ class DefaultIO implements IO {
 	}
 
 	@Override
+	public Flux<DataBuffer> write(Publisher<DataBuffer> source, OutputStream outputStream) {
+		return DataBufferUtils.write(source, outputStream);
+	}
+
+	@Override
 	public boolean isRegularFile(Path path, LinkOption... linkOptions) {
 		return Files.isRegularFile(path, linkOptions);
 	}
@@ -199,7 +205,17 @@ class DefaultIO implements IO {
 			throw new UncheckedIOException(ioex);
 		}
 	}
-	
+
+	@Override
+	public OutputStream newOutputStream(Path destination, OpenOption... openOptions) {
+		try {
+			return Files.newOutputStream(destination, openOptions);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
 	@Override
 	public void delete(Path path) {
 		try {

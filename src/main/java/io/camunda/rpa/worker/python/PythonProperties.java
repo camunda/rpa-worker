@@ -8,5 +8,5 @@ import java.nio.file.Path;
 
 @ConfigurationProperties("camunda.rpa.python")
 @Builder(toBuilder = true)
-record PythonProperties(Path path, URI downloadUrl, Path extraRequirements) {
+record PythonProperties(Path path, URI downloadUrl, String downloadHash, Path extraRequirements) {
 }

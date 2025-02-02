@@ -5,6 +5,8 @@ import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
 import org.apache.commons.exec.CommandLine
 import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
+import org.springframework.core.io.buffer.DefaultDataBufferFactory
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -12,6 +14,7 @@ import spock.lang.Specification
 import spock.lang.Subject
 import spock.util.environment.RestoreSystemProperties
 
+import java.nio.channels.Channels
 import java.nio.file.FileSystem
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -23,7 +26,9 @@ import java.util.stream.Stream
 
 class PythonSetupServiceSpec extends Specification {
 	
-	PythonProperties pythonProperties = new PythonProperties(Paths.get("/path/to/python/"), "https://python/python".toURI(), null)
+	private static final String ZERO_DATA_SHA_256_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+	
+	PythonProperties pythonProperties = new PythonProperties(Paths.get("/path/to/python/"), "https://python/python".toURI(), ZERO_DATA_SHA_256_HASH, null)
 	IO io = Mock() {
 		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
 		run(_) >> { Runnable fn -> Mono.fromRunnable(fn) }
@@ -157,7 +162,7 @@ class PythonSetupServiceSpec extends Specification {
 		FileSystem pythonArchiveFs = Stub() {
 			getPath("/") >> pythonArchiveRootDir
 		}
-		
+
 		when:
 		PythonInterpreter r = service.getObject()
 
@@ -178,8 +183,9 @@ class PythonSetupServiceSpec extends Specification {
 				}
 			}
 		}
-		
-		1 * io.write({ it }, pythonArchive) >> Mono.empty()
+
+		1 * io.newOutputStream(pythonArchive) >> Stub(OutputStream)
+		1 * io.write({ it }, _) >> Flux.empty()
 		
 		and: "The downloaded Python archive is extracted"
 		1 * io.doWithFileSystem(_, _) >> { __, Consumer<FileSystem> fn -> fn.accept(pythonArchiveFs) }
@@ -230,7 +236,8 @@ class PythonSetupServiceSpec extends Specification {
 				}
 			}
 		}
-		1 * io.write(_, _) >> Mono.empty()
+		1 * io.newOutputStream(_) >> Stub(OutputStream)
+		1 * io.write(_, _) >> Flux.empty()
 		1 * io.list(_) >> Stream.of(Paths.get("aDir/"))
 	}
 
@@ -278,5 +285,35 @@ class PythonSetupServiceSpec extends Specification {
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
 		}
+	}
+
+	@RestoreSystemProperties
+	void "Returns error if download integrity check failed"() {
+		given:
+		System.setProperty("os.name", "Windows")
+
+		and:
+		io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		processService.execute(_, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			return Mono.error(new IOException("No Python here"))
+		}
+
+		and:
+		webClient.get() >> Mock(WebClient.RequestHeadersUriSpec) {
+			uri(pythonProperties.downloadUrl()) >> Mock(WebClient.RequestHeadersSpec) {
+				retrieve() >> Mock(WebClient.ResponseSpec) {
+					bodyToFlux(DataBuffer.class) >> DataBufferUtils.readByteChannel(
+							() -> Channels.newChannel(new ByteArrayInputStream([1, 2, 3] as byte[])), DefaultDataBufferFactory.sharedInstance, 8)
+				}
+			}
+		}
+		io.newOutputStream(_) >> Stub(OutputStream)
+		io.write(_, _) >> { Flux<DataBuffer> buffers, OutputStream os -> DataBufferUtils.write(buffers, os) }
+
+		when:
+		service.getObject()
+
+		then:
+		thrown(IllegalStateException)
 	}
 }
