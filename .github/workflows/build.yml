@@ -25,6 +25,8 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        with:
+          add-job-summary: 'on-failure'
 
       - name: Build
         run: |
@@ -63,8 +65,59 @@ jobs:
           files: |
             build/test-results/**/*.xml
             
+  windows_test:
+    runs-on: windows-2025
+    permissions:
+      contents: read
+      checks: write
+      pull-requests: write
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        with: 
+          add-job-summary: 'never'
+
+      - name: Build
+        run: |
+          ./gradlew setVersion
+          ./gradlew check
+          
+      - name: Upload Unit Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-reports-windows
+          path: build/reports/tests/test/
+          retention-days: 1
+
+      - name: Upload Functional Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: functional-test-reports-windows
+          path: build/reports/tests/functionalTest/
+          retention-days: 1
+          
+      - name: Publish Windows Re-Test Results
+        uses: EnricoMi/publish-unit-test-result-action/windows@v2
+        if: always()
+        with:
+          check_name: 'Windows Test Results'
+          comment_mode: 'off'
+          job_summary: false
+          files: |
+            build/test-results/**/*.xml
+  
   images:
-    needs: build
+    needs: 
+      - build
+      - windows_test
     if: github.ref_type == 'tag'
     runs-on: ubuntu-latest
     permissions:
@@ -126,7 +179,9 @@ jobs:
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
         
   native_linux_amd64:
-    needs: build
+    needs: 
+      - build
+      - windows_test
     runs-on: ubuntu-latest
     if: github.ref_type == 'tag'
     permissions:
@@ -153,7 +208,9 @@ jobs:
           retention-days: 1
           
   native_win32_amd64:
-    needs: build
+    needs: 
+      - build
+      - windows_test
     runs-on: windows-2025
     if: github.ref_type == 'tag'
     permissions:
@@ -171,7 +228,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew check -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile
+          ./gradlew -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile
 
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
@@ -183,6 +240,7 @@ jobs:
   release:
     needs:
       - build
+      - windows_test
       - images
       - native_linux_amd64
       - native_win32_amd64
