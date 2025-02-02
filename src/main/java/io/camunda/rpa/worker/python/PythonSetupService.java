@@ -3,20 +3,26 @@ package io.camunda.rpa.worker.python;
 import com.github.zafarkhaja.semver.Version;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
+import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.security.DigestOutputStream;
+import java.security.MessageDigest;
+import java.util.HexFormat;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -115,7 +121,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 				.uri(pythonProperties.downloadUrl())
 				.retrieve()
 				.bodyToFlux(DataBuffer.class)
-				.as(buffers -> io.write(buffers, pythonArchive))
+				.as(buffers -> writeWithIntegrityCheck(buffers, pythonArchive, pythonProperties.downloadHash()))
 
 				.doOnSubscribe(_ -> log.atInfo().log("Downloading Python"))
 
@@ -171,5 +177,24 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		public String pipExe() {
 			return "pip" + exeSuffix();
 		}
+	}
+	
+	private Mono<Void> writeWithIntegrityCheck(Flux<DataBuffer> dataBuffers, Path destination, String expected) {
+		MessageDigest md = Try.of(() -> MessageDigest.getInstance("sha-256")).get();
+
+		return Flux.using(() -> new BufferedOutputStream(io.newOutputStream(destination)),
+						fileOut -> Flux.using(() -> new DigestOutputStream(fileOut, md),
+								digestOut -> io.write(dataBuffers, digestOut)
+										.doOnNext(DataBufferUtils.releaseConsumer())
+
+										.then(Mono.fromSupplier(() -> HexFormat.of().formatHex(digestOut.getMessageDigest().digest()))
+												.flatMap(hash -> hash.equals(expected)
+														? Mono.empty()
+														: Mono.error(new IllegalStateException())
+																.doOnSubscribe(_ -> log.atError()
+																		.kv("expected", expected)
+																		.kv("actual", hash)
+																		.log("Integrity check failed for Python download"))))))
+				.then();
 	}
 }

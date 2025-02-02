@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.io;
 
 import org.reactivestreams.Publisher;
 import org.springframework.core.io.buffer.DataBuffer;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.InputStream;
@@ -64,6 +65,8 @@ public interface IO {
 
 	Mono<Void> write(Publisher<DataBuffer> source, Path destination, OpenOption... openOptions);
 
+	Flux<DataBuffer> write(Publisher<DataBuffer> source, OutputStream outputStream);
+
 	boolean isRegularFile(Path path, LinkOption... linkOptions);
 
 	void delete(Path path);
@@ -71,4 +74,6 @@ public interface IO {
 	void deleteDirectoryRecursively(Path p);
 	
 	Path walkFileTree(Path start, FileVisitor<Path> visitor);
+
+	OutputStream newOutputStream(Path destination, OpenOption... openOptions);
 }
