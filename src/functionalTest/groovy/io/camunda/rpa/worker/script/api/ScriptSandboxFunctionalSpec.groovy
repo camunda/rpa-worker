@@ -117,8 +117,7 @@ Nothing
 		workspaceService.preserveLast(_) >> { Path workspace -> 
 			workspaces.add(workspace)
 			Mono<Void> r = callRealMethod()
-			r.block()
-			latch.countDown()
+			r.doFinally { latch.countDown() }.subscribe()
 			return r
 		}
 		
