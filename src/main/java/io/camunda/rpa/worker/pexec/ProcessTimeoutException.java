@@ -9,7 +9,11 @@ public class ProcessTimeoutException extends RuntimeException {
 	private final String stderr;
 
 	public ProcessTimeoutException(String stdout, String stderr) {
-		super("Process timed out");
+		this(stdout, stderr, null);
+	}
+	
+	public ProcessTimeoutException(String stdout, String stderr, Throwable cause) {
+		super("Process timed out", cause);
 		this.stdout = stdout;
 		this.stderr = stderr;
 	}

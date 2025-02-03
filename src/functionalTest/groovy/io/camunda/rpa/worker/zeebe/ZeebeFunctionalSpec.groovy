@@ -1,33 +1,21 @@
 package io.camunda.rpa.worker.zeebe
 
-import groovy.json.JsonOutput
-import io.camunda.rpa.worker.AbstractFunctionalSpec
-import io.camunda.rpa.worker.robot.WorkspaceService
-import io.camunda.zeebe.client.ZeebeClient
+
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
 import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
-import io.camunda.zeebe.client.api.worker.JobClient
-import io.camunda.zeebe.client.api.worker.JobHandler
 import io.camunda.zeebe.client.api.worker.JobWorker
-import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1
-import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
-import org.spockframework.spring.SpringBean
-import org.spockframework.spring.SpringSpy
-import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Mono
 import spock.lang.Tag
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class ZeebeFunctionalSpec extends AbstractFunctionalSpec {
+class ZeebeFunctionalSpec extends AbstractZeebeFunctionalSpec {
 
-	static final String TASK_PREFIX = "camunda::RPA-Task::"
 	static final String SAMPLE_ROBOT_SCRIPT = '''\
 *** Settings ***
 Library             Camunda
@@ -66,50 +54,22 @@ The tasks
 """
 	}
 
-	@Autowired
-	ZeebeJobService service
-
-	JobWorkerBuilderStep1 builder1 = Mock() {
-		jobType(_) >> { builder2 }
-	}
-	JobHandler theJobHandler
-	JobWorkerBuilderStep1.JobWorkerBuilderStep2 builder2 = Stub() {
-		handler(_) >> { JobHandler jh -> 
-			theJobHandler = jh
-			return builder3 
-		}
-	}
-	JobWorkerBuilderStep1.JobWorkerBuilderStep3 builder3 = Mock() {
-		open() >> Stub(JobWorker)
-	}
-	
-	@SpringBean
-	ZeebeClient zeebeClient = Stub() {
-		newWorker() >> builder1
-	}
-	
-	@SpringSpy
-	WorkspaceService workspaceService
-
-	JobClient jobClient = Mock()
 	CountDownLatch handlerDidFinish = new CountDownLatch(1)
-	
-	void setupSpec() {
-		Path scriptsDir = Paths.get("scripts_ftest")
-		if(Files.exists(scriptsDir))
-			Files.walk(scriptsDir).filter(Files::isRegularFile).forEach(Files::delete)
-		
-		Files.createDirectories(scriptsDir)
-		scriptsDir.resolve("existing_1.robot").text = SAMPLE_ROBOT_SCRIPT
-		scriptsDir.resolve("erroring_1.robot").text = ERRORING_ROBOT_SCRIPT
-		scriptsDir.resolve("companion_1.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("pre0")
-		scriptsDir.resolve("companion_2.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("pre1")
-		scriptsDir.resolve("companion_3.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("post0")
-		scriptsDir.resolve("companion_4.robot").text = COMPANION_ROBOT_SCRIPT_TEMPLATE("post1")
-		scriptsDir.resolve("slow_15s.robot").text = SLOW_ROBOT_SCRIPT_TEMPLATE(15)
-		scriptsDir.resolve("slow_8s.robot").text = SLOW_ROBOT_SCRIPT_TEMPLATE(8)
+
+	@Override
+	Map<String, String> getScripts() {
+		return [
+		        "existing_1": SAMPLE_ROBOT_SCRIPT,
+				"erroring_1": ERRORING_ROBOT_SCRIPT,
+				"companion_1": COMPANION_ROBOT_SCRIPT_TEMPLATE("pre0"),
+		        "companion_2": COMPANION_ROBOT_SCRIPT_TEMPLATE("pre1"),
+		        "companion_3": COMPANION_ROBOT_SCRIPT_TEMPLATE("post0"),
+		        "companion_4": COMPANION_ROBOT_SCRIPT_TEMPLATE("post1"),
+				"slow_15s": SLOW_ROBOT_SCRIPT_TEMPLATE(15),
+		        "slow_8s": SLOW_ROBOT_SCRIPT_TEMPLATE(8)
+		]
 	}
-	
+
 	void "Subscribes on init"() {
 		when:
 		service.doInit()
@@ -311,68 +271,4 @@ The tasks
 		Files.notExists(workspaces.remove())
 	}
 
-	private ActivatedJob anRpaJob(Map<String, Object> variables = [:], String scriptKey = "existing_1", Map additionalHeaders = [:]) {
-		return Stub(ActivatedJob) {
-			getCustomHeaders() >> [
-					(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson(
-							new ZeebeLinkedResources([
-									new ZeebeLinkedResources.ZeebeLinkedResource(
-											scriptKey,
-											ZeebeBindingType.latest,
-											"RPA",
-											"?",
-											ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
-											scriptKey)
-							])),
-
-					*: additionalHeaders
-			]
-
-			getVariablesAsMap() >> variables
-		}
-	}
-	
-	private ActivatedJob anRpaJobWithPreAndPostScripts(
-			List<String> preScripts,
-			String mainScript,
-			List<String> postScripts, 
-			Map<String, Object> inputVariables = [:]) {
-		
-		return Stub(ActivatedJob) {
-			getCustomHeaders() >> [(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson(
-					new ZeebeLinkedResources(
-							preScripts.collect { s -> 
-								new ZeebeLinkedResources.ZeebeLinkedResource(
-										s,
-										ZeebeBindingType.latest,
-										"RPA",
-										"?",
-										ZeebeJobService.BEFORE_SCRIPT_LINK_NAME,
-										s)
-							}
-							+
-							[
-								new ZeebeLinkedResources.ZeebeLinkedResource(
-										mainScript,
-										ZeebeBindingType.latest,
-										"RPA",
-										"?",
-										ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
-										mainScript)
-							]
-							+
-							postScripts.collect { s ->
-								new ZeebeLinkedResources.ZeebeLinkedResource(
-										s,
-										ZeebeBindingType.latest,
-										"RPA",
-										"?",
-										ZeebeJobService.AFTER_SCRIPT_LINK_NAME,
-										s)
-							}))]
-
-			getVariablesAsMap() >> inputVariables
-		}
-
-	}
 }

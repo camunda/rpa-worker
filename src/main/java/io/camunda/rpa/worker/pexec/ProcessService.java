@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.time.Duration;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -28,18 +30,18 @@ import java.util.function.UnaryOperator;
 @Slf4j
 public class ProcessService {
 	
-	private final Scheduler robotWorkScheduler;
+	private final Scheduler processExecutionScheduler;
 	private final Supplier<DefaultExecutor.Builder<?>> executorBuilderFactory;
 	
 	public record ExecutionResult(int exitCode, String stdout, String stderr) {}
 
 	@Autowired
-	public ProcessService(Scheduler robotWorkScheduler) {
-		this(robotWorkScheduler, DefaultExecutor.Builder::new);
+	public ProcessService(Scheduler processExecutionScheduler) {
+		this(processExecutionScheduler, DefaultExecutor.Builder::new);
 	}
 	
-	ProcessService(Scheduler robotWorkScheduler, Supplier<DefaultExecutor.Builder<?>> executorBuilderFactory) {
-		this.robotWorkScheduler = robotWorkScheduler;
+	ProcessService(Scheduler processExecutionScheduler, Supplier<DefaultExecutor.Builder<?>> executorBuilderFactory) {
+		this.processExecutionScheduler = processExecutionScheduler;
 		this.executorBuilderFactory = executorBuilderFactory;
 	}
 	
@@ -49,18 +51,21 @@ public class ProcessService {
 		Set<Integer> allowedExitCodes = new HashSet<>();
 		Map<String, String> environment = new HashMap<>();
 
-		CommandLine cmdLine = executable instanceof Path p 
-				? new CommandLine(p.toFile()) 
+		CommandLine cmdLine = executable instanceof Path p
+				? new CommandLine(p.toFile())
 				: new CommandLine(executable.toString());
 		DefaultExecutor.Builder<?> executorBuilder = executorBuilderFactory.get();
 
 		allowedExitCodes.add(0);
 
 		IntrospectableExecutionCustomizer executionCustomizer = new IntrospectableExecutionCustomizer() {
-			
+
 			@Getter
 			private Duration timeout;
-			
+
+			@Getter
+			private Scheduler scheduler = processExecutionScheduler;
+
 			@Override
 			public ExecutionCustomizer arg(String arg) {
 				cmdLine.addArgument(arg);
@@ -119,21 +124,29 @@ public class ProcessService {
 				this.timeout = newTimeout;
 				return this;
 			}
+
+			@Override
+			public ExecutionCustomizer scheduleOn(Scheduler scheduler) {
+				this.scheduler = scheduler;
+				return this;
+			}
 		};
 		customization.apply(executionCustomizer);
 
 		cmdLine.setSubstitutionMap(bindings);
 		DefaultExecutor defaultExecutor = executorBuilder.get();
-		defaultExecutor.setExitValues(allowedExitCodes.contains(Integer.MIN_VALUE) 
-				? null 
+		defaultExecutor.setExitValues(allowedExitCodes.contains(Integer.MIN_VALUE)
+				? null
 				: allowedExitCodes.stream().mapToInt(i -> i).toArray());
-		ExecuteWatchdog2 watchdog = new ExecuteWatchdog2();
+		ExecuteWatchdog2 watchdog = executionCustomizer.getTimeout() != null
+				? new ExecuteWatchdog2(executionCustomizer.getTimeout().toMillis())
+				: new ExecuteWatchdog2();
 		defaultExecutor.setWatchdog(watchdog);
 
 		StreamHandler streamHandler = new StreamHandler();
 		defaultExecutor.setStreamHandler(streamHandler);
 
-		return Mono.fromSupplier(() -> Try.of(() -> defaultExecutor.execute(cmdLine, environment))
+		return Mono.defer(() -> Mono.fromSupplier(() -> Try.of(() -> defaultExecutor.execute(cmdLine, environment))
 						.onFailure(thrown -> log.atError()
 								.setCause(thrown)
 								.addKeyValue("stderr", streamHandler.getErrString())
@@ -145,16 +158,17 @@ public class ProcessService {
 								streamHandler.getOutString(),
 								streamHandler.getErrString()))
 						.get())
-				.subscribeOn(robotWorkScheduler)
-				.as(p -> executionCustomizer.getTimeout() != null 
-						? p.timeout(executionCustomizer.getTimeout(),
-								Mono.<ExecutionResult>error(() -> new ProcessTimeoutException(streamHandler.getOutString(), streamHandler.getErrString()))
-							.doOnSubscribe(_ -> watchdog.getProcess().toHandle().destroy()))
-						: p);
+				.subscribeOn(executionCustomizer.getScheduler()))
+				.onErrorResume(
+						thrown -> thrown instanceof TimeoutException 
+								|| (thrown instanceof IOException && thrown.getCause() instanceof TimeoutException),
+						thrown -> Mono.error(() -> 
+						new ProcessTimeoutException(streamHandler.getOutString(), streamHandler.getErrString(), thrown)));
 	}
 	
 	private interface IntrospectableExecutionCustomizer extends ExecutionCustomizer {
 		Duration getTimeout();
+		Scheduler getScheduler();
 	}
 
 	static class StreamHandler extends PumpStreamHandler {

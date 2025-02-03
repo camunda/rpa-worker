@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
+import static reactor.core.scheduler.Schedulers.DEFAULT_BOUNDED_ELASTIC_QUEUESIZE;
 
 @Configuration
 @RequiredArgsConstructor
@@ -20,13 +19,12 @@ class RobotConfiguration {
 	
 	@Bean
 	public Scheduler robotWorkScheduler() {
-		AtomicInteger threadNum = new AtomicInteger(1);
-		return Schedulers.fromExecutorService(Executors.newFixedThreadPool(properties.maxConcurrentJobs(), r -> {
-			Thread thread = Executors.defaultThreadFactory().newThread(r);
-			thread.setName("robot-%s".formatted(threadNum.getAndIncrement()));
-			thread.setDaemon(true);
-			return thread;
-		}), "robot");
+		return Schedulers.newBoundedElastic(
+				properties.maxConcurrentJobs(),
+				DEFAULT_BOUNDED_ELASTIC_QUEUESIZE,
+				"robot",
+				60,
+				true);
 	}
 
 	@Bean
