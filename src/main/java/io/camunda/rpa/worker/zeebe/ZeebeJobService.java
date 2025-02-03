@@ -147,17 +147,17 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 											.kv("job", job)
 											.log("Execution aborted, timeout exceeded")))
 
-					.doOnError(thrown -> client
-							.newFailCommand(job)
-							.retries(job.getRetries())
-							.errorMessage(thrown.getMessage())
-							.send())
-
 					.doOnError(thrown -> log.atError()
 							.kv("task", subKey)
 							.kv("job", job.getKey())
 							.setCause(thrown)
 							.log("Error while executing Job"))
+					
+					.doOnError(thrown -> client
+							.newFailCommand(job)
+							.retries(job.getRetries())
+							.errorMessage(thrown.getMessage())
+							.send())
 
 					.onErrorComplete()
 					.subscribe();

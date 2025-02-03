@@ -12,6 +12,8 @@ import spock.lang.Timeout
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Duration
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 class ProcessServiceSpec extends Specification implements PublisherUtils {
 	
@@ -137,14 +139,19 @@ class ProcessServiceSpec extends Specification implements PublisherUtils {
 		Path someExe = Paths.get("/path/to/exe")
 		
 		and:
-		Process process = Mock()
+		Process process = Mock() {
+			exitValue() >> { throw new IllegalThreadStateException("I'm still running") }
+		}
+		CountDownLatch processWasKilled = new CountDownLatch(1)
 		ExecuteWatchdog2 watchdog
 		defaultExecutor.setWatchdog(_) >> { ExecuteWatchdog2 w -> 
 			w.start(process)
-			watchdog = w 
+			watchdog = w
 		}
 		defaultExecutor.execute(_, _) >> {
-			Thread.sleep(3_500)
+			if( ! processWasKilled.await(3_500, TimeUnit.MILLISECONDS))
+				throw new IllegalStateException("Process was not killed")
+			watchdog.checkException()
 			return 1
 		}
 
@@ -154,7 +161,10 @@ class ProcessServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * process.toHandle() >> Mock(ProcessHandle) {
-			1 * destroy() >> true
+			1 * destroy() >> {
+				processWasKilled.countDown()
+				return true
+			}
 		}
 		
 		and:
