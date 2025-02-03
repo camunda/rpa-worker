@@ -53,10 +53,10 @@ class PythonSetupServiceSpec extends Specification {
 		PythonInterpreter r = service.getObject()
 		
 		then:
-		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> false
+		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
 		
 		and:
-		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
+		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 		
 		and:
 		0 * io._(*_)
@@ -70,7 +70,7 @@ class PythonSetupServiceSpec extends Specification {
 		PythonInterpreter r = service.getObject()
 
 		then:
-		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("--version") >> it
@@ -83,7 +83,7 @@ class PythonSetupServiceSpec extends Specification {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("-m") >> it
 				1 * arg("venv") >> it
-				1 * bindArg("pyEnvPath", pythonProperties.path()) >> it
+				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
 				1 * inheritEnv() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
@@ -92,7 +92,7 @@ class PythonSetupServiceSpec extends Specification {
 		and:
 		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
-		1 * processService.execute(pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
 				1 * arg("-r") >> it
@@ -103,7 +103,7 @@ class PythonSetupServiceSpec extends Specification {
 		}
 
 		and:
-		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
+		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 	}
 
 	void "Creates new environment using system Python (exe name is python3)"() {
@@ -114,7 +114,7 @@ class PythonSetupServiceSpec extends Specification {
 		PythonInterpreter r = service.getObject()
 
 		then:
-		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		1 * processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("--version") >> it
@@ -127,7 +127,7 @@ class PythonSetupServiceSpec extends Specification {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("-m") >> it
 				1 * arg("venv") >> it
-				1 * bindArg("pyEnvPath", pythonProperties.path()) >> it
+				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
 				1 * inheritEnv() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
@@ -136,7 +136,7 @@ class PythonSetupServiceSpec extends Specification {
 		and:
 		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
-		1 * processService.execute(pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
 				1 * arg("-r") >> it
@@ -147,7 +147,7 @@ class PythonSetupServiceSpec extends Specification {
 		}
 
 		and:
-		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
+		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 	}
 
 	@RestoreSystemProperties
@@ -156,7 +156,6 @@ class PythonSetupServiceSpec extends Specification {
 		System.setProperty("os.name", "Windows")
 		
 		and:
-		Path pythonExtractDir = Paths.get("/tmp/python/")
 		Path pythonArchive = Paths.get("/tmp/python.zip")
 		Path pythonArchiveRootDir = Paths.get("/")
 		FileSystem pythonArchiveFs = Stub() {
@@ -167,13 +166,12 @@ class PythonSetupServiceSpec extends Specification {
 		PythonInterpreter r = service.getObject()
 
 		then: "Existing Python venv is checked (not there) and system Python is checked (not there)"
-		1 * io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		2 * processService.execute({ it == "python" || it == "python3" }, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			return Mono.error(new IOException("No Python here"))
 		}
 		
 		and: "The standalone Python archive is downloaded from the configured URL"
-		1 * io.createTempDirectory(_) >> pythonExtractDir
 		1 * io.createTempFile(_, ".zip") >> pythonArchive
 		
 		1 * webClient.get() >> Mock(WebClient.RequestHeadersUriSpec) {
@@ -194,15 +192,15 @@ class PythonSetupServiceSpec extends Specification {
 				Paths.get("/aDir/differentDir/anotherFile"))
 		io.isRegularFile(_, _) >> true
 
-		1 * io.createDirectories(pythonExtractDir.resolve("aDir/anotherDir/"))
-		1 * io.copy(_, pythonExtractDir.resolve("aDir/anotherDir/aFile"))
-		1 * io.createDirectories(pythonExtractDir.resolve("aDir/differentDir/"))
-		1 * io.copy(_, pythonExtractDir.resolve("aDir/differentDir/anotherFile"))
+		1 * io.createDirectories(pythonProperties.path().resolve("aDir/anotherDir/"))
+		1 * io.copy(_, pythonProperties.path().resolve("aDir/anotherDir/aFile"))
+		1 * io.createDirectories(pythonProperties.path().resolve("aDir/differentDir/"))
+		1 * io.copy(_, pythonProperties.path().resolve("aDir/differentDir/anotherFile"))
 		
-		1 * io.list(pythonExtractDir) >> Stream.of(Paths.get("aDir/"))
+		1 * io.list(pythonProperties.path()) >> Stream.of(Paths.get("aDir/"))
 		
 		and:
-		r.path() == pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
+		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 
 		then:
 		processService.execute(_, _) >> Mono.empty()
@@ -214,20 +212,18 @@ class PythonSetupServiceSpec extends Specification {
 		System.setProperty("os.name", "Windows")
 		
 		and: "The Python on the path is some fake Windows store launcher thing"
-		io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		processService.execute("python", _) >> Mono.just(
 				new ProcessService.ExecutionResult(PythonSetupService.WINDOWS_NO_PYTHON_EXIT_CODES.first(), "", ""))
 		processService.execute(_, _) >> Mono.empty()
 
 		and:
-		Path pythonExtractDir = Paths.get("/tmp/python/")
 		Path pythonArchive = Paths.get("/tmp/python.zip")
 
 		when:
 		PythonInterpreter r = service.getObject()
 
 		then: "Fake Python is ignored and Python is downloaded as normal"
-		1 * io.createTempDirectory(_) >> pythonExtractDir
 		1 * io.createTempFile(_, ".zip") >> pythonArchive
 		1 * webClient.get() >> Mock(WebClient.RequestHeadersUriSpec) {
 			1 * uri(pythonProperties.downloadUrl()) >> Mock(WebClient.RequestHeadersSpec) {
@@ -243,7 +239,7 @@ class PythonSetupServiceSpec extends Specification {
 
 	void "Installs user requirements when provided"() {
 		given:
-		io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Stub(ExecutionCustomizer) {
 				arg("--version") >> it
@@ -279,7 +275,7 @@ class PythonSetupServiceSpec extends Specification {
 		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
 		1 * io.readString(extraRequirements) >> "extra-requirements"
 		1 * io.writeString(Paths.get("/tmp/requirements.txt"), "\n\nextra-requirements", StandardOpenOption.APPEND)
-		1 * processService.execute(pythonProperties.path().resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				_ >> it
 			})
@@ -293,7 +289,7 @@ class PythonSetupServiceSpec extends Specification {
 		System.setProperty("os.name", "Windows")
 
 		and:
-		io.notExists(pythonProperties.path().resolve("pyvenv.cfg")) >> true
+		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		processService.execute(_, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			return Mono.error(new IOException("No Python here"))
 		}

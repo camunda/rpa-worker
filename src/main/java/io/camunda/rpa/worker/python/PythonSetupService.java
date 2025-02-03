@@ -62,10 +62,10 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	}
 
 	private Optional<Path> existingPythonEnvironment() {
-		if (io.notExists(pythonProperties.path().resolve("pyvenv.cfg")))
+		if (io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")))
 			return Optional.empty();
 
-		return Optional.of(pythonProperties.path().resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
+		return Optional.of(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
 	}
 
 	private Mono<Path> createPythonEnvironment() {
@@ -73,14 +73,14 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 				.switchIfEmpty(Mono.defer(this::installPython))
 				.flatMap(pathOrString -> processService.execute(pathOrString, c -> c
 								.arg("-m").arg("venv")
-								.bindArg("pyEnvPath", pythonProperties.path())
+								.bindArg("pyEnvPath", pythonProperties.path().resolve("venv/"))
 								.inheritEnv())
 
 						.doOnSubscribe(_ -> log.atInfo()
 								.kv("dir", pythonProperties.path())
 								.log("Creating new Python environment")))
 
-				.map(_ -> pythonProperties.path().resolve(pyExeEnv.binDir()))
+				.map(_ -> pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()))
 				.flatMap(pyBinDir ->
 						writeRequirements().flatMap(requirements ->
 								processService.execute(pyBinDir.resolve(pyExeEnv.pipExe()), c -> c
@@ -91,7 +91,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 										.doOnSubscribe(_ ->
 												log.atInfo().log("Installing Pip dependencies"))))
 
-				.thenReturn(pythonProperties.path().resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
+				.thenReturn(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
 	}
 
 	private Mono<Object> systemPython() {
@@ -114,7 +114,6 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		if ( ! System.getProperty("os.name").contains("Windows"))
 			return Mono.error(new RuntimeException("No suitable Python installation was found, and automatic installation is not supported on this platform"));
 
-		Path basePythonDir = io.createTempDirectory("python");
 		Path pythonArchive = io.createTempFile("python", ".zip");
 
 		return webClient.get()
@@ -125,13 +124,13 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 
 				.doOnSubscribe(_ -> log.atInfo().log("Downloading Python"))
 
-				.then(io.run(() -> extractArchive(pythonArchive, basePythonDir))
+				.then(io.run(() -> extractArchive(pythonArchive, pythonProperties.path()))
 						.doOnSubscribe(_ -> log.atInfo()
 								.kv("archive", pythonArchive.toString())
-								.kv("dest", basePythonDir)
+								.kv("dest", pythonProperties.path())
 								.log("Extracting Python archive")))
 
-				.then(io.supply(() -> io.list(basePythonDir)
+				.then(io.supply(() -> io.list(pythonProperties.path())
 						.findFirst()
 						.map(it -> it.resolve("python/").resolve(pyExeEnv.pythonExe()))
 						.orElseThrow()));
