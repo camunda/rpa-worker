@@ -1,5 +1,7 @@
 package io.camunda.rpa.worker.pexec;
 
+import reactor.core.scheduler.Scheduler;
+
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Map;
@@ -15,4 +17,5 @@ public interface ExecutionCustomizer {
 	ExecutionCustomizer inheritEnv();
 	ExecutionCustomizer noFail();
 	ExecutionCustomizer timeout(Duration timeout);
+	ExecutionCustomizer scheduleOn(Scheduler scheduler);
 }

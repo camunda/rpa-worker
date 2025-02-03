@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
 import java.nio.file.Path;
 import java.time.Duration;
@@ -48,6 +49,7 @@ public class RobotService {
 	private final ProcessService processService;
 	private final YamlMapper yamlMapper;
 	private final RobotProperties robotProperties;
+	private final Scheduler robotWorkScheduler;
 
 	private record RobotEnvironment(Path workDir, Path varsFile, Path outputDir, Path artifactsDir) { }
 	private record PreparedScript(String executionKey, RobotScript script) {}
@@ -113,10 +115,12 @@ public class RobotService {
 										.arg("--variablefile").bindArg("varsFile", renv.varsFile())
 										.arg("--report").arg("none")
 										.arg("--logtitle").arg("Task log")
-										.timeout(timeout)
-										.bindArg("script", renv.workDir().resolve("%s.robot".formatted(script.executionKey()))))
+										.bindArg("script", renv.workDir().resolve("%s.robot".formatted(script.executionKey())))
 								
-								.flatMap(xr -> getOutputVariables(renv)
+										.timeout(timeout)
+										.scheduleOn(robotWorkScheduler))
+
+										.flatMap(xr -> getOutputVariables(renv)
 										.map(outputVariables -> toRobotExecutionResult(
 												script.executionKey(), 
 												xr, 

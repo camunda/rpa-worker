@@ -28,18 +28,18 @@ import java.util.function.UnaryOperator;
 @Slf4j
 public class ProcessService {
 	
-	private final Scheduler robotWorkScheduler;
+	private final Scheduler processExecutionScheduler;
 	private final Supplier<DefaultExecutor.Builder<?>> executorBuilderFactory;
 	
 	public record ExecutionResult(int exitCode, String stdout, String stderr) {}
 
 	@Autowired
-	public ProcessService(Scheduler robotWorkScheduler) {
-		this(robotWorkScheduler, DefaultExecutor.Builder::new);
+	public ProcessService(Scheduler processExecutionScheduler) {
+		this(processExecutionScheduler, DefaultExecutor.Builder::new);
 	}
 	
-	ProcessService(Scheduler robotWorkScheduler, Supplier<DefaultExecutor.Builder<?>> executorBuilderFactory) {
-		this.robotWorkScheduler = robotWorkScheduler;
+	ProcessService(Scheduler processExecutionScheduler, Supplier<DefaultExecutor.Builder<?>> executorBuilderFactory) {
+		this.processExecutionScheduler = processExecutionScheduler;
 		this.executorBuilderFactory = executorBuilderFactory;
 	}
 	
@@ -60,6 +60,9 @@ public class ProcessService {
 			
 			@Getter
 			private Duration timeout;
+			
+			@Getter
+			private Scheduler scheduler = processExecutionScheduler;
 			
 			@Override
 			public ExecutionCustomizer arg(String arg) {
@@ -119,6 +122,12 @@ public class ProcessService {
 				this.timeout = newTimeout;
 				return this;
 			}
+
+			@Override
+			public ExecutionCustomizer scheduleOn(Scheduler scheduler) {
+				this.scheduler = scheduler;
+				return this;
+			}
 		};
 		customization.apply(executionCustomizer);
 
@@ -145,7 +154,7 @@ public class ProcessService {
 								streamHandler.getOutString(),
 								streamHandler.getErrString()))
 						.get())
-				.subscribeOn(robotWorkScheduler)
+				.subscribeOn(executionCustomizer.getScheduler())
 				.as(p -> executionCustomizer.getTimeout() != null 
 						? p.timeout(executionCustomizer.getTimeout(),
 								Mono.<ExecutionResult>error(() -> new ProcessTimeoutException(streamHandler.getOutString(), streamHandler.getErrString()))
@@ -155,6 +164,7 @@ public class ProcessService {
 	
 	private interface IntrospectableExecutionCustomizer extends ExecutionCustomizer {
 		Duration getTimeout();
+		Scheduler getScheduler();
 	}
 
 	static class StreamHandler extends PumpStreamHandler {

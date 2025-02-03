@@ -9,6 +9,7 @@ import io.camunda.rpa.worker.python.PythonInterpreter
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.util.YamlMapper
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import spock.lang.Specification
 import spock.lang.Subject
 
@@ -31,7 +32,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	RobotProperties robotProperties = new RobotProperties(1, Duration.ofSeconds(3))
 
 	@Subject
-	RobotService service = new RobotService(io, objectMapper, pythonInterpreter, processService, yamlMapper, robotProperties)
+	RobotService service = new RobotService(io, objectMapper, pythonInterpreter, processService, yamlMapper, robotProperties, Schedulers.single())
 	
 	RobotExecutionListener executionListener = Mock()
 
