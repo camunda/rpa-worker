@@ -13,7 +13,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
-@TestPropertySource(properties = "camunda.rpa.python.path=python_ftest/venv/")
+@TestPropertySource(properties = "camunda.rpa.python.path=python_ftest/")
 class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 	
 	private static Path ftestPythonEnv
@@ -27,7 +27,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 	void setupSpec() {
 		ftestPythonEnv = Paths.get("python_ftest/venv/").toAbsolutePath()
 		assert ftestPythonEnv.toString().contains("python_ftest")
-		alwaysRealIO.deleteDirectoryRecursively(ftestPythonEnv)
+		alwaysRealIO.deleteDirectoryRecursively(ftestPythonEnv.parent)
 	}
 
 	void "A new Python environment is created (from system Python) and the correct dependencies are available"() {
@@ -50,7 +50,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 		}
 	}
 
-	@TestPropertySource(properties = "camunda.rpa.python.path=python_ftest/venv_extra/")
+	@TestPropertySource(properties = "camunda.rpa.python.path=python_ftest_extra/")
 	@ContextConfiguration(initializers = [StaticPropertyProvidingInitializer])
 	static class PythonSetupWithExtraRequirementsFunctionalSpec extends AbstractFunctionalSpec {
 
@@ -63,9 +63,9 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 		PythonInterpreter pythonInterpreter
 
 		void setupSpec() {
-			ftestPythonEnv = Paths.get("python_ftest/venv_extra/").toAbsolutePath()
+			ftestPythonEnv = Paths.get("python_ftest_extra/venv/").toAbsolutePath()
 			assert ftestPythonEnv.toString().contains("python_ftest")
-			alwaysRealIO.deleteDirectoryRecursively(ftestPythonEnv)
+			alwaysRealIO.deleteDirectoryRecursively(ftestPythonEnv.parent)
 		}
 
 		void "New Python environments install user requirements when provided"() {
