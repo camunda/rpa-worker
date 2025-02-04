@@ -15,10 +15,12 @@ import okhttp3.mockwebserver.MockResponse
 import org.spockframework.spring.SpringSpy
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.codec.multipart.FormFieldPart
 import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Mono
 
+import java.nio.file.Files
 import java.nio.file.Path
 
 class FilesFunctionalSpec extends AbstractFunctionalSpec {
@@ -34,6 +36,12 @@ Write Some Files
     Create File    outputs/two.yes    two
     Create File    outputs/three.no    three
     Create File    outputs/four.no    four
+'''
+	
+	private static final String DO_NOTHING_SCRIPT = '''\
+*** Tasks ***
+Do Nothing
+	No Operation
 '''
 	
 	@SpringSpy
@@ -98,5 +106,55 @@ Write Some Files
 		resp.size() == 2
 		resp['one.yes'].metadata().fileName() == "one.yes"
 		resp['two.yes'].metadata().fileName() == "two.yes"
+	}
+	
+	void "Request to retrieve files downloads from Zeebe into workspace"() {
+		given:
+		bypassZeebeAuth()
+		Path theWorkspace
+		workspaceCleanupService.preserveLast(_) >> { Path w ->
+			theWorkspace = w
+			return Mono.empty()
+		}
+		
+		and:
+		zeebeDocuments.setDispatcher { rr ->
+			return rr.path.endsWith("document-id-1")
+					? new MockResponse().tap {
+						setResponseCode(HttpStatus.OK.value())
+						setBody("File 1 contents")
+					}
+					: new MockResponse().tap {
+						setResponseCode(HttpStatus.NOT_FOUND.value())
+					}
+		}
+
+		when:
+		EvaluateScriptResponse response = block post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(new EvaluateScriptRequest(DO_NOTHING_SCRIPT, [:])))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+
+		then:
+		response.result() == ExecutionResults.Result.PASS
+
+		when:
+		Map<String, FilesController.RetrieveFileResult> resp = block post()
+				.uri("/file/retrieve/${theWorkspace.fileName.toString()}")
+				.body(BodyInserters.fromValue([
+						"input/file1.txt": new ZeebeDocumentDescriptor("the-store", "document-id-1", null),
+						"input/file2.txt": new ZeebeDocumentDescriptor("the-store", "document-id-2", null)]))
+				.retrieve()
+				.bodyToMono(new ParameterizedTypeReference<Map<String, FilesController.RetrieveFileResult>>() {})
+
+		then:
+		resp.size() == 2
+		resp['input/file1.txt'].result() == "OK"
+		resp['input/file2.txt'].result() == "NOT_FOUND"
+		
+		and:
+		Files.exists(theWorkspace.resolve("input/file1.txt"))
+		theWorkspace.resolve("input/file1.txt").text == "File 1 contents"
 	}
 }

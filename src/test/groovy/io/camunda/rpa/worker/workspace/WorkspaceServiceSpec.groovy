@@ -180,7 +180,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 		
 		and:
 		result.size() == 2
-		result.contains(new WorkspaceFile("text/plain", 123, workspaceFile1))
-		result.contains(new WorkspaceFile("text/plain", 123, workspaceFile2))
+		result.contains(new WorkspaceFile(theWorkspace, "text/plain", 123, workspaceFile1))
+		result.contains(new WorkspaceFile(theWorkspace, "text/plain", 123, workspaceFile2))
 	}
 }

@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.files.api;
 
+import feign.FeignException;
 import io.camunda.rpa.worker.files.DocumentClient;
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor;
 import io.camunda.rpa.worker.io.IO;
@@ -26,25 +27,27 @@ import java.nio.file.PathMatcher;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static io.camunda.rpa.worker.util.PathUtils.fixSlashes;
+
 @RestController
 @RequestMapping("/file")
 @RequiredArgsConstructor
 class FilesController {
-	
+
 	static final String ZEEBE_TOKEN_AUDIENCE = "zeebe.camunda.io";
-	
+
 	private final WorkspaceService workspaceService;
 	private final IO io;
 	private final ZeebeAuthenticationService zeebeAuthenticationService;
 	private final DocumentClient documentClient;
-	
+
 	@PostMapping("/store/{workspaceId}")
 	public Mono<Map<String, ZeebeDocumentDescriptor>> storeFiles(
-			@PathVariable String workspaceId, 
+			@PathVariable String workspaceId,
 			@RequestBody StoreFilesRequest request) {
 
 		PathMatcher pathMatcher = io.globMatcher(request.files());
-		
+
 		return io.supply(() -> workspaceService.getById(workspaceId)
 						.stream()
 						.flatMap(io::walk)
@@ -63,7 +66,7 @@ class FilesController {
 
 		builder.part("metadata", new ZeebeDocumentDescriptor.Metadata(
 						file.contentType(),
-						file.path().getFileName().toString(),
+						fixSlashes(file.path().getFileName()),
 						null,
 						file.size()))
 				.contentType(MediaType.APPLICATION_JSON);
@@ -72,8 +75,41 @@ class FilesController {
 						DataBufferUtils.read(file.path(), DefaultDataBufferFactory.sharedInstance, 8192),
 						DataBuffer.class)
 				.contentType(MediaType.parseMediaType(file.contentType()))
-				.filename(file.path().getFileName().toString());
+				.filename(fixSlashes(file.workspace().relativize(file.path())));
 
 		return builder.build();
+	}
+
+	record RetrieveFileResult(String result, String details) {}
+	
+	@PostMapping("/retrieve/{workspaceId}")
+	public Mono<Map<String, RetrieveFileResult>> retrieveFiles(
+			@PathVariable String workspaceId,
+			@RequestBody Map<String, ZeebeDocumentDescriptor> request) {
+
+		return io.supply(() -> workspaceService.getById(workspaceId))
+				.flatMap(Mono::justOrEmpty)
+				.flatMap(ws -> Flux.fromIterable(request.entrySet())
+						
+						.flatMap(kv -> ws.resolve(kv.getKey()).normalize().toAbsolutePath().startsWith(ws.toAbsolutePath())
+								? Mono.just(kv)
+								: Mono.error(IllegalArgumentException::new))
+						.doOnNext(kv -> io.createDirectories(ws.resolve(kv.getKey()).getParent()))
+
+						.flatMap(kv -> zeebeAuthenticationService.getAuthToken(ZEEBE_TOKEN_AUDIENCE)
+								.flatMap(token -> io.write(
+										documentClient.getDocument(token, kv.getValue().documentId(), null),
+										ws.resolve(kv.getKey())))
+
+								.then(Mono.just(Map.entry(kv.getKey(),
+										new RetrieveFileResult("OK", null))))
+								.onErrorResume(FeignException.NotFound.class, _ -> Mono.just(Map.entry(kv.getKey(),
+										new RetrieveFileResult("NOT_FOUND", null))))
+								.onErrorResume(IllegalArgumentException.class, _ -> Mono.just(Map.entry(kv.getKey(),
+										new RetrieveFileResult("BAD_REQUEST", null))))
+								.onErrorResume(thrown -> Mono.just(Map.entry(kv.getKey(),
+										new RetrieveFileResult("ERROR", "%s: %s".formatted(thrown.getClass().getSimpleName(), thrown.getMessage()))))))
+
+						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 	}
 }

@@ -54,8 +54,8 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		Path workspaceFile2 = workspace.resolve("output/file2.xlsx")
 		workspaceService.getWorkspaceFiles("workspace123") >> {
 			Stream.of(
-					new WorkspaceFile("text/plain", 123, workspaceFile1),
-					new WorkspaceFile("application/octet-stream", 456, workspaceFile2))
+					new WorkspaceFile(workspace, "text/plain", 123, workspaceFile1),
+					new WorkspaceFile(workspace, "application/octet-stream", 456, workspaceFile2))
 		}
 
 		when:

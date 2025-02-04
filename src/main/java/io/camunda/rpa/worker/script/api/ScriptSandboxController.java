@@ -25,6 +25,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static io.camunda.rpa.worker.util.PathUtils.fixSlashes;
+
 @RestController
 @RequestMapping("/script/evaluate")
 @RequiredArgsConstructor
@@ -43,10 +45,10 @@ class ScriptSandboxController {
 				.flatMap(xr -> io.supply(() -> workspaceService.getWorkspaceFiles(xr.workspace().getFileName().toString()))
 						.map(wsFiles -> {
 							Map<String, URI> workspace = wsFiles.collect(Collectors.toMap(
-									p -> "/" + xr.workspace().relativize(p.path()).toString().replaceAll("\\\\", "/"),
+									p -> "/" + fixSlashes(xr.workspace().relativize(p.path())),
 									p -> attachIfNecessary(p, URI.create("/")
 											.resolve("/workspace/%s/".formatted(xr.workspace().getFileName().toString()))
-											.resolve(xr.workspace().relativize(p.path()).toString().replaceAll("\\\\", "/")))));
+											.resolve(fixSlashes(xr.workspace().relativize(p.path()))))));
 
 							ExecutionResults.ExecutionResult r = xr.results().entrySet().iterator().next().getValue();
 							return new EvaluateScriptResponse(r.result(), r.output(), xr.outputVariables(), workspace);

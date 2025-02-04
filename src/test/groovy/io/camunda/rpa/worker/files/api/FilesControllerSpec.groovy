@@ -1,5 +1,7 @@
 package io.camunda.rpa.worker.files.api
 
+import feign.FeignException
+import feign.Request
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.files.DocumentClient
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
@@ -7,25 +9,36 @@ import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService
+import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpEntity
 import org.springframework.util.MultiValueMap
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
 
 import java.nio.file.Path
 import java.nio.file.PathMatcher
+import java.nio.file.Paths
 import java.util.function.Supplier
 import java.util.stream.Stream
 
 class FilesControllerSpec extends Specification implements PublisherUtils {
 
-	WorkspaceService workspaceService = Stub()
+	static final String authToken = "the-auth-token"
+	
+	Path workspace = Paths.get("/path/to/workspaces/workspace123456/")
+	WorkspaceService workspaceService = Stub() {
+		getById("workspace123456") >> Optional.of(workspace)
+		getById(_) >> Optional.empty()
+	}
 	IO io = Mock() {
 		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
 	}
 	
-	ZeebeAuthenticationService zeebeAuthService = Stub()
+	ZeebeAuthenticationService zeebeAuthService = Stub() {
+		getAuthToken(FilesController.ZEEBE_TOKEN_AUDIENCE) >> Mono.just(authToken)
+	}
 	DocumentClient documentClient = Stub()
 	
 	@Subject
@@ -33,15 +46,9 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	
 	void "Uploads files from workspace to Zeebe"() {
 		given:
-		Path workspace = Stub(Path)
-		Path matchingWorkspaceFile1 = Stub(Path) {
-			toString() >> "outputs/one.pdf"
-		}
-		Path matchingWorkspaceFile2 = Stub(Path) {
-			toString() >> "outputs/two.pdf"
-		}
-		Path nonMatchingWorkspaceFile = Stub(Path)
-		workspaceService.getById("workspace123456") >> Optional.of(workspace)
+		Path matchingWorkspaceFile1 = workspace.resolve("outputs/one.pdf")
+		Path matchingWorkspaceFile2 = workspace.resolve("outputs/two.pdf")
+		Path nonMatchingWorkspaceFile = workspace.resolve("outputs/ignored.tmp")
 		
 		and:
 		PathMatcher pathMatcher = Stub()
@@ -56,8 +63,7 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
-		zeebeAuthService.getAuthToken(FilesController.ZEEBE_TOKEN_AUDIENCE) >> Mono.just("the-auth-token")
-		documentClient.uploadDocument("the-auth-token", _, _) >> { _, MultiValueMap<String, HttpEntity<?>> reqBody, Map params -> 
+		documentClient.uploadDocument(authToken, _, _) >> { _, MultiValueMap<String, HttpEntity<?>> reqBody, Map params -> 
 			Mono.just(new ZeebeDocumentDescriptor(
 					"store-id", 
 					"document-id", 
@@ -69,10 +75,10 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
-		workspaceService.getWorkspaceFile("workspace123456", "outputs/one.pdf") >> Optional.of(
-				new WorkspaceFile("application/pdf", 123, matchingWorkspaceFile1))
-		workspaceService.getWorkspaceFile("workspace123456", "outputs/two.pdf") >> Optional.of(
-				new WorkspaceFile("application/pdf", 123, matchingWorkspaceFile2))
+		workspaceService.getWorkspaceFile("workspace123456", matchingWorkspaceFile1.toString()) >> Optional.of(
+				new WorkspaceFile(workspace, "application/pdf", 123, matchingWorkspaceFile1))
+		workspaceService.getWorkspaceFile("workspace123456", matchingWorkspaceFile2.toString()) >> Optional.of(
+				new WorkspaceFile(workspace, "application/pdf", 123, matchingWorkspaceFile2))
 
 		and:
 		pathMatcher.matches(matchingWorkspaceFile1) >> true
@@ -87,5 +93,54 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		map.size() == 2
 		map['outputs/one.pdf'].metadata().fileName() == "outputs/one.pdf"
 		map['outputs/two.pdf'].metadata().fileName() == "outputs/two.pdf"
+	}
+	
+	void "Downloads files from Zeebe into workspace"() {
+		given:
+		Path file1Destination = workspace.resolve("input/file1.txt")
+		documentClient.getDocument(authToken, "document-id-1", _) >> Flux.error(
+				new FeignException.NotFound("", new Request(Request.HttpMethod.GET, "", [:], null, null), [] as byte[], [:]))
+		
+		Path file2Destination = workspace.resolve("input/file2.txt")
+		documentClient.getDocument(authToken, "document-id-2", _) >> Flux.empty()
+		
+		Path file3Destination = workspace.resolve("input/file3.txt")
+		documentClient.getDocument(authToken, "document-id-3", _) >> Flux.empty()
+
+
+		when:
+		Map<String, FilesController.RetrieveFileResult> r = block controller.retrieveFiles("workspace123456", [
+				"input/file1.txt": new ZeebeDocumentDescriptor(
+						"store-id",
+						"document-id-1",
+						new ZeebeDocumentDescriptor.Metadata("text/plain", "file1.txt", null, 123)),
+
+				"input/file2.txt": new ZeebeDocumentDescriptor(
+						"store-id",
+						"document-id-2",
+						new ZeebeDocumentDescriptor.Metadata("text/plain", "file2.txt", null, 123)),
+
+				"input/file3.txt": new ZeebeDocumentDescriptor(
+						"store-id",
+						"document-id-3",
+						new ZeebeDocumentDescriptor.Metadata("text/plain", "file3.txt", null, 123))
+		])
+		
+		then:
+		1 * io.write(_ as Flux<DataBuffer>, file1Destination) >> { Flux<DataBuffer> data, Path dest, _ -> 
+			return data.then()
+		}
+		1 * io.write(_ as Flux<DataBuffer>, file2Destination) >> { Flux<DataBuffer> data, Path dest, _ ->
+			return Mono.error(new IOException())
+		}
+		1 * io.write(_ as Flux<DataBuffer>, file3Destination) >> { Flux<DataBuffer> data, Path dest, _ ->
+			return data.then()
+		}
+
+		and:
+		r.size() == 3
+		r['input/file1.txt'].result() == "NOT_FOUND"
+		r['input/file2.txt'].result() == "ERROR"
+		r['input/file3.txt'].result() == "OK"
 	}
 }

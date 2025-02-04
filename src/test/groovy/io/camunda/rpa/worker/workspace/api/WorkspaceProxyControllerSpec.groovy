@@ -47,7 +47,7 @@ class WorkspaceProxyControllerSpec extends Specification implements PublisherUti
 
 		then:
 		1 * workspaceService.getWorkspaceFile("abc123", "path/to/file.txt") >> Optional.of(
-				new WorkspaceFile("text/plain", 123, workspaceFilePath))
+				new WorkspaceFile(null, "text/plain", 123, workspaceFilePath))
 		1 * dataBuffersFactory.apply(workspaceFilePath) >> someDataBuffers
 		
 		and:
@@ -72,7 +72,7 @@ class WorkspaceProxyControllerSpec extends Specification implements PublisherUti
 
 		then:
 		1 * workspaceService.getWorkspaceFile("abc123", "path/to/file.txt") >> Optional.of(
-				new WorkspaceFile("text/plain", 123, workspaceFilePath))
+				new WorkspaceFile(null, "text/plain", 123, workspaceFilePath))
 		1 * dataBuffersFactory.apply(workspaceFilePath) >> someDataBuffers
 
 		and:

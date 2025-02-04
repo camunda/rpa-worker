@@ -42,7 +42,7 @@ class DocumentClientConfiguration {
 				public void serialize(ZeebeDocumentDescriptor value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
 					Map<String, Object> map = plainObjectMapper.convertValue(value, new TypeReference<>() {});
 					gen.writeObject(Stream.concat(
-									map.entrySet().stream(),
+									map.entrySet().stream().filter(kv -> kv.getValue() != null),
 									Stream.of(Map.entry("camunda.document.type", "camunda")))
 							.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 				}
