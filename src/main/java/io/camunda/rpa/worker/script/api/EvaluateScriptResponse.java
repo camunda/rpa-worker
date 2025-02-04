@@ -5,7 +5,7 @@ import io.camunda.rpa.worker.robot.ExecutionResults;
 import java.net.URI;
 import java.util.Map;
 
-record EvaluateScriptResponse(
+public record EvaluateScriptResponse(
 		ExecutionResults.Result result,
 		String log,
 		Map<String, Object> variables, 

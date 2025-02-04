@@ -6,4 +6,4 @@ import lombok.Builder;
 import java.util.Map;
 
 @Builder
-record EvaluateScriptRequest(@NotBlank String script, Map<String, Object> variables) { }
+public record EvaluateScriptRequest(@NotBlank String script, Map<String, Object> variables) { }
