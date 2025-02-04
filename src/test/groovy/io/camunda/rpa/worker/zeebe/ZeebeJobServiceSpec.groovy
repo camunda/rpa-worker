@@ -50,7 +50,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		newWorker() >> builder1
 	}
 	
-	ZeebeProperties zeebeProperties = new ZeebeProperties(TASK_PREFIX, ["tag-one", "tag-two"].toSet())
+	ZeebeProperties zeebeProperties = new ZeebeProperties(TASK_PREFIX, ["tag-one", "tag-two"].toSet(), "http://auth/".toURI())
 	RobotService robotService = Mock()
 	SecretsService secretsService = Stub() {
 		getSecrets() >> Mono.just([secretVar: 'secret-value'])
