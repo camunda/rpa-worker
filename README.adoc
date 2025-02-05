@@ -48,6 +48,15 @@ all the necessary configuration for connecting to Camunda, and can be used as-is
 ==== Python
 
 When the RPA Worker sets up its Python environment it will install a default set of dependencies. 
+
+NOTE: As the RPA Runtime is currently under very heavy development, the RPA Worker only installs an 
+https://github.com/camunda/rpa-worker/blob/42df1047b4d5f1a7aebb730b514c9cd78f83a19e/src/main/resources/python/requirements.txt[extremely minimal] set of dependencies: 
+the core `robotframework` library,
+an early version of the Camunda Robot integration library,
+and the `PyYAML` library. 
+This list will be extended as the final default libraries decision is made, and the RPA Framework libraries are brought over, 
+however any additional requirements can still be installed using the *Extra Requirements* configuration described below. 
+
 Additional dependencies can be installed by providing a supplementary `requirements.txt` file with the 
 `camunda.rpa.python.extra-requirements` property.
 
