@@ -1,4 +1,4 @@
-package io.camunda.rpa.worker.robot
+package io.camunda.rpa.worker.workspace
 
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.io.IO
@@ -7,12 +7,12 @@ import spock.lang.Subject
 
 import java.nio.file.Path
 
-class WorkspaceServiceSpec extends Specification implements PublisherUtils {
+class WorkspaceCleanupServiceSpec extends Specification implements PublisherUtils {
 	
 	IO io = Mock()
 	
 	@Subject
-	WorkspaceService service = new WorkspaceService(io)
+	WorkspaceCleanupService service = new WorkspaceCleanupService(io)
 
 	void "Immediately deletes directory"() {
 		given:

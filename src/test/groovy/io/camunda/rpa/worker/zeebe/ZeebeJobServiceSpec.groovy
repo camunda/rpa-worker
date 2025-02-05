@@ -8,10 +8,10 @@ import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.robot.ExecutionResults.Result
 import io.camunda.rpa.worker.robot.RobotExecutionListener
 import io.camunda.rpa.worker.robot.RobotService
-import io.camunda.rpa.worker.robot.WorkspaceService
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.script.ScriptRepository
 import io.camunda.rpa.worker.secrets.SecretsService
+import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
@@ -61,7 +61,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		getById("this_script_latest") >> Mono.just(script)
 	}
 	ObjectMapper objectMapper = new ObjectMapper()
-	WorkspaceService workspaceService = Mock()
+	WorkspaceCleanupService workspaceService = Mock()
 
 	@Subject
 	ZeebeJobService service = new ZeebeJobService(
@@ -104,7 +104,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 			Mono.just(new ExecutionResults(
 					[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", expectedOutputVars)],
 					Result.PASS,
-					expectedOutputVars))
+					expectedOutputVars, 
+					Stub(Path)))
 		}
 
 		and:
@@ -129,7 +130,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		then:
 		1 * robotService.execute(script, [], [], _, _, null, _) >> Mono.just(new ExecutionResults([main: new ExecutionResults.ExecutionResult("main", result, "", expectedOutputVars)], 
 				result, 
-				expectedOutputVars))
+				expectedOutputVars, 
+				Stub(Path)))
 
 		and:
 		1 * jobClient.newThrowErrorCommand(job) >> Mock(ThrowErrorCommandStep1) {
@@ -249,7 +251,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * robotService.execute(script, [expectedBefore], [expectedAfter], _, _, null, _) >> Mono.just(new ExecutionResults(
-				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:])], null, [:]))
+				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:])], null, [:], Stub(Path)))
 	}
 	
 	void "Sets timeout when present, reports correct error when exceeded"() {
