@@ -110,7 +110,8 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 											Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
 													.map(Duration::parse)
 													.orElse(null),
-											workspaceCleanupService::deleteWorkspace))
+											workspaceCleanupService::deleteWorkspace,
+											getZeebeEnvironment(job)))
 							
 							.doOnSuccess(xr -> (switch (xr.result()) {
 								case PASS -> client
@@ -190,6 +191,13 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 								"SECRET_%s".formatted(kv.getKey().toUpperCase()),
 								kv.getValue()))
 						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+	}
+
+	private Map<String, String> getZeebeEnvironment(ActivatedJob job) {
+		return Map.of(
+				"RPA_ZEEBE_JOB_KEY", String.valueOf(job.getKey()),
+				"RPA_ZEEBE_BPMN_PROCESS_ID", job.getBpmnProcessId(),
+				"RPA_ZEEBE_PROCESS_INSTANCE_KEY", String.valueOf(job.getProcessInstanceKey()));
 	}
 
 }

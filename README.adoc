@@ -67,6 +67,38 @@ NOTE: Dependencies are only installed when initially setting up the Python envir
 changes then the existing Python environment can be deleted, and it will be recreated with the new dependencies
 the next time the RPA Worker starts.
 
+== Robot Job Execution
+
+The RPA Worker makes the following environment variables available to the Robot execution:
+
+
+|===
+|Variable |Description
+
+|`RPA_WORKSPACE_ID`
+|The workspace ID of the current job
+
+|`RPA_WORKSPACE`
+|The full path to the workspace of the current job
+
+|`RPA_SCRIPT`
+|The name of the currently executing script
+
+|`RPA_EXECUTION_KEY`
+|The execution key of the currently executing script
+
+|`RPA_ZEEBE_JOB_KEY`
+|The Zeebe Job Key which triggered the Robot execution
+
+|`RPA_ZEEBE_BPMN_PROCESS_ID`
+|The current BPMN process ID
+
+|`RPA_ZEEBE_PROCESS_INSTANCE_KEY`
+|The current process instance key
+
+|===
+
+
 == Configuration Reference
 
 [stripes=even]

@@ -48,7 +48,15 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		Path workDir = Paths.get("/path/to/workDir/")
 
 		when:
-		ExecutionResults r = block service.execute(script, [rpaVar: 'rpa-var-value'], [secretVar: 'secret-var-value'], null, executionListener)
+		ExecutionResults r = block service.execute(
+				script, 
+				[],
+				[],
+				[rpaVar: 'rpa-var-value'], 
+				[secretVar: 'secret-var-value'], 
+				null, 
+				executionListener,
+				[extraEnvVar: 'extra-env-var-value'])
 
 		then:
 		1 * workspaceService.createWorkspace() >> workDir
@@ -66,8 +74,15 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		and:
 		1 * executionCustomizer.workDir(workDir) >> executionCustomizer
 		1 * executionCustomizer.allowExitCodes(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES) >> executionCustomizer
+		
 		1 * executionCustomizer.env("ROBOT_ARTIFACTS", workDir.resolve("robot_artifacts").toAbsolutePath().toString()) >> executionCustomizer
+		1 * executionCustomizer.env([extraEnvVar: 'extra-env-var-value']) >> executionCustomizer
+		1 * executionCustomizer.env("RPA_WORKSPACE_ID", workDir.fileName.toString()) >> executionCustomizer
+		1 * executionCustomizer.env("RPA_WORKSPACE", workDir.toAbsolutePath().toString()) >> executionCustomizer
+		1 * executionCustomizer.env("RPA_SCRIPT", "some-script") >> executionCustomizer
+		1 * executionCustomizer.env("RPA_EXECUTION_KEY", "main") >> executionCustomizer
 		1 * executionCustomizer.env([secretVar: 'secret-var-value']) >> executionCustomizer
+
 		1 * executionCustomizer.arg("-m") >> executionCustomizer
 		1 * executionCustomizer.arg("robot") >> executionCustomizer
 		1 * executionCustomizer.arg("--rpa") >> executionCustomizer
@@ -221,7 +236,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null)
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, java.util.Collections.emptyMap())
 		
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
@@ -279,7 +294,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null)
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, java.util.Collections.emptyMap())
 
 		then:
 		1 * processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
@@ -312,7 +327,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		io.notExists(workDir.resolve("outputs.yml")) >> false
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null)
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, java.util.Collections.emptyMap())
 
 		then:
 		3 * processService.execute(_, _) >> { _, __ ->
