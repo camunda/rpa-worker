@@ -1,0 +1,288 @@
+openapi: 3.1.0
+info:
+  title: RPA Worker
+  version: 1.0.0
+  
+tags:
+  - name: Local Script Library
+    description: >- 
+      Management of the Local Script Library. 
+      Temporary functionality until Zeebe manages the Robot scripts
+  - name: Sandbox
+    description: >-
+      Direct evaluation of Robot scripts.
+      Used by the Modeler for local script development and testing
+  - name: File Management
+    description: >-
+      Upload and download files to/from Zeebe.
+      Used by the Camunda Robot Python Library to fulfil document management keywords
+
+paths:
+  /script/deploy:
+    post:
+      tags:
+        - Local Script Library
+      summary: Deploy a script to this RPA Worker's local library
+      requestBody: 
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeployScriptRequest'
+      responses: 
+        204:
+          description: Script was persisted successfully
+        422:
+          description: Request body was invalid
+          content: 
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/ValidationFailedResponse'
+    
+  /script/evaluate:
+    post: 
+      tags:
+        - Sandbox
+      summary: Immediately evaluate a raw Robot script
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EvaluateScriptRequest'
+      responses:
+        200:
+          description: Script was executed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EvaluateScriptResponse'
+        422:
+          description: Request body was invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationFailedResponse'
+        500:
+          description: >-
+            A server-side error occurred while executing the Robot script.
+            This signifies a low-level process execution failure, in other words the Worker failed to either configure 
+            or execute the Robot process to run the script. It does not mean that Robot reported an error, in which 
+            case the response would be 200, with `result` set to `ERROR`. 
+                
+  /file/store/{jobKey}:
+    post: 
+      tags:
+        - File Management
+      summary: Store files from a Robot workspace in Zeebe
+      parameters:
+        - in: path
+          name: jobKey
+          required: true
+          schema: 
+            type: string
+          description: The Job Key for the Robot execution
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreFilesRequest'
+            example: 
+              files: 'outputs/**/*.pdf'
+      responses:
+        200:
+          description: Files were successfully uploaded to Zeebe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoreFilesResponse'
+              example: 
+                'output/2023-07/invoice-july-2024.pdf': 
+                  'camunda.document.type': 'camunda'
+                  storeId: 'gcp'
+                  documentId: 'output__2023-07__invoice-july-2024'
+                  metadata:
+                    fileName: 'invoice-july-2024.pdf'
+                    customProperties: {}
+                'output/2024-08/invoice-aug-2024.pdf':
+                  'camunda.document.type': 'camunda'
+                  storeId: 'gcp'
+                  documentId: 'output__2023-08__invoice-aug-2024'
+                  metadata:
+                    fileName: 'invoice-aug-2024.pdf'
+                    customProperties: { }
+        404:
+          description: The Job Key, or its associated workspace, was not found
+        422:
+          description: Request body was invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationFailedResponse'
+                
+  /file/retrieve/{jobKey}:
+    post:
+      tags:
+        - File Management
+      summary: Retrieve files from Zeebe and make them available in the Robot workspace
+      parameters:
+        - in: path
+          name: executionId
+          required: true
+          schema:
+            type: string
+          description: The Job Key for the Robot execution
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/RetrieveFileRequest'
+            example: 
+              'input/data.csv':
+                'camunda.document.type': 'camunda'
+                storeId: 'gcp'
+                documentId: 'the-input-data'
+              'input/optional-data.csv':
+                'camunda.document.type': 'camunda'
+                storeId: 'gcp'
+                documentId: 'more-input-data'
+      responses:
+        200:
+          description: The request was processed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: 
+                  $ref: '#/components/schemas/RetrieveFileResponse'
+              example: 
+                'input/data.csv':
+                  result: OK
+                'input/optional-data.csv':
+                  result: NOT_FOUND
+        404:
+          description: The Job Key, or its associated workspace, was not found
+        422:
+          description: Request body was invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationFailedResponse'
+
+components:
+  schemas: 
+    DeployScriptRequest:
+      type: object
+      properties: 
+        id:
+          type: string
+          description: The unique identifier of the script
+          required: true
+        script:
+          type: string
+          description: The body of the raw Robot script to be executed
+          required: true
+    
+    ValidationFailedResponse:
+      type: object
+      properties: 
+        fieldErrors:
+          type: object
+          additionalProperties: 
+            $ref: '#/components/schemas/FieldError'
+            
+    FieldError:
+      type: object
+      properties: 
+        code: 
+          type: string
+        message: 
+          type: string
+        rejectedValue: 
+          type: any
+      
+    EvaluateScriptRequest:
+      type: object
+      properties: 
+        script:
+          type: string
+          description: The contents of the raw Robot script to be executed
+        variables:
+          type: object
+          description: Input variables for the execution
+          additionalProperties: {}
+    
+    EvaluateScriptResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          enum: [PASS, FAIL, ERROR]
+          description: >- 
+            The result of the Robot execution. `PASS` signifies that the Robot execution was successful, 
+            and there were no task failures or errors. `FAIL` signifies that there were task failures, and `ERROR`
+            signifies that although the *process* execution was successful, the *Robot* execution was not (ie Robot
+            reported errors).
+        log:
+          type: string
+          description: The raw output from the script execution
+        outputXml:
+          type: string
+          description: The xUnit XML report the execution
+        variables:
+          type: object
+          additionalProperties: {}
+          description: The output variables returned by the execution
+        workspace:
+          type: object
+          description: A map of files in the workspace to URLs providing proxies to their contents
+          additionalProperties: 
+            type: string
+    
+    StoreFilesRequest: 
+      type: object
+      properties: 
+        files:
+          type: string
+          required: true
+          description: A glob pattern (relative to the Robot execution workspace) of files to store
+          
+    StoreFilesResponse: 
+      type: object
+      description: A map of stored workspace file to ZeebeDocumentDescriptor
+      additionalProperties: 
+        type: object
+        $ref: '#/components/schemas/ZeebeDocumentDescriptor'
+        
+    RetrieveFileRequest: 
+      type: object
+      description: A map of workspace destination path to ZeebeDocumentDescriptor
+      additionalProperties: 
+        $ref: '#/components/schemas/ZeebeDocumentDescriptor'
+    
+    RetrieveFileResponse:
+      type: object
+      properties:
+        result:
+          type: string
+          enum:
+            - OK
+            - NOT_FOUND
+    
+    ZeebeDocumentDescriptor: 
+      type: object
+      properties:
+        'camunda.document.type':
+          type: string
+          enum: ['camunda']
+        storeId:
+          type: string
+        documentId:
+          type: string
+        metadata:
+          type: object
+          properties: 
+            fileName:
+              type: string
+            customProperties:
+              type: object
+              additionalProperties: {}
