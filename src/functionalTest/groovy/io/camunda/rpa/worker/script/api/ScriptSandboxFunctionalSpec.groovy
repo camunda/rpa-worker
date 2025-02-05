@@ -171,7 +171,7 @@ Assert input variable
 
 		when:
 		String file1 = block get()
-				.uri(r.workspace().entrySet().find { kv -> kv.key.endsWith("/file1.txt") }.value)
+				.uri(r.workspace().entrySet().find { kv -> kv.key.endsWith("/file1.txt") }.value.toString())
 				.exchangeToMono { cr -> cr.bodyToMono(String) }
 		
 		then:
@@ -179,7 +179,7 @@ Assert input variable
 
 		when:
 		ClientResponse response = block get()
-				.uri(r.workspace().entrySet().find { kv -> kv.key.endsWith("/file2.xlsx") }.value)
+				.uri(r.workspace().entrySet().find { kv -> kv.key.endsWith("/file2.xlsx") }.value.toString())
 				.exchangeToMono(cr -> Mono.just(cr))
 
 		then:
@@ -220,7 +220,7 @@ Assert input variable
 				.bodyToMono(EvaluateScriptResponse)
 
 		and:
-		ClientResponse response2 = block get().uri(response.workspace().entrySet().first().value.resolve("fake-file.txt"))
+		ClientResponse response2 = block get().uri(response.workspace().entrySet().first().value.resolve("fake-file.txt").toString())
 				.exchangeToMono { cr -> Mono.just(cr) }
 		
 		then:

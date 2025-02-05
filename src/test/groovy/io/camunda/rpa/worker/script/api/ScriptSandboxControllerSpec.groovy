@@ -76,8 +76,8 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		response.result() == ExecutionResults.Result.PASS
 		response.variables() == outputVariables
 		response.workspace() == [
-		        "/output/file1.txt": "http://localhost:36227/workspace/workspace123/output/file1.txt".toURI(),
-		        "/output/file2.xlsx": "http://localhost:36227/workspace/workspace123/output/file2.xlsx?attachment".toURI(),
+		        "/output/file1.txt": "/workspace/workspace123/output/file1.txt".toURI(),
+		        "/output/file2.xlsx": "/workspace/workspace123/output/file2.xlsx?attachment".toURI(),
 		]
 		
 		and:
