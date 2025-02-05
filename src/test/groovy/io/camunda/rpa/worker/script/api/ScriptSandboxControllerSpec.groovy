@@ -10,8 +10,6 @@ import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
 import org.springframework.core.env.Environment
-import org.springframework.http.server.reactive.ServerHttpRequest
-import org.springframework.web.server.ServerWebExchange
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -43,23 +41,18 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		Map<String, Object> inputVariables = [foo: 'bar']
 		Map<String, Object> outputVariables = [baz: 'bat']
 		Path workspace = Paths.get("/path/to/workspace123/")
-		ServerWebExchange exchange = Stub() {
-			getRequest() >> Stub(ServerHttpRequest) {
-				getSslInfo() >> null
-			}
-		}
 
 		and:
 		Path workspaceFile1 = workspace.resolve("output/file1.txt")
 		Path workspaceFile2 = workspace.resolve("output/file2.xlsx")
 		workspaceService.getWorkspaceFiles("workspace123") >> {
 			Stream.of(
-					new WorkspaceFile("text/plain", 123, workspaceFile1),
-					new WorkspaceFile("application/octet-stream", 456, workspaceFile2))
+					new WorkspaceFile(workspace, "text/plain", 123, workspaceFile1),
+					new WorkspaceFile(workspace, "application/octet-stream", 456, workspaceFile2))
 		}
 
 		when:
-		EvaluateScriptResponse response = block controller.evaluateScript(new EvaluateScriptRequest(scriptBody, inputVariables), exchange)
+		EvaluateScriptResponse response = block controller.evaluateScript(new EvaluateScriptRequest(scriptBody, inputVariables))
 		
 		then:
 		1 * robotService.execute(new RobotScript("_eval_", scriptBody), inputVariables, [:], null, _) >> { _, __, ___, ____, RobotExecutionListener executionListener ->

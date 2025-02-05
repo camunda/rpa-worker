@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
@@ -24,6 +23,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static io.camunda.rpa.worker.util.PathUtils.fixSlashes;
 
 @RestController
 @RequestMapping("/script/evaluate")
@@ -37,16 +38,16 @@ class ScriptSandboxController {
 	private final Environment environment;
 
 	@PostMapping
-	public Mono<EvaluateScriptResponse> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request, ServerWebExchange exchange) {
+	public Mono<EvaluateScriptResponse> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request) {
 		RobotScript robotScript = new RobotScript("_eval_", request.script());
 		return robotService.execute(robotScript, request.variables(), Collections.emptyMap(), null, workspaceCleanupService::preserveLast)
 				.flatMap(xr -> io.supply(() -> workspaceService.getWorkspaceFiles(xr.workspace().getFileName().toString()))
 						.map(wsFiles -> {
 							Map<String, URI> workspace = wsFiles.collect(Collectors.toMap(
-									p -> "/" + xr.workspace().relativize(p.path()).toString().replaceAll("\\\\", "/"),
+									p -> "/" + fixSlashes(xr.workspace().relativize(p.path())),
 									p -> attachIfNecessary(p, URI.create("/")
 											.resolve("/workspace/%s/".formatted(xr.workspace().getFileName().toString()))
-											.resolve(xr.workspace().relativize(p.path()).toString().replaceAll("\\\\", "/")))));
+											.resolve(fixSlashes(xr.workspace().relativize(p.path()))))));
 
 							ExecutionResults.ExecutionResult r = xr.results().entrySet().iterator().next().getValue();
 							return new EvaluateScriptResponse(r.result(), r.output(), xr.outputVariables(), workspace);

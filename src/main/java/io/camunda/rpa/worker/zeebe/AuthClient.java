@@ -1,4 +1,4 @@
-package io.camunda.rpa.worker.secrets;
+package io.camunda.rpa.worker.zeebe;
 
 import feign.RequestLine;
 import reactor.core.publisher.Mono;

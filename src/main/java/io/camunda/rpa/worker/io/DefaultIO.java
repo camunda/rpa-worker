@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
@@ -286,5 +287,10 @@ class DefaultIO implements IO {
 				return FileVisitResult.CONTINUE;
 			}
 		});
+	}
+
+	@Override
+	public PathMatcher globMatcher(String glob) {
+		return FileSystems.getDefault().getPathMatcher("glob:%s".formatted(glob));
 	}
 }

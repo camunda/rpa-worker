@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.Memoized
@@ -35,7 +36,8 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 
 	static final int ZEEBE_MOCK_AUTH_PORT = 18180
 	static final int ZEEBE_MOCK_SECRETS_PORT = 18181
-	
+	static final int ZEEBE_MOCK_DOCUMENTS_PORT = 18182
+
 	static final String ZEEBE_CLIENT_ID = "the-client-id"
 	static final String ZEEBE_CLIENT_SECRET = "the-client-secret"
 
@@ -47,6 +49,9 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	
 	@Autowired
 	private WebClient.Builder webClientBuilder
+	
+	@Autowired
+	ObjectMapper objectMapper
 
 	@LocalServerPort
 	int serverPort
@@ -66,15 +71,17 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	MockWebServer zeebeSecrets = new MockWebServer().tap {
 		start(ZEEBE_MOCK_SECRETS_PORT)
 	}
+	MockWebServer zeebeDocuments = new MockWebServer().tap {
+		start(ZEEBE_MOCK_DOCUMENTS_PORT)
+	}
 	
-	void bypassSecretsAuth() {
+	void bypassZeebeAuth() {
 		zeebeAuth.setDispatcher(new Dispatcher() {
 			@Override
 			MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
 				with(new JsonSlurper().parseText(recordedRequest.getBody().readUtf8()) as Map) {
 					assert client_id == AbstractFunctionalSpec.ZEEBE_CLIENT_ID
 					assert client_secret == AbstractFunctionalSpec.ZEEBE_CLIENT_SECRET
-					assert audience == "secrets.camunda.io"
 					assert grant_type == "client_credentials"
 				}
 				return new MockResponse().tap {
@@ -90,7 +97,7 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	}
 	
 	void withNoSecrets() {
-		bypassSecretsAuth()
+		bypassZeebeAuth()
 
 		zeebeSecrets.setDispatcher(new Dispatcher() {
 			@Override
@@ -108,7 +115,7 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	}
 
 	void withSimpleSecrets(Map<String, String> secrets) {
-		bypassSecretsAuth()
+		bypassZeebeAuth()
 
 		zeebeSecrets.setDispatcher(new Dispatcher() {
 			@Override
@@ -128,6 +135,7 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	void cleanup() {
 		zeebeAuth.close()
 		zeebeSecrets.close()
+		zeebeDocuments.close()
 	}
 
 	protected static <T> Function<ClientResponse, Mono<ResponseEntity<T>>> toResponseEntity(Class<T> klass) {

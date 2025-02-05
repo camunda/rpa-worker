@@ -1,4 +1,4 @@
-package io.camunda.rpa.worker.secrets;
+package io.camunda.rpa.worker.zeebe;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

@@ -100,7 +100,8 @@ The tasks
 		        "companion_3": COMPANION_ROBOT_SCRIPT_TEMPLATE("post0"),
 		        "companion_4": COMPANION_ROBOT_SCRIPT_TEMPLATE("post1"),
 				"slow_15s": SLOW_ROBOT_SCRIPT_TEMPLATE(15),
-		        "slow_8s": SLOW_ROBOT_SCRIPT_TEMPLATE(8)
+		        "slow_8s": SLOW_ROBOT_SCRIPT_TEMPLATE(8),
+				"env_check": ENV_CHECK_ROBOT_SCRIPT,
 		]
 	}
 
@@ -305,4 +306,34 @@ The tasks
 		Files.notExists(workspaces.remove())
 	}
 
+	static final String ENV_CHECK_ROBOT_SCRIPT = '''\
+*** Tasks ***
+Assert input variable
+    Should Not Be Empty    %{RPA_WORKSPACE_ID}
+    Should Not Be Empty    %{RPA_WORKSPACE}
+    Should Not Be Empty    %{RPA_SCRIPT}
+    Should Not Be Empty    %{RPA_EXECUTION_KEY}
+    Should Not Be Empty    %{RPA_ZEEBE_JOB_KEY}
+    Should Not Be Empty    %{RPA_ZEEBE_BPMN_PROCESS_ID}
+    Should Not Be Empty    %{RPA_ZEEBE_PROCESS_INSTANCE_KEY}
+'''
+
+	void "All built-in environment variables are available to job"() {
+		given:
+		service.doInit()
+		withNoSecrets()
+
+		when:
+		theJobHandler.handle(jobClient, anRpaJob([:], "env_check"))
+		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
+
+		then:
+		1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			variables(_) >> it
+			1 * send() >> {
+				handlerDidFinish.countDown()
+				return null
+			}
+		}
+	}
 }

@@ -64,7 +64,7 @@ public class RobotService {
 			Duration timeout, 
 			RobotExecutionListener executionListener) {
 		
-		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, secrets, timeout, executionListener);
+		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, secrets, timeout, executionListener, Collections.emptyMap());
 	}
 	
 	public Mono<ExecutionResults> execute(
@@ -73,8 +73,9 @@ public class RobotService {
 			List<RobotScript> afterScripts,
 			Map<String, Object> variables,
 			Map<String, String> secrets,
-			Duration timeout, 
-			RobotExecutionListener executionListener) {
+			Duration timeout,
+			RobotExecutionListener executionListener,
+			Map<String, String> extraEnvironment) {
 
 		AtomicInteger beforeCounter = new AtomicInteger(0);
 		AtomicInteger afterCounter = new AtomicInteger(0);
@@ -92,15 +93,16 @@ public class RobotService {
 				.flatMap(s -> s)
 				.toList();
 
-		return doExecute(scripts, variables, secrets, timeout != null ? timeout : robotProperties.defaultTimeout(), Optional.ofNullable(executionListener));
+		return doExecute(scripts, variables, secrets, timeout != null ? timeout : robotProperties.defaultTimeout(), Optional.ofNullable(executionListener), extraEnvironment);
 	}
 	
 	private Mono<ExecutionResults> doExecute(
-			List<PreparedScript> scripts, 
-			Map<String, Object> variables, 
-			Map<String, String> secrets, 
-			Duration timeout, 
-			Optional<RobotExecutionListener> executionListener) {
+			List<PreparedScript> scripts,
+			Map<String, Object> variables,
+			Map<String, String> secrets,
+			Duration timeout,
+			Optional<RobotExecutionListener> executionListener,
+			Map<String, String> extraEnvironment) {
 
 		return newRobotEnvironment(scripts, variables)
 				.flatMap(renv -> Flux.fromIterable(scripts)
@@ -108,7 +110,13 @@ public class RobotService {
 
 										.workDir(renv.workDir())
 										.allowExitCodes(ROBOT_TASK_FAILURE_EXIT_CODES)
+
 										.env("ROBOT_ARTIFACTS", renv.artifactsDir().toAbsolutePath().toString())
+										.env(extraEnvironment)
+										.env("RPA_WORKSPACE_ID", renv.workDir().getFileName().toString())
+										.env("RPA_WORKSPACE", renv.workDir().toAbsolutePath().toString())
+										.env("RPA_SCRIPT", script.script().id())
+										.env("RPA_EXECUTION_KEY", script.executionKey())
 										.env(secrets)
 
 										.arg("-m").arg("robot")

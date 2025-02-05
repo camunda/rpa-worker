@@ -15,6 +15,7 @@ import java.nio.file.FileVisitor;
 import java.nio.file.LinkOption;
 import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.PathMatcher;
 import java.nio.file.attribute.FileAttribute;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -85,4 +86,6 @@ public interface IO {
 	boolean isDirectory(Path path, LinkOption... linkOptions);
 
 	OutputStream newOutputStream(Path destination, OpenOption... openOptions);
+
+	PathMatcher globMatcher(String glob);
 }

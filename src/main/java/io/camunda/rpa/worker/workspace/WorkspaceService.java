@@ -57,12 +57,13 @@ public class WorkspaceService implements ApplicationListener<ApplicationReadyEve
 	}
 
 	public Stream<WorkspaceFile> getWorkspaceFiles(String workspaceId) {
-		return getById(workspaceId)
+		Optional<Path> workspace = getById(workspaceId);
+		return workspace
 				.stream()
 				.flatMap(p -> io.walk(p)
 						.filter(io::isRegularFile)
 						.filter(pp -> ! pp.getFileName().toString().startsWith(".")))
-				.map(p -> new WorkspaceFile(io.probeContentType(p), io.size(p), p));
+				.map(p -> new WorkspaceFile(workspace.get(), io.probeContentType(p), io.size(p), p));
 	}
 
 	public Optional<WorkspaceFile> getWorkspaceFile(String workspaceId, String path) {
@@ -71,11 +72,11 @@ public class WorkspaceService implements ApplicationListener<ApplicationReadyEve
 		return getById(workspaceId)
 				.map(workspace -> new WorkspaceAndRequestedFile(workspace, workspace.resolve(path).normalize().toAbsolutePath()))
 				.filter(wr -> wr.requestedFile().startsWith(wr.workspace()))
-				.map(WorkspaceAndRequestedFile::requestedFile)
-				.filter(io::exists)
-				.map(workspaceFile -> new WorkspaceFile(
-						io.probeContentType(workspaceFile),
-						io.size(workspaceFile),
-						workspaceFile));
+				.filter(wr -> io.exists(wr.requestedFile()))
+				.map(wr -> new WorkspaceFile(
+						wr.workspace(), 
+						io.probeContentType(wr.requestedFile()),
+						io.size(wr.requestedFile()),
+						wr.requestedFile()));
 	}
 }
