@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
@@ -39,7 +38,7 @@ class ScriptSandboxController {
 	private final Environment environment;
 
 	@PostMapping
-	public Mono<EvaluateScriptResponse> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request, ServerWebExchange exchange) {
+	public Mono<EvaluateScriptResponse> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request) {
 		RobotScript robotScript = new RobotScript("_eval_", request.script());
 		return robotService.execute(robotScript, request.variables(), Collections.emptyMap(), null, workspaceCleanupService::preserveLast)
 				.flatMap(xr -> io.supply(() -> workspaceService.getWorkspaceFiles(xr.workspace().getFileName().toString()))

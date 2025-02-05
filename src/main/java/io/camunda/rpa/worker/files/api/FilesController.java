@@ -7,6 +7,7 @@ import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.workspace.WorkspaceFile;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -44,7 +45,7 @@ class FilesController {
 	@PostMapping("/store/{workspaceId}")
 	public Mono<Map<String, ZeebeDocumentDescriptor>> storeFiles(
 			@PathVariable String workspaceId,
-			@RequestBody StoreFilesRequest request) {
+			@Valid @RequestBody StoreFilesRequest request) {
 
 		PathMatcher pathMatcher = io.globMatcher(request.files());
 
@@ -85,7 +86,7 @@ class FilesController {
 	@PostMapping("/retrieve/{workspaceId}")
 	public Mono<Map<String, RetrieveFileResult>> retrieveFiles(
 			@PathVariable String workspaceId,
-			@RequestBody Map<String, ZeebeDocumentDescriptor> request) {
+			@Valid @RequestBody Map<String, @Valid ZeebeDocumentDescriptor> request) {
 
 		return io.supply(() -> workspaceService.getById(workspaceId))
 				.flatMap(Mono::justOrEmpty)
