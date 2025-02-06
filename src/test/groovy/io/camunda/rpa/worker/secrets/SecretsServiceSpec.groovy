@@ -10,16 +10,17 @@ class SecretsServiceSpec extends Specification implements PublisherUtils {
 	
 	SecretsClient secretsClient = Mock()
 	ZeebeAuthenticationService zeebeAuthService = Mock()
-	
+	SecretsClientProperties secretsClientProperties = new SecretsClientProperties(null, "secrets-token-audience")
+
 	@Subject
-	SecretsService service = new SecretsService(secretsClient, zeebeAuthService)
+	SecretsService service = new SecretsService(secretsClient, zeebeAuthService, secretsClientProperties)
 	
 	void "Authenticates and fetches secrets"() {
 		when:
 		Map<String, Object> map = block service.getSecrets()
 		
 		then:
-		1 * zeebeAuthService.getAuthToken(SecretsService.SECRETS_TOKEN_AUDIENCE) >> Mono.just("the-access-token")
+		1 * zeebeAuthService.getAuthToken("secrets-token-audience") >> Mono.just("the-access-token")
 		1 * secretsClient.getSecrets("the-access-token") >> Mono.just([secretVar: 'secret-value'])
 		
 		and:

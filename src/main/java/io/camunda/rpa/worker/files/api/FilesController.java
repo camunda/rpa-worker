@@ -7,6 +7,7 @@ import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.workspace.WorkspaceFile;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
+import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -35,13 +36,12 @@ import static io.camunda.rpa.worker.util.PathUtils.fixSlashes;
 @RequiredArgsConstructor
 class FilesController {
 
-	static final String ZEEBE_TOKEN_AUDIENCE = "zeebe.camunda.io";
-
 	private final WorkspaceService workspaceService;
 	private final IO io;
 	private final ZeebeAuthenticationService zeebeAuthenticationService;
 	private final DocumentClient documentClient;
-
+	private final CamundaClientProperties camundaClientProperties;
+	
 	@PostMapping("/store/{workspaceId}")
 	public Mono<Map<String, ZeebeDocumentDescriptor>> storeFiles(
 			@PathVariable String workspaceId,
@@ -55,7 +55,7 @@ class FilesController {
 						.filter(pathMatcher::matches))
 				.flatMapMany(Flux::fromStream)
 				.flatMap(p -> Mono.justOrEmpty(workspaceService.getWorkspaceFile(workspaceId, p.toString())))
-				.flatMap(p -> zeebeAuthenticationService.getAuthToken(ZEEBE_TOKEN_AUDIENCE)
+				.flatMap(p -> zeebeAuthenticationService.getAuthToken(camundaClientProperties.getZeebe().getAudience())
 						.flatMap(token -> documentClient.uploadDocument(token, toZeebeStoreDocumentRequest(p), null)))
 				.collect(Collectors.toMap(
 						r -> r.metadata().fileName(),
@@ -97,7 +97,7 @@ class FilesController {
 								: Mono.error(IllegalArgumentException::new))
 						.doOnNext(kv -> io.createDirectories(ws.resolve(kv.getKey()).getParent()))
 
-						.flatMap(kv -> zeebeAuthenticationService.getAuthToken(ZEEBE_TOKEN_AUDIENCE)
+						.flatMap(kv -> zeebeAuthenticationService.getAuthToken(camundaClientProperties.getZeebe().getAudience())
 								.flatMap(token -> io.write(
 										documentClient.getDocument(token, kv.getValue().documentId(), null),
 										ws.resolve(kv.getKey())))

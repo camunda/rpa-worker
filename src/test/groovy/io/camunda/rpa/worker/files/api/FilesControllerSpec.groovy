@@ -9,6 +9,9 @@ import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService
+import io.camunda.zeebe.spring.client.properties.CamundaClientProperties
+import io.camunda.zeebe.spring.client.properties.common.AuthProperties
+import io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpEntity
 import org.springframework.util.MultiValueMap
@@ -37,12 +40,27 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	}
 	
 	ZeebeAuthenticationService zeebeAuthService = Stub() {
-		getAuthToken(FilesController.ZEEBE_TOKEN_AUDIENCE) >> Mono.just(authToken)
+		getAuthToken("zeebe-token-audience") >> Mono.just(authToken)
 	}
 	DocumentClient documentClient = Stub()
+
+	CamundaClientProperties camundaClientProperties = Stub(CamundaClientProperties) {
+		getMode() >> CamundaClientProperties.ClientMode.saas
+		getAuth() >> Stub(AuthProperties) {
+			getClientId() >> "the-client-id"
+		}
+		getClusterId() >> "the-cluster-id"
+		getRegion() >> "the-region"
+		getZeebe() >> Stub(ZeebeClientProperties) {
+			getGrpcAddress() >> "https://the-grpc-address".toURI()
+			getRestAddress() >> "https://the-rest-address".toURI()
+			isPreferRestOverGrpc() >> false
+			getAudience() >> "zeebe-token-audience"
+		}
+	}
 	
 	@Subject
-	FilesController controller = new FilesController(workspaceService, io, zeebeAuthService, documentClient)
+	FilesController controller = new FilesController(workspaceService, io, zeebeAuthService, documentClient, camundaClientProperties)
 	
 	void "Uploads files from workspace to Zeebe"() {
 		given:

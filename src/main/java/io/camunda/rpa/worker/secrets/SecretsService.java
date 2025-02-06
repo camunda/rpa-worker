@@ -13,13 +13,13 @@ import java.util.Map;
 @Slf4j
 public class SecretsService {
 	
-	static final String SECRETS_TOKEN_AUDIENCE = "secrets.camunda.io";
 	
 	private final SecretsClient secretsClient;
 	private final ZeebeAuthenticationService zeebeAuthenticationService;
+	private final SecretsClientProperties secretsClientProperties;
 	
 	public Mono<Map<String, String>> getSecrets() {
-		return zeebeAuthenticationService.getAuthToken(SECRETS_TOKEN_AUDIENCE)
+		return zeebeAuthenticationService.getAuthToken(secretsClientProperties.tokenAudience())
 				.flatMap(secretsClient::getSecrets);
 	}
 }
