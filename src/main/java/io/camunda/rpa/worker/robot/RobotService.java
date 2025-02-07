@@ -9,6 +9,7 @@ import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.util.MoreCollectors;
 import io.camunda.rpa.worker.util.YamlMapper;
+import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,7 @@ public class RobotService {
 	private final WorkspaceService workspaceService;
 	private final Scheduler robotWorkScheduler;
 
-	private record RobotEnvironment(Path workDir, Path varsFile, Path outputDir, Path artifactsDir) { }
+	private record RobotEnvironment(Workspace workspace, Path varsFile, Path outputDir, Path artifactsDir) { }
 	private record PreparedScript(String executionKey, RobotScript script) {}
 	
 	
@@ -108,13 +109,13 @@ public class RobotService {
 				.flatMap(renv -> Flux.fromIterable(scripts)
 						.concatMap(script -> processService.execute(pythonInterpreter.path(), c -> c
 
-										.workDir(renv.workDir())
+										.workDir(renv.workspace().path())
 										.allowExitCodes(ROBOT_TASK_FAILURE_EXIT_CODES)
 
 										.env("ROBOT_ARTIFACTS", renv.artifactsDir().toAbsolutePath().toString())
 										.env(extraEnvironment)
-										.env("RPA_WORKSPACE_ID", renv.workDir().getFileName().toString())
-										.env("RPA_WORKSPACE", renv.workDir().toAbsolutePath().toString())
+										.env("RPA_WORKSPACE_ID", renv.workspace().path().getFileName().toString())
+										.env("RPA_WORKSPACE", renv.workspace().path().toAbsolutePath().toString())
 										.env("RPA_SCRIPT", script.script().id())
 										.env("RPA_EXECUTION_KEY", script.executionKey())
 										.env(secrets)
@@ -125,7 +126,7 @@ public class RobotService {
 										.arg("--variablefile").bindArg("varsFile", renv.varsFile())
 										.arg("--report").arg("none")
 										.arg("--logtitle").arg("Task log")
-										.bindArg("script", renv.workDir().resolve("%s.robot".formatted(script.executionKey())))
+										.bindArg("script", renv.workspace().path().resolve("%s.robot".formatted(script.executionKey())))
 								
 										.timeout(timeout)
 										.scheduleOn(robotWorkScheduler))
@@ -152,7 +153,7 @@ public class RobotService {
 								MoreCollectors.MergeStrategy.noDuplicatesExpected()))
 
 						.doFinally(_ -> executionListener.ifPresent(
-								l -> l.afterRobotExecution(renv.workDir())))
+								l -> l.afterRobotExecution(renv.workspace())))
 
 						.map(resultsMap -> new ExecutionResults(
 								resultsMap,
@@ -163,29 +164,29 @@ public class RobotService {
 												Map.Entry::getKey,
 												Map.Entry::getValue,
 												MoreCollectors.MergeStrategy.rightPrecedence())),
-								renv.workDir())));
+								renv.workspace().path())));
 	}
 
 	private Mono<RobotEnvironment> newRobotEnvironment(List<PreparedScript> scripts, Map<String, Object> variables) {
 		return io.supply(() -> {
-			Path workDir = workspaceService.createWorkspace();
-			Path varsFile = workDir.resolve("variables.json");
-			Path outputDir = workDir.resolve("output");
+			Workspace workspace = workspaceService.createWorkspace();
+			Path varsFile = workspace.path().resolve("variables.json");
+			Path outputDir = workspace.path().resolve("output");
 			io.createDirectories(outputDir);
-			Path artifactsDir = workDir.resolve("robot_artifacts");
+			Path artifactsDir = workspace.path().resolve("robot_artifacts");
 			io.createDirectories(artifactsDir);
 
 			scripts.forEach(s -> io.writeString(
-					workDir.resolve("%s.robot".formatted(s.executionKey())), 
+					workspace.path().resolve("%s.robot".formatted(s.executionKey())), 
 					s.script().body()));
 			io.write(varsFile, Try.of(() -> objectMapper.writeValueAsBytes(variables)).get());
-			return new RobotEnvironment(workDir, varsFile, outputDir, artifactsDir);
+			return new RobotEnvironment(workspace, varsFile, outputDir, artifactsDir);
 		});
 	}
 
 	private Mono<Map<String, Object>> getOutputVariables(RobotEnvironment robotEnvironment) {
 		return io.supply(() -> {
-			Path outputs = robotEnvironment.workDir().resolve("outputs.yml");
+			Path outputs = robotEnvironment.workspace().path().resolve("outputs.yml");
 			if (io.notExists(outputs)) return Collections.emptyMap();
 			return io.withReader(outputs, r -> yamlMapper.readValue(r, new TypeReference<Map<String, Object>>() {}));
 		});

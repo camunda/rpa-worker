@@ -11,6 +11,7 @@ import io.camunda.rpa.worker.robot.RobotService
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.script.ScriptRepository
 import io.camunda.rpa.worker.secrets.SecretsService
+import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
@@ -94,7 +95,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		service.doInit()
 		Map<String, String> expectedOutputVars = [outputVar: 'output-var-value']
 		Map<String, String> expectedExtraEnv = [RPA_ZEEBE_PROCESS_INSTANCE_KEY: "345", RPA_ZEEBE_JOB_KEY: "123", RPA_ZEEBE_BPMN_PROCESS_ID: "234"]
-		Path workspace = Stub()
+		Path workspacePath = Stub()
+		Workspace workspace = new Workspace(null, workspacePath)
 
 		when:
 		theJobHandler.handle(jobClient, job)

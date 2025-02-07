@@ -1,8 +1,8 @@
 package io.camunda.rpa.worker.robot;
 
-import java.nio.file.Path;
+import io.camunda.rpa.worker.workspace.Workspace;
 
 @FunctionalInterface
 public interface RobotExecutionListener {
-	void afterRobotExecution(Path workspace);
+	void afterRobotExecution(Workspace workspace);
 }

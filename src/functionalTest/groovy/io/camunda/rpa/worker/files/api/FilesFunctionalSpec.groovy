@@ -7,6 +7,7 @@ import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
 import io.camunda.rpa.worker.util.IterableMultiPart
+import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import okhttp3.MediaType
 import okhttp3.MultipartReader
@@ -21,7 +22,6 @@ import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Mono
 
 import java.nio.file.Files
-import java.nio.file.Path
 
 class FilesFunctionalSpec extends AbstractFunctionalSpec {
 	
@@ -50,8 +50,8 @@ Do Nothing
 	void "Request to store files triggers upload of workspace files to Zeebe"() {
 		given:
 		bypassZeebeAuth()
-		Path theWorkspace
-		workspaceCleanupService.preserveLast(_) >> { Path w ->
+		Workspace theWorkspace
+		workspaceCleanupService.preserveLast(_) >> { Workspace w ->
 			theWorkspace = w
 			return Mono.empty()
 		}
@@ -97,7 +97,7 @@ Do Nothing
 
 		when:
 		Map<String, ZeebeDocumentDescriptor> resp = block post()
-				.uri("/file/store/${theWorkspace.fileName.toString()}")
+				.uri("/file/store/${theWorkspace.path().fileName.toString()}")
 				.body(BodyInserters.fromValue(new StoreFilesRequest("**/*.yes")))
 				.retrieve()
 				.bodyToMono(new ParameterizedTypeReference<Map<String, ZeebeDocumentDescriptor>>() {})
@@ -111,15 +111,16 @@ Do Nothing
 	void "Request to retrieve files downloads from Zeebe into workspace"() {
 		given:
 		bypassZeebeAuth()
-		Path theWorkspace
-		workspaceCleanupService.preserveLast(_) >> { Path w ->
+		Workspace theWorkspace
+		workspaceCleanupService.preserveLast(_) >> { Workspace w ->
 			theWorkspace = w
 			return Mono.empty()
 		}
 		
 		and:
 		zeebeDocuments.setDispatcher { rr ->
-			return rr.path.endsWith("document-id-1")
+			String path = URI.create(rr.path).path
+			return path.endsWith("document-id-1")
 					? new MockResponse().tap {
 						setResponseCode(HttpStatus.OK.value())
 						setBody("File 1 contents")
@@ -141,10 +142,10 @@ Do Nothing
 
 		when:
 		Map<String, FilesController.RetrieveFileResult> resp = block post()
-				.uri("/file/retrieve/${theWorkspace.fileName.toString()}")
+				.uri("/file/retrieve/${theWorkspace.path().fileName.toString()}")
 				.body(BodyInserters.fromValue([
-						"input/file1.txt": new ZeebeDocumentDescriptor("the-store", "document-id-1", null),
-						"input/file2.txt": new ZeebeDocumentDescriptor("the-store", "document-id-2", null)]))
+						"input/file1.txt": new ZeebeDocumentDescriptor("the-store", "document-id-1", null, null),
+						"input/file2.txt": new ZeebeDocumentDescriptor("the-store", "document-id-2", null, null)]))
 				.retrieve()
 				.bodyToMono(new ParameterizedTypeReference<Map<String, FilesController.RetrieveFileResult>>() {})
 
@@ -154,7 +155,7 @@ Do Nothing
 		resp['input/file2.txt'].result() == "NOT_FOUND"
 		
 		and:
-		Files.exists(theWorkspace.resolve("input/file1.txt"))
-		theWorkspace.resolve("input/file1.txt").text == "File 1 contents"
+		Files.exists(theWorkspace.path().resolve("input/file1.txt"))
+		theWorkspace.path().resolve("input/file1.txt").text == "File 1 contents"
 	}
 }

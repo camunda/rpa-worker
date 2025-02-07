@@ -19,7 +19,7 @@ class WorkspaceCleanupServiceSpec extends Specification implements PublisherUtil
 		Path aPath = Stub()
 
 		when:
-		block service.deleteWorkspace(aPath)
+		block service.deleteWorkspace(new Workspace(null, aPath))
 		
 		then:
 		1 * io.deleteDirectoryRecursively(aPath)
@@ -32,20 +32,20 @@ class WorkspaceCleanupServiceSpec extends Specification implements PublisherUtil
 		Path path3 = Stub()
 
 		when:
-		block service.preserveLast(path1)
+		block service.preserveLast(new Workspace(null, path1))
 
 		then:
 		0 * io._(*_)
 		
 		when:
-		block service.preserveLast(path2)
+		block service.preserveLast(new Workspace(null, path2))
 		
 		then:
 		1 * io.deleteDirectoryRecursively(path1)
 		0 * io._(*_)
 		
 		when:
-		block service.preserveLast(path3)
+		block service.preserveLast(new Workspace(null, path3))
 
 		then:
 		1 * io.deleteDirectoryRecursively(path2)

@@ -5,6 +5,7 @@ import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType;
 import java.util.Collection;
 
 record ZeebeLinkedResources(Collection<ZeebeLinkedResource> linkedResources) {
+	
 	record ZeebeLinkedResource(
 			String resourceId,
 			ZeebeBindingType bindingType,
@@ -12,4 +13,5 @@ record ZeebeLinkedResources(Collection<ZeebeLinkedResource> linkedResources) {
 			String versionTag,
 			String linkName, 
 			String key) {}
+
 }

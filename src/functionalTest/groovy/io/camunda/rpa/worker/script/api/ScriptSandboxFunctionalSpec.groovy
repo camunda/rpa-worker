@@ -4,6 +4,7 @@ import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.api.ValidationFailureDto
 import io.camunda.rpa.worker.robot.ExecutionResults
+import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import org.spockframework.spring.SpringSpy
 import org.springframework.http.HttpHeaders
@@ -14,7 +15,6 @@ import org.springframework.web.reactive.function.client.ClientResponse
 import reactor.core.publisher.Mono
 
 import java.nio.file.Files
-import java.nio.file.Path
 import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -115,8 +115,8 @@ Nothing
 '''
 		and:
 		CountDownLatch latch = new CountDownLatch(2)
-		Queue<Path> workspaces = new LinkedList<>()
-		workspaceCleanupService.preserveLast(_) >> { Path workspace -> 
+		Queue<Workspace> workspaces = new LinkedList<>()
+		workspaceCleanupService.preserveLast(_) >> { Workspace workspace -> 
 			workspaces.add(workspace)
 			Mono<Void> r = callRealMethod()
 			r.doFinally { latch.countDown() }.subscribe()
@@ -140,10 +140,10 @@ Nothing
 		workspaces.size() == 2
 
 		and: "First workspace deleted"
-		Files.notExists(workspaces.remove())
+		Files.notExists(workspaces.remove().path())
 		
 		and: "Second workspace remains"
-		Files.exists(workspaces.remove())
+		Files.exists(workspaces.remove().path())
 	}
 
 	void "Serves workspace files after run"() {

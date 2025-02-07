@@ -1,6 +1,6 @@
 package io.camunda.rpa.worker.zeebe
 
-
+import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
@@ -18,7 +18,6 @@ import reactor.core.publisher.Mono
 import spock.lang.Tag
 
 import java.nio.file.Files
-import java.nio.file.Path
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -279,8 +278,8 @@ The tasks
 		CountDownLatch handlersDidFinish = new CountDownLatch(2)
 		
 		and:
-		Queue<Path> workspaces = new LinkedList<>()
-		workspaceCleanupService.deleteWorkspace(_) >> { Path p ->
+		Queue<Workspace> workspaces = new LinkedList<>()
+		workspaceCleanupService.deleteWorkspace(_) >> { Workspace p ->
 			workspaces.add(p)
 			Mono<Void> r = callRealMethod()
 			r.block()
@@ -303,7 +302,7 @@ The tasks
 
 		then: "Workspace deleted immediately"
 		workspaces.size() == 1
-		Files.notExists(workspaces.remove())
+		Files.notExists(workspaces.remove().path())
 	}
 
 	static final String ENV_CHECK_ROBOT_SCRIPT = '''\

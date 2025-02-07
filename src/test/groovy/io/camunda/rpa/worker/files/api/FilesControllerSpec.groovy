@@ -6,6 +6,7 @@ import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.files.DocumentClient
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.io.IO
+import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService
@@ -30,7 +31,7 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 
 	static final String authToken = "the-auth-token"
 	
-	Path workspace = Paths.get("/path/to/workspaces/workspace123456/")
+	Workspace workspace = new Workspace("workspace123456", Paths.get("/path/to/workspaces/workspace123456/"), [:])
 	WorkspaceService workspaceService = Stub() {
 		getById("workspace123456") >> Optional.of(workspace)
 		getById(_) >> Optional.empty()
@@ -64,16 +65,16 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	
 	void "Uploads files from workspace to Zeebe"() {
 		given:
-		Path matchingWorkspaceFile1 = workspace.resolve("outputs/one.pdf")
-		Path matchingWorkspaceFile2 = workspace.resolve("outputs/two.pdf")
-		Path nonMatchingWorkspaceFile = workspace.resolve("outputs/ignored.tmp")
+		Path matchingWorkspaceFile1 = workspace.path().resolve("outputs/one.pdf")
+		Path matchingWorkspaceFile2 = workspace.path().resolve("outputs/two.pdf")
+		Path nonMatchingWorkspaceFile = workspace.path().resolve("outputs/ignored.tmp")
 		
 		and:
 		PathMatcher pathMatcher = Stub()
 		io.globMatcher("**/*.pdf") >> pathMatcher
 		
 		and:
-		io.walk(workspace) >> { 
+		io.walk(workspace.path()) >> { 
 			Stream.of(
 					matchingWorkspaceFile1, 
 					matchingWorkspaceFile2, 
@@ -83,13 +84,18 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		and:
 		documentClient.uploadDocument(authToken, _, _) >> { _, MultiValueMap<String, HttpEntity<?>> reqBody, Map params -> 
 			Mono.just(new ZeebeDocumentDescriptor(
-					"store-id", 
-					"document-id", 
+					"store-id",
+					"document-id",
 					new ZeebeDocumentDescriptor.Metadata(
 							"content-type", 
 							reqBody.getFirst("file").getHeaders().getContentDisposition().getFilename(), 
 							null, 
-							123)))
+							123, 
+							null, 
+							null, 
+							[:]), 
+					null))
+			
 		}
 		
 		and:
@@ -115,15 +121,15 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	
 	void "Downloads files from Zeebe into workspace"() {
 		given:
-		Path file1Destination = workspace.resolve("input/file1.txt")
-		documentClient.getDocument(authToken, "document-id-1", _) >> Flux.error(
+		Path file1Destination = workspace.path().resolve("input/file1.txt")
+		documentClient.getDocument(authToken, "document-id-1", _, _) >> Flux.error(
 				new FeignException.NotFound("", new Request(Request.HttpMethod.GET, "", [:], null, null), [] as byte[], [:]))
 		
-		Path file2Destination = workspace.resolve("input/file2.txt")
-		documentClient.getDocument(authToken, "document-id-2", _) >> Flux.empty()
+		Path file2Destination = workspace.path().resolve("input/file2.txt")
+		documentClient.getDocument(authToken, "document-id-2", _, _) >> Flux.empty()
 		
-		Path file3Destination = workspace.resolve("input/file3.txt")
-		documentClient.getDocument(authToken, "document-id-3", _) >> Flux.empty()
+		Path file3Destination = workspace.path().resolve("input/file3.txt")
+		documentClient.getDocument(authToken, "document-id-3", _, _) >> Flux.empty()
 
 
 		when:
@@ -131,17 +137,20 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 				"input/file1.txt": new ZeebeDocumentDescriptor(
 						"store-id",
 						"document-id-1",
-						new ZeebeDocumentDescriptor.Metadata("text/plain", "file1.txt", null, 123)),
+						new ZeebeDocumentDescriptor.Metadata("text/plain", "file1.txt", null, 123, null, null, [:]), 
+						null),
 
 				"input/file2.txt": new ZeebeDocumentDescriptor(
 						"store-id",
 						"document-id-2",
-						new ZeebeDocumentDescriptor.Metadata("text/plain", "file2.txt", null, 123)),
+						new ZeebeDocumentDescriptor.Metadata("text/plain", "file2.txt", null, 123, null, null, [:]), 
+						null),
 
 				"input/file3.txt": new ZeebeDocumentDescriptor(
 						"store-id",
 						"document-id-3",
-						new ZeebeDocumentDescriptor.Metadata("text/plain", "file3.txt", null, 123))
+						new ZeebeDocumentDescriptor.Metadata("text/plain", "file3.txt", null, 123, null, null, [:]), 
+						null)
 		])
 		
 		then:
