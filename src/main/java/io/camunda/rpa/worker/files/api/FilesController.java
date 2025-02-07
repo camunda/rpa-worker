@@ -62,7 +62,7 @@ class FilesController {
 						.flatMap(token -> documentClient.uploadDocument(token, toZeebeStoreDocumentRequest(p), null)))
 				.collect(Collectors.toMap(
 						r -> r.metadata().fileName(),
-						r -> new ZeebeDocumentDescriptor(r.storeId(), r.documentId(), r.metadata(), null)));
+						r -> r));
 	}
 
 	private MultiValueMap<String, HttpEntity<?>> toZeebeStoreDocumentRequest(WorkspaceFile file) {

@@ -19,9 +19,11 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.codec.multipart.FormFieldPart
 import org.springframework.web.reactive.function.BodyInserters
+import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 
 import java.nio.file.Files
+import java.util.concurrent.TimeUnit
 
 class FilesFunctionalSpec extends AbstractFunctionalSpec {
 	
@@ -76,6 +78,7 @@ Do Nothing
 						'camunda.document.type': 'camunda',
 						storeId: 'the-store',
 						documentId: 'document-id',
+						contentHash: 'content-hash',
 						metadata: [
 								contentType: metadata.contentType(),
 								fileName: metadata.fileName(),
@@ -106,6 +109,7 @@ Do Nothing
 		resp.size() == 2
 		resp['one.yes'].metadata().fileName() == "one.yes"
 		resp['two.yes'].metadata().fileName() == "two.yes"
+		resp.values()*.contentHash().every { it == "content-hash" }
 	}
 	
 	void "Request to retrieve files downloads from Zeebe into workspace"() {
@@ -144,8 +148,19 @@ Do Nothing
 		Map<String, FilesController.RetrieveFileResult> resp = block post()
 				.uri("/file/retrieve/${theWorkspace.path().fileName.toString()}")
 				.body(BodyInserters.fromValue([
-						"input/file1.txt": new ZeebeDocumentDescriptor("the-store", "document-id-1", null, null),
-						"input/file2.txt": new ZeebeDocumentDescriptor("the-store", "document-id-2", null, null)]))
+						
+						"input/file1.txt": new ZeebeDocumentDescriptor(
+								"the-store", 
+								"document-id-1", 
+								null, 
+								"file1-hash"),
+						
+						"input/file2.txt": new ZeebeDocumentDescriptor(
+								"the-store", 
+								"document-id-2", 
+								null, 
+								"file2-hash")]))
+		
 				.retrieve()
 				.bodyToMono(new ParameterizedTypeReference<Map<String, FilesController.RetrieveFileResult>>() {})
 
@@ -157,5 +172,16 @@ Do Nothing
 		and:
 		Files.exists(theWorkspace.path().resolve("input/file1.txt"))
 		theWorkspace.path().resolve("input/file1.txt").text == "File 1 contents"
+		
+		and:
+		with([zeebeDocuments.takeRequest(1, TimeUnit.SECONDS), zeebeDocuments.takeRequest(1, TimeUnit.SECONDS)]) { reqs ->
+			with(reqs.collect {  UriComponentsBuilder.fromUri(URI.create(it.path)).build().getQueryParams() }) { qs ->
+				qs.collect { it.getFirst("storeId") }
+						.every { it == "the-store" }
+
+				qs.collect { it.getFirst("contentHash") }
+						.containsAll(["file1-hash", "file2-hash"])
+			}
+		}
 	}
 }

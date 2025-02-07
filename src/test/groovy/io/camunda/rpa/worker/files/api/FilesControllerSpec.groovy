@@ -94,7 +94,7 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 							null, 
 							null, 
 							[:]), 
-					null))
+					"filehashfromserver"))
 			
 		}
 		
@@ -117,19 +117,20 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		map.size() == 2
 		map['outputs/one.pdf'].metadata().fileName() == "outputs/one.pdf"
 		map['outputs/two.pdf'].metadata().fileName() == "outputs/two.pdf"
+		map.values()*.contentHash().every { it == "filehashfromserver" } 
 	}
 	
 	void "Downloads files from Zeebe into workspace"() {
 		given:
 		Path file1Destination = workspace.path().resolve("input/file1.txt")
-		documentClient.getDocument(authToken, "document-id-1", _, _) >> Flux.error(
+		documentClient.getDocument(authToken, "document-id-1", "store-id", _) >> Flux.error(
 				new FeignException.NotFound("", new Request(Request.HttpMethod.GET, "", [:], null, null), [] as byte[], [:]))
 		
 		Path file2Destination = workspace.path().resolve("input/file2.txt")
-		documentClient.getDocument(authToken, "document-id-2", _, _) >> Flux.empty()
+		documentClient.getDocument(authToken, "document-id-2", "store-id", _) >> Flux.empty()
 		
 		Path file3Destination = workspace.path().resolve("input/file3.txt")
-		documentClient.getDocument(authToken, "document-id-3", _, _) >> Flux.empty()
+		documentClient.getDocument(authToken, "document-id-3", "store-id", _) >> Flux.empty()
 
 
 		when:
@@ -137,20 +138,41 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 				"input/file1.txt": new ZeebeDocumentDescriptor(
 						"store-id",
 						"document-id-1",
-						new ZeebeDocumentDescriptor.Metadata("text/plain", "file1.txt", null, 123, null, null, [:]), 
-						null),
+						new ZeebeDocumentDescriptor.Metadata(
+								"text/plain", 
+								"file1.txt", 
+								null, 
+								123, 
+								null, 
+								null, 
+								[:]),
+						"f1hash"),
 
 				"input/file2.txt": new ZeebeDocumentDescriptor(
 						"store-id",
 						"document-id-2",
-						new ZeebeDocumentDescriptor.Metadata("text/plain", "file2.txt", null, 123, null, null, [:]), 
-						null),
+						new ZeebeDocumentDescriptor.Metadata(
+								"text/plain", 
+								"file2.txt", 
+								null, 
+								123, 
+								null, 
+								null, 
+								[:]),
+						"f2hash"),
 
 				"input/file3.txt": new ZeebeDocumentDescriptor(
 						"store-id",
 						"document-id-3",
-						new ZeebeDocumentDescriptor.Metadata("text/plain", "file3.txt", null, 123, null, null, [:]), 
-						null)
+						new ZeebeDocumentDescriptor.Metadata(
+								"text/plain", 
+								"file3.txt", 
+								null, 
+								123, 
+								null, 
+								null, 
+								[:]), 
+						"f3hash")
 		])
 		
 		then:
