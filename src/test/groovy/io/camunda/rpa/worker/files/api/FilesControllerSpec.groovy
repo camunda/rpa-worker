@@ -99,15 +99,15 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
-		workspaceService.getWorkspaceFile("workspace123456", matchingWorkspaceFile1.toString()) >> Optional.of(
+		workspaceService.getWorkspaceFile("workspace123456", workspace.path().relativize(matchingWorkspaceFile1).toString()) >> Optional.of(
 				new WorkspaceFile(workspace, "application/pdf", 123, matchingWorkspaceFile1))
-		workspaceService.getWorkspaceFile("workspace123456", matchingWorkspaceFile2.toString()) >> Optional.of(
+		workspaceService.getWorkspaceFile("workspace123456", workspace.path().relativize(matchingWorkspaceFile2).toString()) >> Optional.of(
 				new WorkspaceFile(workspace, "application/pdf", 123, matchingWorkspaceFile2))
 
 		and:
-		pathMatcher.matches(matchingWorkspaceFile1) >> true
-		pathMatcher.matches(matchingWorkspaceFile2) >> true
-		pathMatcher.matches(nonMatchingWorkspaceFile) >> false
+		pathMatcher.matches(workspace.path().relativize(matchingWorkspaceFile1)) >> true
+		pathMatcher.matches(workspace.path().relativize(matchingWorkspaceFile2)) >> true
+		pathMatcher.matches(workspace.path().relativize(nonMatchingWorkspaceFile)) >> false
 
 		when:
 		Map<String, ZeebeDocumentDescriptor> map = block controller.storeFiles(

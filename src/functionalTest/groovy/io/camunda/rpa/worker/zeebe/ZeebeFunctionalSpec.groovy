@@ -364,7 +364,7 @@ Assert input variable
 		and:
 		block post()
 				.uri("/file/store/${theWorkspace.path().fileName.toString()}")
-				.body(BodyInserters.fromValue(new StoreFilesRequest("**/*.robot")))
+				.body(BodyInserters.fromValue(new StoreFilesRequest("*.robot")))
 				.retrieve()
 				.bodyToMono(new ParameterizedTypeReference<Map<String, ZeebeDocumentDescriptor>>() {})
 
