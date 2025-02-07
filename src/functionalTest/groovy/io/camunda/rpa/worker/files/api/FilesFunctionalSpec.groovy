@@ -184,4 +184,66 @@ Do Nothing
 			}
 		}
 	}
+	
+	void "Request to store files looks up correct location in workspace"() {
+		given:
+		bypassZeebeAuth()
+		Workspace theWorkspace
+		workspaceCleanupService.preserveLast(_) >> { Workspace w ->
+			theWorkspace = w
+			return Mono.empty()
+		}
+
+		and:
+		zeebeDocuments.setDispatcher { rr ->
+
+			MultipartReader mpr = new MultipartReader(ResponseBody.create(
+					rr.body.readUtf8(),
+					MediaType.parse(rr.headers.get("Content-Type"))))
+
+			Map<String, FormFieldPart> parts = new IterableMultiPart(mpr).collectEntries {
+				[it.name(), it]
+			}
+
+			ZeebeDocumentDescriptor.Metadata metadata = objectMapper.readValue(parts.metadata.value(), ZeebeDocumentDescriptor.Metadata)
+
+			new MockResponse().tap {
+				setResponseCode(201)
+				setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+				setBody(new JsonOutput().toJson([
+						'camunda.document.type': 'camunda',
+						storeId                : 'the-store',
+						documentId             : 'document-id',
+						contentHash            : 'content-hash',
+						metadata               : [
+								contentType: metadata.contentType(),
+								fileName   : metadata.fileName(),
+								size       : metadata.size()
+						]
+				]))
+			}
+		}
+
+		when:
+		EvaluateScriptResponse response = block post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(new EvaluateScriptRequest(WRITE_SOME_FILES_SCRIPT, [:])))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+
+		then:
+		response.result() == ExecutionResults.Result.PASS
+
+		when:
+		Map<String, ZeebeDocumentDescriptor> resp = block post()
+				.uri("/file/store/${theWorkspace.path().fileName.toString()}")
+				.body(BodyInserters.fromValue(new StoreFilesRequest("*.robot")))
+				.retrieve()
+				.bodyToMono(new ParameterizedTypeReference<Map<String, ZeebeDocumentDescriptor>>() {})
+
+		then:
+		resp.size() == 1
+		resp['main.robot'].metadata().fileName() == "main.robot"
+		resp.values()*.contentHash().every { it == "content-hash" }
+	}
 }

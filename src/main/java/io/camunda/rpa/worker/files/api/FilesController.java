@@ -59,6 +59,7 @@ class FilesController {
 						.stream()
 						.map(Workspace::path)
 						.flatMap(io::walk)
+						.map(p -> workspace.get().path().relativize(p))
 						.filter(pathMatcher::matches))
 				.flatMapMany(Flux::fromStream)
 				.flatMap(p -> Mono.justOrEmpty(workspaceService.getWorkspaceFile(workspaceId, p.toString())))
