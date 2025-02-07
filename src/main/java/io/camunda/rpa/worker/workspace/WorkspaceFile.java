@@ -4,7 +4,7 @@ import org.springframework.http.MediaType;
 
 import java.nio.file.Path;
 
-public record WorkspaceFile(Path workspace, String contentType, long size, Path path) {
+public record WorkspaceFile(Workspace workspace, String contentType, long size, Path path) {
 	public WorkspaceFile {
 		if(contentType == null) contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
 	}

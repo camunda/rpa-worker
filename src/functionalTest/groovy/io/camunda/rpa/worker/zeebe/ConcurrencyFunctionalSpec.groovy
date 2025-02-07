@@ -1,13 +1,13 @@
 package io.camunda.rpa.worker.zeebe
 
 import io.camunda.rpa.worker.AbstractFunctionalSpec
+import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import org.springframework.test.context.TestPropertySource
 import spock.lang.IgnoreIf
 
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.attribute.BasicFileAttributes
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -66,8 +66,8 @@ Don't do very much
 			service.doInit()
 			withNoSecrets()
 			CountDownLatch handlerDidFinish = new CountDownLatch(2)
-			List<Path> workspaces = []
-			workspaceCleanupService.deleteWorkspace(_) >> { Path w ->
+			List<Workspace> workspaces = []
+			workspaceCleanupService.deleteWorkspace(_) >> { Workspace w ->
 				workspaces << w
 				handlerDidFinish.countDown()
 				return null
@@ -86,7 +86,7 @@ Don't do very much
 
 			then:
 			workspaces
-					.collectMany { w -> Files.list(w).filter(Files::isRegularFile).filter(p -> p.getFileName().toString().startsWith("written_")).toList() }
+					.collectMany { w -> Files.list(w.path()).filter(Files::isRegularFile).filter(p -> p.getFileName().toString().startsWith("written_")).toList() }
 					.sort { p -> Files.readAttributes(p, BasicFileAttributes).creationTime().toInstant() }
 					.collect { p -> p.fileName.toString() - ".txt" } == [
 
@@ -134,8 +134,8 @@ Don't do very much
 			service.doInit()
 			withNoSecrets()
 			CountDownLatch handlerDidFinish = new CountDownLatch(2)
-			List<Path> workspaces = []
-			workspaceCleanupService.deleteWorkspace(_) >> { Path w ->
+			List<Workspace> workspaces = []
+			workspaceCleanupService.deleteWorkspace(_) >> { Workspace w ->
 				workspaces << w
 				handlerDidFinish.countDown()
 				return null
@@ -154,7 +154,7 @@ Don't do very much
 
 			then:
 			workspaces
-					.collectMany { w -> Files.list(w).filter(Files::isRegularFile).filter(p -> p.getFileName().toString().startsWith("written_")).toList() }
+					.collectMany { w -> Files.list(w.path()).filter(Files::isRegularFile).filter(p -> p.getFileName().toString().startsWith("written_")).toList() }
 					.sort { p -> Files.readAttributes(p, BasicFileAttributes).creationTime().toInstant() }
 					.collect { p -> p.fileName.toString() - ".txt" } == [
 
@@ -180,8 +180,8 @@ Don't do very much
 			service.doInit()
 			withNoSecrets()
 			CountDownLatch handlerDidFinish = new CountDownLatch(256)
-			List<Path> workspaces = []
-			workspaceCleanupService.deleteWorkspace(_) >> { Path w ->
+			List<Workspace> workspaces = []
+			workspaceCleanupService.deleteWorkspace(_) >> { Workspace w ->
 				workspaces << w
 				handlerDidFinish.countDown()
 				return null

@@ -8,6 +8,7 @@ import io.camunda.rpa.worker.pexec.ProcessService
 import io.camunda.rpa.worker.python.PythonInterpreter
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.util.YamlMapper
+import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceService
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
@@ -46,6 +47,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
+		Workspace workspace = new Workspace("workspace12456", workDir)
 
 		when:
 		ExecutionResults r = block service.execute(
@@ -56,10 +58,11 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 				[secretVar: 'secret-var-value'], 
 				null, 
 				executionListener,
-				[extraEnvVar: 'extra-env-var-value'])
+				[extraEnvVar: 'extra-env-var-value'],
+				[:])
 
 		then:
-		1 * workspaceService.createWorkspace() >> workDir
+		1 * workspaceService.createWorkspace([:]) >> workspace
 		1 * io.createDirectories(workDir.resolve("output"))
 		1 * io.createDirectories(workDir.resolve("robot_artifacts"))
 		1 * io.writeString(workDir.resolve("main.robot"), "some-script-body", _)
@@ -104,7 +107,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 [STDERR] stderr-content"""
 		
 		and:
-		1 * executionListener.afterRobotExecution(workDir)
+		1 * executionListener.afterRobotExecution(workspace)
 	}
 
 	void "Returns output variables"() {
@@ -113,7 +116,8 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		workspaceService.createWorkspace() >> workDir
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace([:]) >> workspace
 
 		and:
 		processService.execute(_, _) >> { _, __ ->
@@ -146,7 +150,8 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		workspaceService.createWorkspace() >> workDir
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace([:]) >> workspace
 		io.notExists(workDir.resolve("outputs.yml")) >> true
 
 		and:
@@ -162,7 +167,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		result.results().values().first().result() == ExecutionResults.Result.FAIL
 		
 		and:
-		1 * executionListener.afterRobotExecution(workDir)
+		1 * executionListener.afterRobotExecution(workspace)
 	}
 
 	void "Throws correct exception for Robot failure"() {
@@ -171,7 +176,8 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		workspaceService.createWorkspace() >> workDir
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace([:]) >> workspace
 		io.notExists(workDir.resolve("outputs.yml")) >> true
 
 		and:
@@ -186,7 +192,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		result.results().values().first().result() == ExecutionResults.Result.ERROR
 		
 		and:
-		1 * executionListener.afterRobotExecution(workDir)
+		1 * executionListener.afterRobotExecution(workspace)
 	}
 	
 	void "Throws correct exception for Robot execution failure"() {
@@ -195,7 +201,8 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		workspaceService.createWorkspace() >> workDir
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace([:]) >> workspace
 		io.notExists(workDir.resolve("outputs.yml")) >> true
 
 		and:
@@ -210,7 +217,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		thrown(RobotErrorException)
 		
 		and:
-		1 * executionListener.afterRobotExecution(workDir)
+		1 * executionListener.afterRobotExecution(workspace)
 	}
 	
 	void "Runs before and after scripts and aggregates results"() {
@@ -223,7 +230,8 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		workspaceService.createWorkspace() >> workDir
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace([:]) >> workspace
 		io.notExists(workDir.resolve("outputs.yml")) >> false
 		ExecutionCustomizer executionCustomizer = Mock() {
 			_ >> it
@@ -236,7 +244,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, java.util.Collections.emptyMap())
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, [:], [:])
 		
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
@@ -287,14 +295,15 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		workspaceService.createWorkspace() >> workDir
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace([:]) >> workspace
 		io.notExists(workDir.resolve("outputs.yml")) >> false
 		ExecutionCustomizer executionCustomizer = Mock() {
 			_ >> it
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, java.util.Collections.emptyMap())
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, [:], [:])
 
 		then:
 		1 * processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
@@ -323,11 +332,12 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		workspaceService.createWorkspace() >> workDir
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace([:]) >> workspace
 		io.notExists(workDir.resolve("outputs.yml")) >> false
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, java.util.Collections.emptyMap())
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, [:], [:])
 
 		then:
 		3 * processService.execute(_, _) >> { _, __ ->
@@ -359,7 +369,8 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
-		workspaceService.createWorkspace() >> workDir
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace([:]) >> workspace
 		io.notExists(workDir.resolve("outputs.yml")) >> true
 		ExecutionCustomizer executionCustomizer = Mock() {
 			_ >> it

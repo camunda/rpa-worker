@@ -6,6 +6,7 @@ import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.robot.RobotExecutionListener
 import io.camunda.rpa.worker.robot.RobotService
 import io.camunda.rpa.worker.script.RobotScript
+import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
@@ -40,11 +41,12 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		String scriptBody = "the-script-body"
 		Map<String, Object> inputVariables = [foo: 'bar']
 		Map<String, Object> outputVariables = [baz: 'bat']
-		Path workspace = Paths.get("/path/to/workspace123/")
+		Path workspaceDir = Paths.get("/path/to/workspace123/")
+		Workspace workspace = new Workspace("workspace123", workspaceDir)
 
 		and:
-		Path workspaceFile1 = workspace.resolve("output/file1.txt")
-		Path workspaceFile2 = workspace.resolve("output/file2.xlsx")
+		Path workspaceFile1 = workspaceDir.resolve("output/file1.txt")
+		Path workspaceFile2 = workspaceDir.resolve("output/file2.xlsx")
 		workspaceService.getWorkspaceFiles("workspace123") >> {
 			Stream.of(
 					new WorkspaceFile(workspace, "text/plain", 123, workspaceFile1),
@@ -62,7 +64,7 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 					new ExecutionResults(
 							[main: new ExecutionResults.ExecutionResult("main", ExecutionResults.Result.PASS, "the-output", outputVariables)], null,
 							outputVariables,
-							workspace))
+							workspaceDir))
 		}
 		
 		and:

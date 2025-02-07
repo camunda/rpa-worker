@@ -1,24 +1,27 @@
 package io.camunda.rpa.worker.zeebe
 
-
-import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
-import io.camunda.zeebe.client.ZeebeClient
+import groovy.json.JsonOutput
+import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
+import io.camunda.rpa.worker.files.api.StoreFilesRequest
+import io.camunda.rpa.worker.util.IterableMultiPart
+import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
 import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
-import io.camunda.zeebe.client.api.worker.JobClient
-import io.camunda.zeebe.client.api.worker.JobHandler
 import io.camunda.zeebe.client.api.worker.JobWorker
-import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1
-import org.spockframework.spring.SpringBean
-import org.spockframework.spring.SpringSpy
-import org.springframework.beans.factory.annotation.Autowired
+import okhttp3.MediaType
+import okhttp3.MultipartReader
+import okhttp3.ResponseBody
+import okhttp3.mockwebserver.MockResponse
+import org.springframework.core.ParameterizedTypeReference
+import org.springframework.http.HttpHeaders
+import org.springframework.http.codec.multipart.FormFieldPart
+import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Mono
 import spock.lang.Tag
 
 import java.nio.file.Files
-import java.nio.file.Path
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -61,33 +64,13 @@ The tasks
     Sleep    ${time}s
 """
 	}
-
-	@Autowired
-	ZeebeJobService service
-
-	JobWorkerBuilderStep1 builder1 = Mock() {
-		jobType(_) >> { builder2 }
-	}
-	JobHandler theJobHandler
-	JobWorkerBuilderStep1.JobWorkerBuilderStep2 builder2 = Stub() {
-		handler(_) >> { JobHandler jh -> 
-			theJobHandler = jh
-			return builder3 
-		}
-	}
-	JobWorkerBuilderStep1.JobWorkerBuilderStep3 builder3 = Mock() {
-		open() >> Stub(JobWorker)
-	}
 	
-	@SpringBean
-	ZeebeClient zeebeClient = Stub() {
-		newWorker() >> builder1
-	}
-	
-	@SpringSpy
-	WorkspaceCleanupService workspaceCleanupService
+	static final String DO_NOTHING_SCRIPT = '''\
+*** Tasks ***
+Do Nothing
+	No Operation
+'''
 
-	JobClient jobClient = Mock()
 	CountDownLatch handlerDidFinish = new CountDownLatch(1)
 
 	@Override
@@ -102,6 +85,7 @@ The tasks
 				"slow_15s": SLOW_ROBOT_SCRIPT_TEMPLATE(15),
 		        "slow_8s": SLOW_ROBOT_SCRIPT_TEMPLATE(8),
 				"env_check": ENV_CHECK_ROBOT_SCRIPT,
+				"do_nothing": DO_NOTHING_SCRIPT
 		]
 	}
 
@@ -279,8 +263,8 @@ The tasks
 		CountDownLatch handlersDidFinish = new CountDownLatch(2)
 		
 		and:
-		Queue<Path> workspaces = new LinkedList<>()
-		workspaceCleanupService.deleteWorkspace(_) >> { Path p ->
+		Queue<Workspace> workspaces = new LinkedList<>()
+		workspaceCleanupService.deleteWorkspace(_) >> { Workspace p ->
 			workspaces.add(p)
 			Mono<Void> r = callRealMethod()
 			r.block()
@@ -303,7 +287,7 @@ The tasks
 
 		then: "Workspace deleted immediately"
 		workspaces.size() == 1
-		Files.notExists(workspaces.remove())
+		Files.notExists(workspaces.remove().path())
 	}
 
 	static final String ENV_CHECK_ROBOT_SCRIPT = '''\
@@ -334,6 +318,69 @@ Assert input variable
 				handlerDidFinish.countDown()
 				return null
 			}
+		}
+	}
+
+	void "Request to store files during Zeebe job triggers upload of workspace files to Zeebe with job metadata"() {
+		given:
+		service.doInit()
+		bypassZeebeAuth()
+		withNoSecrets()
+		Workspace theWorkspace
+		workspaceCleanupService.deleteWorkspace(_) >> { Workspace w ->
+			theWorkspace = w
+			return Mono.empty()
+		}
+
+		and:
+		zeebeDocuments.setDispatcher { rr ->
+
+			new MockResponse().tap {
+				setResponseCode(201)
+				setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+				setBody(new JsonOutput().toJson([
+						'camunda.document.type': 'camunda',
+						storeId                : 'the-store',
+						documentId             : 'document-id',
+						contentHash            : 'content-hash',
+						metadata               : [fileName: 'filename']
+				]))
+			}
+		}
+		
+		and:
+		jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			variables(_) >> it
+			send() >> {
+				handlerDidFinish.countDown()
+				return null
+			}
+		}
+
+		when:
+		theJobHandler.handle(jobClient, anRpaJob([:], "do_nothing"))
+		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
+
+		and:
+		block post()
+				.uri("/file/store/${theWorkspace.path().fileName.toString()}")
+				.body(BodyInserters.fromValue(new StoreFilesRequest("**/*.robot")))
+				.retrieve()
+				.bodyToMono(new ParameterizedTypeReference<Map<String, ZeebeDocumentDescriptor>>() {})
+
+		then:
+		with(zeebeDocuments.takeRequest(1, TimeUnit.SECONDS)) { req ->
+			MultipartReader mpr = new MultipartReader(ResponseBody.create(
+					req.body.readUtf8(),
+					MediaType.parse(req.headers.get("Content-Type"))))
+
+			Map<String, FormFieldPart> parts = new IterableMultiPart(mpr).collectEntries {
+				[it.name(), it]
+			}
+
+			ZeebeDocumentDescriptor.Metadata metadata = objectMapper.readValue(parts.metadata.value(), ZeebeDocumentDescriptor.Metadata)
+			metadata.processDefinitionId() == "123"
+			metadata.processInstanceKey() == 234
 		}
 	}
 }

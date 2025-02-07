@@ -22,7 +22,8 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	@Subject
 	WorkspaceService service = new WorkspaceService(io)
 	
-	Path theWorkspace = Paths.get("/path/to/workspaces/workspace123456/").toAbsolutePath()
+	Path workspacePath = Paths.get("/path/to/workspaces/workspace123456/").toAbsolutePath()
+	Workspace theWorkspace = new Workspace("workspace123456", workspacePath)
 
 	void "Creates workspaces root dir on init"() {
 		when:
@@ -38,31 +39,33 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 		Path rootDir = service.workspacesDir
 
 		when:
-		Path workspace = service.createWorkspace()
+		Workspace workspace = service.createWorkspace()
 		
 		then:
-		1 * io.createTempDirectory(rootDir, "workspace") >> theWorkspace
-		1 * io.writeString(theWorkspace.resolve(".workspace"), "workspace123456", StandardOpenOption.CREATE_NEW)
+		1 * io.createTempDirectory(rootDir, "workspace") >> workspacePath
+		1 * io.writeString(workspacePath.resolve(".workspace"), "workspace123456", StandardOpenOption.CREATE_NEW)
 		
 		and:
-		workspace == theWorkspace
+		workspace.path() == workspacePath
 	}
 	
 	void "Returns workspace by ID"() {
 		given:
 		service.doInit()
 		
+		and:
+		io.createTempDirectory(_, "workspace") >> workspacePath
+		Workspace created = service.createWorkspace()
+		
 		when:
-		Optional<Path> workspace = service.getById("workspace123456")
+		Optional<Workspace> workspace = service.getById(created.id())
 		
 		then:
-		1 * io.notExists(theWorkspace) >> false
-		1 * io.isDirectory(theWorkspace) >> true
-		1 * io.notExists(theWorkspace.resolve(".workspace")) >> false
-		1 * io.readString(theWorkspace.resolve(".workspace")) >> "workspace123456"
+		1 * io.exists(workspacePath) >> true
+		1 * io.isDirectory(workspacePath) >> true
 		
 		and:
-		workspace.get() == theWorkspace
+		workspace.get().path() == workspacePath
 	}
 	
 	void "Returns empty when workspace is in incorrect location"() {
@@ -70,7 +73,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 		service.doInit()
 
 		when:
-		Optional<Path> workspace = service.getById("../../workspace123456")
+		Optional<Workspace> workspace = service.getById("../../workspace123456")
 
 		then:
 		! workspace.isPresent()
@@ -81,64 +84,40 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 		service.doInit()
 
 		when:
-		Optional<Path> workspace = service.getById("workspace123456")
+		Optional<Workspace> workspace = service.getById(service.createWorkspace().id())
 
 		then:
-		1 * io.notExists(theWorkspace) >> true
+		1 * io.createTempDirectory(_, "workspace") >> workspacePath
+		1 * io.exists(workspacePath) >> false
 
 		and:
 		! workspace.isPresent()
 
 		when:
-		Optional<Path> workspace2 = service.getById("workspace123456")
+		Optional<Workspace> workspace2 = service.getById(service.createWorkspace().id())
 
 		then:
-		1 * io.notExists(theWorkspace) >> false
-		1 * io.isDirectory(theWorkspace) >> false
+		1 * io.createTempDirectory(_, "workspace") >> workspacePath
+		1 * io.exists(workspacePath) >> true
+		1 * io.isDirectory(workspacePath) >> false
 
 		and:
 		! workspace2.isPresent()
 	}
 	
-	void "Returns empty when no correct workspace ID file"() {
-		given:
-		service.doInit()
-		io.notExists(theWorkspace) >> false
-		io.isDirectory(theWorkspace) >> true
-		Path workspaceIdFile = theWorkspace.resolve(".workspace")
-
-		when:
-		Optional<Path> workspace = service.getById("workspace123456")
-
-		then:
-		1 * io.notExists(workspaceIdFile) >> true
-
-		and:
-		! workspace.isPresent()
-
-		when:
-		Optional<Path> workspace2 = service.getById("workspace123456")
-
-		then:
-		1 * io.notExists(workspaceIdFile) >> false
-		1 * io.readString(workspaceIdFile) >> "workspace789"
-
-		and:
-		! workspace2.isPresent()
-	}
-
 	void "Resolves workspace file and returns correct details"() {
 		given:
 		service.doInit()
-		Path theFile = theWorkspace.resolve("path/to/file.txt")
+		Path theFile = workspacePath.resolve("path/to/file.txt")
+		io.createTempDirectory(_, "workspace") >> workspacePath
+		Workspace workspace = service.createWorkspace()
 		
 		and:
-		io.notExists(theWorkspace) >> false
-		io.isDirectory(theWorkspace) >> true
-		io.readString(theWorkspace.resolve(".workspace")) >> "workspace123456"
+		io.exists(workspacePath) >> true
+		io.isDirectory(workspacePath) >> true
 
 		when:
-		Optional<WorkspaceFile> result = service.getWorkspaceFile("workspace123456", "path/to/file.txt")
+		Optional<WorkspaceFile> result = service.getWorkspaceFile(workspace.id(), "path/to/file.txt")
 
 		then:
 		1 * io.exists(theFile) >> true
@@ -156,22 +135,24 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	void "Lists workspace files and returns correct details"() {
 		given:
 		service.doInit()
+		io.createTempDirectory(_, "workspace") >> workspacePath
+		Workspace workspace = service.createWorkspace()
 
 		and:
-		io.notExists(theWorkspace) >> false
-		io.isDirectory(theWorkspace) >> true
-		io.readString(theWorkspace.resolve(".workspace")) >> "workspace123456"
+		io.exists(workspacePath) >> true
+		io.isDirectory(workspacePath) >> true
+		io.readString(workspacePath.resolve(".workspace")) >> "workspace123456"
 		
 		and:
-		Path workspaceFile1 = theWorkspace.resolve("outputs/file1.txt")
-		Path workspaceFile2 = theWorkspace.resolve("outputs/file2.txt")
-		Path workspaceFile3 = theWorkspace.resolve("outputs/.otherfile")
+		Path workspaceFile1 = workspacePath.resolve("outputs/file1.txt")
+		Path workspaceFile2 = workspacePath.resolve("outputs/file2.txt")
+		Path workspaceFile3 = workspacePath.resolve("outputs/.otherfile")
 
 		when:
-		List<WorkspaceFile> result = service.getWorkspaceFiles("workspace123456").toList()
+		List<WorkspaceFile> result = service.getWorkspaceFiles(workspace.id()).toList()
 
 		then:
-		1 * io.walk(theWorkspace) >> {
+		1 * io.walk(workspacePath) >> {
 			Stream.of(workspaceFile1, workspaceFile2, workspaceFile3)
 		}
 		3 * io.isRegularFile(_) >> true
@@ -180,7 +161,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 		
 		and:
 		result.size() == 2
-		result.contains(new WorkspaceFile(theWorkspace, "text/plain", 123, workspaceFile1))
-		result.contains(new WorkspaceFile(theWorkspace, "text/plain", 123, workspaceFile2))
+		result.contains(new WorkspaceFile(workspace, "text/plain", 123, workspaceFile1))
+		result.contains(new WorkspaceFile(workspace, "text/plain", 123, workspaceFile2))
 	}
 }
