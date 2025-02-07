@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
+
+	public static final String ZEEBE_JOB_WORKSPACE_PROPERTY = "ZEEBE_JOB";
 	
 	static final String LINKED_RESOURCES_HEADER_NAME = "camunda::linkedResources";
 	static final String TIMEOUT_HEADER_NAME = "camunda::timeout";
@@ -111,7 +113,8 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 													.map(Duration::parse)
 													.orElse(null),
 											workspaceCleanupService::deleteWorkspace,
-											getZeebeEnvironment(job)))
+											getZeebeEnvironment(job), 
+											Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job)))
 							
 							.doOnSuccess(xr -> (switch (xr.result()) {
 								case PASS -> client

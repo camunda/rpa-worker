@@ -8,6 +8,7 @@ import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceFile;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
+import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ import reactor.core.publisher.Mono;
 import java.nio.file.PathMatcher;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.camunda.rpa.worker.util.PathUtils.fixSlashes;
@@ -51,7 +53,9 @@ class FilesController {
 
 		PathMatcher pathMatcher = io.globMatcher(request.files());
 
-		return io.supply(() -> workspaceService.getById(workspaceId)
+		Optional<Workspace> workspace = workspaceService.getById(workspaceId);
+		
+		return io.supply(() -> workspace
 						.stream()
 						.map(Workspace::path)
 						.flatMap(io::walk)
@@ -59,22 +63,32 @@ class FilesController {
 				.flatMapMany(Flux::fromStream)
 				.flatMap(p -> Mono.justOrEmpty(workspaceService.getWorkspaceFile(workspaceId, p.toString())))
 				.flatMap(p -> zeebeAuthenticationService.getAuthToken(camundaClientProperties.getZeebe().getAudience())
-						.flatMap(token -> documentClient.uploadDocument(token, toZeebeStoreDocumentRequest(p), null)))
+						.flatMap(token -> documentClient.uploadDocument(token, toZeebeStoreDocumentRequest(p, getZeebeJobInfoForWorkspace(workspace)), null)))
 				.collect(Collectors.toMap(
 						r -> r.metadata().fileName(),
 						r -> r));
 	}
 
-	private MultiValueMap<String, HttpEntity<?>> toZeebeStoreDocumentRequest(WorkspaceFile file) {
+	private record ZeebeJobInfo(String procesDefinitionId, Long processInstanceKey) {}
+	private ZeebeJobInfo getZeebeJobInfoForWorkspace(Optional<Workspace> workspace) {
+		return workspace
+				.map(w -> w.<ActivatedJob>getProperty("ZEEBE_JOB"))
+				.map(j -> new ZeebeJobInfo(
+						j.getBpmnProcessId(),
+						j.getProcessInstanceKey()))
+				.orElse(new ZeebeJobInfo(null, null));
+	}
+
+	private MultiValueMap<String, HttpEntity<?>> toZeebeStoreDocumentRequest(WorkspaceFile file, ZeebeJobInfo zeebeJobInfo) {
 		MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
 		builder.part("metadata", new ZeebeDocumentDescriptor.Metadata(
 						file.contentType(),
 						fixSlashes(file.path().getFileName()),
 						null,
-						file.size(), 
-						null /*TODO*/,
-						null /*TODO*/, 
+						file.size(),
+						zeebeJobInfo.procesDefinitionId(),
+						zeebeJobInfo.processInstanceKey(), 
 						Collections.emptyMap()))
 				.contentType(MediaType.APPLICATION_JSON);
 

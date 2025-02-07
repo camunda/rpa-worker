@@ -65,7 +65,7 @@ public class RobotService {
 			Duration timeout, 
 			RobotExecutionListener executionListener) {
 		
-		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, secrets, timeout, executionListener, Collections.emptyMap());
+		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, secrets, timeout, executionListener, Collections.emptyMap(), Collections.emptyMap());
 	}
 	
 	public Mono<ExecutionResults> execute(
@@ -76,7 +76,8 @@ public class RobotService {
 			Map<String, String> secrets,
 			Duration timeout,
 			RobotExecutionListener executionListener,
-			Map<String, String> extraEnvironment) {
+			Map<String, String> extraEnvironment, 
+			Map<String, Object> workspaceProperties) {
 
 		AtomicInteger beforeCounter = new AtomicInteger(0);
 		AtomicInteger afterCounter = new AtomicInteger(0);
@@ -94,7 +95,7 @@ public class RobotService {
 				.flatMap(s -> s)
 				.toList();
 
-		return doExecute(scripts, variables, secrets, timeout != null ? timeout : robotProperties.defaultTimeout(), Optional.ofNullable(executionListener), extraEnvironment);
+		return doExecute(scripts, variables, secrets, timeout != null ? timeout : robotProperties.defaultTimeout(), Optional.ofNullable(executionListener), extraEnvironment, workspaceProperties);
 	}
 	
 	private Mono<ExecutionResults> doExecute(
@@ -103,9 +104,10 @@ public class RobotService {
 			Map<String, String> secrets,
 			Duration timeout,
 			Optional<RobotExecutionListener> executionListener,
-			Map<String, String> extraEnvironment) {
+			Map<String, String> extraEnvironment, 
+			Map<String, Object> workspaceProperties) {
 
-		return newRobotEnvironment(scripts, variables)
+		return newRobotEnvironment(scripts, variables, workspaceProperties)
 				.flatMap(renv -> Flux.fromIterable(scripts)
 						.concatMap(script -> processService.execute(pythonInterpreter.path(), c -> c
 
@@ -167,9 +169,9 @@ public class RobotService {
 								renv.workspace().path())));
 	}
 
-	private Mono<RobotEnvironment> newRobotEnvironment(List<PreparedScript> scripts, Map<String, Object> variables) {
+	private Mono<RobotEnvironment> newRobotEnvironment(List<PreparedScript> scripts, Map<String, Object> variables, Map<String, Object> workspaceProperties) {
 		return io.supply(() -> {
-			Workspace workspace = workspaceService.createWorkspace();
+			Workspace workspace = workspaceService.createWorkspace(workspaceProperties);
 			Path varsFile = workspace.path().resolve("variables.json");
 			Path outputDir = workspace.path().resolve("output");
 			io.createDirectories(outputDir);
