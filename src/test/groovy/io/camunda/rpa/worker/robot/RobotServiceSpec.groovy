@@ -99,6 +99,9 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.arg("Task log") >> executionCustomizer
 		1 * executionCustomizer.timeout(robotProperties.defaultTimeout()) >> executionCustomizer
 		1 * executionCustomizer.bindArg("script", workDir.resolve("main.robot")) >> executionCustomizer
+		
+		and:
+		1 * executionListener.beforeScriptExecution(workspace, robotProperties.defaultTimeout())
 
 		and:
 		r.results().values().first().result() == ExecutionResults.Result.PASS
@@ -244,26 +247,31 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, [:], [:])
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, executionListener, [:], [:])
 		
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
+		1 * executionListener.beforeScriptExecution(workspace, robotProperties.defaultTimeout())
 		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var1: 'val1']
 
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_1") }) >> executionCustomizer
+		1 * executionListener.beforeScriptExecution(workspace, robotProperties.defaultTimeout())
 		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var2: 'val2']
 
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("main") }) >> executionCustomizer
+		1 * executionListener.beforeScriptExecution(workspace, robotProperties.defaultTimeout())
 		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var3: 'val3']
 
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("post_0") }) >> executionCustomizer
+		1 * executionListener.beforeScriptExecution(workspace, robotProperties.defaultTimeout())
 		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var4: 'val4']
 
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("post_1") }) >> executionCustomizer
+		1 * executionListener.beforeScriptExecution(workspace, robotProperties.defaultTimeout())
 		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var5: 'val5']
 
 		and:
@@ -303,7 +311,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, null, [:], [:])
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], [:], null, executionListener, [:], [:])
 
 		then:
 		1 * processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
@@ -311,6 +319,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content"))
 		}
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
+		1 * executionListener.beforeScriptExecution(workspace, robotProperties.defaultTimeout())
 		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var1: 'val1']
 
 		then:
@@ -383,9 +392,10 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		block service.execute(script, [:], [:], Duration.ofMinutes(3), null)
+		block service.execute(script, [:], [:], Duration.ofMinutes(3), executionListener)
 
 		then:
 		1 * executionCustomizer.timeout(Duration.ofMinutes(3)) >> executionCustomizer
+		1 * executionListener.beforeScriptExecution(workspace, Duration.ofMinutes(3))
 	}
 }

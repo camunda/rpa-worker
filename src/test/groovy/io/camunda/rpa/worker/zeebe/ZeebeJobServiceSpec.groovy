@@ -17,6 +17,7 @@ import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
 import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
+import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import io.camunda.zeebe.client.api.worker.JobClient
 import io.camunda.zeebe.client.api.worker.JobHandler
@@ -103,15 +104,23 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * robotService.execute(script, [], [], _, _, null, _, expectedExtraEnv, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job]) >> { _, __, ___, ____, _____, ______, RobotExecutionListener executionListener, _______, ________ ->
+			executionListener.beforeScriptExecution(workspace, Duration.ofMinutes(1))
 			executionListener.afterRobotExecution(workspace)
-			Mono.just(new ExecutionResults(
+			return Mono.just(new ExecutionResults(
 					[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", expectedOutputVars)],
 					Result.PASS,
 					expectedOutputVars, 
 					Stub(Path)))
 		}
+		
+		then:
+		1 * zeebeClient.newUpdateJobCommand(job) >> Mock(UpdateJobCommandStep1) {
+			1 * updateTimeout(Duration.ofMinutes(1)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
+				1 * send()
+			}
+		}
 
-		and:
+		then:
 		1 * jobClient.newCompleteCommand(job) >> Mock(CompleteJobCommandStep1) {
 			1 * variables(expectedOutputVars) >> it
 			1 * send()

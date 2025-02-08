@@ -129,11 +129,14 @@ public class RobotService {
 										.arg("--report").arg("none")
 										.arg("--logtitle").arg("Task log")
 										.bindArg("script", renv.workspace().path().resolve("%s.robot".formatted(script.executionKey())))
-								
+
 										.timeout(timeout)
 										.scheduleOn(robotWorkScheduler))
 
-										.flatMap(xr -> getOutputVariables(renv)
+								.doOnSubscribe(_ -> executionListener.ifPresent(
+										l -> l.beforeScriptExecution(renv.workspace(), timeout)))
+
+								.flatMap(xr -> getOutputVariables(renv)
 										.map(outputVariables -> toRobotExecutionResult(
 												script.executionKey(),
 												xr,

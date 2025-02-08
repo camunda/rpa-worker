@@ -3,10 +3,12 @@ package io.camunda.rpa.worker.zeebe;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.robot.ExecutionResults;
+import io.camunda.rpa.worker.robot.RobotExecutionListener;
 import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.secrets.SecretsService;
+import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -112,7 +114,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 											Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
 													.map(Duration::parse)
 													.orElse(null),
-											workspaceCleanupService::deleteWorkspace,
+											executionListenerFor(job),
 											getZeebeEnvironment(job), 
 											Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job)))
 							
@@ -165,6 +167,23 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 
 					.onErrorComplete()
 					.subscribe();
+		};
+	}
+
+	private RobotExecutionListener executionListenerFor(ActivatedJob job) {
+		return new RobotExecutionListener() {
+			@SuppressWarnings("ReactiveStreamsUnusedPublisher")
+			@Override
+			public void afterRobotExecution(Workspace workspace) {
+				workspaceCleanupService.deleteWorkspace(workspace);
+			}
+
+			@Override
+			public void beforeScriptExecution(Workspace workspace, Duration timeout) {
+				zeebeClient.newUpdateJobCommand(job)
+						.updateTimeout(timeout)
+						.send();
+			}
 		};
 	}
 
