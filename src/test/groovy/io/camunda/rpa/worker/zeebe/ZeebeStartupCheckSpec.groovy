@@ -28,6 +28,7 @@ class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 			getGrpcAddress() >> "https://the-grpc-address".toURI()
 			getRestAddress() >> "https://the-rest-address".toURI()
 			isPreferRestOverGrpc() >> false
+			getEnabled() >> true
 		}
 	}
 	
