@@ -234,6 +234,15 @@
       "type": "android.app.Application"
     },
     {
+      "type": "apple.security.AppleProvider",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "boolean"
     },
     {
@@ -3889,6 +3898,12 @@
       "allDeclaredFields": true,
       "methods": [
         {
+          "name": "main",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        },
+        {
           "name": "webClient",
           "parameterTypes": [
             "org.springframework.web.reactive.function.client.WebClient$Builder"
@@ -4344,6 +4359,16 @@
             "io.camunda.rpa.worker.io.IO",
             "io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService",
             "io.camunda.rpa.worker.files.DocumentClient"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.workspace.WorkspaceService",
+            "io.camunda.rpa.worker.io.IO",
+            "io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService",
+            "io.camunda.rpa.worker.files.DocumentClient",
+            "io.camunda.zeebe.spring.client.properties.CamundaClientProperties"
           ]
         },
         {
@@ -8145,6 +8170,13 @@
           "name": "<init>",
           "parameterTypes": [
             "java.net.URI",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.net.URI",
             "java.net.URI"
           ]
         }
@@ -8327,6 +8359,14 @@
           "parameterTypes": [
             "io.camunda.rpa.worker.secrets.SecretsClient",
             "io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsClient",
+            "io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService",
+            "io.camunda.rpa.worker.secrets.SecretsClientProperties"
           ]
         },
         {
@@ -12186,6 +12226,12 @@
           "parameterTypes": [
             "boolean"
           ]
+        },
+        {
+          "name": "setRestAddress",
+          "parameterTypes": [
+            "java.net.URI"
+          ]
         }
       ]
     },
@@ -12247,6 +12293,15 @@
     },
     {
       "type": "io.grpc.internal.DelayedClientCall$DelayedListener$3"
+    },
+    {
+      "type": "io.grpc.internal.DnsNameResolver"
+    },
+    {
+      "type": "io.grpc.internal.DnsNameResolver$JdkAddressResolver"
+    },
+    {
+      "type": "io.grpc.internal.DnsNameResolver$Resolve"
     },
     {
       "type": "io.grpc.internal.DnsNameResolverProvider"
@@ -12676,7 +12731,13 @@
       "type": "io.netty.channel.kqueue.KQueue"
     },
     {
-      "type": "io.netty.channel.socket.nio.NioSocketChannel"
+      "type": "io.netty.channel.socket.nio.NioSocketChannel",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "io.netty.channel.unix.DatagramSocketAddress"
@@ -12768,6 +12829,15 @@
     },
     {
       "type": "io.netty.resolver.dns.DnsNameResolver$DnsResponseHandler"
+    },
+    {
+      "type": "io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "io.netty.util.AbstractReferenceCounted",
@@ -14387,6 +14457,12 @@
       "type": "java.net.ConnectExceptionCustomizer"
     },
     {
+      "type": "java.net.InetAddress"
+    },
+    {
+      "type": "java.net.InetAddress$CachedLookup"
+    },
+    {
       "type": "java.net.InetSocketAddress"
     },
     {
@@ -15650,6 +15726,12 @@
     {
       "type": "java.util.concurrent.Future",
       "allDeclaredFields": true
+    },
+    {
+      "type": "java.util.concurrent.FutureTask"
+    },
+    {
+      "type": "java.util.concurrent.ScheduledThreadPoolExecutor$ScheduledFutureTask"
     },
     {
       "type": "java.util.concurrent.ThreadFactory"
@@ -19812,6 +19894,9 @@
       "type": "org.hibernate.validator.internal.util.logging.Log_$logger_en"
     },
     {
+      "type": "org.hibernate.validator.internal.util.logging.Log_$logger_en_001"
+    },
+    {
       "type": "org.hibernate.validator.internal.util.logging.Log_$logger_en_GB"
     },
     {
@@ -19827,6 +19912,9 @@
     },
     {
       "type": "org.hibernate.validator.internal.util.logging.Messages_$bundle_en"
+    },
+    {
+      "type": "org.hibernate.validator.internal.util.logging.Messages_$bundle_en_001"
     },
     {
       "type": "org.hibernate.validator.internal.util.logging.Messages_$bundle_en_GB"
@@ -26470,6 +26558,9 @@
       "type": "org.springframework.boot.logging.AbstractLoggingSystem"
     },
     {
+      "type": "org.springframework.boot.logging.LogLevelEditor"
+    },
+    {
       "type": "org.springframework.boot.logging.LoggingSystem"
     },
     {
@@ -29788,6 +29879,9 @@
       ]
     },
     {
+      "type": "reactor.core.publisher.FluxConcatMap$ConcatMapInner"
+    },
+    {
       "type": "reactor.core.publisher.FluxConcatMapNoPrefetch$FluxConcatMapNoPrefetchSubscriber",
       "fields": [
         {
@@ -29797,6 +29891,9 @@
           "name": "state"
         }
       ]
+    },
+    {
+      "type": "reactor.core.publisher.FluxContextWrite$ContextWriteSubscriber"
     },
     {
       "type": "reactor.core.publisher.FluxCreate$BaseSink",
@@ -30235,6 +30332,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "reactor.core.publisher.MonoFlatMap$FlatMapInner"
+    },
+    {
       "type": "reactor.core.publisher.MonoFlatMap$FlatMapMain",
       "fields": [
         {
@@ -30558,6 +30658,9 @@
       ]
     },
     {
+      "type": "reactor.core.publisher.SinkManyEmitterProcessor$EmitterInner"
+    },
+    {
       "type": "reactor.core.publisher.SinksSpecs$AbstractSerializedSink",
       "fields": [
         {
@@ -30846,6 +30949,9 @@
     },
     {
       "type": "reactor.util.context.ContextView"
+    },
+    {
+      "type": "reactor.util.retry.RetryBackoffSpec"
     },
     {
       "type": "spock.config.RunnerConfiguration",
@@ -32321,6 +32427,18 @@
       "glob": "META-INF/native-image/sbom.json"
     },
     {
+      "glob": "META-INF/native/libnetty_resolver_dns_native_macos_x86_64.dylib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_resolver_dns_native_macos_x86_64.jnilib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_tcnative.dylib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_tcnative.jnilib"
+    },
+    {
       "glob": "META-INF/native/libnetty_tcnative.so"
     },
     {
@@ -32331,6 +32449,18 @@
     },
     {
       "glob": "META-INF/native/libnetty_tcnative_linux_x86_64_fedora.so"
+    },
+    {
+      "glob": "META-INF/native/libnetty_tcnative_osx_x86_64.dylib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_tcnative_osx_x86_64.jnilib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_tcnative_x86_64.dylib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_tcnative_x86_64.jnilib"
     },
     {
       "glob": "META-INF/native/libnetty_tcnative_x86_64.so"
@@ -32357,6 +32487,9 @@
       "glob": "META-INF/resources/status"
     },
     {
+      "glob": "META-INF/resources/webjars-locator.properties"
+    },
+    {
       "glob": "META-INF/sbom/application.cdx.json"
     },
     {
@@ -32370,6 +32503,9 @@
     },
     {
       "glob": "META-INF/services/io.grpc.NameResolverProvider"
+    },
+    {
+      "glob": "META-INF/services/io.swagger.v3.core.converter.ModelConverter"
     },
     {
       "glob": "META-INF/services/jakarta.el.ExpressionFactory"
@@ -32406,6 +32542,12 @@
     },
     {
       "glob": "META-INF/services/javax.management.remote.JMXConnectorServerProvider"
+    },
+    {
+      "glob": "META-INF/services/javax.xml.stream.XMLInputFactory"
+    },
+    {
+      "glob": "META-INF/services/javax.xml.transform.TransformerFactory"
     },
     {
       "glob": "META-INF/services/org.apache.groovy.json.FastStringServiceFactory"
@@ -32487,6 +32629,9 @@
     },
     {
       "glob": "application-camunda-saas.yaml"
+    },
+    {
+      "glob": "application-camunda-self-managed.yaml"
     },
     {
       "glob": "application-default.properties"
@@ -32633,6 +32778,30 @@
       "glob": "config/rpa-runtime.yml"
     },
     {
+      "glob": "config/rpa-worker-default.properties"
+    },
+    {
+      "glob": "config/rpa-worker-default.xml"
+    },
+    {
+      "glob": "config/rpa-worker-default.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-default.yml"
+    },
+    {
+      "glob": "config/rpa-worker.properties"
+    },
+    {
+      "glob": "config/rpa-worker.xml"
+    },
+    {
+      "glob": "config/rpa-worker.yaml"
+    },
+    {
+      "glob": "config/rpa-worker.yml"
+    },
+    {
       "glob": "git.properties"
     },
     {
@@ -32690,16 +32859,130 @@
       "glob": "io/camunda/rpa/runtime/zeebe/ZeebeJobWorkerManager.class"
     },
     {
+      "glob": "io/camunda/rpa/worker/"
+    },
+    {
       "glob": "io/camunda/rpa/worker/AbstractFunctionalSpec-context.xml"
     },
     {
       "glob": "io/camunda/rpa/worker/AbstractFunctionalSpecContext.groovy"
     },
     {
+      "glob": "io/camunda/rpa/worker/api/ValidatedAdvice.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/check/StartupCheck.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/check/StartupCheckService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/files/DocumentClientConfiguration.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/files/api/FilesController$RetrieveFileResult.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/files/api/FilesController$ZeebeJobInfo.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/files/api/FilesController.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/io/DefaultIO.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/io/IO.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/io/IoConfiguration.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/pexec/ProcessExecutionConfiguration.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/pexec/ProcessService$ExecutionResult.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/pexec/ProcessService$IntrospectableExecutionCustomizer.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/pexec/ProcessService$StreamHandler.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/pexec/ProcessService.class"
+    },
+    {
       "glob": "io/camunda/rpa/worker/python/PythonSetupFunctionalSpec$PythonSetupWithExtraRequirementsFunctionalSpec-context.xml"
     },
     {
       "glob": "io/camunda/rpa/worker/python/PythonSetupFunctionalSpec$PythonSetupWithExtraRequirementsFunctionalSpecContext.groovy"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/python/PythonSetupService$PythonExecutionEnvironment.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/python/PythonSetupService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/python/PythonStartupCheck.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/robot/RobotConfiguration.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/robot/RobotService$PreparedScript.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/robot/RobotService$RobotEnvironment.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/robot/RobotService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/robot/RobotStartupCheck.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/script/LocalLibraryScriptRepository.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/script/ScriptRepository.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/script/api/LocalLibraryController.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/script/api/ScriptSandboxController.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/SecretsClientConfiguration.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/SecretsService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/workspace/WorkspaceCleanupService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/workspace/WorkspaceService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/workspace/api/WorkspaceProxyController.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/ZeebeAuthenticationService$TokenWithAbsoluteExpiry.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/ZeebeAuthenticationService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/ZeebeConfiguration.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/ZeebeJobService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/ZeebeStartupCheck.class"
     },
     {
       "glob": "io/camunda/zeebe/spring/client/configuration/AnnotationProcessorConfiguration.class"
@@ -32724,6 +33007,9 @@
     },
     {
       "glob": "io/camunda/zeebe/spring/client/configuration/ZeebeClientProdAutoConfiguration.class"
+    },
+    {
+      "glob": "io/swagger/v3/oas/annotations/Hidden.class"
     },
     {
       "glob": "java/io/BufferedReader.class"
@@ -33101,10 +33387,175 @@
       "glob": "org/slf4j/impl/StaticLoggerBinder.class"
     },
     {
+      "glob": "org/springdoc/core/conditions/CacheOrGroupedOpenApiCondition$OnCacheDisabled.class"
+    },
+    {
+      "glob": "org/springdoc/core/conditions/CacheOrGroupedOpenApiCondition$OnMultipleOpenApiSupportCondition.class"
+    },
+    {
+      "glob": "org/springdoc/core/conditions/CacheOrGroupedOpenApiCondition.class"
+    },
+    {
+      "glob": "org/springdoc/core/conditions/MultipleOpenApiGroupsCondition$OnGroupConfigProperty.class"
+    },
+    {
+      "glob": "org/springdoc/core/conditions/MultipleOpenApiGroupsCondition$OnGroupedOpenApiBean.class"
+    },
+    {
+      "glob": "org/springdoc/core/conditions/MultipleOpenApiGroupsCondition$OnListGroupedOpenApiBean.class"
+    },
+    {
+      "glob": "org/springdoc/core/conditions/MultipleOpenApiGroupsCondition.class"
+    },
+    {
+      "glob": "org/springdoc/core/conditions/MultipleOpenApiSupportCondition$OnActuatorDifferentPort.class"
+    },
+    {
+      "glob": "org/springdoc/core/conditions/MultipleOpenApiSupportCondition$OnMultipleOpenApiSupportCondition.class"
+    },
+    {
+      "glob": "org/springdoc/core/conditions/MultipleOpenApiSupportCondition.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocConfiguration$OpenApiResourceAdvice.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocConfiguration$QuerydslProvider.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocConfiguration$SpringDocActuatorConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocConfiguration$SpringDocRepositoryRestConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocConfiguration$SpringDocSpringDataWebPropertiesProvider.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocConfiguration$SpringDocWebFluxSupportConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocConfiguration$WebConversionServiceConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocDataRestConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocFunctionCatalogConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocGroovyConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocHateoasConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocJacksonKotlinModuleConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocJavadocConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocKotlinConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocKotlinxConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocPageableConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocSecurityConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocSortConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocSpecPropertiesConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/configuration/SpringDocUIConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/AbstractSwaggerUiConfigProperties$Direction.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/AbstractSwaggerUiConfigProperties$SwaggerUrl.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/AbstractSwaggerUiConfigProperties.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SpringDocConfigProperties$ApiDocs.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SpringDocConfigProperties$Cache.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SpringDocConfigProperties$GroupConfig.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SpringDocConfigProperties$Groups.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SpringDocConfigProperties$ModelConverters.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SpringDocConfigProperties$SortConverter.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SpringDocConfigProperties$Webjars.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SpringDocConfigProperties.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SwaggerUiConfigProperties$Csrf.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SwaggerUiConfigProperties$SyntaxHighlight.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SwaggerUiConfigProperties.class"
+    },
+    {
+      "glob": "org/springdoc/core/properties/SwaggerUiOAuthProperties.class"
+    },
+    {
+      "glob": "org/springdoc/webflux/core/configuration/MultipleOpenApiSupportConfiguration$SpringDocWebMvcActuatorDifferentConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/webflux/core/configuration/MultipleOpenApiSupportConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/webflux/core/configuration/SpringDocWebFluxConfiguration$SpringDocWebFluxActuatorConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/webflux/core/configuration/SpringDocWebFluxConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/webflux/ui/SwaggerConfig$SwaggerActuatorWelcomeConfiguration.class"
+    },
+    {
+      "glob": "org/springdoc/webflux/ui/SwaggerConfig.class"
+    },
+    {
+      "glob": "org/springframework/aot/hint/annotation/Reflective.class"
+    },
+    {
       "glob": "org/springframework/beans/factory/Aware.class"
     },
     {
       "glob": "org/springframework/beans/factory/BeanFactoryAware.class"
+    },
+    {
+      "glob": "org/springframework/beans/factory/FactoryBean.class"
+    },
+    {
+      "glob": "org/springframework/beans/factory/InitializingBean.class"
     },
     {
       "glob": "org/springframework/beans/factory/SmartInitializingSingleton.class"
@@ -33683,6 +34134,9 @@
       "glob": "org/springframework/boot/autoconfigure/validation/ValidationAutoConfiguration.class"
     },
     {
+      "glob": "org/springframework/boot/autoconfigure/web/ConditionalOnEnabledResourceChain.class"
+    },
+    {
       "glob": "org/springframework/boot/autoconfigure/web/client/NotReactiveWebApplicationCondition$ReactiveWebApplication.class"
     },
     {
@@ -33782,6 +34236,9 @@
       "glob": "org/springframework/boot/autoconfigure/web/reactive/function/client/WebClientAutoConfiguration.class"
     },
     {
+      "glob": "org/springframework/boot/context/properties/ConfigurationProperties.class"
+    },
+    {
       "glob": "org/springframework/boot/context/properties/EnableConfigurationProperties.class"
     },
     {
@@ -33827,6 +34284,9 @@
       "glob": "org/springframework/context/ApplicationContextAware.class"
     },
     {
+      "glob": "org/springframework/context/ApplicationListener.class"
+    },
+    {
       "glob": "org/springframework/context/annotation/Conditional.class"
     },
     {
@@ -33848,6 +34308,9 @@
       "glob": "org/springframework/context/annotation/Lazy.class"
     },
     {
+      "glob": "org/springframework/context/annotation/Profile.class"
+    },
+    {
       "glob": "org/springframework/core/Ordered.class"
     },
     {
@@ -33857,10 +34320,22 @@
       "glob": "org/springframework/http/codec/CodecConfigurer.properties"
     },
     {
+      "glob": "org/springframework/web/bind/annotation/ControllerAdvice.class"
+    },
+    {
+      "glob": "org/springframework/web/bind/annotation/Mapping.class"
+    },
+    {
+      "glob": "org/springframework/web/bind/annotation/RequestMapping.class"
+    },
+    {
       "glob": "org/springframework/web/bind/annotation/ResponseBody.class"
     },
     {
       "glob": "org/springframework/web/bind/annotation/RestController.class"
+    },
+    {
+      "glob": "org/springframework/web/bind/annotation/RestControllerAdvice.class"
     },
     {
       "glob": "org/springframework/web/reactive/config/DelegatingWebFluxConfiguration.class"
@@ -34043,10 +34518,37 @@
       "glob": "rpa-runtime.yml"
     },
     {
+      "glob": "rpa-worker-default.properties"
+    },
+    {
+      "glob": "rpa-worker-default.xml"
+    },
+    {
+      "glob": "rpa-worker-default.yaml"
+    },
+    {
+      "glob": "rpa-worker-default.yml"
+    },
+    {
+      "glob": "rpa-worker.properties"
+    },
+    {
+      "glob": "rpa-worker.xml"
+    },
+    {
+      "glob": "rpa-worker.yaml"
+    },
+    {
+      "glob": "rpa-worker.yml"
+    },
+    {
       "glob": "scripts"
     },
     {
       "glob": "spring.properties"
+    },
+    {
+      "glob": "springdoc.config.properties"
     },
     {
       "glob": "static/index.html"
@@ -34495,6 +34997,10 @@
     },
     {
       "module": "java.base",
+      "glob": "jdk/internal/icu/impl/data/icudt74b/nfc.nrm"
+    },
+    {
+      "module": "java.base",
       "glob": "jdk/internal/icu/impl/data/icudt74b/nfkc.nrm"
     },
     {
@@ -34813,13 +35319,25 @@
   ],
   "jni": [
     {
+      "type": "[B"
+    },
+    {
       "type": "[Lcom.sun.management.internal.DiagnosticCommandArgumentInfo;"
     },
     {
       "type": "[Lcom.sun.management.internal.DiagnosticCommandInfo;"
     },
     {
+      "type": "[Lio.netty.resolver.dns.macos.DnsResolver;"
+    },
+    {
       "type": "[Ljava.lang.Class;"
+    },
+    {
+      "type": "[Ljava.lang.String;"
+    },
+    {
+      "type": "[[B"
     },
     {
       "type": "com.sun.management.internal.DiagnosticCommandArgumentInfo",
@@ -34986,6 +35504,26 @@
       "type": "io.netty.channel.unix.Socket"
     },
     {
+      "type": "io.netty.resolver.dns.macos.DnsResolver",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "byte[][]",
+            "int",
+            "java.lang.String[]",
+            "java.lang.String",
+            "int",
+            "int"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider"
+    },
+    {
       "type": "java.io.FileDescriptor",
       "fields": [
         {
@@ -35026,6 +35564,9 @@
     },
     {
       "type": "java.lang.RuntimeException"
+    },
+    {
+      "type": "java.lang.String"
     },
     {
       "type": "java.net.InetSocketAddress",
