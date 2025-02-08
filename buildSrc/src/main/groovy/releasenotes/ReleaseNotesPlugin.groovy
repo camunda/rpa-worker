@@ -41,7 +41,7 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 			URL template = getClass().getResource("/releasenotes_header.md")
 			TemplateEngine te = new GStringTemplateEngine()
 
-			Path exeJar = findFile(projectRoot, ".jar")
+			Path exeJar = findFile(projectRoot, "rpa-worker", ".jar")
 			Writable cooked = te.createTemplate(template).make([
 					jarFilename: exeJar.fileName.toString(),
 					jarHash    : sha256(exeJar),
@@ -65,10 +65,10 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 		return HexFormat.of().formatHex(md.digest())
 	}
 	
-	static Path findFile(Path root, String query) {
+	static Path findFile(Path root, String... queries) {
 		return Files.walk(root)
 				.filter(Files::isRegularFile)
-				.filter(p -> p.getFileName().toString().contains(query))
+				.filter(p -> Arrays.stream(queries).allMatch { query ->  p.getFileName().toString().contains(query) })
 				.findFirst()
 				.orElseThrow()
 	}
