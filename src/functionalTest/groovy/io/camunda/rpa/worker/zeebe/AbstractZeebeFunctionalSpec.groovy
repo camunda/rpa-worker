@@ -4,6 +4,7 @@ import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
+import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import io.camunda.zeebe.client.api.worker.JobClient
 import io.camunda.zeebe.client.api.worker.JobHandler
@@ -40,8 +41,11 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 	}
 
 	@SpringBean
-	ZeebeClient zeebeClient = Stub() {
+	ZeebeClient zeebeClient = Mock() {
 		newWorker() >> builder1
+		newUpdateJobCommand(_) >> Stub(UpdateJobCommandStep1) {
+			updateTimeout(_) >> Stub(UpdateJobCommandStep1.UpdateJobCommandStep2)
+		}
 	}
 
 	@SpringSpy

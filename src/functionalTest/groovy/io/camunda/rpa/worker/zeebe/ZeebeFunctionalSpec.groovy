@@ -8,13 +8,16 @@ import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
 import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
+import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import io.camunda.zeebe.client.api.worker.JobWorker
 import okhttp3.MediaType
 import okhttp3.MultipartReader
 import okhttp3.ResponseBody
 import okhttp3.mockwebserver.MockResponse
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.ParameterizedTypeReference
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.codec.multipart.FormFieldPart
 import org.springframework.web.reactive.function.BodyInserters
@@ -22,6 +25,7 @@ import reactor.core.publisher.Mono
 import spock.lang.Tag
 
 import java.nio.file.Files
+import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
@@ -70,6 +74,9 @@ The tasks
 Do Nothing
 	No Operation
 '''
+	
+	@Autowired
+	Environment environment
 
 	CountDownLatch handlerDidFinish = new CountDownLatch(1)
 
@@ -108,6 +115,13 @@ Do Nothing
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 		
 		then:
+		1 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+			1 * updateTimeout(environment.getRequiredProperty("camunda.rpa.robot.default-timeout", Duration)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
+				1 * send()
+			}
+		}
+		
+		and:
 		1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			1 * variables([anOutputVariable: 'output-variable-value']) >> it
 			1 * send() >> {
@@ -196,6 +210,13 @@ Do Nothing
 		handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
 		then:
+		5 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+			5 * updateTimeout(environment.getRequiredProperty("camunda.rpa.robot.default-timeout", Duration)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
+				5 * send()
+			}
+		}
+		
+		and:
 		1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			1 * variables([
 					anOutputVariableFrom_pre0: "output-value-from-companion",
@@ -245,6 +266,13 @@ Do Nothing
 		handlerDidFinish.awaitRequired(7, TimeUnit.SECONDS)
 
 		then:
+		1 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+			1 * updateTimeout(Duration.ofSeconds(3)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
+				1 * send()
+			}
+		}
+		
+		and:
 		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
 			1 * errorCode("ROBOT_TIMEOUT") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
 				1 * errorMessage(_) >> it
