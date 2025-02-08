@@ -32427,6 +32427,18 @@
       "glob": "META-INF/native-image/sbom.json"
     },
     {
+      "glob": "META-INF/native/libnetty_resolver_dns_native_macos.dylib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_resolver_dns_native_macos.jnilib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_resolver_dns_native_macos_aarch_64.dylib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_resolver_dns_native_macos_aarch_64.jnilib"
+    },
+    {
       "glob": "META-INF/native/libnetty_resolver_dns_native_macos_x86_64.dylib"
     },
     {
@@ -32442,6 +32454,12 @@
       "glob": "META-INF/native/libnetty_tcnative.so"
     },
     {
+      "glob": "META-INF/native/libnetty_tcnative_aarch_64.dylib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_tcnative_aarch_64.jnilib"
+    },
+    {
       "glob": "META-INF/native/libnetty_tcnative_linux_x86_64.so"
     },
     {
@@ -32449,6 +32467,12 @@
     },
     {
       "glob": "META-INF/native/libnetty_tcnative_linux_x86_64_fedora.so"
+    },
+    {
+      "glob": "META-INF/native/libnetty_tcnative_osx_aarch_64.dylib"
+    },
+    {
+      "glob": "META-INF/native/libnetty_tcnative_osx_aarch_64.jnilib"
     },
     {
       "glob": "META-INF/native/libnetty_tcnative_osx_x86_64.dylib"
