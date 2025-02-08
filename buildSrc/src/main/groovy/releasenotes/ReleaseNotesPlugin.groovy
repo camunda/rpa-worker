@@ -48,6 +48,8 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 					version    : project.version.toString(),
 					nativeLinuxAmd64Hash: sha256(findFile(projectRoot, "linux_amd64")),
 					nativeWin32Amd64Hash: sha256(findFile(projectRoot, "win32_amd64")),
+					nativeDarwinAmd64Hash: sha256(findFile(projectRoot, "darwin_amd64")),
+					nativeDarwinAarch64Hash: sha256(findFile(projectRoot, "darwin_aarch64")),
 			])
 			Path out = project.layout.buildDirectory.getAsFile().get().toPath().resolve("releasenotes_header.md")
 			out.withWriter { w -> cooked.writeTo(w) }

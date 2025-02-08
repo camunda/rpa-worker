@@ -336,6 +336,7 @@ jobs:
           files: |
             rpa-worker*linux_amd64
             rpa-worker*win32_amd64.exe
+            rpa-worker*darwin*
             *.jar
           prerelease: ${{ contains(github.ref_name, '-') }}
           preserve_order: true
