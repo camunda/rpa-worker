@@ -36,7 +36,7 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 
 	static final int ZEEBE_MOCK_AUTH_PORT = 18180
 	static final int ZEEBE_MOCK_SECRETS_PORT = 18181
-	static final int ZEEBE_MOCK_DOCUMENTS_PORT = 18182
+	static final int ZEEBE_MOCK_API_PORT = 18182
 
 	static final String ZEEBE_CLIENT_ID = "the-client-id"
 	static final String ZEEBE_CLIENT_SECRET = "the-client-secret"
@@ -71,8 +71,8 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	MockWebServer zeebeSecrets = new MockWebServer().tap {
 		start(ZEEBE_MOCK_SECRETS_PORT)
 	}
-	MockWebServer zeebeDocuments = new MockWebServer().tap {
-		start(ZEEBE_MOCK_DOCUMENTS_PORT)
+	MockWebServer zeebeApi = new MockWebServer().tap {
+		start(ZEEBE_MOCK_API_PORT)
 	}
 	
 	void bypassZeebeAuth() {
@@ -135,7 +135,7 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	void cleanup() {
 		zeebeAuth.close()
 		zeebeSecrets.close()
-		zeebeDocuments.close()
+		zeebeApi.close()
 	}
 
 	protected static <T> Function<ClientResponse, Mono<ResponseEntity<T>>> toResponseEntity(Class<T> klass) {

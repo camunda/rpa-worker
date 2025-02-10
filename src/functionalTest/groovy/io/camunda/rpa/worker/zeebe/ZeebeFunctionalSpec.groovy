@@ -362,7 +362,7 @@ Assert input variable
 		}
 
 		and:
-		zeebeDocuments.setDispatcher { rr ->
+		zeebeApi.setDispatcher { rr ->
 
 			new MockResponse().tap {
 				setResponseCode(201)
@@ -398,7 +398,7 @@ Assert input variable
 				.bodyToMono(new ParameterizedTypeReference<Map<String, ZeebeDocumentDescriptor>>() {})
 
 		then:
-		with(zeebeDocuments.takeRequest(1, TimeUnit.SECONDS)) { req ->
+		with(zeebeApi.takeRequest(1, TimeUnit.SECONDS)) { req ->
 			MultipartReader mpr = new MultipartReader(ResponseBody.create(
 					req.body.readUtf8(),
 					MediaType.parse(req.headers.get("Content-Type"))))
@@ -429,7 +429,7 @@ Assert input variable
 			withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
 			
 			and:
-			zeebeDocuments.enqueue(new MockResponse().tap {
+			zeebeApi.enqueue(new MockResponse().tap {
 				setHeader(HttpHeaders.CONTENT_TYPE, "application/vnd.camunda.rpa+json")
 				setResponseCode(200)
 				setBody(JsonOutput.toJson([
@@ -445,7 +445,7 @@ Assert input variable
 			handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 			then:
-			with(zeebeDocuments.takeRequest(2, TimeUnit.SECONDS)) { req ->
+			with(zeebeApi.takeRequest(2, TimeUnit.SECONDS)) { req ->
 				req.method == "GET"
 				req.headers[HttpHeaders.AUTHORIZATION] == "Bearer the-access-token"
 				URI.create(req.path).path == "/v2/resources/existing_1/content"
