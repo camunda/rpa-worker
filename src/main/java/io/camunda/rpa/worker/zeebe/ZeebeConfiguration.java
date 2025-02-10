@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,12 +27,20 @@ import java.util.Map;
 class ZeebeConfiguration {
 
 	private final ZeebeProperties zeebeProperties;
+	private final CamundaClientProperties camundaClientProperties;
 	
 	@Bean
 	public AuthClient authClient(WebClient.Builder webClientBuilder) {
 		return WebReactiveFeign
 				.<AuthClient>builder(webClientBuilder)
 				.target(AuthClient.class, zeebeProperties.authEndpoint().toString());
+	}
+	
+	@Bean
+	public ResourceClient resourceClient(WebClient.Builder webClientBuilder) {
+		return WebReactiveFeign
+				.<ResourceClient>builder(webClientBuilder)
+				.target(ResourceClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
 	}
 
 	@Bean

@@ -20,6 +20,7 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.codec.multipart.FormFieldPart
+import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Mono
 import spock.lang.Tag
@@ -361,7 +362,7 @@ Assert input variable
 		}
 
 		and:
-		zeebeDocuments.setDispatcher { rr ->
+		zeebeApi.setDispatcher { rr ->
 
 			new MockResponse().tap {
 				setResponseCode(201)
@@ -397,7 +398,7 @@ Assert input variable
 				.bodyToMono(new ParameterizedTypeReference<Map<String, ZeebeDocumentDescriptor>>() {})
 
 		then:
-		with(zeebeDocuments.takeRequest(1, TimeUnit.SECONDS)) { req ->
+		with(zeebeApi.takeRequest(1, TimeUnit.SECONDS)) { req ->
 			MultipartReader mpr = new MultipartReader(ResponseBody.create(
 					req.body.readUtf8(),
 					MediaType.parse(req.headers.get("Content-Type"))))
@@ -409,6 +410,55 @@ Assert input variable
 			ZeebeDocumentDescriptor.Metadata metadata = objectMapper.readValue(parts.metadata.value(), ZeebeDocumentDescriptor.Metadata)
 			metadata.processDefinitionId() == "123"
 			metadata.processInstanceKey() == 234
+		}
+	}
+	
+	@TestPropertySource(properties = "camunda.rpa.scripts.source=zeebe")
+	static class ZeebeScriptSourceFunctionalSpec extends AbstractZeebeFunctionalSpec  {
+		
+		CountDownLatch handlerDidFinish = new CountDownLatch(1)
+
+		@Override
+		Map<String, String> getScripts() {
+			return [:]
+		}
+
+		void "Runs Robot task from Zeebe, fetching script from Zeebe"() {
+			given:
+			service.doInit()
+			withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
+			
+			and:
+			zeebeApi.enqueue(new MockResponse().tap {
+				setHeader(HttpHeaders.CONTENT_TYPE, "application/vnd.camunda.rpa+json")
+				setResponseCode(200)
+				setBody(JsonOutput.toJson([
+						id                      : "existing_1",
+						name                    : "Robot Script 1", 
+						executionPlatform       : "Camunda Cloud", 
+						executionPlatformVersion: "8.7.0", 
+						script                  : SAMPLE_ROBOT_SCRIPT]))
+			})
+
+			when:
+			theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'input-variable-value']))
+			handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
+
+			then:
+			with(zeebeApi.takeRequest(2, TimeUnit.SECONDS)) { req ->
+				req.method == "GET"
+				req.headers[HttpHeaders.AUTHORIZATION] == "Bearer the-access-token"
+				URI.create(req.path).path == "/v2/resources/existing_1/content"
+			}
+			
+			and:
+			1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+				1 * variables([anOutputVariable: 'output-variable-value']) >> it
+				1 * send() >> {
+					handlerDidFinish.countDown()
+					return null
+				}
+			}
 		}
 	}
 }

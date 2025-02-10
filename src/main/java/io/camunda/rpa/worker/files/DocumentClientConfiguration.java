@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,13 +24,13 @@ import java.util.stream.Stream;
 @RequiredArgsConstructor
 class DocumentClientConfiguration {
 
-	private final DocumentClientProperties clientProperties;
+	private final CamundaClientProperties camundaClientProperties;
 
 	@Bean
 	public DocumentClient documentClient(WebClient.Builder webClientBuilder) {
 		return WebReactiveFeign
 				.<DocumentClient>builder(webClientBuilder)
-				.target(DocumentClient.class, clientProperties.documentsEndpoint().toString());
+				.target(DocumentClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
 	}
 
 	@Bean

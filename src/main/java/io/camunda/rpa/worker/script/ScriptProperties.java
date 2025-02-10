@@ -5,4 +5,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.nio.file.Path;
 
 @ConfigurationProperties("camunda.rpa.scripts")
-record ScriptProperties(Path path) { }
+record ScriptProperties(Path path, String source) { }

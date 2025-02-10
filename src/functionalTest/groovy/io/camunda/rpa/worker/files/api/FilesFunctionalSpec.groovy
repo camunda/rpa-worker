@@ -59,7 +59,7 @@ Do Nothing
 		}
 		
 		and:
-		zeebeDocuments.setDispatcher { rr ->
+		zeebeApi.setDispatcher { rr ->
 
 			MultipartReader mpr = new MultipartReader(ResponseBody.create(
 					rr.body.readUtf8(),
@@ -122,7 +122,7 @@ Do Nothing
 		}
 		
 		and:
-		zeebeDocuments.setDispatcher { rr ->
+		zeebeApi.setDispatcher { rr ->
 			String path = URI.create(rr.path).path
 			return path.endsWith("document-id-1")
 					? new MockResponse().tap {
@@ -174,7 +174,7 @@ Do Nothing
 		theWorkspace.path().resolve("input/file1.txt").text == "File 1 contents"
 		
 		and:
-		with([zeebeDocuments.takeRequest(1, TimeUnit.SECONDS), zeebeDocuments.takeRequest(1, TimeUnit.SECONDS)]) { reqs ->
+		with([zeebeApi.takeRequest(1, TimeUnit.SECONDS), zeebeApi.takeRequest(1, TimeUnit.SECONDS)]) { reqs ->
 			with(reqs.collect {  UriComponentsBuilder.fromUri(URI.create(it.path)).build().getQueryParams() }) { qs ->
 				qs.collect { it.getFirst("storeId") }
 						.every { it == "the-store" }
@@ -195,7 +195,7 @@ Do Nothing
 		}
 
 		and:
-		zeebeDocuments.setDispatcher { rr ->
+		zeebeApi.setDispatcher { rr ->
 
 			MultipartReader mpr = new MultipartReader(ResponseBody.create(
 					rr.body.readUtf8(),
