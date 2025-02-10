@@ -1,7 +1,7 @@
 package io.camunda.rpa.worker.script.api;
 
+import io.camunda.rpa.worker.script.ConfiguredScriptRepository;
 import io.camunda.rpa.worker.script.RobotScript;
-import io.camunda.rpa.worker.script.ScriptRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/script/deploy")
 class LocalLibraryController {
 	
-	private final ScriptRepository scriptRepository;
+	private final ConfiguredScriptRepository scriptRepository;
 	
 	@PostMapping
 	public Mono<ResponseEntity<?>> deployScript(@Valid @RequestBody DeployScriptRequest request) {

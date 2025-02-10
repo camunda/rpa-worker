@@ -12,7 +12,7 @@ import java.util.function.Supplier
 
 class LocalLibraryScriptRepositorySpec extends Specification implements PublisherUtils {
 
-	ScriptProperties scriptProperties = new ScriptProperties(Paths.get("/path/to/scripts/"))
+	ScriptProperties scriptProperties = new ScriptProperties(Paths.get("/path/to/scripts/"), "local")
 	IO io = Mock() {
 		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
 	}

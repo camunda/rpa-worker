@@ -20,7 +20,12 @@ class LocalLibraryScriptRepository implements ScriptRepository {
 		io.createDirectories(scriptProperties.path());
 		return this;
 	}
-	
+
+	@Override
+	public String getKey() {
+		return "local";
+	}
+
 	@Override
 	public Mono<RobotScript> findById(String id) {
 		Path script = scriptProperties.path().resolve("%s.robot".formatted(id));

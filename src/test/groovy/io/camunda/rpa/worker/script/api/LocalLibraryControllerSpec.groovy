@@ -1,8 +1,8 @@
 package io.camunda.rpa.worker.script.api
 
 import io.camunda.rpa.worker.PublisherUtils
+import io.camunda.rpa.worker.script.ConfiguredScriptRepository
 import io.camunda.rpa.worker.script.RobotScript
-import io.camunda.rpa.worker.script.ScriptRepository
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono
@@ -11,7 +11,7 @@ import spock.lang.Subject
 
 class LocalLibraryControllerSpec extends Specification implements PublisherUtils {
 	
-	ScriptRepository scriptRepository = Mock()
+	ConfiguredScriptRepository scriptRepository = Mock()
 	
 	@Subject
 	LocalLibraryController controller = new LocalLibraryController(scriptRepository)
