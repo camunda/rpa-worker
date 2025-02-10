@@ -355,9 +355,13 @@ Assert input variable
 		service.doInit()
 		bypassZeebeAuth()
 		withNoSecrets()
+		CountDownLatch handlersDidFinish = new CountDownLatch(2)
+		
+		and:
 		Workspace theWorkspace
 		workspaceCleanupService.deleteWorkspace(_) >> { Workspace w ->
 			theWorkspace = w
+			handlersDidFinish.countDown()
 			return Mono.empty()
 		}
 
@@ -381,14 +385,14 @@ Assert input variable
 		jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			variables(_) >> it
 			send() >> {
-				handlerDidFinish.countDown()
+				handlersDidFinish.countDown()
 				return null
 			}
 		}
 
 		when:
 		theJobHandler.handle(jobClient, anRpaJob([:], "do_nothing"))
-		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
+		handlersDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		and:
 		block post()
