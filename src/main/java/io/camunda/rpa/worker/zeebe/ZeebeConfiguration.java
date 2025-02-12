@@ -30,10 +30,13 @@ class ZeebeConfiguration {
 	private final CamundaClientProperties camundaClientProperties;
 	
 	@Bean
-	public AuthClient authClient(WebClient.Builder webClientBuilder) {
-		return WebReactiveFeign
-				.<AuthClient>builder(webClientBuilder)
-				.target(AuthClient.class, zeebeProperties.authEndpoint().toString());
+	public AuthClient authClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
+		AuthClient.InternalClient target = WebReactiveFeign
+				.<AuthClient.InternalClient>builder(webClientBuilder)
+				.target(AuthClient.InternalClient.class, zeebeProperties.authEndpoint().toString());
+		
+		return auth -> target.authenticate(
+				objectMapper.convertValue(auth, new TypeReference<>() {}));
 	}
 	
 	@Bean

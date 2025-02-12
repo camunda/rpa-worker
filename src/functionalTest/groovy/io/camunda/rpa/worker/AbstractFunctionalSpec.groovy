@@ -2,7 +2,6 @@ package io.camunda.rpa.worker
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import groovy.transform.Memoized
 import io.camunda.rpa.worker.io.DefaultIO
 import okhttp3.mockwebserver.Dispatcher
@@ -20,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.util.UriComponentsBuilder
 import reactor.blockhound.BlockHound
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
@@ -79,7 +79,7 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 		zeebeAuth.setDispatcher(new Dispatcher() {
 			@Override
 			MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
-				with(new JsonSlurper().parseText(recordedRequest.getBody().readUtf8()) as Map) {
+				with(decodeForm(recordedRequest.getBody().readUtf8()) as Map) {
 					assert client_id == AbstractFunctionalSpec.ZEEBE_CLIENT_ID
 					assert client_secret == AbstractFunctionalSpec.ZEEBE_CLIENT_SECRET
 					assert grant_type == "client_credentials"
@@ -147,6 +147,10 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	@Memoized
 	protected static io.camunda.rpa.worker.io.IO getAlwaysRealIO() {
 		return new DefaultIO(Schedulers.boundedElastic())
+	}
+	
+	protected static Map<String, String> decodeForm(String string) {
+		UriComponentsBuilder.fromPath("/").query(string).build().getQueryParams().asSingleValueMap()
 	}
 
 }

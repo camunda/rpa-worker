@@ -1,7 +1,6 @@
 package io.camunda.rpa.worker.secrets
 
 import groovy.json.JsonOutput
-import groovy.json.JsonSlurper
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import okhttp3.mockwebserver.MockResponse
 import org.springframework.beans.factory.annotation.Autowired
@@ -41,7 +40,7 @@ class SecretsFunctionalSpec extends AbstractFunctionalSpec {
 		
 		then:
 		with(zeebeAuth.takeRequest(2, TimeUnit.SECONDS)) { req ->
-			with(new JsonSlurper().parseText(req.getBody().readUtf8()) as Map) {
+			with(decodeForm(req.getBody().readUtf8()) as Map) {
 				client_id == AbstractFunctionalSpec.ZEEBE_CLIENT_ID
 				client_secret == AbstractFunctionalSpec.ZEEBE_CLIENT_SECRET
 				audience == "secrets.camunda.io"
