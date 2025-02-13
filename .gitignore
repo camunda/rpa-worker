@@ -37,12 +37,12 @@ out/
 .vscode/
 
 tags
-/python*/
-/scripts/
-scripts_ftest/
+**/python*/
+**/scripts/
+**/scripts_ftest/
 application-my-c8-cluster.properties
 satest.properties
 version.txt
 
-/src/main/resources/*c8*.properties
-!/src/main/resources/application-c8-local.properties
+**/src/main/resources/*c8*.properties
+!**/src/main/resources/application-c8-local.properties
