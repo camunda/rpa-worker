@@ -79,7 +79,7 @@ dependencies {
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
 //	testLogging.showStandardStreams = true
-//	jvmArgs("-agentlib:native-image-agent=config-merge-dir=${project.rootDir}/src/main/resources/META-INF/native-image/")
+//	jvmArgs("-agentlib:native-image-agent=config-merge-dir=${project.rootDir}/rpa-worker-application/src/main/resources/META-INF/native-image/")
 }
 
 tasks.named("functionalTest", Test).configure { Test task ->

@@ -3295,6 +3295,9 @@
       "type": "groovy.runtime.metaclass.org.springframework.util.LinkedMultiValueMapMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.org.springframework.util.MultiToSingleValueMapAdapterMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.org.springframework.util.MultiValueMapMetaClass"
     },
     {
@@ -3876,6 +3879,12 @@
         {
           "name": "cleanup",
           "parameterTypes": []
+        },
+        {
+          "name": "decodeForm",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         },
         {
           "name": "getAlwaysRealIO",
@@ -4560,6 +4569,12 @@
           ]
         },
         {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.zeebe.spring.client.properties.CamundaClientProperties"
+          ]
+        },
+        {
           "name": "CGLIB$SET_STATIC_CALLBACKS",
           "parameterTypes": [
             "org.springframework.cglib.proxy.Callback[]"
@@ -4600,6 +4615,10 @@
       "type": "io.camunda.rpa.worker.files.DocumentClientProperties",
       "allDeclaredFields": true,
       "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
         {
           "name": "<init>",
           "parameterTypes": [
@@ -5733,6 +5752,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$516161687",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$573883143",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -7388,6 +7415,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1115566105",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1161919274",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -9263,6 +9298,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$21517682",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$530468526",
       "fields": [
         {
@@ -9526,6 +9569,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1965063072",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$2064032651",
       "fields": [
         {
@@ -9535,6 +9586,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$314793097",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$519493961",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -9701,6 +9760,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$1989019346",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$653133701",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -10272,6 +10339,9 @@
       "type": "io.camunda.rpa.worker.zeebe.AuthClient$AuthenticationResponseCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.AuthClient$InternalClient"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.AuthClientBeanInfo"
     },
     {
@@ -10723,6 +10793,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService$SpockMock$1571078196",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService$SpockMock$1816693569",
       "fields": [
         {
@@ -10795,6 +10873,13 @@
           ]
         },
         {
+          "name": "authClient",
+          "parameterTypes": [
+            "org.springframework.web.reactive.function.client.WebClient$Builder",
+            "com.fasterxml.jackson.databind.ObjectMapper"
+          ]
+        },
+        {
           "name": "authModule",
           "parameterTypes": []
         },
@@ -10860,6 +10945,10 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeConfiguration$1",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeConfiguration$2",
       "allDeclaredFields": true
     },
     {
@@ -14012,6 +14101,14 @@
       ]
     },
     {
+      "type": "io.camunda.zeebe.spring.client.properties.CamundaClientProperties$SpockMock$1887947388",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.spring.client.properties.CamundaClientProperties$SpockMock$1968289880",
       "fields": [
         {
@@ -14165,6 +14262,14 @@
       ]
     },
     {
+      "type": "io.camunda.zeebe.spring.client.properties.common.AuthProperties$SpockMock$321138188",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.spring.client.properties.common.AuthProperties$SpockMock$596899634",
       "fields": [
         {
@@ -14250,6 +14355,14 @@
     },
     {
       "type": "io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties$SpockMock$466836053",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties$SpockMock$567337688",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -19315,6 +19428,14 @@
       ]
     },
     {
+      "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$701187163",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$746781976",
       "fields": [
         {
@@ -19327,6 +19448,14 @@
     },
     {
       "type": "org.apache.commons.exec.DefaultExecutor$BuilderCustomizer"
+    },
+    {
+      "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$1033408690",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
     },
     {
       "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$1298641089",
@@ -20963,6 +21092,76 @@
       ]
     },
     {
+      "type": "org.codehaus.groovy.runtime.dgm$355",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$356",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$357",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$358",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$359",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
       "type": "org.codehaus.groovy.runtime.dgm$36",
       "methods": [
         {
@@ -22500,6 +22699,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$50088475",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.File$SpockMock$977322593",
       "fields": [
         {
@@ -22533,6 +22740,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$2076031587",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$376477985",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -22596,6 +22811,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$635687600",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$741965069",
       "fields": [
         {
@@ -22621,6 +22844,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.Process$SpockMock$1323283351",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.Process$SpockMock$1340570220",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -23972,6 +24203,14 @@
     },
     {
       "type": "org.springframework.boot.SpringApplication$SpockMock$1406503504",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.SpringApplication$SpockMock$1425515390",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -29698,6 +29937,14 @@
       ]
     },
     {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$732637503",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$733509468",
       "fields": [
         {
@@ -31109,9 +31356,23 @@
       "type": "org.springframework.util.MimeTypeCustomizer"
     },
     {
+      "type": "org.springframework.util.MultiToSingleValueMapAdapter",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "org.springframework.util.MultiToSingleValueMapAdapterBeanInfo"
+    },
+    {
+      "type": "org.springframework.util.MultiToSingleValueMapAdapterCustomizer"
+    },
+    {
       "type": "org.springframework.util.MultiValueMap",
       "allDeclaredFields": true,
       "methods": [
+        {
+          "name": "asSingleValueMap",
+          "parameterTypes": []
+        },
         {
           "name": "fromMultiValue",
           "parameterTypes": [
@@ -31816,7 +32077,15 @@
     },
     {
       "type": "org.springframework.web.util.UriBuilder",
-      "allDeclaredFields": true
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "query",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
     },
     {
       "type": "org.springframework.web.util.UriBuilderFactory"
@@ -31838,6 +32107,12 @@
         {
           "name": "build",
           "parameterTypes": []
+        },
+        {
+          "name": "fromPath",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
         },
         {
           "name": "fromUri",
@@ -34088,6 +34363,13 @@
         "proxy": [
           "io.camunda.rpa.worker.zeebe.AuthClient",
           "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.rpa.worker.zeebe.AuthClient$InternalClient"
         ]
       }
     },
@@ -37779,6 +38061,10 @@
       "customTargetConstructorClass": "java.lang.Object"
     },
     {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$50088475",
+      "customTargetConstructorClass": "java.lang.Object"
+    },
+    {
       "type": "org.spockframework.mock.codegen.File$SpockMock$977322593",
       "customTargetConstructorClass": "java.lang.Object"
     },
@@ -37816,6 +38102,10 @@
     },
     {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$566032468",
+      "customTargetConstructorClass": "java.lang.Object"
+    },
+    {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$732637503",
       "customTargetConstructorClass": "java.lang.Object"
     },
     {
