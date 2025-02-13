@@ -1,0 +1,101 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: camunda
+  namespace: camunda
+spec:
+  repo: https://helm.camunda.io
+  chart: camunda-platform
+  targetNamespace: camunda
+  valuesContent: |-
+    global:
+      identity:
+        auth: {}
+      ingress:
+        enabled: true
+        host: "camunda.local"
+        className: "traefik"
+      image:
+        tag: "8.7.0-alpha2"
+    
+    identity:
+      image:
+        tag: "8.7.0-alpha2"
+    
+    identityKeycloak:
+      livenessProbe:
+        enabled: false
+      readinessProbe:
+        enabled: false
+      resources:
+        requests:
+          cpu: 1m
+          memory: 1m
+        limits:
+          memory: 2G
+    
+    optimize:
+      enabled: false
+
+    zeebe:
+      clusterSize: 1
+      partitionCount: 1
+      replicationFactor: 1
+      pvcSize: 10Gi
+      image:
+        tag: "8.7.0-alpha2"
+      resources:
+        requests:
+          cpu: 1m
+          memory: 1m
+    
+    zeebeGateway:
+      contextPath: "/zeebe/"
+      replicas: 1
+      service:
+        annotations:
+          traefik.ingress.kubernetes.io/service.serversscheme: h2c
+        type: LoadBalancer
+      ingress:
+        enabled: true
+        host: "zeebe.camunda.local"
+        className: "traefik"
+      image:
+        tag: "8.7.0-alpha2"
+      resources:
+        requests:
+          cpu: 1m
+          memory: 1m
+        limits: 
+          memory: 1G
+    
+    connectors:
+      enabled: false
+      inbound:
+        mode: disabled
+        
+    elasticsearch:
+      master:
+        replicaCount: 1
+        # Request smaller persistent volumes.
+        persistence:
+          size: 15Gi
+        resources:
+          requests:
+            cpu: 1m
+            memory: 1m
+          
+    operate:
+      contextPath: "/operate"
+      migration:
+        enabled: false
+      image:
+        tag: "8.7.0-alpha2"
+      requests:
+        cpu: 1m
+        memory: 1m
+        
+    tasklist:
+      enabled: false
+      contextPath: "/tasklist"
+    

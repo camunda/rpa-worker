@@ -39,7 +39,7 @@ jobs:
         if: always()
         with:
           name: unit-test-reports
-          path: build/reports/tests/test/
+          path: rpa-worker-application/build/reports/tests/test/
           retention-days: 1
           
       - name: Upload Functional Test Results
@@ -47,7 +47,7 @@ jobs:
         if: always()
         with:
           name: functional-test-reports
-          path: build/reports/tests/functionalTest/
+          path: rpa-worker-application/build/reports/tests/functionalTest/
           retention-days: 1
       
       - name: Upload JAR
@@ -55,7 +55,7 @@ jobs:
         if: github.ref_type == 'tag'
         with:
           name: executable-application-jar
-          path: build/libs/*.jar
+          path: rpa-worker-application/build/libs/*.jar
           retention-days: 1
       
       - name: Publish Test Results
@@ -63,7 +63,7 @@ jobs:
         if: always()
         with:
           files: |
-            build/test-results/**/*.xml
+            rpa-worker-application/build/test-results/**/*.xml
             
   windows_test:
     runs-on: windows-2025
@@ -71,7 +71,7 @@ jobs:
       contents: read
       checks: write
       pull-requests: write
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -87,13 +87,13 @@ jobs:
         run: |
           ./gradlew setVersion
           ./gradlew check
-          
+
       - name: Upload Unit Test Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
           name: unit-test-reports-windows
-          path: build/reports/tests/test/
+          path: rpa-worker-application/build/reports/tests/test/
           retention-days: 1
 
       - name: Upload Functional Test Results
@@ -101,9 +101,9 @@ jobs:
         if: always()
         with:
           name: functional-test-reports-windows
-          path: build/reports/tests/functionalTest/
+          path: rpa-worker-application/build/reports/tests/functionalTest/
           retention-days: 1
-          
+
       - name: Publish Windows Re-Test Results
         uses: EnricoMi/publish-unit-test-result-action/windows@v2
         if: always()
@@ -112,8 +112,8 @@ jobs:
           comment_mode: 'off'
           job_summary: false
           files: |
-            build/test-results/**/*.xml
-  
+            rpa-worker-application/build/test-results/**/*.xml
+
   images:
     needs: 
       - build
@@ -128,7 +128,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
       - name: Download Artefacts
         uses: actions/download-artifact@v4
         with:
@@ -204,7 +204,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-linux-amd64
-          path: build/native/nativeCompile/rpa-worker*
+          path: rpa-worker-application/build/native/nativeCompile/rpa-worker*
           retention-days: 1
           
   native_win32_amd64:
@@ -215,7 +215,7 @@ jobs:
     if: github.ref_type == 'tag'
     permissions:
       contents: read
-      
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -234,9 +234,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-win32-amd64
-          path: build/native/nativeCompile/rpa-worker*
+          path: rpa-worker-application/build/native/nativeCompile/rpa-worker*
           retention-days: 1
-          
+
   native_darwin_amd64:
     needs:
       - build
@@ -245,7 +245,7 @@ jobs:
     if: github.ref_type == 'tag'
     permissions:
       contents: read
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -264,9 +264,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-darwin-amd64
-          path: build/native/nativeCompile/rpa-worker*
+          path: rpa-worker-application/build/native/nativeCompile/rpa-worker*
           retention-days: 1
-          
+
   native_darwin_aarch64:
     needs:
       - build
@@ -275,7 +275,7 @@ jobs:
     if: github.ref_type == 'tag'
     permissions:
       contents: read
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -294,10 +294,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-darwin-aarch64
-          path: build/native/nativeCompile/rpa-worker*
+          path: rpa-worker-application/build/native/nativeCompile/rpa-worker*
           retention-days: 1
-  
-  release:
+          
+  e2e:
     needs:
       - build
       - windows_test
@@ -306,7 +306,66 @@ jobs:
       - native_win32_amd64
       - native_darwin_amd64
       - native_darwin_aarch64
-    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    env: 
+      E2E: "1"
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          
+      - name: Setup Camunda
+        run: |
+          echo "## Updating hosts"
+          echo -e "127.0.0.1 \t camunda.local" | sudo tee -a /etc/hosts
+          echo -e "127.0.0.1 \t zeebe.camunda.local" | sudo tee -a /etc/hosts
+          
+          echo "## Installing k3s"
+          curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sudo -E sh -s
+          sleep 10
+          timeout 2m bash -c "while true; do k3s kubectl wait --for=condition=Ready node -l node.kubernetes.io/instance-type && break ||: ; done"
+          
+          echo "## Installing Camunda"
+          k3s kubectl create ns camunda
+          k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml
+          timeout 10m bash -c "while true; do k3s kubectl get pods -n camunda; k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform && break ||: ; done"
+          
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      - name: Download Artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: native-linux-amd64
+          
+      - name: Build
+        run: |
+          export CAMUNDA_CLIENT_AUTH_CLIENTSECRET=$(k3s kubectl get secret -n camunda camunda-zeebe-identity-secret -o jsonpath='{.data.zeebe-secret}' | base64 -d | xargs)
+          export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_linux_amd64)
+          chmod +x $CAMUNDA_RPA_E2E_PATHTOWORKER
+          ./gradlew :rpa-worker-e2e-tests:check
+
+      - name: Upload E2E Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-reports
+          path: rpa-worker-e2e-tests/build/reports/tests/test/
+          retention-days: 1
+          
+      - name: Publish E2E Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          files: |
+            rpa-worker-e2e-tests/build/test-results/**/*.xml
+  
+  release:
+    needs:
+      - e2e
+    if: github.ref_type == 'tag' && ! contains(github.ref_name, 'dev')
     runs-on: ubuntu-latest
     container: "ghcr.io/camunda/rpa-worker-base-image:202501291438"
     
@@ -341,5 +400,5 @@ jobs:
           prerelease: ${{ contains(github.ref_name, '-') }}
           preserve_order: true
           generate_release_notes: true
-          body_path: build/releasenotes_header.md
+          body_path: rpa-worker-application/build/releasenotes_header.md
     

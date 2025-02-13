@@ -1,0 +1,65 @@
+plugins {
+	id 'java'
+	id 'groovy'
+	id 'idea'
+	id 'org.springframework.boot' version '3.4.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'rpa-worker.enable-preview'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(23)
+	}
+}
+
+springBoot {
+	mainClass = "io.camunda.rpa.worker.e2e.RpaWorkerE2ETestsApplication"
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url 'https://gitlab.com/api/v4/projects/50731191/packages/maven'
+	}
+}
+
+dependencies {
+	implementation project(":rpa-worker-api")
+	implementation libs.spring.boot.starter.webflux
+
+	implementation libs.camundaStarter
+	implementation libs.vavr
+	implementation libs.jackson.dataFormatYaml
+	implementation libs.reactiveFeign
+	implementation libs.javaSemver
+	implementation libs.slf4j.api
+	
+	developmentOnly libs.spring.boot.devtools
+	annotationProcessor libs.spring.boot.configurationProcessor
+	
+	compileOnly libs.lombok
+	annotationProcessor libs.lombok
+
+	testImplementation libs.reactor.test
+	testImplementation libs.spock.core
+	testImplementation libs.groovy.json
+	testImplementation libs.groovy.nio
+	testImplementation libs.mockwebserver
+	testImplementation libs.spring.boot.starter.test
+	testImplementation libs.spock.spring
+
+	testRuntimeOnly libs.junit.platformLauncher
+	testRuntimeOnly libs.byteBuddy
+	testRuntimeOnly libs.objenesis
+}
+
+tasks.withType(Test).configureEach {
+	useJUnitPlatform()
+}
