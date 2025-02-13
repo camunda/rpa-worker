@@ -31,6 +31,7 @@ repositories {
 }
 
 dependencies {
+	implementation project(":rpa-worker-api")
 	implementation libs.spring.boot.starter.webflux
 
 	implementation libs.camundaStarter

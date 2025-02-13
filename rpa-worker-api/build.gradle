@@ -1,0 +1,39 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.1'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'rpa-worker.enable-preview'
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(23)
+	}
+}
+
+springBoot {
+	mainClass = "io.camunda.rpa.worker.RpaWorkerApplication"
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven {
+		url 'https://gitlab.com/api/v4/projects/50731191/packages/maven'
+	}
+}
+
+dependencies {
+	implementation libs.spring.boot.starter.validation
+
+	implementation libs.vavr
+	implementation libs.reactiveFeign
+	
+	compileOnly libs.lombok
+	annotationProcessor libs.lombok
+}

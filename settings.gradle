@@ -5,6 +5,7 @@ plugins {
 rootProject.name = 'rpa-worker'
 
 
+include ":rpa-worker-api"
 include ":rpa-worker-application"
 
 if( ! System.getenv("CI") || System.getenv("E2E"))
