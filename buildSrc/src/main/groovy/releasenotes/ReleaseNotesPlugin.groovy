@@ -52,6 +52,7 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 					nativeDarwinAarch64Hash: sha256(findFile(projectRoot, "darwin_aarch64")),
 			])
 			Path out = project.layout.buildDirectory.getAsFile().get().toPath().resolve("releasenotes_header.md")
+			Files.createDirectories(out.parent)
 			out.withWriter { w -> cooked.writeTo(w) }
 		}
 	}
