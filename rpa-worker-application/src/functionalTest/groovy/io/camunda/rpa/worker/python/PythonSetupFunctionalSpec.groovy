@@ -46,7 +46,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 		then:
 		with(deps.stdout()) {
 			contains("robotframework")
-			contains("Camunda")
+			contains("camunda-utils")
 		}
 	}
 
