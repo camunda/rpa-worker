@@ -70,9 +70,7 @@ most of the necessary configuration for connecting to production Camunda SaaS st
 ==== Local-only Working
 
 The Zeebe startup check and subscriptions can be disabled by setting
-`camunda.client.zeebe.enabled` to *false*. 
-Although the Zeebe Client itself cannot be disabled and it will still log,
-the application will keep running allowing local working and these messages can be ignored.
+`camunda.client.zeebe.enabled` to *false*.
 
 ==== Python
 
