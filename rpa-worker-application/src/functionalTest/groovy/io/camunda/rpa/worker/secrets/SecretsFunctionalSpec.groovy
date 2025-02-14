@@ -4,9 +4,13 @@ import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import okhttp3.mockwebserver.MockResponse
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContextInitializer
+import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
+import org.springframework.mock.env.MockPropertySource
 import org.springframework.test.annotation.DirtiesContext
+import org.springframework.test.context.ContextConfiguration
 
 import java.util.concurrent.TimeUnit
 
@@ -125,5 +129,27 @@ class SecretsFunctionalSpec extends AbstractFunctionalSpec {
 
 		then:
 		zeebeAuth.takeRequest(2, TimeUnit.SECONDS)
+	}
+
+	@ContextConfiguration(initializers = [StaticPropertyProvidingInitializer])
+	static class NoSecretsFunctionalSpec extends AbstractFunctionalSpec {
+		@Autowired
+		SecretsService secretsService
+		
+		void "Returns empty secrets when not enabled"() {
+			when:
+			Map<String, String> r = block secretsService.getSecrets()
+			
+			then:
+			r == [:]
+		}
+
+		static class StaticPropertyProvidingInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+			@Override
+			void initialize(ConfigurableApplicationContext applicationContext) {
+				applicationContext.getEnvironment().propertySources.addFirst(new MockPropertySource("secretsProps")
+						.withProperty("camunda.rpa.zeebe.secrets.secrets-endpoint", ""))
+			}
+		}
 	}
 }

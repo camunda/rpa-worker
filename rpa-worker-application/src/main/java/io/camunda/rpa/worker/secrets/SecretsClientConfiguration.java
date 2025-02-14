@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactivefeign.webclient.WebReactiveFeign;
 
+import java.util.Optional;
+
 @Configuration
 @RequiredArgsConstructor
 class SecretsClientConfiguration {
@@ -16,7 +18,9 @@ class SecretsClientConfiguration {
 	public SecretsClient secretsClient(WebClient.Builder webClientBuilder) {
 		return WebReactiveFeign
 				.<SecretsClient>builder(webClientBuilder)
-				.target(SecretsClient.class, clientProperties.secretsEndpoint().toString());
+				.target(SecretsClient.class, Optional.ofNullable(clientProperties.secretsEndpoint())
+						.map(Object::toString)
+						.orElse("http://no-secrets/"));
 	}
 	
 }

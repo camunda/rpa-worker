@@ -10,12 +10,14 @@ class SecretsServiceSpec extends Specification implements PublisherUtils {
 	
 	SecretsClient secretsClient = Mock()
 	ZeebeAuthenticationService zeebeAuthService = Mock()
-	SecretsClientProperties secretsClientProperties = new SecretsClientProperties(null, "secrets-token-audience")
-
-	@Subject
-	SecretsService service = new SecretsService(secretsClient, zeebeAuthService, secretsClientProperties)
 	
 	void "Authenticates and fetches secrets"() {
+		given:
+		SecretsClientProperties secretsClientProperties = new SecretsClientProperties("http://secrets".toURI(), "secrets-token-audience")
+		
+		@Subject
+		SecretsService service = new SecretsService(secretsClient, zeebeAuthService, secretsClientProperties)
+
 		when:
 		Map<String, Object> map = block service.getSecrets()
 		
@@ -25,6 +27,24 @@ class SecretsServiceSpec extends Specification implements PublisherUtils {
 		
 		and:
 		map == [secretVar: 'secret-value']
+	}
+
+	void "Returns empty secrets when not enabled"() {
+		given:
+		SecretsClientProperties secretsClientProperties = new SecretsClientProperties(null, "secrets-token-audience")
+
+		@Subject
+		SecretsService service = new SecretsService(secretsClient, zeebeAuthService, secretsClientProperties)
+
+		when:
+		Map<String, Object> map = block service.getSecrets()
+
+		then:
+		0 * zeebeAuthService._
+		0 * secretsClient._
+
+		and:
+		map == [:]
 	}
 
 }
