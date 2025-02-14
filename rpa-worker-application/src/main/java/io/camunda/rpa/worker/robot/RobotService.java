@@ -114,6 +114,7 @@ public class RobotService {
 										.workDir(renv.workspace().path())
 										.allowExitCodes(ROBOT_TASK_FAILURE_EXIT_CODES)
 
+										.inheritEnv()
 										.env("ROBOT_ARTIFACTS", renv.artifactsDir().toAbsolutePath().toString())
 										.env(extraEnvironment)
 										.env("RPA_WORKSPACE_ID", renv.workspace().path().getFileName().toString())

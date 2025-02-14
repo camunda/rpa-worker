@@ -78,6 +78,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.workDir(workDir) >> executionCustomizer
 		1 * executionCustomizer.allowExitCodes(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES) >> executionCustomizer
 		
+		1 * executionCustomizer.inheritEnv() >> executionCustomizer
 		1 * executionCustomizer.env("ROBOT_ARTIFACTS", workDir.resolve("robot_artifacts").toAbsolutePath().toString()) >> executionCustomizer
 		1 * executionCustomizer.env([extraEnvVar: 'extra-env-var-value']) >> executionCustomizer
 		1 * executionCustomizer.env("RPA_WORKSPACE_ID", workDir.fileName.toString()) >> executionCustomizer
