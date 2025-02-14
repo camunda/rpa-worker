@@ -8,7 +8,12 @@ import org.springframework.web.reactive.function.BodyInserters
 
 import java.time.Duration
 
-class SandboxE2ESpec extends AbstractE2ESpec {
+class ScriptSandboxE2ESpec extends AbstractE2ESpec {
+
+	@Override
+	protected Map<String, String> getExtraEnvironment() {
+		[CAMUNDA_CLIENT_ZEEBE_ENABLED: "false"]
+	}
 
 	void "Evaluates script and returns result"() {
 		when:

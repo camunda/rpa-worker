@@ -4,4 +4,4 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
 @Builder
-record DeployScriptRequest(@NotBlank String id, @NotBlank String script) { }
+public record DeployScriptRequest(@NotBlank String id, @NotBlank String script) { }

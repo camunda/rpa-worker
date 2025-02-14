@@ -29,12 +29,17 @@ class AbstractE2ESpec extends Specification {
 					: (["local"] as String[])
 		}
 	}
+	
+	static final ZeebeConfiguration zeebeConfiguration = ZeebeConfiguration.get()
 
 	@Autowired
 	E2EProperties e2eProperties
 	
 	@Autowired
 	ZeebeClient zeebeClient
+	
+	@Autowired
+	RpaWorkerClient rpaWorkerClient
 	
 	@Autowired
 	private WebClient.Builder webClientBuilder
@@ -49,45 +54,19 @@ class AbstractE2ESpec extends Specification {
 	}
 
 	Map<String, String> getEnvironment() {
-		String camundaHost = e2eProperties.camundaHost() ?: "camunda.local"
-		String clientSecret = e2eProperties.clientSecret() ?: System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET")
-
-		return [
-				JSON_LOGGING_ENABLED                     : 'false',
-				CAMUNDA_CLIENT_MODE                      : 'selfmanaged',
-				CAMUNDA_CLIENT_AUTH_CLIENTID             : 'zeebe',
-				CAMUNDA_CLIENT_AUTH_CLIENTSECRET         : clientSecret,
-				CAMUNDA_CLIENT_ZEEBE_RESTADDRESS         : "http://zeebe.${camundaHost}",
-				CAMUNDA_CLIENT_ZEEBE_GRPCADDRESS         : "http://zeebe.${camundaHost}",
-				CAMUNDA_CLIENT_IDENTITY_BASEURL          : "http://${camundaHost}/auth",
-				CAMUNDA_CLIENT_AUTH_ISSUER               : "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect/token",
-				CAMUNDA_RPA_ZEEBE_AUTHENDPOINT           : "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect",
-				CAMUNDA_CLIENT_ZEEBE_BASEURL             : 'http://localhost:8080/zeebe',
-				CAMUNDA_RPA_ZEEBE_SECRETS_SECRETSENDPOINT: 'http://FIXME-no-secrets/'
-		].collectEntries { k, v -> [k, v.toString()] }
+		return (zeebeConfiguration.environment + getExtraEnvironment())
+				.collectEntries { k, v -> [k, v.toString()] }
+	}
+	
+	protected Map<String, String> getExtraEnvironment() {
+		return [:]
 	}
 
 	static class StaticPropertyProvidingInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 		@Override
 		void initialize(ConfigurableApplicationContext applicationContext) {
-			
-			String camundaHost = System.getenv("CAMUNDA_RPA_E2E_CAMUNDAHOST") ?: "camunda.local"
-			String clientSecret = System.getenv("CAMUNDA_RPA_E2E_CLIENTSECRET") 
-					?: System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET")
-					?: "9DAMljh1he"
-			
-			applicationContext.getEnvironment().propertySources.addFirst(new MockPropertySource()
-					.withProperty("camunda.client.mode", "selfmanaged")
-					.withProperty("camunda.client.auth.client-id", "zeebe")
-					.withProperty("camunda.client.auth.client-secret", clientSecret)
-					.withProperty("camunda.client.zeebe.rest-address", "http://zeebe.${camundaHost}")
-					.withProperty("camunda.client.zeebe.grpc-address", "http://zeebe.${camundaHost}")
-					.withProperty("camunda.client.identity.base-url", "http://${camundaHost}/auth/")
-					.withProperty("camunda.client.auth.issuer", "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect/token")
-					.withProperty("camunda.rpa.zeebe.auth-endpoint", "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect")
-					.withProperty("camunda.client.zeebe.base-url", 'http://localhost:8080/zeebe')
-					.withProperty("camunda.client.zeebe.audience", "zeebe.${camundaHost}")
-					.withProperty("camunda.rpa.zeebe.secrets.secrets-endpoint", 'http://FIXME-no-secrets'))
+			applicationContext.getEnvironment().propertySources.addFirst(
+					zeebeConfiguration.installProperties(new MockPropertySource()))
 		}
 	}
 
@@ -97,7 +76,9 @@ class AbstractE2ESpec extends Specification {
 		ProcessBuilder pb = new ProcessBuilder(e2eProperties.pathToWorker().toAbsolutePath().toString())
 		pb.environment().putAll(getEnvironment())
 		pb.inheritIO()
-		process = pb.start()
+		
+		if( ! zeebeConfiguration.configProperties['camunda.rpa.e2e.no-start-worker'])
+			process = pb.start()
 
 		get().uri("/actuator/health")
 				.retrieve()
@@ -107,8 +88,13 @@ class AbstractE2ESpec extends Specification {
 	}
 
 	void cleanup() {
+		if( ! process) return
 		process.toHandle().destroy()
 		process.waitFor(10, TimeUnit.SECONDS)
 		process.toHandle().destroyForcibly()
+	}
+	
+	String taskForTag(String tag) {
+		return "camunda::RPA-Task::${tag}"
 	}
 }

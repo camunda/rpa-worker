@@ -16,11 +16,11 @@ spec:
         host: "camunda.local"
         className: "traefik"
       image:
-        tag: "8.7.0-alpha2"
+        tag: "SNAPSHOT"
     
     identity:
       image:
-        tag: "8.7.0-alpha2"
+        tag: "SNAPSHOT"
     
     identityKeycloak:
       livenessProbe:
@@ -43,7 +43,7 @@ spec:
       replicationFactor: 1
       pvcSize: 10Gi
       image:
-        tag: "8.7.0-alpha2"
+        tag: "SNAPSHOT"
       resources:
         requests:
           cpu: 1m
@@ -61,7 +61,7 @@ spec:
         host: "zeebe.camunda.local"
         className: "traefik"
       image:
-        tag: "8.7.0-alpha2"
+        tag: "SNAPSHOT"
       resources:
         requests:
           cpu: 1m
@@ -90,7 +90,7 @@ spec:
       migration:
         enabled: false
       image:
-        tag: "8.7.0-alpha2"
+        tag: "SNAPSHOT"
       requests:
         cpu: 1m
         memory: 1m
