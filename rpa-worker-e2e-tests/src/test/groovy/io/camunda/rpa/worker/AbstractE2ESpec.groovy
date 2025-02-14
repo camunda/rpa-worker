@@ -102,7 +102,7 @@ class AbstractE2ESpec extends Specification {
 		get().uri("/actuator/health")
 				.retrieve()
 				.toBodilessEntity()
-				.retryWhen(Retry.backoff(3, Duration.ofSeconds(2)))
+				.retryWhen(Retry.fixedDelay(100, Duration.ofSeconds(3)))
 				.block()
 	}
 
