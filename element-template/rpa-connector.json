@@ -120,7 +120,7 @@
     {
       "group": "worker",
       "label": "Timeout",
-      "tooltip": "<div><p>A time duration defined as ISO 8601 durations format.</p><ul><li><code>PT15S</code> - 15 seconds</li><li><code>PT1H30M</code> - 1 hour and 30 minutes</li><li><code>P14D</code> - 14 days</li></ul></div>",
+      "tooltip": "<div><p>A time duration defined as ISO 8601 duration format.</p><ul><li><code>PT15S</code> - 15 seconds</li><li><code>PT1H30M</code> - 1 hour and 30 minutes</li><li><code>P14D</code> - 14 days</li></ul></div>",
       "binding": {
         "type": "zeebe:taskHeader",
         "key": "camunda::timeout"
@@ -252,7 +252,7 @@
       "group": "postrun",
       "type": "String",
       "feel": "optional",
-      "label": "PostRun Script ID",
+      "label": "Post-run Script ID",
       "binding": {
         "type": "zeebe:linkedResource",
         "linkName": "After",
@@ -269,7 +269,7 @@
     {
       "group": "postrun",
       "type": "Dropdown",
-      "label": "PostRun Script Binding",
+      "label": "Post-run Script Binding",
       "id": "bindingTypePostRun",
       "binding": {
         "type": "zeebe:linkedResource",
