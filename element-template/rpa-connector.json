@@ -133,7 +133,7 @@
       "binding": {
         "type": "zeebe:taskDefinition:type"
       },
-      "value": "{\n  label: get or else(camundaRpaWorkerLabel, \"default\"),\n  baseName: \"camunda::RPA-Task::\",\n  definitionType: baseName + label\n}.definitionType"
+      "value": "={\n  label: get or else(camundaRpaWorkerLabel, \"default\"),\n  baseName: \"camunda::RPA-Task::\",\n  definitionType: baseName + label\n}.definitionType"
     },
     {
       "group": "prerun",
