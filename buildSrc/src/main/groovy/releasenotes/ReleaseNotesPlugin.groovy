@@ -42,6 +42,7 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 			TemplateEngine te = new GStringTemplateEngine()
 
 			Path exeJar = findFile(projectRoot, "rpa-worker", ".jar")
+			Path elementTemplate = findElementTemplate(projectRoot)
 			Writable cooked = te.createTemplate(template).make([
 					jarFilename: exeJar.fileName.toString(),
 					jarHash    : sha256(exeJar),
@@ -50,6 +51,8 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 					nativeWin32Amd64Hash: sha256(findFile(projectRoot, "win32_amd64")),
 					nativeDarwinAmd64Hash: sha256(findFile(projectRoot, "darwin_amd64")),
 					nativeDarwinAarch64Hash: sha256(findFile(projectRoot, "darwin_aarch64")),
+					elementTemplateFilename: elementTemplate.fileName.toString(),
+					elementTemplateHash: sha256(elementTemplate),
 			])
 			Path out = project.layout.buildDirectory.getAsFile().get().toPath().resolve("releasenotes_header.md")
 			Files.createDirectories(out.parent)
@@ -70,6 +73,16 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 		return Files.walk(root)
 				.filter(Files::isRegularFile)
 				.filter(p -> Arrays.stream(queries).allMatch { query ->  p.getFileName().toString().contains(query) })
+				.findFirst()
+				.orElseThrow()
+	}
+
+	static Path findElementTemplate(Path root) {
+		return Files.walk(root)
+				.filter(Files::isRegularFile)
+				.filter(p -> p.fileName.toString() != "rpa-connector.json"
+						&& p.fileName.toString().contains("rpa-connector")
+						&& p.fileName.toString().contains(".json"))
 				.findFirst()
 				.orElseThrow()
 	}

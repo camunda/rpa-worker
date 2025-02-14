@@ -31,7 +31,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew build
+          ./gradlew build elementTemplate
           ./gradlew deletePlainJar
           
       - name: Upload Unit Test Results
@@ -56,6 +56,14 @@ jobs:
         with:
           name: executable-application-jar
           path: rpa-worker-application/build/libs/*.jar
+          retention-days: 1
+          
+      - name: Upload Element Template
+        uses: actions/upload-artifact@v4
+        if: github.ref_type == 'tag'
+        with:
+          name: element-template
+          path: element-template/build/*.json
           retention-days: 1
       
       - name: Publish Test Results
@@ -397,6 +405,7 @@ jobs:
             rpa-worker*win32_amd64.exe
             rpa-worker*darwin*
             *.jar
+            rpa-connector-*.json
           prerelease: ${{ contains(github.ref_name, '-') }}
           preserve_order: true
           generate_release_notes: true

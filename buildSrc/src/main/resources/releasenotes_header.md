@@ -17,6 +17,11 @@
 | Linux / aarch64 | ghcr.io/camunda/rpa-worker | ${version} |
 
 
+### Element Template
+| Asset                      | SHA-256 Hash           |
+|----------------------------|------------------------|
+| ${elementTemplateFilename} | ${elementTemplateHash} |
+
 ### Executable JAR
 
 For Java 23 or newer.
