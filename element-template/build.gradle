@@ -1,0 +1,14 @@
+import java.nio.file.Files
+
+java.nio.file.Path buildDir = project.layout.buildDirectory.asFile.get().toPath()
+
+java.nio.file.Path elementTemplate = project.layout.projectDirectory.asFile.toPath().resolve("rpa-connector.json")
+
+tasks.register("elementTemplate") {
+	doLast {
+		assert Files.exists(elementTemplate)
+		Files.createDirectories(buildDir)
+		
+		buildDir.resolve("rpa-connector-${project.version}.json").text = elementTemplate.text
+	}
+}

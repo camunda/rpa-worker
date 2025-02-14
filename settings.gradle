@@ -4,6 +4,7 @@ plugins {
 
 rootProject.name = 'rpa-worker'
 
+include ":element-template"
 
 include ":rpa-worker-api"
 include ":rpa-worker-application"
