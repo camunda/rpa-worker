@@ -3,11 +3,14 @@ package io.camunda.rpa.worker.zeebe;
 import io.camunda.rpa.worker.RpaWorkerApplication;
 import io.camunda.rpa.worker.check.StartupCheck;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.spring.client.actuator.ZeebeClientHealthIndicator;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import io.camunda.zeebe.spring.client.properties.common.AuthProperties;
 import io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.logging.LogLevel;
+import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
@@ -31,8 +34,7 @@ class ZeebeStartupCheck implements StartupCheck<ZeebeReadyEvent> {
 	public Mono<ZeebeReadyEvent> check() {
 		
 		if( ! camundaClientProperties.getZeebe().getEnabled())
-			return Mono.<ZeebeReadyEvent>empty()
-					.doOnSubscribe(_ -> log.atInfo().log("Zeebe check skipped as client is not enabled"));
+			return zeebeNotEnabled();
 		
 		return Mono.fromCompletionStage(() -> zeebeClient.newTopologyRequest().send())
 				.retryWhen(Retry.backoff(NUM_ATTEMPTS, Duration.ofSeconds(2)))
@@ -55,6 +57,14 @@ class ZeebeStartupCheck implements StartupCheck<ZeebeReadyEvent> {
 						.kv("zeebe-rest-address", Optional.ofNullable(camundaClientProperties.getZeebe()).map(ZeebeClientProperties::getRestAddress).orElse(null))
 						.kv("zeebe-prefer-rest-over-grpc", Optional.ofNullable(camundaClientProperties.getZeebe()).map(ZeebeClientProperties::isPreferRestOverGrpc).orElse(null))
 						.log("Checking Zeebe connection"));
+	}
+
+	private static Mono<ZeebeReadyEvent> zeebeNotEnabled() {
+		LoggingSystem.get(ZeebeClientHealthIndicator.class.getClassLoader())
+				.setLogLevel(ZeebeClientHealthIndicator.class.getName(), LogLevel.OFF);
+		
+		return Mono.<ZeebeReadyEvent>empty()
+				.doOnSubscribe(_ -> log.atInfo().log("Zeebe check skipped as client is not enabled"));
 	}
 
 	@Override
