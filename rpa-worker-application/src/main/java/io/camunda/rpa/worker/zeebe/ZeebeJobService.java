@@ -161,7 +161,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 					
 					.doOnError(thrown -> client
 							.newFailCommand(job)
-							.retries(job.getRetries())
+							.retries(job.getRetries() - 1)
 							.errorMessage(thrown.getMessage())
 							.send())
 

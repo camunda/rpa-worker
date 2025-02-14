@@ -184,7 +184,7 @@ Do Nothing
 
 		then:
 		1 * jobClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
-			1 * retries(_) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
+			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("Script not found") }) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()

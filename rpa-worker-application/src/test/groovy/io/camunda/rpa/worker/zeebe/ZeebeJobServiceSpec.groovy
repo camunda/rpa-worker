@@ -172,7 +172,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		1 * jobClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
-			1 * retries(_) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
+			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage(_) >> it
 				1 * send()
 			}
@@ -218,7 +218,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * jobClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
-			1 * retries(_) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
+			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage(_) >> it
 				1 * send()
 			}
@@ -311,6 +311,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 			getKey() >> 123
 			getBpmnProcessId() >> "234"
 			getProcessInstanceKey() >> 345
+			getRetries() >> 3
 		}
 	}
 }

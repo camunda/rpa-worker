@@ -88,6 +88,7 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 			getVariablesAsMap() >> variables
 			getBpmnProcessId() >> "123"
 			getProcessInstanceKey() >> 234
+			getRetries() >> 3
 		}
 	}
 
