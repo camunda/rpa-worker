@@ -1,11 +1,10 @@
 package io.camunda.rpa.worker.workspace;
 
 import io.camunda.rpa.worker.io.IO;
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.Path;
@@ -18,7 +17,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
-public class WorkspaceService implements ApplicationListener<ApplicationReadyEvent> {
+public class WorkspaceService {
 
 	private final IO io;
 
@@ -27,12 +26,8 @@ public class WorkspaceService implements ApplicationListener<ApplicationReadyEve
 	@Getter(AccessLevel.PACKAGE)
 	private Path workspacesDir;
 
-	@Override
-	public void onApplicationEvent(ApplicationReadyEvent ignored) {
-		doInit();
-	}
-
-	WorkspaceService doInit() {
+	@PostConstruct
+	WorkspaceService init() {
 		workspacesDir = io.createTempDirectory("rpa-workspaces");
 		return this;
 	}
