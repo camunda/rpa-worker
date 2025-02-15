@@ -12,6 +12,7 @@ import reactor.core.scheduler.Scheduler;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.UncheckedIOException;
 import java.nio.file.CopyOption;
@@ -46,6 +47,11 @@ class DefaultIO implements IO {
 	@Override
 	public Mono<Void> run(Runnable fn) {
 		return Mono.fromRunnable(fn).subscribeOn(ioScheduler).then();
+	}
+
+	@Override
+	public <T> Mono<T> wrap(Mono<T> other) {
+		return other.subscribeOn(ioScheduler);
 	}
 
 	@Override
@@ -208,6 +214,17 @@ class DefaultIO implements IO {
 	}
 
 	@Override
+	public void write(String source, OutputStream outputStream) {
+		try {
+			OutputStreamWriter w = new OutputStreamWriter(outputStream);
+			w.write(source);
+			w.close();
+		} catch(IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
 	public boolean isRegularFile(Path path, LinkOption... linkOptions) {
 		return Files.isRegularFile(path, linkOptions);
 	}
@@ -262,6 +279,16 @@ class DefaultIO implements IO {
 	public void delete(Path path) {
 		try {
 			Files.delete(path);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
+	public boolean deleteIfExists(Path path) {
+		try {
+			return Files.deleteIfExists(path);
 		}
 		catch (IOException ioex) {
 			throw new UncheckedIOException(ioex);

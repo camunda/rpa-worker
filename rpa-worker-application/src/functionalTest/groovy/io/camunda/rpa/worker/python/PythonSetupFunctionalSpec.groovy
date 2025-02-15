@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.python
 
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.pexec.ProcessService
+import org.spockframework.spring.SpringSpy
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
@@ -79,12 +80,114 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 			
 			and: "Default requirements are installed"
 			deps.stdout().contains("robotframework")
+			
+			and: "Checksum is written for extra requirements"
+			ftestPythonEnv.parent.resolve("extra-requirements.last").text == "ec72420df5dfbdce4111f715c96338df3b7cb75f58e478d2449c9720e560de8c"
 		}
 
 		static class StaticPropertyProvidingInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 			@Override
 			void initialize(ConfigurableApplicationContext applicationContext) {
 				Path extraRequirementsFile = Files.createTempFile("requirements", ".txt")
+				extraRequirementsFile.text = "requests"
+				applicationContext.getEnvironment().propertySources.addFirst(new MockPropertySource("pythonReqs")
+						.withProperty("camunda.rpa.python.extra-requirements", extraRequirementsFile.toString()))
+			}
+		}
+	}
+
+	@TestPropertySource(properties = "camunda.rpa.python.path=python_ftest_extra/")
+	@ContextConfiguration(initializers = [StaticPropertyProvidingInitializer])
+	static class PythonSetupWithExtraRequirementsNoChangesWhenAlreadyInstalledFunctionalSpec extends AbstractFunctionalSpec {
+
+		private static Path ftestPythonEnv
+		
+		@Autowired
+		PythonSetupService pythonSetupService
+
+		@SpringSpy
+		ProcessService processService
+
+		@Autowired
+		PythonInterpreter pythonInterpreter
+		
+
+		void setupSpec() {
+			ftestPythonEnv = Paths.get("python_ftest_extra/venv/").toAbsolutePath()
+			assert ftestPythonEnv.toString().contains("python_ftest")
+			alwaysRealIO.deleteDirectoryRecursively(ftestPythonEnv.parent)
+		}
+
+		void "Skips installing extra requirements when they have not changed"() {
+			expect:
+			ftestPythonEnv.parent.resolve("extra-requirements.last").text == "ec72420df5dfbdce4111f715c96338df3b7cb75f58e478d2449c9720e560de8c"
+
+			when:
+			pythonSetupService.getObject()
+			
+			then:
+			ftestPythonEnv.parent.resolve("extra-requirements.last").text == "ec72420df5dfbdce4111f715c96338df3b7cb75f58e478d2449c9720e560de8c"
+			
+			and:
+			0 * processService._
+		}
+
+		static class StaticPropertyProvidingInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+			@Override
+			void initialize(ConfigurableApplicationContext applicationContext) {
+				Path extraRequirementsFile = Files.createTempFile("requirements", ".txt")
+				extraRequirementsFile.text = "requests"
+				applicationContext.getEnvironment().propertySources.addFirst(new MockPropertySource("pythonReqs")
+						.withProperty("camunda.rpa.python.extra-requirements", extraRequirementsFile.toString()))
+			}
+		}
+	}
+
+	@TestPropertySource(properties = "camunda.rpa.python.path=python_ftest_extra/")
+	@ContextConfiguration(initializers = [StaticPropertyProvidingInitializer])
+	static class PythonSetupWithExtraRequirementsChangedInExistingEnvironmentFunctionalSpec extends AbstractFunctionalSpec {
+
+		private static Path ftestPythonEnv
+
+		@Autowired
+		PythonSetupService pythonSetupService
+
+		@SpringSpy
+		ProcessService processService
+
+		@Autowired
+		PythonInterpreter pythonInterpreter
+		
+		static Path extraRequirementsFile
+
+
+		void setupSpec() {
+			ftestPythonEnv = Paths.get("python_ftest_extra/venv/").toAbsolutePath()
+			assert ftestPythonEnv.toString().contains("python_ftest")
+			alwaysRealIO.deleteDirectoryRecursively(ftestPythonEnv.parent)
+		}
+
+		void "Re-installs extra requirements into existing environments when they have changed"() {
+			expect:
+			ftestPythonEnv.parent.resolve("extra-requirements.last").text == "ec72420df5dfbdce4111f715c96338df3b7cb75f58e478d2449c9720e560de8c"
+
+			when:
+			extraRequirementsFile.text = "requests\nchardet"
+			
+			and:
+			pythonSetupService.getObject()
+
+			then:
+			ftestPythonEnv.parent.resolve("extra-requirements.last").text == "52c5f32fb0f9e9d921d39386dedd2c1d33ca46cbe87e96c8db9f394a1d3691a7"
+
+			and:
+			1 * processService.execute({ it.toString().contains("pip") }, _)
+		}
+
+		static class StaticPropertyProvidingInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+			@Override
+			void initialize(ConfigurableApplicationContext applicationContext) {
+				extraRequirementsFile = Files.createTempFile("requirements", ".txt")
 				extraRequirementsFile.text = "requests"
 				applicationContext.getEnvironment().propertySources.addFirst(new MockPropertySource("pythonReqs")
 						.withProperty("camunda.rpa.python.extra-requirements", extraRequirementsFile.toString()))

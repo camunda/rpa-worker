@@ -25,6 +25,8 @@ public interface IO {
 	<T> Mono<T> supply(Supplier<T> fn);
 
 	Mono<Void> run(Runnable r);
+	
+	<T> Mono<T> wrap(Mono<T> other);
 
 	<T> T withReader(Path path, IoCheckedFunction<Reader, T> fn);
 //
@@ -74,6 +76,8 @@ public interface IO {
 	boolean isRegularFile(Path path, LinkOption... linkOptions);
 
 	void delete(Path path);
+	
+	boolean deleteIfExists(Path path);
 
 	void deleteDirectoryRecursively(Path p);
 	
@@ -88,4 +92,6 @@ public interface IO {
 	OutputStream newOutputStream(Path destination, OpenOption... openOptions);
 
 	PathMatcher globMatcher(String glob);
+	
+	void write(String source, OutputStream outputStream);
 }

@@ -18,7 +18,6 @@ import java.nio.channels.Channels
 import java.nio.file.FileSystem
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
 import java.util.function.Consumer
 import java.util.function.Supplier
 import java.util.function.UnaryOperator
@@ -237,7 +236,7 @@ class PythonSetupServiceSpec extends Specification {
 		1 * io.list(_) >> Stream.of(Paths.get("aDir/"))
 	}
 
-	void "Installs user requirements when provided"() {
+	void "Installs user requirements into new environments when provided"() {
 		given:
 		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
@@ -273,14 +272,115 @@ class PythonSetupServiceSpec extends Specification {
 		then:
 		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
-		1 * io.readString(extraRequirements) >> "extra-requirements"
-		1 * io.writeString(Paths.get("/tmp/requirements.txt"), "\n\nextra-requirements", StandardOpenOption.APPEND)
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
+				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
 				_ >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
 		}
+
+		and:
+		1 * io.createTempFile("extra-requirements", ".txt") >> Paths.get("/tmp/extra-requirements.txt")
+		1 * io.readString(extraRequirements) >> "extra-requirements"
+		1 * io.newOutputStream(Paths.get("/tmp/extra-requirements.txt")) >> Stub(OutputStream)
+		1 * io.write("extra-requirements", _ as OutputStream) >> { String data, OutputStream target ->
+			new OutputStreamWriter(target).tap {
+				write(data)
+				close()
+			}
+		}
+		1 * io.notExists(Paths.get("/path/to/python/extra-requirements.last")) >> true
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * bindArg("requirementsTxt", Paths.get("/tmp/extra-requirements.txt")) >> it
+				_ >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+		}
+		1 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"), "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843", _)
+	}
+
+	void "Installs user requirements into existing environments when they have changed"() {
+		given:
+		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
+
+		and:
+		Path extraRequirements = Stub()
+
+		and:
+		@Subject
+		PythonSetupService serviceWithExtraRequirements =
+				new PythonSetupService(
+						pythonProperties.toBuilder().extraRequirements(extraRequirements).build(),
+						io,
+						processService,
+						webClient)
+
+		when:
+		serviceWithExtraRequirements.getObject()
+
+		then:
+		0 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+
+		and:
+		1 * io.createTempFile("extra-requirements", ".txt") >> Paths.get("/tmp/extra-requirements.txt")
+		1 * io.readString(extraRequirements) >> "extra-requirements"
+		1 * io.newOutputStream(Paths.get("/tmp/extra-requirements.txt")) >> Stub(OutputStream)
+		1 * io.write("extra-requirements", _ as OutputStream) >> { String data, OutputStream target ->
+			new OutputStreamWriter(target).tap {
+				write(data)
+				close()
+			}
+		}
+		1 * io.notExists(Paths.get("/path/to/python/extra-requirements.last")) >> false
+		1 * io.readString(Paths.get("/path/to/python/extra-requirements.last")) >> "old-checksum"
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * bindArg("requirementsTxt", Paths.get("/tmp/extra-requirements.txt")) >> it
+				_ >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+		}
+		1 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"), "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843", _)
+	}
+
+	void "Skips installing user requirements into existing environments when they have not changed"() {
+		given:
+		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
+
+		and:
+		Path extraRequirements = Stub()
+
+		and:
+		@Subject
+		PythonSetupService serviceWithExtraRequirements =
+				new PythonSetupService(
+						pythonProperties.toBuilder().extraRequirements(extraRequirements).build(),
+						io,
+						processService,
+						webClient)
+
+		when:
+		serviceWithExtraRequirements.getObject()
+
+		then:
+		0 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+
+		and:
+		1 * io.createTempFile("extra-requirements", ".txt") >> Paths.get("/tmp/extra-requirements.txt")
+		1 * io.readString(extraRequirements) >> "extra-requirements"
+		1 * io.newOutputStream(Paths.get("/tmp/extra-requirements.txt")) >> Stub(OutputStream)
+		1 * io.write("extra-requirements", _ as OutputStream) >> { String data, OutputStream target ->
+			new OutputStreamWriter(target).tap {
+				write(data)
+				close()
+			}
+		}
+		1 * io.notExists(Paths.get("/path/to/python/extra-requirements.last")) >> false
+		1 * io.readString(Paths.get("/path/to/python/extra-requirements.last")) >> "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843"
+		0 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _)
+		0 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"))
 	}
 
 	@RestoreSystemProperties
