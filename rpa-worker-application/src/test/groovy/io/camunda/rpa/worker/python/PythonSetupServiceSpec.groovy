@@ -78,6 +78,7 @@ class PythonSetupServiceSpec extends Specification {
 		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))
@@ -122,6 +123,7 @@ class PythonSetupServiceSpec extends Specification {
 		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		1 * processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))

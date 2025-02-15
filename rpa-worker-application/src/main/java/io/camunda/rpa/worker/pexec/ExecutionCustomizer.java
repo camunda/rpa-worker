@@ -18,4 +18,5 @@ public interface ExecutionCustomizer {
 	ExecutionCustomizer noFail();
 	ExecutionCustomizer timeout(Duration timeout);
 	ExecutionCustomizer scheduleOn(Scheduler scheduler);
+	ExecutionCustomizer silent();
 }
