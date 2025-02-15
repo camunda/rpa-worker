@@ -46,3 +46,7 @@ version.txt
 
 **/src/main/resources/*c8*.properties
 !**/src/main/resources/application-c8-local.properties
+
+!rpa-worker-application/src/functionalTest/resources/python/
+rpa-worker-application/src/functionalTest/resources/python/**
+!rpa-worker-application/src/functionalTest/resources/python/requirements-ftest.txt

@@ -27,7 +27,13 @@ class PythonSetupServiceSpec extends Specification {
 	
 	private static final String ZERO_DATA_SHA_256_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 	
-	PythonProperties pythonProperties = new PythonProperties(Paths.get("/path/to/python/"), "https://python/python".toURI(), ZERO_DATA_SHA_256_HASH, null)
+	PythonProperties pythonProperties = PythonProperties.builder()
+			.path(Paths.get("/path/to/python/"))
+			.downloadUrl("https://python/python".toURI())
+			.downloadHash(ZERO_DATA_SHA_256_HASH)
+			.requirementsName("python/requirements.txt")
+			.build()
+	
 	IO io = Mock() {
 		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
 		run(_) >> { Runnable fn -> Mono.fromRunnable(fn) }

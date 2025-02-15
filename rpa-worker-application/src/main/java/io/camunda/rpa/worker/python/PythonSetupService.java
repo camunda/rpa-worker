@@ -148,7 +148,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	private Mono<Path> writeBaseRequirements() {
 		return io.supply(() -> {
 			Path requirementsTxt = io.createTempFile("python_requirements", ".txt");
-			io.copy(getClass().getClassLoader().getResourceAsStream("python/requirements.txt"), requirementsTxt, StandardCopyOption.REPLACE_EXISTING);
+			io.copy(getClass().getClassLoader().getResourceAsStream(pythonProperties.requirementsName()), requirementsTxt, StandardCopyOption.REPLACE_EXISTING);
 			return requirementsTxt;
 		});
 	}
