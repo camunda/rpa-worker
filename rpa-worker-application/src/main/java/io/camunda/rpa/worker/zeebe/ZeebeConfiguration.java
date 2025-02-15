@@ -12,8 +12,12 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.camunda.zeebe.spring.client.actuator.ZeebeClientHealthIndicator;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.boot.actuate.health.Health;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -71,5 +75,22 @@ class ZeebeConfiguration {
 				}
 			});
 		}};
+	}
+	
+	@Bean
+	public BeanPostProcessor zeebeHealthCheckBeanPostProcessor(CamundaClientProperties camundaClientProperties) {
+		return new BeanPostProcessor() {
+			@Override
+			public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+				if ( ! camundaClientProperties.getZeebe().getEnabled()
+						&& bean instanceof ZeebeClientHealthIndicator)
+					return new ZeebeClientHealthIndicator(null) {
+						@Override
+						protected void doHealthCheck(Health.Builder builder) {}
+					};
+
+				return bean;
+			}
+		};
 	}
 }

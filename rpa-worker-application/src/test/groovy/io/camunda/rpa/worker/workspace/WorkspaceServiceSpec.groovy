@@ -27,7 +27,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 
 	void "Creates workspaces root dir on init"() {
 		when:
-		service.doInit()
+		service.init()
 		
 		then:
 		1 * io.createTempDirectory("rpa-workspaces") >> Stub(Path)
@@ -35,7 +35,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	
 	void "Creates new workspaces"() {
 		given:
-		service.doInit()
+		service.init()
 		Path rootDir = service.workspacesDir
 
 		when:
@@ -51,7 +51,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	
 	void "Returns workspace by ID"() {
 		given:
-		service.doInit()
+		service.init()
 		
 		and:
 		io.createTempDirectory(_, "workspace") >> workspacePath
@@ -70,7 +70,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	
 	void "Returns empty when workspace is in incorrect location"() {
 		given:
-		service.doInit()
+		service.init()
 
 		when:
 		Optional<Workspace> workspace = service.getById("../../workspace123456")
@@ -81,7 +81,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 
 	void "Returns empty when workspace does not exist"() {
 		given:
-		service.doInit()
+		service.init()
 
 		when:
 		Optional<Workspace> workspace = service.getById(service.createWorkspace().id())
@@ -107,7 +107,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 	
 	void "Resolves workspace file and returns correct details"() {
 		given:
-		service.doInit()
+		service.init()
 		Path theFile = workspacePath.resolve("path/to/file.txt")
 		io.createTempDirectory(_, "workspace") >> workspacePath
 		Workspace workspace = service.createWorkspace()
@@ -134,7 +134,7 @@ class WorkspaceServiceSpec extends Specification implements PublisherUtils {
 
 	void "Lists workspace files and returns correct details"() {
 		given:
-		service.doInit()
+		service.init()
 		io.createTempDirectory(_, "workspace") >> workspacePath
 		Workspace workspace = service.createWorkspace()
 
