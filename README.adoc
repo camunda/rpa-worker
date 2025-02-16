@@ -104,9 +104,8 @@ jmespath
 camunda.rpa.python.extra-requirements=extra-requirements.txt
 ----
 
-NOTE: Dependencies are only installed when initially setting up the Python environment. If the requirements list 
-changes then the existing Python environment can be deleted, and it will be recreated with the new dependencies
-the next time the RPA Worker starts.
+If the extra requirements files changes, the RPA Worker will install the new dependencies at the next restart, although
+no dependencies will be removed. If the Python environment is deleted then the RPA Worker will recreate it from scratch. 
 
 == Robot Job Execution
 
