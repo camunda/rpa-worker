@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.HexFormat;
@@ -53,6 +52,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	@Override
 	public PythonInterpreter getObject() {
 		return Mono.justOrEmpty(existingPythonEnvironment())
+				.flatMap(p -> maybeReinstallExtraRequirements().thenReturn(p))
 				.switchIfEmpty(Mono.defer(this::createPythonEnvironment))
 				.map(PythonInterpreter::new)
 				.doOnNext(pi -> log.atInfo()
@@ -65,7 +65,10 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		if (io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")))
 			return Optional.empty();
 
-		return Optional.of(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
+		return Optional.of(pythonProperties.path()
+				.resolve("venv/")
+				.resolve(pyExeEnv.binDir())
+				.resolve(pyExeEnv.pythonExe()));
 	}
 
 	private Mono<Path> createPythonEnvironment() {
@@ -79,24 +82,18 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 						.doOnSubscribe(_ -> log.atInfo()
 								.kv("dir", pythonProperties.path())
 								.log("Creating new Python environment")))
-
-				.map(_ -> pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()))
-				.flatMap(pyBinDir ->
-						writeRequirements().flatMap(requirements ->
-								processService.execute(pyBinDir.resolve(pyExeEnv.pipExe()), c -> c
-												.arg("install")
-												.arg("-r").bindArg("requirementsTxt", requirements)
-												.inheritEnv())
-
-										.doOnSubscribe(_ ->
-												log.atInfo().log("Installing Pip dependencies"))))
+				
+				.flatMap(_ -> writeBaseRequirements()
+						.flatMap(this::installWithPip)
+						.doOnSubscribe(_ -> log.atInfo().log("Installing base Python dependencies")))
+				.flatMap(_ -> maybeReinstallExtraRequirements())
 
 				.thenReturn(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
 	}
 
 	private Mono<Object> systemPython() {
 		return Flux.<Object>just("python3", "python")
-				.flatMap(exeName -> processService.execute(exeName, c -> c.arg("--version"))
+				.flatMap(exeName -> processService.execute(exeName, c -> c.silent().arg("--version"))
 						.onErrorComplete(IOException.class)
 						.filter(xr -> ! WINDOWS_NO_PYTHON_EXIT_CODES.contains(xr.exitCode()))
 						.filter(xr -> {
@@ -148,15 +145,10 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		});
 	}
 
-	private Mono<Path> writeRequirements() {
+	private Mono<Path> writeBaseRequirements() {
 		return io.supply(() -> {
 			Path requirementsTxt = io.createTempFile("python_requirements", ".txt");
-			io.copy(getClass().getClassLoader().getResourceAsStream("python/requirements.txt"), requirementsTxt, StandardCopyOption.REPLACE_EXISTING);
-			
-			Optional.ofNullable(pythonProperties.extraRequirements())
-					.map(io::readString)
-					.ifPresent(txt -> io.writeString(requirementsTxt, "\n\n" + txt, StandardOpenOption.APPEND));
-					
+			io.copy(getClass().getClassLoader().getResourceAsStream(pythonProperties.requirementsName()), requirementsTxt, StandardCopyOption.REPLACE_EXISTING);
 			return requirementsTxt;
 		});
 	}
@@ -177,7 +169,16 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 			return "pip" + exeSuffix();
 		}
 	}
-	
+
+	private Mono<String> writeWithChecksum(String string, Path destination) {
+		MessageDigest md = Try.of(() -> MessageDigest.getInstance("sha-256")).get();
+
+		return Mono.using(() -> new BufferedOutputStream(io.newOutputStream(destination)),
+				fileOut -> Mono.using(() -> new DigestOutputStream(fileOut, md),
+						digestOut -> Mono.fromRunnable(() -> io.write(string, digestOut))
+								.then(Mono.fromSupplier(() -> HexFormat.of().formatHex(digestOut.getMessageDigest().digest())))));
+	}
+
 	private Mono<Void> writeWithIntegrityCheck(Flux<DataBuffer> dataBuffers, Path destination, String expected) {
 		MessageDigest md = Try.of(() -> MessageDigest.getInstance("sha-256")).get();
 
@@ -195,5 +196,49 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 																		.kv("actual", hash)
 																		.log("Integrity check failed for Python download"))))))
 				.then();
+	}
+
+	private Mono<Void> maybeReinstallExtraRequirements() {
+		if (pythonProperties.extraRequirements() == null)
+			return Mono.<Void>empty()
+					.doOnSubscribe(_ -> log.atInfo().log("There are no extra requirements configured"));
+
+		Path extraRequirementsLastChecksumFile = pythonProperties.path().resolve("extra-requirements.last");
+
+		return io.supply(() -> io.createTempFile("extra-requirements", ".txt"))
+				.flatMap(extraRequirementsDst -> {
+					String extraRequirementsContents = io.readString(pythonProperties.extraRequirements());
+					return writeWithChecksum(extraRequirementsContents, extraRequirementsDst)
+							.filter(newExRequirementsChecksum -> io.notExists(extraRequirementsLastChecksumFile)
+									|| ! io.readString(extraRequirementsLastChecksumFile).equals(newExRequirementsChecksum))
+							
+							.doOnNext(_ -> log.atInfo()
+									.kv("source", pythonProperties.extraRequirements())
+									.log("Extra requirements have changed, re-installing"))
+
+							.switchIfEmpty(Mono.<String>empty().doOnSubscribe(_ ->
+									log.atInfo().log("Extra requirements have not changed, skipping install")))
+							
+							.flatMap(newExRequirementsChecksum -> installExtraRequirements(extraRequirementsDst, newExRequirementsChecksum));
+				});
+	}
+
+	private Mono<Void> installExtraRequirements(Path extraRequirements, String extraRequirementsChecksum) {
+		Path extraRequirementsLastChecksumFile = pythonProperties.path().resolve("extra-requirements.last");
+		return io.run(() -> io.deleteIfExists(extraRequirementsLastChecksumFile))
+				.then(installWithPip(extraRequirements)
+						.doOnSuccess(_ -> io.writeString(extraRequirementsLastChecksumFile, extraRequirementsChecksum)))
+				.then();
+	}
+
+	private Mono<ProcessService.ExecutionResult> installWithPip(Path requirements) {
+		return processService.execute(pythonProperties.path()
+						.resolve("venv/")
+						.resolve(pyExeEnv.binDir())
+						.resolve(pyExeEnv.pipExe()),
+				c -> c
+						.arg("install")
+						.arg("-r").bindArg("requirementsTxt", requirements)
+						.inheritEnv());
 	}
 }

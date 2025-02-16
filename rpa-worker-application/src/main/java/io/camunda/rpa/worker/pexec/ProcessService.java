@@ -65,6 +65,9 @@ public class ProcessService {
 
 			@Getter
 			private Scheduler scheduler = processExecutionScheduler;
+			
+			@Getter
+			private boolean silent = false;
 
 			@Override
 			public ExecutionCustomizer arg(String arg) {
@@ -130,6 +133,12 @@ public class ProcessService {
 				this.scheduler = scheduler;
 				return this;
 			}
+
+			@Override
+			public ExecutionCustomizer silent() {
+				this.silent = true;
+				return this;
+			}
 		};
 		customization.apply(executionCustomizer);
 
@@ -147,11 +156,13 @@ public class ProcessService {
 		defaultExecutor.setStreamHandler(streamHandler);
 
 		return Mono.defer(() -> Mono.fromSupplier(() -> Try.of(() -> defaultExecutor.execute(cmdLine, environment))
-						.onFailure(thrown -> log.atError()
-								.setCause(thrown)
-								.addKeyValue("stderr", streamHandler.getErrString())
-								.addKeyValue("stdout", streamHandler.getOutString())
-								.log("Process execution failed"))
+						.onFailure(thrown -> {
+							if( ! executionCustomizer.isSilent()) log.atError()
+									.setCause(thrown)
+									.addKeyValue("stderr", streamHandler.getErrString())
+									.addKeyValue("stdout", streamHandler.getOutString())
+									.log("Process execution failed");
+						})
 						.recover(ExecuteException.class, ExecuteException::getExitValue)
 						.map(exitCode -> new ExecutionResult(
 								exitCode,
@@ -169,6 +180,7 @@ public class ProcessService {
 	private interface IntrospectableExecutionCustomizer extends ExecutionCustomizer {
 		Duration getTimeout();
 		Scheduler getScheduler();
+		boolean isSilent();
 	}
 
 	static class StreamHandler extends PumpStreamHandler {
