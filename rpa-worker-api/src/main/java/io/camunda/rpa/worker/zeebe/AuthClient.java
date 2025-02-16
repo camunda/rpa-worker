@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
-interface AuthClient {
+public interface AuthClient {
 	
 	Mono<AuthenticationResponse> authenticate(AuthenticationRequest auth);
 

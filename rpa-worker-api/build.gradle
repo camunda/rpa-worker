@@ -34,6 +34,8 @@ dependencies {
 	implementation libs.vavr
 	implementation libs.reactiveFeign
 	
+	implementation libs.camundaStarter
+
 	compileOnly libs.lombok
 	annotationProcessor libs.lombok
 }

@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
 @SpringBootTest
 @ActiveProfiles(resolver = ProfileResolver)
 @ContextConfiguration(initializers = [StaticPropertyProvidingInitializer])
-class AbstractE2ESpec extends Specification {
+class AbstractE2ESpec extends Specification implements PublisherUtils {
 
 	static class ProfileResolver implements ActiveProfilesResolver {
 		@Override

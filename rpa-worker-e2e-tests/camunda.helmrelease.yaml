@@ -10,17 +10,42 @@ spec:
   valuesContent: |-
     global:
       identity:
-        auth: {}
+        auth: 
+          publicIssuerUrl: "https://camunda.local/auth/realms/camunda-platform"
+          operate:
+            redirectUrl: "https://camunda.local/operate"
       ingress:
         enabled: true
         host: "camunda.local"
         className: "traefik"
       image:
-        tag: "SNAPSHOT"
+        tag: "8.7.0-alpha4"
     
     identity:
+      contextPath: "/identity"
       image:
-        tag: "SNAPSHOT"
+        tag: "8.7.0-alpha4"
+      env:
+      - name: KEYCLOAK_CLIENTS_2_ID
+        value: e2e
+      - name: KEYCLOAK_CLIENTS_2_NAME
+        value: E2E User
+      - name: KEYCLOAK_CLIENTS_2_SECRET
+        value: e2e-client-secret
+      - name: KEYCLOAK_CLIENTS_2_REDIRECT_URIS_0
+        value: /operate/identity-callback
+      - name: KEYCLOAK_CLIENTS_2_ROOT_URL
+        value: https://v87-newtest.camunda.local
+      - name: KEYCLOAK_CLIENTS_2_TYPE
+        value: CONFIDENTIAL
+      - name: KEYCLOAK_CLIENTS_2_PERMISSIONS_0_RESOURCE_SERVER_ID
+        value: operate-api
+      - name: KEYCLOAK_CLIENTS_2_PERMISSIONS_0_DEFINITION
+        value: "read:*"
+      - name: KEYCLOAK_CLIENTS_2_PERMISSIONS_1_RESOURCE_SERVER_ID
+        value: operate-api
+      - name: KEYCLOAK_CLIENTS_2_PERMISSIONS_1_DEFINITION
+        value: "write:*"    
     
     identityKeycloak:
       livenessProbe:
@@ -43,7 +68,7 @@ spec:
       replicationFactor: 1
       pvcSize: 10Gi
       image:
-        tag: "SNAPSHOT"
+        tag: "8.7.0-alpha4"
       resources:
         requests:
           cpu: 1m
@@ -61,7 +86,7 @@ spec:
         host: "zeebe.camunda.local"
         className: "traefik"
       image:
-        tag: "SNAPSHOT"
+        tag: "8.7.0-alpha4"
       resources:
         requests:
           cpu: 1m
@@ -90,7 +115,7 @@ spec:
       migration:
         enabled: false
       image:
-        tag: "SNAPSHOT"
+        tag: "8.7.0-alpha4"
       requests:
         cpu: 1m
         memory: 1m

@@ -66,4 +66,11 @@ tasks.withType(Test).configureEach {
 	
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-martins-snapshot")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-local-snapshot")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-again-local-snapshot")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-local-ciab")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88alpha-prod")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-alpha1-local")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v87-local")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-newchart-local")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v87-newtest-local")
 }

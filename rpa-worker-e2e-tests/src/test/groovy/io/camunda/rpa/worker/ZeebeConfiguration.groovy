@@ -31,10 +31,20 @@ class ZeebeConfiguration {
 				?: System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET")
 				?: "unset"
 
+		String operateClient = overrides['camunda.rpa.e2e.operate-client']
+				?: System.getenv("CAMUNDA_RPA_E2E_OPERATECLIENT")
+				?: "e2e"
+		
+		String operateSecret = overrides['camunda.rpa.e2e.operate-client-secret']
+				?: System.getenv("CAMUNDA_RPA_E2E_OPERATECLIENTSECRET")
+				?: "e2e-client-secret"
+
 		configProperties['json.logging.enabled'] = 'false'
 		configProperties["camunda.client.mode"] = "selfmanaged"
+		configProperties["camunda.client.zeebe.enabled"] = "true"
 		configProperties["camunda.client.auth.client-id"] = "zeebe"
 		configProperties["camunda.client.auth.client-secret"] = clientSecret
+		configProperties["camunda.client.auth.operate-secret"] = operateSecret
 		configProperties["camunda.client.zeebe.rest-address"] = "http://zeebe.${camundaHost}"
 		configProperties["camunda.client.zeebe.grpc-address"] = "http://zeebe.${camundaHost}"
 		configProperties["camunda.client.identity.base-url"] = "http://${camundaHost}/auth/"
@@ -43,7 +53,10 @@ class ZeebeConfiguration {
 		configProperties["camunda.client.zeebe.base-url"] = 'http://localhost:8080/zeebe'
 		configProperties["camunda.client.zeebe.audience"] = "zeebe.${camundaHost}"
 		configProperties["camunda.rpa.zeebe.secrets.secrets-endpoint"] = 'http://FIXME-no-secrets'
-		
+		configProperties["camunda.rpa.e2e.camunda-host"] = camundaHost
+		configProperties["camunda.rpa.e2e.operate-client"] = operateClient
+		configProperties["camunda.rpa.e2e.operate-client-secret"] = operateSecret
+
 		configProperties.putAll(overrides)
 	}
 
