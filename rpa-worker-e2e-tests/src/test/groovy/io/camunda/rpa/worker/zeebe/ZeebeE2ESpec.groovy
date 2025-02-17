@@ -3,7 +3,6 @@ package io.camunda.rpa.worker.zeebe
 import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.operate.OperateClient
-import io.camunda.zeebe.client.api.response.DeploymentEvent
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
 import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Mono
@@ -24,7 +23,7 @@ class ZeebeE2ESpec extends AbstractE2ESpec {
 
 	void "Process errors with correct message when no linked resource providing main script"() {
 		when:
-		DeploymentEvent deploy = zeebeClient.newDeployResourceCommand()
+		zeebeClient.newDeployResourceCommand()
 				.addResourceFromClasspath("no_script_on_default.bpmn")
 				.send()
 				.join()

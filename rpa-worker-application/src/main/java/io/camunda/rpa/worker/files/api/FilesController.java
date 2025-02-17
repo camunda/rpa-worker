@@ -80,7 +80,7 @@ class FilesController {
 				.orElse(new ZeebeJobInfo(null, null));
 	}
 
-	private MultiValueMap<String, HttpEntity<?>> toZeebeStoreDocumentRequest(WorkspaceFile file, ZeebeJobInfo zeebeJobInfo) {
+	private static MultiValueMap<String, HttpEntity<?>> toZeebeStoreDocumentRequest(WorkspaceFile file, ZeebeJobInfo zeebeJobInfo) {
 		MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
 		builder.part("metadata", new ZeebeDocumentDescriptor.Metadata(
