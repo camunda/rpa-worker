@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-	implementation project(":rpa-worker-api")
+	implementation project(":rpa-worker-common")
 	implementation libs.spring.boot.starter.webflux
 
 	implementation libs.camundaStarter
@@ -62,4 +62,15 @@ dependencies {
 
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
+	testLogging.showStandardStreams = true
+	
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-martins-snapshot")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-local-snapshot")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-again-local-snapshot")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-local-ciab")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88alpha-prod")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-alpha1-local")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v87-local")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-newchart-local")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v87-newtest-local")
 }

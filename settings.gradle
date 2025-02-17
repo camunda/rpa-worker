@@ -6,7 +6,7 @@ rootProject.name = 'rpa-worker'
 
 include ":element-template"
 
-include ":rpa-worker-api"
+include ":rpa-worker-common"
 include ":rpa-worker-application"
 
 if( ! System.getenv("CI") || System.getenv("E2E"))
