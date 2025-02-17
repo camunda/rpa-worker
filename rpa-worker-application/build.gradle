@@ -40,7 +40,7 @@ repositories {
 }
 
 dependencies {
-	implementation project(":rpa-worker-api")
+	implementation project(":rpa-worker-common")
 	
 	implementation libs.spring.boot.starter.webflux
 	implementation libs.spring.boot.starter.actuator

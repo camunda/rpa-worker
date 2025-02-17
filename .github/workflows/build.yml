@@ -72,7 +72,8 @@ jobs:
         with:
           files: |
             rpa-worker-application/build/test-results/**/*.xml
-            
+            rpa-worker-common/build/test-results/**/*.xml
+  
   windows_test:
     runs-on: windows-2025
     permissions:
