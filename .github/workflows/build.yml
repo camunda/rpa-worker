@@ -2,6 +2,8 @@ name: Build
 
 on:
   push: {}
+  pull_request: {}
+  
   
 env:
   REGISTRY: ghcr.io
@@ -192,7 +194,7 @@ jobs:
       - build
       - windows_test
     runs-on: ubuntu-latest
-    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
       contents: read
     steps:
@@ -310,11 +312,8 @@ jobs:
     needs:
       - build
       - windows_test
-      - images
       - native_linux_amd64
-      - native_win32_amd64
-      - native_darwin_amd64
-      - native_darwin_aarch64
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     env: 
       E2E: "1"
@@ -374,6 +373,11 @@ jobs:
   
   release:
     needs:
+      - images
+      - native_linux_amd64
+      - native_win32_amd64
+      - native_darwin_amd64
+      - native_darwin_aarch64
       - e2e
     if: github.ref_type == 'tag' && ! contains(github.ref_name, 'dev')
     runs-on: ubuntu-latest
