@@ -185,6 +185,10 @@ The RPA Worker makes the following environment variables available to the Robot 
 |`PT5M` (5 minutes)
 
 3+| *Zeebe Properties*
+|camunda.client.zeebe.enabled
+|Whether the Zeebe integration should be enabled
+|`false`
+
 |camunda.rpa.zeebe.rpa-task-prefix
 |The prefix used to construct the task subscription key
 |`camunda::RPA-Task::`
@@ -193,14 +197,46 @@ The RPA Worker makes the following environment variables available to the Robot 
 |The worker tag(s) this worker should subscribe to (comma-separated)
 |`default`
 
-3+| *Secrets Client Properties*
-|camunda.rpa.zeebe.secrets.auth-endpoint
-|The authentication endpoint that should be used for authenticating before sending secrets requests
-|`https://login.cloud.camunda.io`
+|camunda.rpa.zeebe.auth-endpoint
+|The authentication endpoint that should be used for authenticating before sending requests
+|`https://login.cloud.camunda.io/oauth`
 
+|camunda.client.zeebe.audience
+|The token audience to use when authenticating for Zeebe
+|`zeebe.camunda.io`
+
+|camunda.client.region
+|The region for Camunda SaaS
+|_None_
+
+|camunda.client.cluster-id
+|The cluster ID for Camunda SaaS
+|_None_
+
+|camunda.client.zeebe.base-url
+|The region for Camunda SaaS
+|`https://${camunda.client.region}.zeebe.camunda.io/${camunda.client.cluster-id}`
+
+|camunda.client.auth.client-id
+|The client ID to use when authenticating with Zeebe
+|_None_
+
+|camunda.client.auth.client-secret
+|The client secret to use when authenticating with Zeebe
+|_None_
+
+3+| _See the 
+https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/configuration/#additional-configuration-options[Spring Zeebe Configuration Reference]
+for other supported properties_
+
+3+| *Secrets Client Properties*
 |camunda.rpa.zeebe.secrets.secrets-endpoint
 |The endpoint providing the secrets service
 |_None_ (Secrets fetching disabled)
+
+|camunda.rpa.zeebe.secrets.secrets.token-audience
+|The token audience to use when authenticating for secrets
+|`secrets.camunda.io`
 
 |===
 
