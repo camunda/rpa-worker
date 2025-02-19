@@ -32,6 +32,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.camunda.rpa.worker.util.PathUtils.fixSlashes;
 
@@ -52,22 +53,27 @@ class FilesController {
 			@Valid @RequestBody StoreFilesRequest request) {
 
 		PathMatcher pathMatcher = io.globMatcher(request.files());
-
-		Optional<Workspace> workspace = workspaceService.getById(workspaceId);
 		
-		return io.supply(() -> workspace
-						.stream()
-						.map(Workspace::path)
-						.flatMap(io::walk)
-						.map(p -> workspace.get().path().relativize(p))
-						.filter(pathMatcher::matches))
-				.flatMapMany(Flux::fromStream)
-				.flatMap(p -> Mono.justOrEmpty(workspaceService.getWorkspaceFile(workspaceId, p.toString())))
-				.flatMap(p -> zeebeAuthenticationService.getAuthToken(camundaClientProperties.getZeebe().getAudience())
-						.flatMap(token -> documentClient.uploadDocument(token, toZeebeStoreDocumentRequest(p, getZeebeJobInfoForWorkspace(workspace)), null)))
-				.collect(Collectors.toMap(
-						r -> r.metadata().fileName(),
-						r -> r));
+		return io.wrap(Mono.defer(() -> {
+			Optional<Workspace> workspace = workspaceService.getById(workspaceId);
+			Stream<WorkspaceFile> filesToStore = workspace
+					.stream()
+					.map(Workspace::path)
+					.flatMap(io::walk)
+					.map(p -> workspace.get().path().relativize(p))
+					.filter(pathMatcher::matches)
+					.flatMap(p -> workspaceService.getWorkspaceFile(workspace.get(), p.toString()).stream());
+
+			return Flux.fromStream(filesToStore)
+					.flatMap(p -> zeebeAuthenticationService.getAuthToken(camundaClientProperties.getZeebe().getAudience())
+							.flatMap(token -> documentClient.uploadDocument(
+									token,
+									toZeebeStoreDocumentRequest(p, getZeebeJobInfoForWorkspace(workspace)),
+									null)))
+					.collect(Collectors.toMap(
+							r -> r.metadata().fileName(),
+							r -> r));
+		}));
 	}
 
 	private record ZeebeJobInfo(String procesDefinitionId, Long processInstanceKey) {}
