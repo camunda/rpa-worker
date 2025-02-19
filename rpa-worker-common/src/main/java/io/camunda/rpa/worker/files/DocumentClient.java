@@ -15,17 +15,14 @@ import java.util.Map;
 public interface DocumentClient {
 	
 	@RequestLine("GET /documents/{documentId}?storeId={storeId}&contentHash={contentHash}")
-	@Headers("Authorization: Bearer {authToken}")
 	Flux<DataBuffer> getDocument(
-			@Param("authToken") String authToken,
 			@Param("documentId") String documentId, 
 			@Param("storeId") String storeId, 
 			@Param("contentHash") String contentHash);
 
 	@RequestLine("POST /documents")
-	@Headers({"Content-type: multipart/form-data", "Authorization: Bearer {authToken}"})
+	@Headers("Content-type: multipart/form-data")
 	Mono<ZeebeDocumentDescriptor> uploadDocument(
-			@Param("authToken") String authToken,
 			MultiValueMap<String, HttpEntity<?>> data, 
 			@QueryMap Map<String, String> query);
 }

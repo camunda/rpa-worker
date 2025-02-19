@@ -7,9 +7,7 @@ import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceFile;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
-import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.buffer.DataBuffer;
@@ -43,17 +41,15 @@ class FilesController {
 
 	private final WorkspaceService workspaceService;
 	private final IO io;
-	private final ZeebeAuthenticationService zeebeAuthenticationService;
 	private final DocumentClient documentClient;
-	private final CamundaClientProperties camundaClientProperties;
-	
+
 	@PostMapping("/store/{workspaceId}")
 	public Mono<Map<String, ZeebeDocumentDescriptor>> storeFiles(
 			@PathVariable String workspaceId,
 			@Valid @RequestBody StoreFilesRequest request) {
 
 		PathMatcher pathMatcher = io.globMatcher(request.files());
-		
+
 		return io.wrap(Mono.defer(() -> {
 			Optional<Workspace> workspace = workspaceService.getById(workspaceId);
 			Stream<WorkspaceFile> filesToStore = workspace
@@ -65,11 +61,9 @@ class FilesController {
 					.flatMap(p -> workspaceService.getWorkspaceFile(workspace.get(), p.toString()).stream());
 
 			return Flux.fromStream(filesToStore)
-					.flatMap(p -> zeebeAuthenticationService.getAuthToken(camundaClientProperties.getZeebe().getAudience())
-							.flatMap(token -> documentClient.uploadDocument(
-									token,
-									toZeebeStoreDocumentRequest(p, getZeebeJobInfoForWorkspace(workspace)),
-									null)))
+					.flatMap(p -> documentClient.uploadDocument(
+							toZeebeStoreDocumentRequest(p, getZeebeJobInfoForWorkspace(workspace)),
+							null))
 					.collect(Collectors.toMap(
 							r -> r.metadata().fileName(),
 							r -> r));
@@ -124,10 +118,9 @@ class FilesController {
 								: Mono.error(IllegalArgumentException::new))
 						.doOnNext(kv -> io.createDirectories(ws.path().resolve(kv.getKey()).getParent()))
 
-						.flatMap(kv -> zeebeAuthenticationService.getAuthToken(camundaClientProperties.getZeebe().getAudience())
-								.flatMap(token -> io.write(
-										documentClient.getDocument(token, kv.getValue().documentId(), kv.getValue().storeId(), kv.getValue().contentHash()),
-										ws.path().resolve(kv.getKey())))
+								.flatMap(kv -> io.write(
+										documentClient.getDocument(kv.getValue().documentId(), kv.getValue().storeId(), kv.getValue().contentHash()),
+										ws.path().resolve(kv.getKey()))
 
 								.then(Mono.just(Map.entry(kv.getKey(),
 										new RetrieveFileResult("OK", null))))
