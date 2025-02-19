@@ -78,9 +78,9 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
-		workspaceService.getWorkspaceFile("workspace123456", workspace.path().relativize(matchingWorkspaceFile1).toString()) >> Optional.of(
+		workspaceService.getWorkspaceFile(workspace, workspace.path().relativize(matchingWorkspaceFile1).toString()) >> Optional.of(
 				new WorkspaceFile(workspace, "application/pdf", 123, matchingWorkspaceFile1))
-		workspaceService.getWorkspaceFile("workspace123456", workspace.path().relativize(matchingWorkspaceFile2).toString()) >> Optional.of(
+		workspaceService.getWorkspaceFile(workspace, workspace.path().relativize(matchingWorkspaceFile2).toString()) >> Optional.of(
 				new WorkspaceFile(workspace, "application/pdf", 123, matchingWorkspaceFile2))
 
 		and:

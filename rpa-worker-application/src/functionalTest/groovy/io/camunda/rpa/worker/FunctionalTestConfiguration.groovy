@@ -1,11 +1,15 @@
 package io.camunda.rpa.worker
 
+
+import jakarta.annotation.PostConstruct
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
 import org.springframework.context.annotation.Configuration
 import org.springframework.mock.env.MockPropertySource
+import reactor.blockhound.BlockHound
 
 import java.nio.file.Files
+import java.security.SecureRandom
 
 @Configuration
 class FunctionalTestConfiguration {
@@ -29,4 +33,12 @@ class FunctionalTestConfiguration {
 		}
 	}
 	
+	@PostConstruct
+	void init() {
+		BlockHound.builder()
+				.loadIntegrations()
+				.allowBlockingCallsInside(ResourceBundle.class.name, "getBundle")
+				.allowBlockingCallsInside(SecureRandom.class.name, "next")
+				.install()
+	}
 }
