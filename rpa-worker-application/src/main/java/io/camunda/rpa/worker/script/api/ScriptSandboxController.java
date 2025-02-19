@@ -9,6 +9,7 @@ import io.camunda.rpa.worker.workspace.WorkspaceFile;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +30,7 @@ import static io.camunda.rpa.worker.util.PathUtils.fixSlashes;
 @RestController
 @RequestMapping("/script/evaluate")
 @RequiredArgsConstructor
+@Slf4j
 class ScriptSandboxController {
 	
 	private final RobotService robotService;
@@ -39,19 +41,29 @@ class ScriptSandboxController {
 
 	@PostMapping
 	public Mono<EvaluateScriptResponse> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request) {
+
+		log.atInfo().log("Received script for sandbox evaluation");
+
 		RobotScript robotScript = new RobotScript("_eval_", request.script());
 		return robotService.execute(robotScript, request.variables(), Collections.emptyMap(), null, workspaceCleanupService::preserveLast)
-				.flatMap(xr -> io.supply(() -> workspaceService.getWorkspaceFiles(xr.workspace().getFileName().toString()))
-						.map(wsFiles -> {
-							Map<String, URI> workspace = wsFiles.collect(Collectors.toMap(
-									p -> "/" + fixSlashes(xr.workspace().relativize(p.path())),
-									p -> attachIfNecessary(p, URI.create("/")
-											.resolve("/workspace/%s/".formatted(xr.workspace().getFileName().toString()))
-											.resolve(fixSlashes(xr.workspace().relativize(p.path()))))));
 
-							ExecutionResults.ExecutionResult r = xr.results().entrySet().iterator().next().getValue();
-							return new EvaluateScriptResponse(r.result(), r.output(), xr.outputVariables(), workspace);
-						}));
+				.doOnSuccess(xr -> log.atInfo().kv("result", xr.result()).log("Returning sandbox execution results"))
+
+				.flatMap(xr -> getWorkspaceFileListWithProxyUrls(xr).map(files -> {
+					ExecutionResults.ExecutionResult r = xr.results().entrySet().iterator().next().getValue();
+					return new EvaluateScriptResponse(r.result(), r.output(), xr.outputVariables(), files);
+				}))
+
+				.doOnError(thrown -> log.atError().setCause(thrown).log("Error running sandbox script"));
+	}
+	
+	private Mono<Map<String, URI>> getWorkspaceFileListWithProxyUrls(ExecutionResults xr) {
+		return io.supply(() -> workspaceService.getWorkspaceFiles(xr.workspace().getFileName().toString()))
+				.map(wsFiles -> wsFiles.collect(Collectors.toMap(
+						p -> "/" + fixSlashes(xr.workspace().relativize(p.path())),
+						p -> attachIfNecessary(p, URI.create("/")
+								.resolve("/workspace/%s/".formatted(xr.workspace().getFileName().toString()))
+								.resolve(fixSlashes(xr.workspace().relativize(p.path())))))));
 	}
 
 	private static final Set<MediaType> BROWSER_FRIENDLY_MEDIA_TYPES = Set.of(
@@ -59,7 +71,8 @@ class ScriptSandboxController {
 			MediaType.parseMediaType("image/*"),
 			MediaType.APPLICATION_PDF, 
 			MediaType.APPLICATION_JSON, 
-			MediaType.APPLICATION_XML);
+			MediaType.APPLICATION_XML, 
+			MediaType.APPLICATION_YAML);
 
 	private URI attachIfNecessary(WorkspaceFile file, URI uri) {
 		MediaType mediaType = MediaType.parseMediaType(file.contentType());
