@@ -2,7 +2,6 @@ package io.camunda.rpa.worker.zeebe;
 
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
@@ -10,10 +9,8 @@ import reactor.core.publisher.Mono;
 @Repository
 @RequiredArgsConstructor
 class ZeebeResourceScriptRepository implements ScriptRepository {
-	
-	private final ZeebeAuthenticationService zeebeAuthenticationService;
+
 	private final ResourceClient resourceClient;
-	private final CamundaClientProperties camundaClientProperties;
 
 	@Override
 	public String getKey() {
@@ -22,8 +19,7 @@ class ZeebeResourceScriptRepository implements ScriptRepository {
 
 	@Override
 	public Mono<RobotScript> findById(String id) {
-		return zeebeAuthenticationService.getAuthToken(camundaClientProperties.getZeebe().getAudience())
-				.flatMap(token -> resourceClient.getRpaResource(token, id))
+		return resourceClient.getRpaResource(id)
 				.map(rpa -> new RobotScript(rpa.id(), rpa.script()));
 	}
 

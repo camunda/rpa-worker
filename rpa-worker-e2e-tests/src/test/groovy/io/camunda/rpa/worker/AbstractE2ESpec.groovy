@@ -1,7 +1,6 @@
 package io.camunda.rpa.worker
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService
 import io.camunda.zeebe.client.ZeebeClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -12,7 +11,6 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ActiveProfilesResolver
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.reactive.function.client.WebClient
-import reactor.core.publisher.Mono
 import reactor.util.retry.Retry
 import spock.lang.Specification
 
@@ -43,11 +41,6 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	
 	@Autowired
 	RpaWorkerClient rpaWorkerClient
-	
-	@Autowired
-	ZeebeAuthenticationService zeebeAuthenticationService
-
-	Mono<String> zeebeToken
 	
 	@Autowired
 	ObjectMapper objectMapper
@@ -96,8 +89,6 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.toBodilessEntity()
 				.retryWhen(Retry.fixedDelay(100, Duration.ofSeconds(3)))
 				.block()
-		
-		zeebeToken = zeebeAuthenticationService.getAuthToken(zeebeConfiguration.configProperties['camunda.client.zeebe.audience'])
 	}
 
 	void cleanup() {

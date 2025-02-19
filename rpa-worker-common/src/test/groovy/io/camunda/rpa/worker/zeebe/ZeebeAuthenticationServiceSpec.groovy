@@ -10,19 +10,18 @@ class ZeebeAuthenticationServiceSpec extends Specification implements PublisherU
 	static String audience = "SOME_AUDIENCE"
 
 	AuthClient authClient = Mock()
-	ZeebeAuthProperties authProperties = new ZeebeAuthProperties("client-id", "client-secret")
 
 	@Subject
-	ZeebeAuthenticationService service = new ZeebeAuthenticationService(authClient, authProperties)
+	ZeebeAuthenticationService service = new ZeebeAuthenticationService(authClient)
 
 	void "Uses cached authentication token"() {
 		when:
-		String token1 = block service.getAuthToken(audience)
+		String token1 = block service.getAuthToken("client", "client-secret", audience)
 
 		then:
 		1 * authClient.authenticate(new AuthClient.AuthenticationRequest(
-				authProperties.clientId(), 
-				authProperties.clientSecret(), 
+				"client", 
+				"client-secret", 
 				audience, 
 				"client_credentials")) >> Mono.just(new AuthClient.AuthenticationResponse("the-access-token", 3600))
 		
@@ -30,7 +29,7 @@ class ZeebeAuthenticationServiceSpec extends Specification implements PublisherU
 		token1 == "the-access-token"
 
 		when:
-		String token2 = block service.getAuthToken(audience)
+		String token2 = block service.getAuthToken("client", "client-secret", audience)
 
 		then:
 		0 * authClient.authenticate(_)
@@ -41,12 +40,12 @@ class ZeebeAuthenticationServiceSpec extends Specification implements PublisherU
 
 	void "Refreshes cached auth token when expired"() {
 		when:
-		String token1 = block service.getAuthToken(audience)
+		String token1 = block service.getAuthToken("client", "client-secret", audience)
 
 		then:
 		1 * authClient.authenticate(new AuthClient.AuthenticationRequest(
-				authProperties.clientId(), 
-				authProperties.clientSecret(),
+				"client",
+				"client-secret", 
 				audience, 
 				"client_credentials")) >> Mono.just(new AuthClient.AuthenticationResponse("first-access-token", 0))
 		
@@ -54,12 +53,12 @@ class ZeebeAuthenticationServiceSpec extends Specification implements PublisherU
 		token1 == "first-access-token"
 
 		when:
-		String token2 = block service.getAuthToken(audience)
+		String token2 = block service.getAuthToken("client", "client-secret", audience)
 
 		then:
 		1 * authClient.authenticate(new AuthClient.AuthenticationRequest(
-				authProperties.clientId(), 
-				authProperties.clientSecret(), 
+				"client",
+				"client-secret", 
 				audience, 
 				"client_credentials")) >> Mono.just(new AuthClient.AuthenticationResponse("second-access-token", 3600))
 		
