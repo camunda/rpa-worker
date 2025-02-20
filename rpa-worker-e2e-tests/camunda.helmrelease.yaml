@@ -73,6 +73,9 @@ spec:
         requests:
           cpu: 1m
           memory: 1m
+      readinessProbe:
+        failureThreshold: 15
+        timeoutSeconds: 10
     
     zeebeGateway:
       contextPath: "/zeebe/"
@@ -93,6 +96,9 @@ spec:
           memory: 1m
         limits: 
           memory: 1G
+      readinessProbe:
+        failureThreshold: 15
+        timeoutSeconds: 10
     
     connectors:
       enabled: false
