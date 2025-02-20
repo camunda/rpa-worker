@@ -63,6 +63,17 @@ dependencies {
 
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
+	failFast = true
+	
+	afterTest { TestDescriptor desc, TestResult result ->
+		String namespace = "camunda"
+//		String namespace = "c8-v87-newtest"
+		if(result.resultType == TestResult.ResultType.FAILURE) {
+			println "k3s kubectl -n ${namespace} describe pods".execute().text
+			println "k3s kubectl -n ${namespace} logs --prefix=true -l app.kubernetes.io/component=zeebe-gateway".execute().text
+			println "k3s kubectl -n ${namespace} logs --prefix=true -l app.kubernetes.io/component=zeebe-broker".execute().text
+		}
+	}
 	
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-martins-snapshot")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-local-snapshot")
