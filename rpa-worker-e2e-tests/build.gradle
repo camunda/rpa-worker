@@ -69,7 +69,7 @@ tasks.withType(Test).configureEach {
 		String namespace = "camunda"
 //		String namespace = "c8-v87-newtest"
 		if(result.resultType == TestResult.ResultType.FAILURE) {
-			println "k3s kubectl -n ${namespace} describe pods".execute().text
+			println "k3s kubectl -n ${namespace} describe pods -l app=camunda-platform".execute().text
 			println "k3s kubectl -n ${namespace} logs --prefix=true -l app.kubernetes.io/component=zeebe-gateway".execute().text
 			println "k3s kubectl -n ${namespace} logs --prefix=true -l app.kubernetes.io/component=zeebe-broker".execute().text
 		}
