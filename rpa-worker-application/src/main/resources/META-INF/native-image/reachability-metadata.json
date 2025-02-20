@@ -4575,6 +4575,14 @@
           ]
         },
         {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.zeebe.spring.client.properties.CamundaClientProperties",
+            "io.camunda.rpa.worker.zeebe.ZeebeAuthProperties",
+            "org.springframework.beans.factory.ObjectProvider"
+          ]
+        },
+        {
           "name": "CGLIB$SET_STATIC_CALLBACKS",
           "parameterTypes": [
             "org.springframework.cglib.proxy.Callback[]"
@@ -4626,6 +4634,10 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.RetryingDocumentClientWrapper",
+      "allDeclaredFields": true
     },
     {
       "type": "io.camunda.rpa.worker.files.ZeebeDocumentDescriptor",
@@ -4737,6 +4749,14 @@
       "type": "io.camunda.rpa.worker.files.api.FilesController",
       "allDeclaredFields": true,
       "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.workspace.WorkspaceService",
+            "io.camunda.rpa.worker.io.IO",
+            "io.camunda.rpa.worker.files.DocumentClient"
+          ]
+        },
         {
           "name": "<init>",
           "parameterTypes": [
@@ -6174,6 +6194,16 @@
       "type": "io.camunda.rpa.worker.python.PythonProperties",
       "allDeclaredFields": true,
       "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.nio.file.Path",
+            "java.net.URI",
+            "java.lang.String",
+            "java.lang.String",
+            "java.nio.file.Path"
+          ]
+        },
         {
           "name": "<init>",
           "parameterTypes": [
@@ -8981,6 +9011,13 @@
           "parameterTypes": [
             "org.springframework.web.reactive.function.client.WebClient$Builder"
           ]
+        },
+        {
+          "name": "secretsClient",
+          "parameterTypes": [
+            "org.springframework.web.reactive.function.client.WebClient$Builder",
+            "io.camunda.rpa.worker.secrets.SecretsClientProperties"
+          ]
         }
       ]
     },
@@ -8997,6 +9034,14 @@
           "name": "<init>",
           "parameterTypes": [
             "io.camunda.rpa.worker.secrets.SecretsClientProperties"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsClientProperties",
+            "org.springframework.beans.factory.ObjectProvider",
+            "io.camunda.rpa.worker.zeebe.ZeebeAuthProperties"
           ]
         },
         {
@@ -9238,6 +9283,13 @@
             "io.camunda.rpa.worker.secrets.AuthClient",
             "io.camunda.rpa.worker.secrets.ZeebeAuthProperties",
             "io.camunda.rpa.worker.secrets.SecretsClient"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsClient",
+            "io.camunda.rpa.worker.secrets.SecretsClientProperties"
           ]
         },
         {
@@ -9730,6 +9782,10 @@
         },
         {
           "name": "getWorkspacesDir",
+          "parameterTypes": []
+        },
+        {
+          "name": "init",
           "parameterTypes": []
         }
       ]
@@ -10764,6 +10820,12 @@
         {
           "name": "<init>",
           "parameterTypes": [
+            "io.camunda.rpa.worker.zeebe.AuthClient"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
             "io.camunda.rpa.worker.zeebe.AuthClient",
             "io.camunda.rpa.worker.zeebe.ZeebeAuthProperties"
           ]
@@ -10888,6 +10950,12 @@
           "parameterTypes": [
             "org.springframework.web.reactive.function.client.WebClient$Builder"
           ]
+        },
+        {
+          "name": "zeebeHealthCheckBeanPostProcessor",
+          "parameterTypes": [
+            "io.camunda.zeebe.spring.client.properties.CamundaClientProperties"
+          ]
         }
       ]
     },
@@ -10911,6 +10979,15 @@
           "parameterTypes": [
             "io.camunda.rpa.worker.zeebe.ZeebeProperties",
             "io.camunda.zeebe.spring.client.properties.CamundaClientProperties"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.zeebe.ZeebeProperties",
+            "io.camunda.zeebe.spring.client.properties.CamundaClientProperties",
+            "org.springframework.beans.factory.ObjectProvider",
+            "io.camunda.rpa.worker.zeebe.ZeebeAuthProperties"
           ]
         },
         {
@@ -10950,6 +11027,13 @@
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeConfiguration$2",
       "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeConfiguration$3",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeConfiguration$3$1"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec",
@@ -13050,6 +13134,12 @@
         {
           "name": "<init>",
           "parameterTypes": [
+            "io.camunda.rpa.worker.zeebe.ResourceClient"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
             "io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService",
             "io.camunda.rpa.worker.zeebe.ResourceClient",
             "io.camunda.zeebe.spring.client.properties.CamundaClientProperties"
@@ -13599,6 +13689,9 @@
     {
       "type": "io.camunda.zeebe.client.impl.worker.ExponentialBackoff",
       "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.zeebe.client.impl.worker.JobRunnableFactoryImpl"
     },
     {
       "type": "io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType",
@@ -14758,6 +14851,12 @@
       ]
     },
     {
+      "type": "io.netty.channel.CombinedChannelDuplexHandler"
+    },
+    {
+      "type": "io.netty.channel.CombinedChannelDuplexHandler$DelegatingChannelHandlerContext"
+    },
+    {
       "type": "io.netty.channel.DefaultChannelConfig",
       "fields": [
         {
@@ -14790,6 +14889,9 @@
     },
     {
       "type": "io.netty.channel.epoll.AbstractEpollChannel$AbstractEpollUnsafe"
+    },
+    {
+      "type": "io.netty.channel.epoll.AbstractEpollStreamChannel$EpollStreamUnsafe"
     },
     {
       "type": "io.netty.channel.epoll.Epoll",
@@ -14881,22 +14983,43 @@
       "type": "io.netty.channel.unix.Socket"
     },
     {
+      "type": "io.netty.handler.codec.ByteToMessageDecoder"
+    },
+    {
+      "type": "io.netty.handler.codec.DefaultHeaders"
+    },
+    {
       "type": "io.netty.handler.codec.dns.DatagramDnsQueryEncoder"
     },
     {
       "type": "io.netty.handler.codec.haproxy.HAProxyMessageDecoder"
     },
     {
+      "type": "io.netty.handler.codec.http.DefaultHttpHeaders"
+    },
+    {
+      "type": "io.netty.handler.codec.http.DefaultHttpHeadersFactory$1"
+    },
+    {
       "type": "io.netty.handler.codec.http.HttpClientCodec"
     },
     {
+      "type": "io.netty.handler.codec.http.HttpClientCodec$Decoder"
+    },
+    {
       "type": "io.netty.handler.codec.http.HttpContentDecompressor"
+    },
+    {
+      "type": "io.netty.handler.codec.http.HttpObjectDecoder"
     },
     {
       "type": "io.netty.handler.codec.http.HttpServerCodec"
     },
     {
       "type": "io.netty.handler.ssl.SslHandler"
+    },
+    {
+      "type": "io.netty.handler.timeout.IdleStateHandler"
     },
     {
       "type": "io.netty.handler.timeout.ReadTimeoutHandler"
@@ -17887,6 +18010,9 @@
     },
     {
       "type": "java.util.concurrent.Executors"
+    },
+    {
+      "type": "java.util.concurrent.Executors$RunnableAdapter"
     },
     {
       "type": "java.util.concurrent.ForkJoinTask",
@@ -26067,7 +26193,15 @@
       "type": "org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$LinksHandler"
     },
     {
-      "type": "org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$ReadOperationHandler"
+      "type": "org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$ReadOperationHandler",
+      "methods": [
+        {
+          "name": "handle",
+          "parameterTypes": [
+            "org.springframework.web.server.ServerWebExchange"
+          ]
+        }
+      ]
     },
     {
       "type": "org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping$WriteOperationHandler"
@@ -26245,7 +26379,17 @@
     },
     {
       "type": "org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension",
-      "allDeclaredFields": true
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "health",
+          "parameterTypes": [
+            "org.springframework.boot.actuate.endpoint.ApiVersion",
+            "org.springframework.boot.actuate.endpoint.web.WebServerNamespace",
+            "org.springframework.boot.actuate.endpoint.SecurityContext"
+          ]
+        }
+      ]
     },
     {
       "type": "org.springframework.boot.actuate.health.SimpleHttpCodeStatusMapper",
@@ -31773,6 +31917,9 @@
       "type": "org.springframework.web.reactive.function.client.ExchangeFunction"
     },
     {
+      "type": "org.springframework.web.reactive.function.client.ExchangeFunctions$DefaultExchangeFunction"
+    },
+    {
       "type": "org.springframework.web.reactive.function.client.ExchangeStrategies"
     },
     {
@@ -32169,6 +32316,9 @@
     },
     {
       "type": "reactivefeign.webclient.WebReactiveFeign$Builder"
+    },
+    {
+      "type": "reactivefeign.webclient.client.WebReactiveHttpClient"
     },
     {
       "type": "reactor.blockhound.AllowancesByteBuddyTransformer$AllowAdvice"
@@ -32705,6 +32855,9 @@
       ]
     },
     {
+      "type": "reactor.core.publisher.FluxIterable"
+    },
+    {
       "type": "reactor.core.publisher.FluxIterable$IterableSubscription",
       "fields": [
         {
@@ -32713,7 +32866,16 @@
       ]
     },
     {
+      "type": "reactor.core.publisher.FluxMap$MapSubscriber"
+    },
+    {
       "type": "reactor.core.publisher.FluxOnAssembly$OnAssemblyException"
+    },
+    {
+      "type": "reactor.core.publisher.FluxOnAssembly$OnAssemblySubscriber"
+    },
+    {
+      "type": "reactor.core.publisher.FluxOnErrorResume$ResumeSubscriber"
     },
     {
       "type": "reactor.core.publisher.FluxOnErrorReturn$ReturnSubscriber",
@@ -32722,6 +32884,12 @@
           "name": "requested"
         }
       ]
+    },
+    {
+      "type": "reactor.core.publisher.FluxPeek$PeekSubscriber"
+    },
+    {
+      "type": "reactor.core.publisher.FluxPeekFuseable$PeekConditionalSubscriber"
     },
     {
       "type": "reactor.core.publisher.FluxPublish$PubSubInner",
@@ -32752,6 +32920,12 @@
           "name": "wip"
         }
       ]
+    },
+    {
+      "type": "reactor.core.publisher.FluxRetryWhen$RetryWhenOtherSubscriber"
+    },
+    {
+      "type": "reactor.core.publisher.FluxStream"
     },
     {
       "type": "reactor.core.publisher.FluxSubscribeOnCallable$CallableSubscribeOnSubscription",
@@ -32820,6 +32994,9 @@
           "name": "wip"
         }
       ]
+    },
+    {
+      "type": "reactor.core.publisher.FluxZip"
     },
     {
       "type": "reactor.core.publisher.FluxZip$ZipCoordinator",
@@ -33027,6 +33204,9 @@
       "type": "reactor.core.publisher.MonoDoFinallyCustomizer"
     },
     {
+      "type": "reactor.core.publisher.MonoErrorSupplied"
+    },
+    {
       "type": "reactor.core.publisher.MonoFlatMap",
       "allDeclaredFields": true
     },
@@ -33155,6 +33335,9 @@
       "type": "reactor.core.publisher.MonoPeekFuseableCustomizer"
     },
     {
+      "type": "reactor.core.publisher.MonoPeekTerminal$MonoTerminalPeekSubscriber"
+    },
+    {
       "type": "reactor.core.publisher.MonoPublishOn$PublishOnSubscriber",
       "fields": [
         {
@@ -33166,6 +33349,9 @@
       ]
     },
     {
+      "type": "reactor.core.publisher.MonoSingle$SingleSubscriber"
+    },
+    {
       "type": "reactor.core.publisher.MonoStreamCollector",
       "allDeclaredFields": true
     },
@@ -33174,6 +33360,20 @@
     },
     {
       "type": "reactor.core.publisher.MonoStreamCollectorCustomizer"
+    },
+    {
+      "type": "reactor.core.publisher.MonoSubscribeOn$SubscribeOnSubscriber",
+      "fields": [
+        {
+          "name": "requested"
+        },
+        {
+          "name": "s"
+        },
+        {
+          "name": "thread"
+        }
+      ]
     },
     {
       "type": "reactor.core.publisher.MonoSubscribeOnCallable",
@@ -33264,6 +33464,9 @@
       ]
     },
     {
+      "type": "reactor.core.publisher.Operators"
+    },
+    {
       "type": "reactor.core.publisher.Operators$BaseFluxToMonoOperator",
       "fields": [
         {
@@ -33323,6 +33526,9 @@
     {
       "type": "reactor.core.publisher.OptimizableOperator",
       "allDeclaredFields": true
+    },
+    {
+      "type": "reactor.core.publisher.SerializedSubscriber"
     },
     {
       "type": "reactor.core.publisher.SignalPeek",
@@ -33455,6 +33661,23 @@
       ]
     },
     {
+      "type": "reactor.core.scheduler.WorkerTask",
+      "fields": [
+        {
+          "name": "future"
+        },
+        {
+          "name": "parent"
+        },
+        {
+          "name": "thread"
+        }
+      ]
+    },
+    {
+      "type": "reactor.netty.ReactorNetty$CompositeConnectionObserver"
+    },
+    {
       "type": "reactor.netty.channel.ChannelOperations",
       "fields": [
         {
@@ -33502,6 +33725,12 @@
     },
     {
       "type": "reactor.netty.http.client.HttpClient"
+    },
+    {
+      "type": "reactor.netty.http.client.HttpClientConnect$HttpObserver"
+    },
+    {
+      "type": "reactor.netty.http.client.HttpClientOperations"
     },
     {
       "type": "reactor.netty.http.server.HttpServer"
@@ -33558,6 +33787,12 @@
           "name": "once"
         }
       ]
+    },
+    {
+      "type": "reactor.netty.resources.DefaultPooledConnectionProvider$DisposableAcquire"
+    },
+    {
+      "type": "reactor.netty.resources.DefaultPooledConnectionProvider$PooledConnection"
     },
     {
       "type": "reactor.netty.resources.DefaultPooledConnectionProvider$PooledConnectionAllocator$PooledConnectionInitializer"
@@ -35326,6 +35561,9 @@
       "glob": "META-INF/services/java.nio.file.spi.FileSystemProvider"
     },
     {
+      "glob": "META-INF/services/java.nio.file.spi.FileTypeDetector"
+    },
+    {
       "glob": "META-INF/services/java.rmi.server.RMIClassLoaderSpi"
     },
     {
@@ -35740,6 +35978,9 @@
       "glob": "io/camunda/rpa/worker/script/ScriptRepository.class"
     },
     {
+      "glob": "io/camunda/rpa/worker/script/ScriptRepositoryConfiguration.class"
+    },
+    {
       "glob": "io/camunda/rpa/worker/script/api/LocalLibraryController.class"
     },
     {
@@ -35761,6 +36002,9 @@
       "glob": "io/camunda/rpa/worker/workspace/api/WorkspaceProxyController.class"
     },
     {
+      "glob": "io/camunda/rpa/worker/zeebe/ZeebeAuthenticationService$Authentication.class"
+    },
+    {
       "glob": "io/camunda/rpa/worker/zeebe/ZeebeAuthenticationService$TokenWithAbsoluteExpiry.class"
     },
     {
@@ -35771,6 +36015,9 @@
     },
     {
       "glob": "io/camunda/rpa/worker/zeebe/ZeebeJobService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/ZeebeResourceScriptRepository.class"
     },
     {
       "glob": "io/camunda/rpa/worker/zeebe/ZeebeStartupCheck.class"
