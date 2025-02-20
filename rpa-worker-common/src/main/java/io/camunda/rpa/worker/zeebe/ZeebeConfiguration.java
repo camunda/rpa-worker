@@ -16,14 +16,18 @@ import io.camunda.zeebe.spring.client.actuator.ZeebeClientHealthIndicator;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactivefeign.webclient.WebReactiveFeign;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 
 @Configuration
@@ -32,6 +36,8 @@ class ZeebeConfiguration {
 
 	private final ZeebeProperties zeebeProperties;
 	private final CamundaClientProperties camundaClientProperties;
+	private final ObjectProvider<ZeebeAuthenticationService> zeebeAuthenticationService;
+	private final ZeebeAuthProperties zeebeAuthProperties;
 	
 	@Bean
 	public AuthClient authClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
@@ -45,8 +51,17 @@ class ZeebeConfiguration {
 	
 	@Bean
 	public ResourceClient resourceClient(WebClient.Builder webClientBuilder) {
+		Mono<String> authenticator = zeebeAuthenticationService.getObject().getAuthToken(
+				zeebeAuthProperties.clientId(),
+				zeebeAuthProperties.clientSecret(),
+				camundaClientProperties.getZeebe().getAudience());
+		
 		return WebReactiveFeign
 				.<ResourceClient>builder(webClientBuilder)
+				.addRequestInterceptor(reactiveHttpRequest -> authenticator
+						.doOnNext(token -> reactiveHttpRequest
+								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
+						.thenReturn(reactiveHttpRequest))
 				.target(ResourceClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
 	}
 

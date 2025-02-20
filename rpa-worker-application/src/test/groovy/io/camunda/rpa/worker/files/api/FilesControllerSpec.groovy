@@ -9,10 +9,6 @@ import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
-import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties
-import io.camunda.zeebe.spring.client.properties.common.AuthProperties
-import io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpEntity
 import org.springframework.util.MultiValueMap
@@ -38,30 +34,13 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	}
 	IO io = Mock() {
 		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
+		wrap(_) >> { Mono<?> m -> m }
 	}
-	
-	ZeebeAuthenticationService zeebeAuthService = Stub() {
-		getAuthToken("zeebe-token-audience") >> Mono.just(authToken)
-	}
+
 	DocumentClient documentClient = Stub()
 
-	CamundaClientProperties camundaClientProperties = Stub(CamundaClientProperties) {
-		getMode() >> CamundaClientProperties.ClientMode.saas
-		getAuth() >> Stub(AuthProperties) {
-			getClientId() >> "the-client-id"
-		}
-		getClusterId() >> "the-cluster-id"
-		getRegion() >> "the-region"
-		getZeebe() >> Stub(ZeebeClientProperties) {
-			getGrpcAddress() >> "https://the-grpc-address".toURI()
-			getRestAddress() >> "https://the-rest-address".toURI()
-			isPreferRestOverGrpc() >> false
-			getAudience() >> "zeebe-token-audience"
-		}
-	}
-	
 	@Subject
-	FilesController controller = new FilesController(workspaceService, io, zeebeAuthService, documentClient, camundaClientProperties)
+	FilesController controller = new FilesController(workspaceService, io, documentClient)
 	
 	void "Uploads files from workspace to Zeebe"() {
 		given:
@@ -82,7 +61,7 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
-		documentClient.uploadDocument(authToken, _, _) >> { _, MultiValueMap<String, HttpEntity<?>> reqBody, Map params -> 
+		documentClient.uploadDocument(_, _) >> { MultiValueMap<String, HttpEntity<?>> reqBody, Map params -> 
 			Mono.just(new ZeebeDocumentDescriptor(
 					"store-id",
 					"document-id",
@@ -123,14 +102,14 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	void "Downloads files from Zeebe into workspace"() {
 		given:
 		Path file1Destination = workspace.path().resolve("input/file1.txt")
-		documentClient.getDocument(authToken, "document-id-1", "store-id", _) >> Flux.error(
+		documentClient.getDocument("document-id-1", "store-id", _) >> Flux.error(
 				new FeignException.NotFound("", new Request(Request.HttpMethod.GET, "", [:], null, null), [] as byte[], [:]))
 		
 		Path file2Destination = workspace.path().resolve("input/file2.txt")
-		documentClient.getDocument(authToken, "document-id-2", "store-id", _) >> Flux.empty()
+		documentClient.getDocument("document-id-2", "store-id", _) >> Flux.empty()
 		
 		Path file3Destination = workspace.path().resolve("input/file3.txt")
-		documentClient.getDocument(authToken, "document-id-3", "store-id", _) >> Flux.empty()
+		documentClient.getDocument("document-id-3", "store-id", _) >> Flux.empty()
 
 
 		when:

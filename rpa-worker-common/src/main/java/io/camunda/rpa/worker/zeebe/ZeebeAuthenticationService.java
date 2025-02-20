@@ -15,31 +15,32 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ZeebeAuthenticationService {
 	
 	private final AuthClient authClient;
-	private final ZeebeAuthProperties zeebeAuthProperties;
 	
-	private final Map<String, Mono<String>> tokens = new ConcurrentHashMap<>();
+	private final Map<Authentication, Mono<String>> tokens = new ConcurrentHashMap<>();
 
 	private record TokenWithAbsoluteExpiry(String token, Instant expiry) { }
+	private record Authentication(String client, String clientSecret, String audience) {}
 
-	public Mono<String> getAuthToken(String audience) {
-		return tokens.computeIfAbsent(audience, this::createAuthenticator);
+	public Mono<String> getAuthToken(String client, String clientSecret, String audience) {
+		Authentication authentication = new Authentication(client, clientSecret, audience);
+		return tokens.computeIfAbsent(authentication, this::createAuthenticator);
 	}
 
-	private Mono<String> createAuthenticator(String audience) {
+	private Mono<String> createAuthenticator(Authentication authentication) {
 		return Mono.defer(() -> authClient.authenticate(new AuthClient.AuthenticationRequest(
-						zeebeAuthProperties.clientId(),
-						zeebeAuthProperties.clientSecret(),
-						audience,
-						"client_credentials"))
+								authentication.client(),
+								authentication.clientSecret(),
+								authentication.audience(),
+								"client_credentials"))
 
-				.doOnSubscribe(_ -> log.atInfo()
-						.kv("audience", audience)
-						.log("Refreshing auth token")))
+						.doOnSubscribe(_ -> log.atInfo()
+								.kv("audience", authentication.audience())
+								.log("Refreshing auth token")))
 
 				.map(resp -> new TokenWithAbsoluteExpiry(
 						resp.accessToken(),
 						Instant.now().minusSeconds(60).plusSeconds(resp.expiresIn())))
-				
+
 				.cacheInvalidateIf(token -> token.expiry().isBefore(Instant.now()))
 				.map(TokenWithAbsoluteExpiry::token);
 	}

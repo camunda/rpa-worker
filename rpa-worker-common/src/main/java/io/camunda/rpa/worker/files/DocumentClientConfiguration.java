@@ -8,14 +8,20 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.camunda.rpa.worker.zeebe.ZeebeAuthProperties;
+import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactivefeign.webclient.WebReactiveFeign;
+import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,11 +31,22 @@ import java.util.stream.Stream;
 class DocumentClientConfiguration {
 
 	private final CamundaClientProperties camundaClientProperties;
+	private final ZeebeAuthProperties zeebeAuthProperties;
+	private final ObjectProvider<ZeebeAuthenticationService> zeebeAuthenticationService;
 
 	@Bean
 	public DocumentClient documentClient(WebClient.Builder webClientBuilder) {
+		Mono<String> authenticator = zeebeAuthenticationService.getObject().getAuthToken(
+				zeebeAuthProperties.clientId(), 
+				zeebeAuthProperties.clientSecret(), 
+				camundaClientProperties.getZeebe().getAudience());
+		
 		return WebReactiveFeign
 				.<DocumentClient>builder(webClientBuilder)
+				.addRequestInterceptor(reactiveHttpRequest -> authenticator
+						.doOnNext(token -> reactiveHttpRequest
+								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
+						.thenReturn(reactiveHttpRequest))
 				.target(DocumentClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
 	}
 

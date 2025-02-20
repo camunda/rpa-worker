@@ -26,9 +26,8 @@ class FileHandlingE2ESpec extends AbstractE2ESpec {
 	
 	void "Single file is provided to workspace"() {
 		given:
-		ZeebeDocumentDescriptor uploaded = zeebeToken.flatMap { token ->
-			documentClient.uploadDocument(token, uploadDocumentRequest("one.txt", "one"), null)
-		}.block()
+		ZeebeDocumentDescriptor uploaded = documentClient.uploadDocument(
+				uploadDocumentRequest("one.txt", "one"), null).block()
 		
 		when:
 		EvaluateScriptResponse r = post()
@@ -57,12 +56,10 @@ Download the file
 
 	void "Multiple files are provided to workspace"() {
 		given:
-		ZeebeDocumentDescriptor uploaded1 = zeebeToken.flatMap { token ->
-			documentClient.uploadDocument(token, uploadDocumentRequest("one.txt", "one"), null)
-		}.block()
-		ZeebeDocumentDescriptor uploaded2 = zeebeToken.flatMap { token ->
-			documentClient.uploadDocument(token, uploadDocumentRequest("two.txt", "two"), null)
-		}.block()
+		ZeebeDocumentDescriptor uploaded1 = documentClient.uploadDocument(
+				uploadDocumentRequest("one.txt", "one"), null).block()
+		ZeebeDocumentDescriptor uploaded2 = documentClient.uploadDocument(
+				uploadDocumentRequest("two.txt", "two"), null).block()
 
 		when:
 		EvaluateScriptResponse r = post()
@@ -94,9 +91,8 @@ Download the file
 	@PendingFeature(reason = "Files are downloaded into a directory with the custom name with the original name?")
 	void "Single file is provided to workspace - custom filename"() {
 		given:
-		ZeebeDocumentDescriptor uploaded = zeebeToken.flatMap { token ->
-			documentClient.uploadDocument(token, uploadDocumentRequest("one.txt", "one"), null)
-		}.block()
+		ZeebeDocumentDescriptor uploaded = documentClient.uploadDocument(
+				uploadDocumentRequest("one.txt", "one"), null).block()
 
 		when:
 		EvaluateScriptResponse r = post()
@@ -149,9 +145,8 @@ Upload the file
 		
 		when:
 		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(r.variables()['uploadedFile'], ZeebeDocumentDescriptor)
-		String contents = download(zeebeToken.flatMapMany { token ->
-			documentClient.getDocument(token, uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())
-		}).text
+		String contents = download(documentClient.getDocument(
+				uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())).text
 		
 		then:
 		contents == "one"
@@ -182,9 +177,8 @@ Upload the file
 
 		when:
 		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(r.variables()['uploadedFile'], ZeebeDocumentDescriptor)
-		String contents = download(zeebeToken.flatMapMany { token ->
-			documentClient.getDocument(token, uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())
-		}).text
+		String contents = download(documentClient.getDocument(
+				uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())).text
 
 		then:
 		contents == "one"
@@ -217,15 +211,15 @@ Upload the file
 		when:
 		List<ZeebeDocumentDescriptor> uploaded = objectMapper.convertValue(r.variables()['uploadedFiles'],
 				new TypeReference<List<ZeebeDocumentDescriptor>>() {})
-		String contents1 = download(zeebeToken.flatMapMany { token ->
-			uploaded.find { it.metadata().fileName() == "one.txt" }.with { zdd ->
-				documentClient.getDocument(token, zdd.documentId(), zdd.storeId(), zdd.contentHash())
-			}
+
+		String contents1 = download(uploaded.find {
+			it.metadata().fileName() == "one.txt" }.with { zdd ->
+				documentClient.getDocument(zdd.documentId(), zdd.storeId(), zdd.contentHash())
 		}).text
-		String contents2 = download(zeebeToken.flatMapMany { token ->
-			uploaded.find { it.metadata().fileName() == "two.txt" }.with { zdd ->
-				documentClient.getDocument(token, zdd.documentId(), zdd.storeId(), zdd.contentHash())
-			}
+
+		String contents2 = download(uploaded.find {
+			it.metadata().fileName() == "two.txt" }.with { zdd ->
+				documentClient.getDocument(zdd.documentId(), zdd.storeId(), zdd.contentHash())
 		}).text
 
 		then:
@@ -234,7 +228,7 @@ Upload the file
 	}
 
 	private static MultiValueMap<String, HttpEntity<?>> uploadDocumentRequest(String filename, String content) {
-		MultipartBodyBuilder builder = new MultipartBodyBuilder();
+		MultipartBodyBuilder builder = new MultipartBodyBuilder()
 
 		builder.part("metadata", new ZeebeDocumentDescriptor.Metadata(
 				"text/plain",
@@ -244,11 +238,11 @@ Upload the file
 				null,
 				null,
 				Collections.emptyMap()))
-				.contentType(MediaType.APPLICATION_JSON);
+				.contentType(MediaType.APPLICATION_JSON)
 
 		builder.part("file", content, MediaType.TEXT_PLAIN)
 
-		return builder.build();
+		return builder.build()
 	}
 	
 	private static InputStream download(Flux<DataBuffer> source) {
