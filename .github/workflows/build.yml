@@ -354,6 +354,19 @@ jobs:
           export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_linux_amd64)
           chmod +x $CAMUNDA_RPA_E2E_PATHTOWORKER
           ./gradlew :rpa-worker-e2e-tests:check
+          
+      - name: Pod Logs
+        if: always()
+        run: |
+          sudo zip -r logs.zip /var/log/pods/
+          
+      - name: Upload Pod Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pod-logs
+          path: logs.zip
+          retention-days: 1
 
       - name: Upload E2E Test Results
         uses: actions/upload-artifact@v4

@@ -40,14 +40,16 @@ class DocumentClientConfiguration {
 				zeebeAuthProperties.clientId(), 
 				zeebeAuthProperties.clientSecret(), 
 				camundaClientProperties.getZeebe().getAudience());
-		
-		return WebReactiveFeign
+
+		DocumentClient client = WebReactiveFeign
 				.<DocumentClient>builder(webClientBuilder)
 				.addRequestInterceptor(reactiveHttpRequest -> authenticator
 						.doOnNext(token -> reactiveHttpRequest
 								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
 						.thenReturn(reactiveHttpRequest))
 				.target(DocumentClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
+		
+		return new RetryingDocumentClientWrapper(client);
 	}
 
 	@Bean

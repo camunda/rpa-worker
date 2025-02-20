@@ -20,7 +20,6 @@ import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.reactive.function.client.ClientResponse
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
-import reactor.blockhound.BlockHound
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import spock.lang.Specification
@@ -41,12 +40,6 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	static final String ZEEBE_CLIENT_ID = "the-client-id"
 	static final String ZEEBE_CLIENT_SECRET = "the-client-secret"
 
-	static {
-		BlockHound.builder()
-				.allowBlockingCallsInside(ResourceBundle.class.name, "getBundle")
-				.install()
-	}
-	
 	@Autowired
 	private WebClient.Builder webClientBuilder
 	

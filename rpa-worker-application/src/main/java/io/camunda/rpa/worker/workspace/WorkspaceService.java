@@ -61,10 +61,18 @@ public class WorkspaceService {
 	}
 
 	public Optional<WorkspaceFile> getWorkspaceFile(String workspaceId, String path) {
+		return getById(workspaceId)
+				.flatMap(workspace -> doGetWorkspaceFile(workspace, path));
+	}
+
+	public Optional<WorkspaceFile> getWorkspaceFile(Workspace workspace, String path) {
+		return doGetWorkspaceFile(workspace, path);
+	}
+
+	private Optional<WorkspaceFile> doGetWorkspaceFile(Workspace workspace, String path) {
 		record WorkspaceAndRequestedFile(Workspace workspace, Path requestedFile) { }
 
-		return getById(workspaceId)
-				.map(workspace -> new WorkspaceAndRequestedFile(workspace, workspace.path().resolve(path).normalize().toAbsolutePath()))
+		return Optional.of(new WorkspaceAndRequestedFile(workspace, workspace.path().resolve(path).normalize().toAbsolutePath()))
 				.filter(wr -> wr.requestedFile().startsWith(wr.workspace().path()))
 				.filter(wr -> io.exists(wr.requestedFile()))
 				.map(wr -> new WorkspaceFile(
@@ -73,4 +81,5 @@ public class WorkspaceService {
 						io.size(wr.requestedFile()),
 						wr.requestedFile()));
 	}
+
 }
