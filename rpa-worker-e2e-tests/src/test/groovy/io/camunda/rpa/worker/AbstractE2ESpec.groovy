@@ -80,14 +80,16 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 		ProcessBuilder pb = new ProcessBuilder(e2eProperties.pathToWorker().toAbsolutePath().toString())
 		pb.environment().putAll(getEnvironment())
 		pb.inheritIO()
-		
-		if( ! zeebeConfiguration.configProperties['camunda.rpa.e2e.no-start-worker'])
+
+		if ( ! zeebeConfiguration.configProperties['camunda.rpa.e2e.no-start-worker'])
 			process = pb.start()
 
 		get().uri("/actuator/health")
 				.retrieve()
 				.toBodilessEntity()
-				.retryWhen(Retry.fixedDelay(100, Duration.ofSeconds(3)))
+				.retryWhen(Retry.fixedDelay(100, Duration.ofSeconds(3))
+						.filter { ( ! process) || process.alive })
+				.onErrorMap(thrown -> new IllegalStateException("RPA Worker did not become available", thrown))
 				.block()
 	}
 
