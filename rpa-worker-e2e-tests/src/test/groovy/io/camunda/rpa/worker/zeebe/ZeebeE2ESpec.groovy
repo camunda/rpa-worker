@@ -1,9 +1,11 @@
 package io.camunda.rpa.worker.zeebe
 
+import feign.FeignException
 import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
+import org.spockframework.runtime.ConditionNotSatisfiedError
 import org.springframework.beans.factory.annotation.Autowired
 import reactor.core.publisher.Mono
 import reactor.util.retry.Retry
@@ -47,9 +49,11 @@ class ZeebeE2ESpec extends AbstractE2ESpec {
 				incident()
 			}
 			log.info("Incident is raised")
-		}.doOnError { 
+		}.doOnError(ConditionNotSatisfiedError) { 
 			log.info("Incident not raised yet") 
-		}.retryWhen(Retry.backoff(4, Duration.ofSeconds(4)))
+		}.retryWhen(Retry.fixedDelay(15, Duration.ofSeconds(2))
+				.filter { thrown -> thrown instanceof ConditionNotSatisfiedError 
+						|| thrown instanceof FeignException.NotFound })
 
 		when:
 		OperateClient.GetIncidentsResponse incidents = block operateClient.getIncidents(

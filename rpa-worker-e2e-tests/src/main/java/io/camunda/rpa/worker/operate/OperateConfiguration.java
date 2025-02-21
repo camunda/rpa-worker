@@ -11,6 +11,7 @@ import reactivefeign.webclient.WebReactiveFeign;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,8 +26,12 @@ class OperateConfiguration {
 		Mono<String> authenticator = zeebeAuthenticationService.getAuthToken(
 				e2eProperties.operateClient(),
 				e2eProperties.operateClientSecret(),
-				"operate-dedicated");
+				e2eProperties.operateTokenAudience());
 
+		String operateUrl = Optional.ofNullable(e2eProperties.operateUrl())
+				.map(Object::toString)
+				.orElse("http://%s/operate/v1".formatted(e2eProperties.camundaHost()));
+				
 		return WebReactiveFeign
 				.<OperateClient>builder()
 				.addRequestInterceptor(reactiveHttpRequest -> authenticator
@@ -34,6 +39,6 @@ class OperateConfiguration {
 								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
 
 						.thenReturn(reactiveHttpRequest))
-				.target(OperateClient.class, "http://%s/operate/v1".formatted(e2eProperties.camundaHost()));
+				.target(OperateClient.class, operateUrl);
 	}
 }
