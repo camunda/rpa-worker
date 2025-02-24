@@ -79,7 +79,7 @@ Don't do very much
 
 			when:
 			jobQueue << anRpaJob([jobNum: 0], "delayed_file_0", [:], 0)
-			Thread.sleep(250) // TODO: Is this still needed?
+			Thread.sleep(250) 
 			jobQueue << anRpaJob([jobNum: 1], "delayed_file_1", [:], 1)
 			handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
@@ -145,7 +145,7 @@ Don't do very much
 
 			when:
 			jobQueue << anRpaJob([jobNum: 0], "delayed_file_0", [:], 0)
-			Thread.sleep(250) // TODO - Still needed?
+			Thread.sleep(250) 
 			jobQueue << anRpaJob([jobNum: 1], "delayed_file_1", [:], 1)
 			handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
