@@ -1,6 +1,6 @@
 package io.camunda.rpa.worker.zeebe;
 
-record RpaResource(
+public record RpaResource(
 		String id,
 		String name,
 		String executionPlatform,

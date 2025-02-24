@@ -5,6 +5,7 @@ import feign.FeignException
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.operate.OperateClient
+import io.camunda.rpa.worker.zeebe.ResourceClient
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.response.DeploymentEvent
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
@@ -63,6 +64,9 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	
 	@Autowired
 	OperateClient operateClient
+	
+	@Autowired
+	ResourceClient resourceClient
 
 	@Autowired
 	private WebClient.Builder webClientBuilder
@@ -125,13 +129,21 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 
 	DeploymentEvent deployScript(String script) {
 		String scriptBody = getClass().getResource("/${script}.robot").text
-		return zeebeClient.newDeployResourceCommand()
+		DeploymentEvent deployment = zeebeClient.newDeployResourceCommand()
 				.addResourceStringUtf8(JsonOutput.toJson([
 						id    : script,
 						name  : script,
 						script: scriptBody]), "${script}.rpa")
 				.send()
 				.join()
+		log.info("Deployed script, got {}", deployment)
+		
+		resourceClient.getRpaResource(deployment.key.toString())
+			.retryWhen(waitForObjectRetrySpec)
+			.doOnError { log.error("Deployed script did not show up") }
+			.onErrorComplete()
+		
+		return deployment
 	}
 
 	DeploymentEvent deployProcess(String process) {
