@@ -142,6 +142,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 			.retryWhen(waitForObjectRetrySpec)
 			.doOnError { log.error("Deployed script did not show up") }
 			.onErrorComplete()
+			.block()
 		
 		return deployment
 	}
