@@ -8,11 +8,12 @@ import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.ConfiguredScriptRepository;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.secrets.SecretsService;
+import io.camunda.rpa.worker.util.LoopingListIterator;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.worker.JobHandler;
 import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.vavr.control.Try;
 import jakarta.annotation.PreDestroy;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -53,6 +55,8 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	private final WorkspaceCleanupService workspaceCleanupService;
 
 	private final Map<String, JobWorker> jobWorkers = new ConcurrentHashMap<>();
+	
+	private Disposable jobSubscription;
 
 	@Override
 	public void onApplicationEvent(ZeebeReadyEvent ignored) {
@@ -60,10 +64,27 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	}
 
 	ZeebeJobService doInit() {
-		jobWorkers.putAll(zeebeProperties.workerTags().stream()
+		LoopingListIterator<String> tagIterator = new LoopingListIterator<>(zeebeProperties.workerTags().stream()
 				.map(t -> zeebeProperties.rpaTaskPrefix() + t)
-				.collect(Collectors.toMap(subKey -> subKey, this::subscribeTo)));
-				
+				.collect(Collectors.toList()));
+
+		if(jobSubscription != null) 
+			jobSubscription.dispose();
+		
+		jobSubscription = Flux.fromIterable(() -> tagIterator)
+				.flatMap(jobType -> Mono.fromCompletionStage(zeebeClient.newActivateJobsCommand()
+								.jobType(jobType)
+								.maxJobsToActivate(1)
+								.requestTimeout(Duration.ofMillis(2_000 /* TODO */))
+								.send())
+						.doOnSubscribe(_ -> log.atDebug()
+								.kv("jobType", jobType)
+								.log("Polling for job"))
+						.flatMapIterable(ActivateJobsResponse::getJobs)
+						.doOnNext(_ -> log.atInfo().log("GOT JOB!"))
+						.flatMap(this::handleJob), zeebeProperties.maxConcurrentJobs())
+				.subscribe();
+
 		return this;
 	}
 
@@ -72,102 +93,89 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 		jobWorkers.values().forEach(JobWorker::close);
 	}
 
-	private JobWorker subscribeTo(String subKey) {
+	private Mono<Void> handleJob(ActivatedJob job) {
 		log.atInfo()
-				.kv("task", subKey)
-				.log("Subscribing to task");
-		
-		return zeebeClient.newWorker()
-				.jobType(subKey)
-				.handler(createJobHandler(subKey))
-				.open();
-	}
+				.kv("task", job.getType())
+				.kv("job", job.getKey())
+				.log("Received Job from Zeebe");
 
-	private JobHandler createJobHandler(String subKey) {
-		return (client, job) -> {
-			log.atInfo()
-					.kv("task", subKey)
-					.kv("job", job.getKey())
-					.log("Received Job from Zeebe");
+		Flux<RobotScript> before = getScriptKeys(job, BEFORE_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
+		Mono<RobotScript> main = getScriptKeys(job, MAIN_SCRIPT_LINK_NAME)
+				.single()
+				.onErrorMap(thrown ->
+								thrown instanceof IndexOutOfBoundsException
+										|| thrown instanceof NoSuchElementException,
+						thrown -> new IllegalStateException(
+								"Failed to find exactly 1 LinkedResource providing the main script", thrown))
+				.flatMap(scriptRepository::getById);
+		Flux<RobotScript> after = getScriptKeys(job, AFTER_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
 
-			Flux<RobotScript> before = getScriptKeys(job, BEFORE_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
-			Mono<RobotScript> main = getScriptKeys(job, MAIN_SCRIPT_LINK_NAME)
-					.single()
-					.onErrorMap(thrown ->
-							thrown instanceof IndexOutOfBoundsException
-									|| thrown instanceof NoSuchElementException, 
-							thrown -> new IllegalStateException(
-									"Failed to find exactly 1 LinkedResource providing the main script", thrown))
-					.flatMap(scriptRepository::getById);
-			Flux<RobotScript> after = getScriptKeys(job, AFTER_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
+		return Flux.zip(before.collectList(), main, after.collectList())
+				.flatMap(scriptSet -> getSecretsAsEnv(job)
+						.flatMap(secrets ->
 
-			Flux.zip(before.collectList(), main, after.collectList())
-					.flatMap(scriptSet -> getSecretsAsEnv(job)
-							.flatMap(secrets ->
+								robotService.execute(
+										scriptSet.getT2(),
+										scriptSet.getT1(),
+										scriptSet.getT3(),
+										getVariables(job),
+										secrets,
+										Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
+												.map(Duration::parse)
+												.orElse(null),
+										executionListenerFor(job),
+										getZeebeEnvironment(job),
+										Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job)))
 
-									robotService.execute(
-											scriptSet.getT2(), 
-											scriptSet.getT1(),
-											scriptSet.getT3(), 
-											getVariables(job), 
-											secrets, 
-											Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
-													.map(Duration::parse)
-													.orElse(null),
-											executionListenerFor(job),
-											getZeebeEnvironment(job), 
-											Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job)))
-							
-							.doOnSuccess(xr -> (switch (xr.result()) {
-								case PASS -> client
-										.newCompleteCommand(job)
-										.variables(xr.outputVariables());
+						.doOnSuccess(xr -> (switch (xr.result()) {
+							case PASS -> zeebeClient
+									.newCompleteCommand(job)
+									.variables(xr.outputVariables());
 
-								case FAIL -> client
+							case FAIL -> zeebeClient
+									.newThrowErrorCommand(job)
+									.errorCode("ROBOT_TASKFAIL")
+									.errorMessage("There were task failures");
+
+							case ERROR -> zeebeClient
+									.newThrowErrorCommand(job)
+									.errorCode("ROBOT_ERROR")
+									.errorMessage("There were task errors");
+						}).send())
+
+
+						.doOnSuccess(xr -> log.atInfo()
+								.kv("task", job.getType())
+								.kv("job", job.getKey())
+								.kv("results", xr.results())
+								.log("Job complete")))
+
+				.onErrorResume(ProcessTimeoutException.class,
+						_ -> Mono.<ExecutionResults>empty()
+								.doOnSubscribe(_ -> zeebeClient
 										.newThrowErrorCommand(job)
-										.errorCode("ROBOT_TASKFAIL")
-										.errorMessage("There were task failures");
+										.errorCode("ROBOT_TIMEOUT")
+										.errorMessage("The execution timed out")
+										.send())
 
-								case ERROR -> client
-										.newThrowErrorCommand(job)
-										.errorCode("ROBOT_ERROR")
-										.errorMessage("There were task errors");
-							}).send())
-							
+								.doOnSubscribe(_ -> log.atWarn()
+										.kv("job", job)
+										.log("Execution aborted, timeout exceeded")))
 
-							.doOnSuccess(xr -> log.atInfo()
-									.kv("task", subKey)
-									.kv("job", job.getKey())
-									.kv("results", xr.results())
-									.log("Job complete")))
-					
-					.onErrorResume(ProcessTimeoutException.class, 
-							_ -> Mono.<ExecutionResults>empty()
-									.doOnSubscribe(_ -> client
-											.newThrowErrorCommand(job)
-											.errorCode("ROBOT_TIMEOUT")
-											.errorMessage("The execution timed out")
-											.send())
-							
-									.doOnSubscribe(_ -> log.atWarn()
-											.kv("job", job)
-											.log("Execution aborted, timeout exceeded")))
+				.doOnError(thrown -> log.atError()
+						.kv("task", job.getType())
+						.kv("job", job.getKey())
+						.setCause(thrown)
+						.log("Error while executing Job"))
 
-					.doOnError(thrown -> log.atError()
-							.kv("task", subKey)
-							.kv("job", job.getKey())
-							.setCause(thrown)
-							.log("Error while executing Job"))
-					
-					.doOnError(thrown -> client
-							.newFailCommand(job)
-							.retries(job.getRetries() - 1)
-							.errorMessage(thrown.getMessage())
-							.send())
+				.doOnError(thrown -> zeebeClient
+						.newFailCommand(job)
+						.retries(job.getRetries() - 1)
+						.errorMessage(thrown.getMessage())
+						.send())
 
-					.onErrorComplete()
-					.subscribe();
-		};
+				.onErrorComplete()
+				.then();
 	}
 
 	private RobotExecutionListener executionListenerFor(ActivatedJob job) {

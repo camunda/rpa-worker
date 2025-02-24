@@ -10,7 +10,6 @@ import io.camunda.zeebe.client.api.command.FailJobCommandStep1
 import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
 import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
-import io.camunda.zeebe.client.api.worker.JobWorker
 import okhttp3.MediaType
 import okhttp3.MultipartReader
 import okhttp3.ResponseBody
@@ -97,22 +96,12 @@ Do Nothing
 		]
 	}
 
-	void "Subscribes on init"() {
-		when:
-		service.doInit()
-		
-		then:
-		1 * builder1.jobType(TASK_PREFIX + "default") >> builder2
-		1 * builder3.open() >> Stub(JobWorker)
-	}
-	
 	void "Runs Robot task from Zeebe, passing in input variables and secrets, reports success with output variables"() {
 		given:
-		service.doInit()
 		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
 
 		when:
-		theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'input-variable-value']))
+		jobQueue << anRpaJob([anInputVariable: 'input-variable-value'])
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 		
 		then:
@@ -123,7 +112,7 @@ Do Nothing
 		}
 		
 		and:
-		1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			1 * variables([anOutputVariable: 'output-variable-value']) >> it
 			1 * send() >> {
 				handlerDidFinish.countDown()
@@ -134,15 +123,14 @@ Do Nothing
 
 	void "Runs Robot task from Zeebe, passing in input variables, reports fail"() {
 		given:
-		service.doInit()
 		withNoSecrets()
 
 		when:
-		theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'UNEXPECTED-input-variable-value']))
+		jobQueue << anRpaJob([anInputVariable: 'UNEXPECTED-input-variable-value'])
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
+		1 * zeebeClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
 			1 * errorCode("ROBOT_TASKFAIL") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
 				1 * errorMessage(_) >> it
 				1 * send() >> {
@@ -155,15 +143,14 @@ Do Nothing
 
 	void "Runs Robot task from Zeebe, passing in input variables, reports Robot error"() {
 		given:
-		service.doInit()
 		withNoSecrets()
 
 		when:
-		theJobHandler.handle(jobClient, anRpaJob([:], "erroring_1"))
+		jobQueue << anRpaJob([:], "erroring_1")
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
+		1 * zeebeClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
 			1 * errorCode("ROBOT_ERROR") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
 				1 * errorMessage(_) >> it
 				1 * send() >> {
@@ -175,15 +162,12 @@ Do Nothing
 	}
 
 	void "Reports system error when couldn't run job"() {
-		given:
-		service.doInit()
-
 		when:
-		theJobHandler.handle(jobClient, anRpaJob([:], "fake_script"))
+		jobQueue << anRpaJob([:], "fake_script")
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * jobClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("Script not found") }) >> it
 				1 * send() >> {
@@ -196,7 +180,6 @@ Do Nothing
 	
 	void "Runs pre and post scripts, in order, and aggregates results"() {
 		given:
-		service.doInit()
 		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
 		
 		and:
@@ -207,7 +190,7 @@ Do Nothing
 				[anInputVariable: 'input-variable-value'])
 
 		when:
-		theJobHandler.handle(jobClient, jobWithPreAndPostScripts)
+		jobQueue << jobWithPreAndPostScripts
 		handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
 		then:
@@ -218,7 +201,7 @@ Do Nothing
 		}
 		
 		and:
-		1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			1 * variables([
 					anOutputVariableFrom_pre0: "output-value-from-companion",
 					anOutputVariableSameName: "output-value-from-companion-post1",
@@ -227,6 +210,7 @@ Do Nothing
 					anOutputVariableFrom_post0: "output-value-from-companion",
 					anOutputVariableFrom_post1: "output-value-from-companion",
 			]) >> it
+			
 			1 * send() >> {
 				handlerDidFinish.countDown()
 				return null
@@ -237,15 +221,14 @@ Do Nothing
 	@Tag("slow")
 	void "Applies default timeout to jobs, aborts when exceeded, reports correct error"() {
 		given:
-		service.doInit()
 		withNoSecrets()
 
 		when:
-		theJobHandler.handle(jobClient, anRpaJob([:], "slow_15s"))
+		jobQueue << anRpaJob([:], "slow_15s")
 		handlerDidFinish.awaitRequired(14, TimeUnit.SECONDS)
 
 		then:
-		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
+		1 * zeebeClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
 			1 * errorCode("ROBOT_TIMEOUT") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
 				1 * errorMessage(_) >> it
 				1 * send() >> {
@@ -259,11 +242,10 @@ Do Nothing
 	@Tag("slow")
 	void "Applies custom timeout to jobs, aborts when exceeded, reports correct error"() {
 		given:
-		service.doInit()
 		withNoSecrets()
 
 		when:
-		theJobHandler.handle(jobClient, anRpaJob([:], "slow_8s", [(ZeebeJobService.TIMEOUT_HEADER_NAME): "PT3S"]))
+		jobQueue << anRpaJob([:], "slow_8s", [(ZeebeJobService.TIMEOUT_HEADER_NAME): "PT3S"])
 		handlerDidFinish.awaitRequired(7, TimeUnit.SECONDS)
 
 		then:
@@ -274,7 +256,7 @@ Do Nothing
 		}
 		
 		and:
-		1 * jobClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
+		1 * zeebeClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
 			1 * errorCode("ROBOT_TIMEOUT") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
 				1 * errorMessage(_) >> it
 				1 * send() >> {
@@ -287,7 +269,6 @@ Do Nothing
 
 	void "Cleans up workspace after running job"() {
 		given:
-		service.doInit()
 		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
 		CountDownLatch handlersDidFinish = new CountDownLatch(2)
 		
@@ -302,7 +283,7 @@ Do Nothing
 		}
 		
 		and:
-		jobClient.newCompleteCommand(_ as ActivatedJob) >> Stub(CompleteJobCommandStep1) {
+		zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Stub(CompleteJobCommandStep1) {
 			variables(_) >> it
 			send() >> {
 				handlersDidFinish.countDown()
@@ -311,7 +292,7 @@ Do Nothing
 		}
 
 		when:
-		theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'input-variable-value']))
+		jobQueue << anRpaJob([anInputVariable: 'input-variable-value'])
 		handlersDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then: "Workspace deleted immediately"
@@ -333,15 +314,14 @@ Assert input variable
 
 	void "All built-in environment variables are available to job"() {
 		given:
-		service.doInit()
 		withNoSecrets()
 
 		when:
-		theJobHandler.handle(jobClient, anRpaJob([:], "env_check"))
+		jobQueue << anRpaJob([:], "env_check")
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			variables(_) >> it
 			1 * send() >> {
 				handlerDidFinish.countDown()
@@ -352,7 +332,6 @@ Assert input variable
 
 	void "Request to store files during Zeebe job triggers upload of workspace files to Zeebe with job metadata"() {
 		given:
-		service.doInit()
 		bypassZeebeAuth()
 		withNoSecrets()
 		CountDownLatch handlersDidFinish = new CountDownLatch(2)
@@ -382,7 +361,7 @@ Assert input variable
 		}
 		
 		and:
-		jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			variables(_) >> it
 			send() >> {
 				handlersDidFinish.countDown()
@@ -391,7 +370,7 @@ Assert input variable
 		}
 
 		when:
-		theJobHandler.handle(jobClient, anRpaJob([:], "do_nothing"))
+		jobQueue << anRpaJob([:], "do_nothing")
 		handlersDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		and:
@@ -429,7 +408,6 @@ Assert input variable
 
 		void "Runs Robot task from Zeebe, fetching script from Zeebe"() {
 			given:
-			service.doInit()
 			withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
 			
 			and:
@@ -445,7 +423,7 @@ Assert input variable
 			})
 
 			when:
-			theJobHandler.handle(jobClient, anRpaJob([anInputVariable: 'input-variable-value']))
+			jobQueue << anRpaJob([anInputVariable: 'input-variable-value'])
 			handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 			then:
@@ -456,7 +434,7 @@ Assert input variable
 			}
 			
 			and:
-			1 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 				1 * variables([anOutputVariable: 'output-variable-value']) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()

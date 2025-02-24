@@ -9,4 +9,5 @@ import java.util.Set;
 record ZeebeProperties(
 		String rpaTaskPrefix,
 		Set<String> workerTags,
-		URI authEndpoint) { }
+		URI authEndpoint, 
+		int maxConcurrentJobs) { }

@@ -50,7 +50,7 @@ Don't do very much
 		]
 	}
 
-	@TestPropertySource(properties = "camunda.rpa.robot.max-concurrent-jobs=1")
+	@TestPropertySource(properties = "camunda.rpa.zeebe.max-concurrent-jobs=1")
 	static class JobLimitFunctionalSpec extends AbstractZeebeFunctionalSpec {
 
 		@Override
@@ -63,7 +63,6 @@ Don't do very much
 
 		void "Limits job concurrency when configured"() {
 			given:
-			service.doInit()
 			withNoSecrets()
 			CountDownLatch handlerDidFinish = new CountDownLatch(2)
 			List<Workspace> workspaces = []
@@ -74,14 +73,14 @@ Don't do very much
 			}
 
 			and:
-			jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 				variables(_) >> it
 			}
 
 			when:
-			theJobHandler.handle(jobClient, anRpaJob([jobNum: 0], "delayed_file_0", [:], 0))
-			Thread.sleep(250)
-			theJobHandler.handle(jobClient, anRpaJob([jobNum: 1], "delayed_file_1", [:], 1))
+			jobQueue << anRpaJob([jobNum: 0], "delayed_file_0", [:], 0)
+			Thread.sleep(250) // TODO: Is this still needed?
+			jobQueue << anRpaJob([jobNum: 1], "delayed_file_1", [:], 1)
 			handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
 			then:
@@ -99,7 +98,6 @@ Don't do very much
 		
 		void "Queue has no timeout"() {
 			given:
-			service.doInit()
 			withNoSecrets()
 			
 			and:
@@ -109,19 +107,19 @@ Don't do very much
 			}
 
 			when:
-			theJobHandler.handle(jobClient, anRpaJob([jobNum: 0], "long_script", [:], 0))
-			theJobHandler.handle(jobClient, anRpaJob([jobNum: 1], "long_script", [:], 1))
+			jobQueue << anRpaJob([jobNum: 0], "long_script", [:], 0)
+			jobQueue << anRpaJob([jobNum: 1], "long_script", [:], 1)
 			handlersDidFinish.awaitRequired(20, TimeUnit.SECONDS)
 
 			then:
-			2 * jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			2 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 				it.variables(_) >> it
 				2 * send()
 			}
 		}
 	}
 
-	@TestPropertySource(properties = "camunda.rpa.robot.max-concurrent-jobs=2")
+	@TestPropertySource(properties = "camunda.rpa.zeebe.max-concurrent-jobs=2")
 	static class ConcurrentJobFunctionalSpec extends AbstractZeebeFunctionalSpec {
 
 		@Override
@@ -131,7 +129,6 @@ Don't do very much
 
 		void "Allows concurrent jobs when configured"() {
 			given:
-			service.doInit()
 			withNoSecrets()
 			CountDownLatch handlerDidFinish = new CountDownLatch(2)
 			List<Workspace> workspaces = []
@@ -142,14 +139,14 @@ Don't do very much
 			}
 
 			and:
-			jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 				variables(_) >> it
 			}
 
 			when:
-			theJobHandler.handle(jobClient, anRpaJob([jobNum: 0], "delayed_file_0", [:], 0))
-			Thread.sleep(250)
-			theJobHandler.handle(jobClient, anRpaJob([jobNum: 1], "delayed_file_1", [:], 1))
+			jobQueue << anRpaJob([jobNum: 0], "delayed_file_0", [:], 0)
+			Thread.sleep(250) // TODO - Still needed?
+			jobQueue << anRpaJob([jobNum: 1], "delayed_file_1", [:], 1)
 			handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
 			then:
@@ -166,7 +163,7 @@ Don't do very much
 		}
 	}
 
-	@TestPropertySource(properties = "camunda.rpa.robot.max-concurrent-jobs=256")
+	@TestPropertySource(properties = "camunda.rpa.zeebe.max-concurrent-jobs=256")
 	@IgnoreIf({ System.getenv("CI") })
 	static class ScaleFunctionalSpec extends AbstractZeebeFunctionalSpec {
 
@@ -177,7 +174,6 @@ Don't do very much
 
 		void "Scale test"() {
 			given:
-			service.doInit()
 			withNoSecrets()
 			CountDownLatch handlerDidFinish = new CountDownLatch(256)
 			List<Workspace> workspaces = []
@@ -189,12 +185,12 @@ Don't do very much
 
 			when:
 			256.times { jobNum ->
-				theJobHandler.handle(jobClient, anRpaJob([jobNum: jobNum], "simple_output", [:], jobNum))
+				jobQueue << anRpaJob([jobNum: jobNum], "simple_output", [:], jobNum)
 			}
 			handlerDidFinish.awaitRequired(20, TimeUnit.SECONDS)
 
 			then:
-			jobClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 				256 * it.variables({ m -> m.containsKey("myJobNumber") }) >> it
 				256 * send()
 			}
