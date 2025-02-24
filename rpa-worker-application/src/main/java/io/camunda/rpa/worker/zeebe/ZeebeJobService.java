@@ -73,7 +73,6 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 								.kv("jobType", jobType)
 								.log("Polling for job"))
 						.flatMapIterable(ActivateJobsResponse::getJobs)
-						.doOnNext(_ -> log.atInfo().log("GOT JOB!")) // TODO
 						.flatMap(this::handleJob), zeebeProperties.maxConcurrentJobs())
 				.subscribe();
 
