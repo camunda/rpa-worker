@@ -22,7 +22,7 @@ public interface OperateClient {
 			boolean incident,
 			long processDefinitionKey) {
 		
-		enum State {
+		public enum State {
 			ACTIVE, COMPLETED, CANCELED
 		}
 	}

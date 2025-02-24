@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.zeebe;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.robot.ExecutionResults;
@@ -23,6 +24,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -36,7 +38,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 
 	public static final String ZEEBE_JOB_WORKSPACE_PROPERTY = "ZEEBE_JOB";
 
-	static final String LINKED_RESOURCES_HEADER_NAME = "camunda::linkedResources";
+	static final String LINKED_RESOURCES_HEADER_NAME = "linkedResources";
 	static final String TIMEOUT_HEADER_NAME = "camunda::timeout";
 	static final String MAIN_SCRIPT_LINK_NAME = "RPAScript";
 	static final String BEFORE_SCRIPT_LINK_NAME = "Before";
@@ -71,7 +73,6 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 								.kv("jobType", jobType)
 								.log("Polling for job"))
 						.flatMapIterable(ActivateJobsResponse::getJobs)
-						.doOnNext(_ -> log.atInfo().log("GOT JOB!")) // TODO
 						.flatMap(this::handleJob), zeebeProperties.maxConcurrentJobs())
 				.subscribe();
 
@@ -181,16 +182,21 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	}
 
 	private Flux<String> getScriptKeys(ActivatedJob job, String linkName) {
-		List<ZeebeLinkedResources.ZeebeLinkedResource> linkedResources = Optional.ofNullable(
+		List<ZeebeLinkedResource> linkedResources = Optional.ofNullable(
 						job.getCustomHeaders().get(LINKED_RESOURCES_HEADER_NAME))
-				.map(rawHeader -> Try.of(() -> objectMapper.readValue(rawHeader, ZeebeLinkedResources.class)).get())
+				.map(rawHeader -> Try.of(() -> objectMapper.readValue(rawHeader,
+						new TypeReference<List<ZeebeLinkedResource>>() {})).get())
 				.stream()
-				.flatMap(rs -> rs.linkedResources().stream())
+				.flatMap(Collection::stream)
 				.filter(r -> r.resourceType().equals("RPA"))
 				.filter(r -> r.linkName().equals(linkName))
 				.toList();
 
-		return Flux.fromStream(linkedResources.stream().map(ZeebeLinkedResources.ZeebeLinkedResource::key));
+		return Flux.fromStream(linkedResources.stream().map(ZeebeLinkedResource::resourceKey))
+				.doOnNext(resourceKey -> log.atInfo()
+						.kv("linkName", linkName)
+						.kv("resourceKey", resourceKey)
+						.log("Identified resource key for script"));
 	}
 
 	@SuppressWarnings("unchecked")

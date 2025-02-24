@@ -248,7 +248,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	void "Includes before and after scripts when present"() {
 		given:
 		ActivatedJob job = anRpaJob([:], [
-		        new ZeebeLinkedResources.ZeebeLinkedResource(
+		        new ZeebeLinkedResource(
 				        "before_1", 
 				        ZeebeBindingType.latest, 
 				        "RPA", 
@@ -256,7 +256,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 				        ZeebeJobService.BEFORE_SCRIPT_LINK_NAME, 
 				        "before_1_latest"),
 
-		        new ZeebeLinkedResources.ZeebeLinkedResource(
+		        new ZeebeLinkedResource(
 				        "after_1",
 				        ZeebeBindingType.latest,
 				        "RPA",
@@ -311,9 +311,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	private ActivatedJob anRpaJob(Map<String, Object> variables = [:], List additionalResources = [], Map additionalHeaders = [:]) {
 		return Stub(ActivatedJob) {
 			getCustomHeaders() >> [
-					(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson(
-							new ZeebeLinkedResources([
-									new ZeebeLinkedResources.ZeebeLinkedResource(
+					(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson([
+									new ZeebeLinkedResource(
 											"this_script",
 											ZeebeBindingType.latest,
 											"RPA",
@@ -322,7 +321,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 											"this_script_latest"),
 
 									*additionalResources
-							])),
+							]),
 					
 					*: additionalHeaders
 			]

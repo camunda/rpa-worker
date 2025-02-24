@@ -52,7 +52,6 @@ class ZeebeConfiguration {
 		configProperties["camunda.rpa.zeebe.auth-endpoint"] = "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect"
 		configProperties["camunda.client.zeebe.base-url"] = 'http://localhost:8080/zeebe'
 		configProperties["camunda.client.zeebe.audience"] = "zeebe.${camundaHost}"
-		configProperties["camunda.rpa.zeebe.secrets.secrets-endpoint"] = 'http://FIXME-no-secrets'
 		configProperties["camunda.rpa.e2e.camunda-host"] = camundaHost
 		configProperties["camunda.rpa.e2e.operate-client"] = operateClient
 		configProperties["camunda.rpa.e2e.operate-client-secret"] = operateSecret

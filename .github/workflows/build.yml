@@ -192,7 +192,6 @@ jobs:
   native_linux_amd64:
     needs: 
       - build
-      - windows_test
     runs-on: ubuntu-latest
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
@@ -311,7 +310,6 @@ jobs:
   e2e:
     needs:
       - build
-      - windows_test
       - native_linux_amd64
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
