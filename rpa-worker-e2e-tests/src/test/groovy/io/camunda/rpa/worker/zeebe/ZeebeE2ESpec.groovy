@@ -9,6 +9,11 @@ import org.spockframework.runtime.ConditionNotSatisfiedError
 @Slf4j
 class ZeebeE2ESpec extends AbstractE2ESpec {
 
+	@Override
+	protected Map<String, String> getExtraEnvironment() {
+		return [CAMUNDA_RPA_SCRIPTS_SOURCE: "zeebe"]
+	}
+
 	void "Process errors with correct message when no linked resource providing main script"() {
 		when:
 		deployProcess("no_script_on_default")
