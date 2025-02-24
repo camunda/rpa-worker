@@ -35,12 +35,13 @@ import java.util.stream.Collectors;
 class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 
 	public static final String ZEEBE_JOB_WORKSPACE_PROPERTY = "ZEEBE_JOB";
-	
+
 	static final String LINKED_RESOURCES_HEADER_NAME = "camunda::linkedResources";
 	static final String TIMEOUT_HEADER_NAME = "camunda::timeout";
 	static final String MAIN_SCRIPT_LINK_NAME = "RPAScript";
 	static final String BEFORE_SCRIPT_LINK_NAME = "Before";
 	static final String AFTER_SCRIPT_LINK_NAME = "After";
+	static final Duration JOB_POLL_TIME = Duration.ofMillis(200);
 
 	private final ZeebeClient zeebeClient;
 	private final ZeebeProperties zeebeProperties;
@@ -64,13 +65,13 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 				.flatMap(jobType -> Mono.fromCompletionStage(zeebeClient.newActivateJobsCommand()
 								.jobType(jobType)
 								.maxJobsToActivate(1)
-								.requestTimeout(Duration.ofMillis(200))
+								.requestTimeout(JOB_POLL_TIME)
 								.send())
 						.doOnSubscribe(_ -> log.atDebug()
 								.kv("jobType", jobType)
 								.log("Polling for job"))
 						.flatMapIterable(ActivateJobsResponse::getJobs)
-						.doOnNext(_ -> log.atInfo().log("GOT JOB!"))
+						.doOnNext(_ -> log.atInfo().log("GOT JOB!")) // TODO
 						.flatMap(this::handleJob), zeebeProperties.maxConcurrentJobs())
 				.subscribe();
 
