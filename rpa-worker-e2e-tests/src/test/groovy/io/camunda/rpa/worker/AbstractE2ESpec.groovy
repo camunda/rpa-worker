@@ -24,6 +24,7 @@ import spock.lang.Specification
 
 import java.time.Duration
 import java.util.concurrent.TimeUnit
+import java.util.function.Function
 
 @SpringBootTest
 @ActiveProfiles(resolver = ProfileResolver)
@@ -154,5 +155,19 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.doOnSubscribe { log.info("Fetching Process Instance") }
 				.doOnError { log.info("Process Instance not in Operate yet") }
 				.doOnNext { log.info("Got Process Instance") }
+	}
+
+	Function<OperateClient.GetProcessInstanceResponse, Mono<OperateClient.GetProcessInstanceResponse>> expectNoIncident() {
+		return { pinstance ->
+			if ( ! pinstance.incident())
+				return Mono.just(pinstance)
+
+			return operateClient.getIncidents(new OperateClient.GetIncidentsRequest(new OperateClient.GetIncidentsRequest.Filter(pinstance.key())))
+					.map {
+						with(it.items()) { incidents ->
+							incidents.empty
+						}
+					}
+		}
 	}
 }

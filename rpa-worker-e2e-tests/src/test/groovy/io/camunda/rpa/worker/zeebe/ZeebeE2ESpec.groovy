@@ -57,10 +57,10 @@ class ZeebeE2ESpec extends AbstractE2ESpec {
 
 		then:
 		block getProcessInstance(pinstance.processInstanceKey)
+				.flatMap(expectNoIncident())
 				.doOnNext { resp ->
 					log.info("Checking for completion")
 					with(resp) {
-						! incident()
 						state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
 					}
 					log.info("Instance is complete")
