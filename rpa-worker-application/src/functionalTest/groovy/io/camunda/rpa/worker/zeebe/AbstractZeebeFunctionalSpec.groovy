@@ -32,6 +32,29 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 	static final String TASK_PREFIX = "camunda::RPA-Task::"
 	
 	BlockingQueue<ActivatedJob> jobQueue = new LinkedBlockingQueue<>()
+
+	FinalCommandStep activateFinal = Stub() {
+		send() >> Stub(ZeebeFuture) {
+			handle(_) >> { BiFunction fn ->
+				return CompletableFuture.supplyAsync({
+					ActivatedJob job = jobQueue.poll(200, TimeUnit.MILLISECONDS)
+					return { -> job ? [job] : [] } as ActivateJobsResponse
+				}).handle(fn)
+			}
+		}
+	}
+	
+	ActivateJobsCommandStep1.ActivateJobsCommandStep3 activate3 = Stub() {
+		requestTimeout(_) >> activateFinal
+	}
+	
+	ActivateJobsCommandStep1.ActivateJobsCommandStep2 activate2 = Stub() {
+		maxJobsToActivate(_) >> activate3
+	}
+	
+	ActivateJobsCommandStep1 activate1 = Stub() {
+		jobType(_) >> activate2
+	}
 	
 	@SpringBean
 	ZeebeClient zeebeClient = Mock(ZeebeClient) {
@@ -39,24 +62,7 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 			updateTimeout(_) >> Stub(UpdateJobCommandStep1.UpdateJobCommandStep2)
 		}
 
-		newActivateJobsCommand() >> Stub(ActivateJobsCommandStep1) {
-			jobType(_) >> Stub(ActivateJobsCommandStep1.ActivateJobsCommandStep2) {
-				maxJobsToActivate(_) >> Stub(ActivateJobsCommandStep1.ActivateJobsCommandStep3) {
-					requestTimeout(_) >> Stub(FinalCommandStep) {
-						send() >> Stub(ZeebeFuture) {
-							handle(_) >> { BiFunction fn -> 
-								CompletableFuture.supplyAsync {
-									ActivatedJob job = jobQueue.poll(2000, TimeUnit.MILLISECONDS)
-									return Stub(ActivateJobsResponse) {
-										getJobs() >> { job ? [job] : [] }
-									}
-								}.handle(fn)
-							}
-						}
-					}
-				}
-			}
-		}
+		newActivateJobsCommand() >> activate1
 	}
 
 	@SpringSpy

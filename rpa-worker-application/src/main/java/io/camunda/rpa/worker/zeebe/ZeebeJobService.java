@@ -14,14 +14,11 @@ import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.client.api.worker.JobWorker;
 import io.vavr.control.Try;
-import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
-import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -30,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,10 +50,6 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	private final SecretsService secretsService;
 	private final WorkspaceCleanupService workspaceCleanupService;
 
-	private final Map<String, JobWorker> jobWorkers = new ConcurrentHashMap<>();
-	
-	private Disposable jobSubscription;
-
 	@Override
 	public void onApplicationEvent(ZeebeReadyEvent ignored) {
 		doInit();
@@ -68,14 +60,11 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 				.map(t -> zeebeProperties.rpaTaskPrefix() + t)
 				.collect(Collectors.toList()));
 
-		if(jobSubscription != null) 
-			jobSubscription.dispose();
-		
-		jobSubscription = Flux.fromIterable(() -> tagIterator)
+		Flux.fromIterable(() -> tagIterator)
 				.flatMap(jobType -> Mono.fromCompletionStage(zeebeClient.newActivateJobsCommand()
 								.jobType(jobType)
 								.maxJobsToActivate(1)
-								.requestTimeout(Duration.ofMillis(2_000 /* TODO */))
+								.requestTimeout(Duration.ofMillis(200))
 								.send())
 						.doOnSubscribe(_ -> log.atDebug()
 								.kv("jobType", jobType)
@@ -86,11 +75,6 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 				.subscribe();
 
 		return this;
-	}
-
-	@PreDestroy
-	private void destroy() {
-		jobWorkers.values().forEach(JobWorker::close);
 	}
 
 	private Mono<Void> handleJob(ActivatedJob job) {
