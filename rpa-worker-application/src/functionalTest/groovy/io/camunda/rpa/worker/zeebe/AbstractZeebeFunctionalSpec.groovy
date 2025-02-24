@@ -4,55 +4,73 @@ import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
+import io.camunda.zeebe.client.api.ZeebeFuture
+import io.camunda.zeebe.client.api.command.ActivateJobsCommandStep1
+import io.camunda.zeebe.client.api.command.FinalCommandStep
 import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
+import io.camunda.zeebe.client.api.response.ActivateJobsResponse
 import io.camunda.zeebe.client.api.response.ActivatedJob
-import io.camunda.zeebe.client.api.worker.JobClient
-import io.camunda.zeebe.client.api.worker.JobHandler
-import io.camunda.zeebe.client.api.worker.JobWorker
-import io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
 import org.spockframework.spring.SpringBean
 import org.spockframework.spring.SpringSpy
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.test.annotation.DirtiesContext
 
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.BlockingQueue
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.LinkedBlockingQueue
+import java.util.concurrent.TimeUnit
+import java.util.function.BiFunction
 
+@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 
 	static final String TASK_PREFIX = "camunda::RPA-Task::"
 	
-	@Autowired
-	ZeebeJobService service
+	BlockingQueue<ActivatedJob> jobQueue = new LinkedBlockingQueue<>()
 
-	JobWorkerBuilderStep1 builder1 = Mock() {
-		jobType(_) >> { builder2 }
-	}
-	JobHandler theJobHandler
-	JobWorkerBuilderStep1.JobWorkerBuilderStep2 builder2 = Stub() {
-		handler(_) >> { JobHandler jh ->
-			theJobHandler = jh
-			return builder3
+	FinalCommandStep activateFinal = Stub() {
+		send() >> Stub(ZeebeFuture) {
+			handle(_) >> { BiFunction fn ->
+				return CompletableFuture.supplyAsync({
+					ActivatedJob job = jobQueue.poll(200, TimeUnit.MILLISECONDS)
+					return { -> job ? [job] : [] } as ActivateJobsResponse
+				}).handle(fn)
+			}
 		}
 	}
-	JobWorkerBuilderStep1.JobWorkerBuilderStep3 builder3 = Mock() {
-		open() >> Stub(JobWorker)
+	
+	ActivateJobsCommandStep1.ActivateJobsCommandStep3 activate3 = Stub() {
+		requestTimeout(_) >> activateFinal
 	}
-
+	
+	ActivateJobsCommandStep1.ActivateJobsCommandStep2 activate2 = Stub() {
+		maxJobsToActivate(_) >> activate3
+	}
+	
+	ActivateJobsCommandStep1 activate1 = Stub() {
+		jobType(_) >> activate2
+	}
+	
 	@SpringBean
-	ZeebeClient zeebeClient = Mock() {
-		newWorker() >> builder1
+	ZeebeClient zeebeClient = Mock(ZeebeClient) {
 		newUpdateJobCommand(_) >> Stub(UpdateJobCommandStep1) {
 			updateTimeout(_) >> Stub(UpdateJobCommandStep1.UpdateJobCommandStep2)
 		}
+
+		newActivateJobsCommand() >> activate1
 	}
 
 	@SpringSpy
 	WorkspaceCleanupService workspaceCleanupService
-
-	JobClient jobClient = Mock()
 	
+	@Autowired
+	ApplicationEventPublisher eventPublisher
+
 	abstract Map<String, String> getScripts()
 
 	void setupSpec() {
@@ -65,6 +83,10 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 		scripts.each { k, v ->
 			scriptsDir.resolve("${k}.robot").text = v
 		}
+	}
+	
+	void setup() {
+		eventPublisher.publishEvent(new ZeebeReadyEvent(zeebeClient))
 	}
 
 	protected ActivatedJob anRpaJob(Map<String, Object> variables = [:], String scriptKey = "existing_1", Map additionalHeaders = [:], int jobNum = 0) {

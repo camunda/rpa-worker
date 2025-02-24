@@ -31,7 +31,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	PythonInterpreter pythonInterpreter = new PythonInterpreter(pythonExe)
 	ProcessService processService = Mock()
 	YamlMapper yamlMapper = new YamlMapper(objectMapper)
-	RobotProperties robotProperties = new RobotProperties(1, Duration.ofSeconds(3))
+	RobotProperties robotProperties = new RobotProperties(Duration.ofSeconds(3))
 	WorkspaceService workspaceService = Mock()
 
 	@Subject

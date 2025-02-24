@@ -5,4 +5,4 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.time.Duration;
 
 @ConfigurationProperties("camunda.rpa.robot")
-record RobotProperties(int maxConcurrentJobs, Duration defaultTimeout) { }
+record RobotProperties(Duration defaultTimeout) { }
