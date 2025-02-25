@@ -92,20 +92,19 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 	protected ActivatedJob anRpaJob(Map<String, Object> variables = [:], String scriptKey = "existing_1", Map additionalHeaders = [:], int jobNum = 0) {
 		return Stub(ActivatedJob) {
 			getCustomHeaders() >> [
-					(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson(
-							new ZeebeLinkedResources([
-									new ZeebeLinkedResources.ZeebeLinkedResource(
-											scriptKey,
-											ZeebeBindingType.latest,
-											"RPA",
-											"?",
-											ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
-											scriptKey)
-							])),
+					(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson([
+							new ZeebeLinkedResource(
+									scriptKey,
+									ZeebeBindingType.latest,
+									"RPA",
+									"?",
+									ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
+									scriptKey)
+					]),
 
 					*: additionalHeaders
 			]
-			
+
 			getKey() >> { jobNum }
 			getVariablesAsMap() >> variables
 			getBpmnProcessId() >> "123"
@@ -122,36 +121,35 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 
 		return Stub(ActivatedJob) {
 			getCustomHeaders() >> [(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson(
-					new ZeebeLinkedResources(
-							preScripts.collect { s ->
-								new ZeebeLinkedResources.ZeebeLinkedResource(
+					preScripts.collect { s ->
+						new ZeebeLinkedResource(
+								s,
+								ZeebeBindingType.latest,
+								"RPA",
+								"?",
+								ZeebeJobService.BEFORE_SCRIPT_LINK_NAME,
+								s)
+							}
+							+
+							[
+									new ZeebeLinkedResource(
+											mainScript,
+											ZeebeBindingType.latest,
+											"RPA",
+											"?",
+											ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
+											mainScript)
+							]
+							+
+							postScripts.collect { s ->
+								new ZeebeLinkedResource(
 										s,
 										ZeebeBindingType.latest,
 										"RPA",
 										"?",
-										ZeebeJobService.BEFORE_SCRIPT_LINK_NAME,
+										ZeebeJobService.AFTER_SCRIPT_LINK_NAME,
 										s)
-							}
-									+
-									[
-											new ZeebeLinkedResources.ZeebeLinkedResource(
-													mainScript,
-													ZeebeBindingType.latest,
-													"RPA",
-													"?",
-													ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
-													mainScript)
-									]
-									+
-									postScripts.collect { s ->
-										new ZeebeLinkedResources.ZeebeLinkedResource(
-												s,
-												ZeebeBindingType.latest,
-												"RPA",
-												"?",
-												ZeebeJobService.AFTER_SCRIPT_LINK_NAME,
-												s)
-									}))]
+							})]
 
 			getVariablesAsMap() >> inputVariables
 		}
