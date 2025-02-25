@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker
 
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import feign.FeignException
 import groovy.json.JsonOutput
@@ -229,7 +230,10 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	Map<String, String> getInstanceVariables(long processInstanceKey) {
 		return block(operateClient.getVariables(new OperateClient.GetVariablesRequest(new OperateClient.GetVariablesRequest.Filter(processInstanceKey)))
 				.flatMapIterable(it -> it.items())
-				.collect(Collectors.toMap(kv -> kv.name(), kv -> kv.value())))
+				.collect(Collectors.toMap(
+						(OperateClient.GetVariablesResponse.Item kv) -> kv.name(),
+						(OperateClient.GetVariablesResponse.Item kv) -> 
+								objectMapper.readValue(kv.value() ?: "{}", Object))))
 	}
 
 	private class SpecificationHelper {

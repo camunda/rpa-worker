@@ -154,7 +154,7 @@ Upload the file
 		}
 		
 		when:
-		ZeebeDocumentDescriptor uploaded = objectMapper.readValue(
+		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(
 				getInstanceVariables(pinstance.processInstanceKey)['uploadedFile'], 
 				ZeebeDocumentDescriptor)
 
@@ -191,7 +191,7 @@ Upload the file
 		}
 
 		when:
-		ZeebeDocumentDescriptor uploaded = objectMapper.readValue(
+		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(
 				getInstanceVariables(pinstance.processInstanceKey)['uploadedFile'],
 				ZeebeDocumentDescriptor)
 
@@ -229,7 +229,7 @@ Upload the file
 		}
 
 		when:
-		List<ZeebeDocumentDescriptor> uploaded = objectMapper.readValue(
+		List<ZeebeDocumentDescriptor> uploaded = objectMapper.convertValue(
 				getInstanceVariables(pinstance.processInstanceKey)['uploadedFiles'],
 				new TypeReference<List<ZeebeDocumentDescriptor>>() {})
 
