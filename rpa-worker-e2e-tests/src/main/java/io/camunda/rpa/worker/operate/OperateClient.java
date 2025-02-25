@@ -52,4 +52,21 @@ public interface OperateClient {
 			}
 		}
 	}
+	
+	@RequestLine("POST /variables/search")
+	Mono<GetVariablesResponse> getVariables(GetVariablesRequest request);
+
+	record GetVariablesRequest(Filter filter) {
+		public record Filter(long processInstanceKey) { }
+	}
+
+	record GetVariablesResponse(List<Item> items) {
+		public record Item(
+				long key,
+				long processDefinitionKey,
+				long processInstanceKey,
+				String name,
+				String value) {
+		}
+	}
 }

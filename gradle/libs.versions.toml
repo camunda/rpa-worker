@@ -44,5 +44,6 @@ spock-spring = { module = "org.spockframework:spock-spring", version.ref = "spoc
 spring-boot-starter-test = { module  = "org.springframework.boot:spring-boot-starter-test" }
 groovy-nio = { module = "org.apache.groovy:groovy-nio", version.ref = "groovy" }
 groovy-json = { module = "org.apache.groovy:groovy-json", version.ref = "groovy" }
+groovy-templates = { module = "org.apache.groovy:groovy-templates", version.ref = "groovy" }
 blockhound = { module = "io.projectreactor.tools:blockhound", version.ref = "blockhound" }
 mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }

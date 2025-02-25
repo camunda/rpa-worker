@@ -2,9 +2,8 @@ package io.camunda.rpa.worker.files
 
 import com.fasterxml.jackson.core.type.TypeReference
 import io.camunda.rpa.worker.AbstractE2ESpec
-import io.camunda.rpa.worker.robot.ExecutionResults
-import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
-import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
+import io.camunda.rpa.worker.operate.OperateClient
+import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
@@ -12,28 +11,22 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.util.MultiValueMap
-import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Flux
 import spock.lang.PendingFeature
 
-import java.time.Duration
-
-// TODO: Using the Sandbox for now, but should use Zeebe job when available
 class FileHandlingE2ESpec extends AbstractE2ESpec {
+
+	@Override
+	protected Map<String, String> getExtraEnvironment() {
+		return [CAMUNDA_RPA_SCRIPTS_SOURCE: 'zeebe']
+	}
 
 	@Autowired
 	DocumentClient documentClient
 	
 	void "Single file is provided to workspace"() {
 		given:
-		ZeebeDocumentDescriptor uploaded = documentClient.uploadDocument(
-				uploadDocumentRequest("one.txt", "one"), null).block()
-		
-		when:
-		EvaluateScriptResponse r = post()
-				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
-						.script('''\
+		deployScript("download_from_zeebe", '''\
 *** Settings ***
 Library    OperatingSystem
 Library    Camunda
@@ -44,28 +37,28 @@ Download the file
     ${fileContents}=    Get File    one.txt
     Should Be Equal    ${fileContents}    one
 ''')
-						.variables([theFile: uploaded])
-						.build()))
-				.retrieve()
-				.bodyToMono(EvaluateScriptResponse)
-				.block(Duration.ofMinutes(1))
+		
+		and:
+		deploySimpleRobotProcess("download_from_zeebe_on_default", "download_from_zeebe")
+		
+		and:
+		ZeebeDocumentDescriptor uploaded = documentClient.uploadDocument(
+				uploadDocumentRequest("one.txt", "one"), null).block()
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("download_from_zeebe_on_default", 
+				theFile: uploaded)
 
 		then:
-		r.result() == ExecutionResults.Result.PASS
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
 	}
 
 	void "Multiple files are provided to workspace"() {
 		given:
-		ZeebeDocumentDescriptor uploaded1 = documentClient.uploadDocument(
-				uploadDocumentRequest("one.txt", "one"), null).block()
-		ZeebeDocumentDescriptor uploaded2 = documentClient.uploadDocument(
-				uploadDocumentRequest("two.txt", "two"), null).block()
-
-		when:
-		EvaluateScriptResponse r = post()
-				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
-						.script('''\
+		deployScript('download_multiple_from_zeebe', '''\
 *** Settings ***
 Library    OperatingSystem
 Library    Camunda
@@ -78,27 +71,31 @@ Download the file
     Should Be Equal    ${fileContents1}    one
     Should Be Equal    ${fileContents2}    two
 ''')
-						.variables([theFiles: [uploaded1, uploaded2]])
-						.build()))
-				.retrieve()
-				.bodyToMono(EvaluateScriptResponse)
-				.block(Duration.ofMinutes(1))
+		
+		and:
+		deploySimpleRobotProcess('download_multiple_from_zeebe_on_default', 'download_multiple_from_zeebe')
+		
+		and:
+		ZeebeDocumentDescriptor uploaded1 = documentClient.uploadDocument(
+				uploadDocumentRequest("one.txt", "one"), null).block()
+		ZeebeDocumentDescriptor uploaded2 = documentClient.uploadDocument(
+				uploadDocumentRequest("two.txt", "two"), null).block()
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance('download_multiple_from_zeebe_on_default',
+				theFiles: [uploaded1, uploaded2])
 
 		then:
-		r.result() == ExecutionResults.Result.PASS
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
 	}
 	
 	@PendingFeature(reason = "Files are downloaded into a directory with the custom name with the original name?")
 	void "Single file is provided to workspace - custom filename"() {
 		given:
-		ZeebeDocumentDescriptor uploaded = documentClient.uploadDocument(
-				uploadDocumentRequest("one.txt", "one"), null).block()
-
-		when:
-		EvaluateScriptResponse r = post()
-				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
-						.script('''\
+		deployScript('download_from_zeebe_custom_filename', '''\
 *** Settings ***
 Library    OperatingSystem
 Library    Camunda
@@ -109,22 +106,30 @@ Download the file
     ${fileContents}=    Get File    downloaded.txt
     Should Be Equal    ${fileContents}    one
 ''')
-						.variables([theFile: uploaded])
-						.build()))
-				.retrieve()
-				.bodyToMono(EvaluateScriptResponse)
-				.block(Duration.ofMinutes(1))
+
+		and:
+		deploySimpleRobotProcess(
+				'download_from_zeebe_custom_filename_on_default',
+				'download_from_zeebe_custom_filename')
+
+		and:
+		ZeebeDocumentDescriptor uploaded = documentClient.uploadDocument(
+				uploadDocumentRequest("one.txt", "one"), null).block()
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance('download_from_zeebe_custom_filename_on_default',
+				theFile: uploaded)
 
 		then:
-		r.result() == ExecutionResults.Result.PASS
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
 	}
 	
 	void "Single file is uploaded from workspace"() {
-		when:
-		EvaluateScriptResponse r = post()
-				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
-						.script('''\
+		given:
+		deployScript('upload_to_zeebe', '''\
 *** Settings ***
 Library    OperatingSystem
 Library    Camunda
@@ -135,16 +140,24 @@ Upload the file
     ${uploadedFile}=    Upload Documents    one.txt
     Set Output Variable    uploadedFile    ${uploadedFile}
 ''')
-						.build()))
-				.retrieve()
-				.bodyToMono(EvaluateScriptResponse)
-				.block(Duration.ofMinutes(1))
-
-		then:
-		r.result() == ExecutionResults.Result.PASS
+		
+		and:
+		deploySimpleRobotProcess('upload_to_zeebe_on_default', 'upload_to_zeebe')
 		
 		when:
-		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(r.variables()['uploadedFile'], ZeebeDocumentDescriptor)
+		ProcessInstanceEvent pinstance = createInstance('upload_to_zeebe_on_default')
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+		
+		when:
+		ZeebeDocumentDescriptor uploaded = objectMapper.readValue(
+				getInstanceVariables(pinstance.processInstanceKey)['uploadedFile'], 
+				ZeebeDocumentDescriptor)
+
 		String contents = download(documentClient.getDocument(
 				uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())).text
 		
@@ -153,11 +166,8 @@ Upload the file
 	}
 
 	void "Single file is uploaded from workspace - alt out variable"() {
-		when:
-		EvaluateScriptResponse r = post()
-				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
-						.script('''\
+		given:
+		deployScript('upload_to_zeebe_alt_out', '''\
 *** Settings ***
 Library    OperatingSystem
 Library    Camunda
@@ -167,16 +177,24 @@ Upload the file
     Create File    one.txt    one
     Upload Documents    one.txt    uploadedFile
 ''')
-						.build()))
-				.retrieve()
-				.bodyToMono(EvaluateScriptResponse)
-				.block(Duration.ofMinutes(1))
-
-		then:
-		r.result() == ExecutionResults.Result.PASS
+		
+		and:
+		deploySimpleRobotProcess('upload_to_zeebe_alt_out_on_default', 'upload_to_zeebe_alt_out')
 
 		when:
-		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(r.variables()['uploadedFile'], ZeebeDocumentDescriptor)
+		ProcessInstanceEvent pinstance = createInstance('upload_to_zeebe_alt_out_on_default')
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+
+		when:
+		ZeebeDocumentDescriptor uploaded = objectMapper.readValue(
+				getInstanceVariables(pinstance.processInstanceKey)['uploadedFile'],
+				ZeebeDocumentDescriptor)
+
 		String contents = download(documentClient.getDocument(
 				uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())).text
 
@@ -185,11 +203,8 @@ Upload the file
 	}
 
 	void "Multiple files are uploaded from workspace"() {
-		when:
-		EvaluateScriptResponse r = post()
-				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
-						.script('''\
+		given:
+		deployScript('upload_multiple_to_zeebe', '''\
 *** Settings ***
 Library    OperatingSystem
 Library    Camunda
@@ -200,16 +215,22 @@ Upload the file
     Create File    two.txt    two
     Upload Documents    *.txt    uploadedFiles
 ''')
-						.build()))
-				.retrieve()
-				.bodyToMono(EvaluateScriptResponse)
-				.block(Duration.ofMinutes(1))
-
-		then:
-		r.result() == ExecutionResults.Result.PASS
+		
+		and:
+		deploySimpleRobotProcess('upload_multiple_to_zeebe_on_default', 'upload_multiple_to_zeebe')
 
 		when:
-		List<ZeebeDocumentDescriptor> uploaded = objectMapper.convertValue(r.variables()['uploadedFiles'],
+		ProcessInstanceEvent pinstance = createInstance('upload_multiple_to_zeebe_on_default')
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+
+		when:
+		List<ZeebeDocumentDescriptor> uploaded = objectMapper.readValue(
+				getInstanceVariables(pinstance.processInstanceKey)['uploadedFiles'],
 				new TypeReference<List<ZeebeDocumentDescriptor>>() {})
 
 		String contents1 = download(uploaded.find {

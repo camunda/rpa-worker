@@ -1,3 +1,0 @@
-*** Tasks ***
-Tasks
-    No Operation

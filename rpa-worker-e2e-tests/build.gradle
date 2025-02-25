@@ -52,6 +52,7 @@ dependencies {
 	testImplementation libs.spock.core
 	testImplementation libs.groovy.json
 	testImplementation libs.groovy.nio
+	testImplementation libs.groovy.templates
 	testImplementation libs.mockwebserver
 	testImplementation libs.spring.boot.starter.test
 	testImplementation libs.spock.spring
