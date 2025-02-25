@@ -105,7 +105,13 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		given:
 		ActivatedJob job = anRpaJob()
 		Map<String, String> expectedOutputVars = [outputVar: 'output-var-value']
-		Map<String, String> expectedExtraEnv = [RPA_ZEEBE_PROCESS_INSTANCE_KEY: "345", RPA_ZEEBE_JOB_KEY: "123", RPA_ZEEBE_BPMN_PROCESS_ID: "234"]
+		Map<String, String> expectedExtraEnv = [
+				RPA_ZEEBE_PROCESS_INSTANCE_KEY: "345", 
+				RPA_ZEEBE_JOB_KEY: "123", 
+				RPA_ZEEBE_BPMN_PROCESS_ID: "234",
+				RPA_ZEEBE_JOB_TYPE: "camunda::RPA-Task::default"
+		]
+		
 		Path workspacePath = Stub()
 		Workspace workspace = new Workspace(null, workspacePath)
 		
@@ -331,6 +337,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 			getBpmnProcessId() >> "234"
 			getProcessInstanceKey() >> 345
 			getRetries() >> 3
+			getType() >> "camunda::RPA-Task::default"
 		}
 	}
 }
