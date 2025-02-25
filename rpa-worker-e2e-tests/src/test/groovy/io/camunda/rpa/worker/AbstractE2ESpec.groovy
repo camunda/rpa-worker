@@ -3,12 +3,19 @@ package io.camunda.rpa.worker
 import com.fasterxml.jackson.databind.ObjectMapper
 import feign.FeignException
 import groovy.json.JsonOutput
+import groovy.text.StreamingTemplateEngine
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.FromString
+import groovy.transform.stc.SimpleType
 import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.operate.OperateClient
+import io.camunda.rpa.worker.operate.OperateClient.GetProcessInstanceResponse
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.response.DeploymentEvent
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
+import org.spockframework.lang.ConditionBlock
 import org.spockframework.runtime.ConditionNotSatisfiedError
+import org.spockframework.runtime.GroovyRuntimeUtil
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContextInitializer
@@ -19,12 +26,13 @@ import org.springframework.test.context.ActiveProfilesResolver
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
+import reactor.core.scheduler.Schedulers
 import reactor.util.retry.Retry
 import spock.lang.Specification
 
 import java.time.Duration
 import java.util.concurrent.TimeUnit
-import java.util.function.Function
+import java.util.stream.Collectors
 
 @SpringBootTest
 @ActiveProfiles(resolver = ProfileResolver)
@@ -40,10 +48,10 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 					: (["local"] as String[])
 		}
 	}
-	
+
 	static final ZeebeConfiguration zeebeConfiguration = ZeebeConfiguration.get()
 
-	final Retry waitForObjectRetrySpec = Retry.fixedDelay(15, Duration.ofSeconds(2))
+	final Retry waitForObjectRetrySpec = Retry.fixedDelay(15, Duration.ofSeconds(3))
 			.filter { thrown ->
 				thrown instanceof ConditionNotSatisfiedError
 						|| thrown instanceof FeignException.NotFound
@@ -51,26 +59,28 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 
 	@Autowired
 	E2EProperties e2eProperties
-	
+
 	@Autowired
 	ZeebeClient zeebeClient
-	
+
 	@Autowired
 	RpaWorkerClient rpaWorkerClient
-	
+
 	@Autowired
 	ObjectMapper objectMapper
-	
+
 	@Autowired
 	OperateClient operateClient
+	
+	SpecificationHelper spec = new SpecificationHelper()
 
 	@Autowired
 	private WebClient.Builder webClientBuilder
-	
+
 	private WebClient $$webClient
 	@Delegate
 	WebClient getWebClient() {
-		if (!$$webClient)
+		if ( ! $$webClient)
 			$$webClient = webClientBuilder.baseUrl("http://127.0.0.1:36227").build()
 
 		return $$webClient
@@ -80,7 +90,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 		return (zeebeConfiguration.environment + getExtraEnvironment())
 				.collectEntries { k, v -> [k, v.toString()] }
 	}
-	
+
 	protected Map<String, String> getExtraEnvironment() {
 		return [:]
 	}
@@ -92,7 +102,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 					zeebeConfiguration.installProperties(new MockPropertySource()))
 		}
 	}
-
+	
 	static Process process
 
 	void setup() {
@@ -118,18 +128,28 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 		process.waitFor(10, TimeUnit.SECONDS)
 		process.toHandle().destroyForcibly()
 	}
-	
+
 	String taskForTag(String tag) {
 		return "camunda::RPA-Task::${tag}"
 	}
 
-	DeploymentEvent deployScript(String script) {
+	DeploymentEvent deployScriptFile(String script) {
 		String scriptBody = getClass().getResource("/${script}.robot").text
 		return zeebeClient.newDeployResourceCommand()
 				.addResourceStringUtf8(JsonOutput.toJson([
 						id    : script,
 						name  : script,
 						script: scriptBody]), "${script}.rpa")
+				.send()
+				.join()
+	}
+
+	DeploymentEvent deployScript(String name, String script) {
+		return zeebeClient.newDeployResourceCommand()
+				.addResourceStringUtf8(JsonOutput.toJson([
+						id    : name,
+						name  : name,
+						script: script]), "${script}.rpa")
 				.send()
 				.join()
 	}
@@ -141,7 +161,32 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.join()
 	}
 
-	ProcessInstanceEvent createInstance(String process, Map<String, Object> inputVariables = [:]) {
+	DeploymentEvent deploySimpleRobotProcess(String processId, String scriptId, String workerLabel = "default") {
+		getClass().getResource("/simple_rpa_process_template.bpmn").withReader { r ->
+			PipedInputStream pin = new PipedInputStream()
+			PipedOutputStream pout = new PipedOutputStream(pin)
+
+			Thread.start {
+				OutputStreamWriter writer = new OutputStreamWriter(pout)
+
+				new StreamingTemplateEngine().createTemplate(r).make([
+						processId  : processId,
+						scriptId   : scriptId,
+						workerLabel: workerLabel])
+						.writeTo(writer)
+
+				writer.close()
+				pout.close()
+			}
+
+			return zeebeClient.newDeployResourceCommand()
+					.addResourceStream(pin, "${processId}.bpmn")
+					.send()
+					.join()
+		}
+	}
+
+	ProcessInstanceEvent createInstance(Map<String, Object> inputVariables = [:], String process) {
 		return zeebeClient.newCreateInstanceCommand()
 				.bpmnProcessId(process)
 				.latestVersion()
@@ -150,24 +195,87 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.join()
 	}
 
-	Mono<OperateClient.GetProcessInstanceResponse> getProcessInstance(long key) {
+	Mono<GetProcessInstanceResponse> getProcessInstance(long key) {
 		return operateClient.getProcessInstance(key)
 				.doOnSubscribe { log.info("Fetching Process Instance") }
 				.doOnError { log.info("Process Instance not in Operate yet") }
 				.doOnNext { log.info("Got Process Instance") }
 	}
 
-	Function<OperateClient.GetProcessInstanceResponse, Mono<OperateClient.GetProcessInstanceResponse>> expectNoIncident() {
-		return { pinstance ->
-			if ( ! pinstance.incident())
-				return Mono.just(pinstance)
+	GetProcessInstanceResponse waitForProcessInstance(long key) {
+		return getProcessInstance(key)
+				.retryWhen(waitForObjectRetrySpec)
+				.block()
+	}
 
-			return operateClient.getIncidents(new OperateClient.GetIncidentsRequest(new OperateClient.GetIncidentsRequest.Filter(pinstance.key())))
-					.map {
-						with(it.items()) { incidents ->
-							incidents.empty
+	void expectNoIncident(long processInstanceKey) {
+		block(getProcessInstance(processInstanceKey)
+				.retryWhen(waitForObjectRetrySpec)
+				.flatMap { pinstance ->
+					operateClient.getIncidents(
+							new OperateClient.GetIncidentsRequest(
+									new OperateClient.GetIncidentsRequest.Filter(
+											pinstance.key())))
+
+							.doOnSubscribe { log.info("Fetching Incidents") }
+				}
+				.doOnNext { resp ->
+					with(resp.items()) { incidents -> 
+						incidents.empty
+					}
+				})
+	}
+
+	Map<String, String> getInstanceVariables(long processInstanceKey) {
+		return block(operateClient.getVariables(new OperateClient.GetVariablesRequest(new OperateClient.GetVariablesRequest.Filter(processInstanceKey)))
+				.flatMapIterable(it -> it.items())
+				.collect(Collectors.toMap(kv -> kv.name(), kv -> kv.value())))
+	}
+
+	private class SpecificationHelper {
+
+		@ConditionBlock
+		GetProcessInstanceResponse waitForProcessInstance(
+				long key,
+				@DelegatesTo(GetProcessInstanceResponse)
+				@ClosureParams(
+						value = SimpleType,
+						options = "io.camunda.rpa.worker.operate.OperateClient.GetProcessInstanceResponse") Closure<?> fn) {
+
+			return getProcessInstance(key)
+					.publishOn(Schedulers.boundedElastic())
+					.doOnNext { resp -> {
+							Closure<?> fn2 = fn.rehydrate(resp, fn.owner, fn.thisObject).curry(resp)
+							GroovyRuntimeUtil.invokeClosure(fn2)
 						}
 					}
+					.retryWhen(waitForObjectRetrySpec)
+					.block()
+		}
+
+		@ConditionBlock
+		List expectIncidents(
+				long processInstanceKey,
+				@DelegatesTo(GetProcessInstanceResponse)
+				@ClosureParams(
+						value = FromString,
+						options = "java.util.List<io.camunda.rpa.worker.operate.OperateClient.GetIncidentsResponse.Item>") Closure<?> fn) {
+
+			return block(getProcessInstance(processInstanceKey)
+					.flatMap { pinstance ->
+						operateClient.getIncidents(
+								new OperateClient.GetIncidentsRequest(
+										new OperateClient.GetIncidentsRequest.Filter(
+												pinstance.key())))
+
+								.doOnSubscribe { log.info("Fetching Incidents") }
+					}
+					.doOnNext { resp ->
+						Closure<?> fn2 = fn.rehydrate(resp, fn.owner, fn.thisObject).curry(resp.items())
+						GroovyRuntimeUtil.invokeClosure(fn2)
+					}
+					.retryWhen(waitForObjectRetrySpec)
+					.map { it.items() })
 		}
 	}
 }
