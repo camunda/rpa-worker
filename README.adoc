@@ -168,10 +168,6 @@ The RPA Worker makes the following environment variables available to the Robot 
 
 3+| *Robot Properties*
 
-|camunda.rpa.robot.max-concurrent-jobs
-|How many Robot jobs may run concurrently
-|`1`
-
 |camunda.rpa.robot.default-timeout
 |The default timeout to use when no other timeout is specified (ISO 8601 duration string)
 |`PT5M` (5 minutes)
@@ -188,6 +184,10 @@ The RPA Worker makes the following environment variables available to the Robot 
 |camunda.rpa.zeebe.worker-tags
 |The worker tag(s) this worker should subscribe to (comma-separated)
 |`default`
+
+|camunda.rpa.zeebe.max-concurrent-jobs
+|How many Robot jobs from Zeebe to run concurrently
+|`1`
 
 |camunda.rpa.zeebe.auth-endpoint
 |The authentication endpoint that should be used for authenticating before sending requests
