@@ -122,6 +122,9 @@ The RPA Worker makes the following environment variables available to the Robot 
 |`RPA_ZEEBE_JOB_KEY`
 |The Zeebe Job Key which triggered the Robot execution
 
+|`RPA_ZEEBE_JOB_TYPE`
+|The Zeebe Job type
+
 |`RPA_ZEEBE_BPMN_PROCESS_ID`
 |The current BPMN process ID
 

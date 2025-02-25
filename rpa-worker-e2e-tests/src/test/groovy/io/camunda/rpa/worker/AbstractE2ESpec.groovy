@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker
 
+
 import com.fasterxml.jackson.databind.ObjectMapper
 import feign.FeignException
 import groovy.json.JsonOutput
@@ -8,11 +9,13 @@ import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FromString
 import groovy.transform.stc.SimpleType
 import groovy.util.logging.Slf4j
+import io.camunda.rpa.worker.files.DocumentClient
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.rpa.worker.operate.OperateClient.GetProcessInstanceResponse
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.response.DeploymentEvent
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
+import org.intellij.lang.annotations.Language
 import org.spockframework.lang.ConditionBlock
 import org.spockframework.runtime.ConditionNotSatisfiedError
 import org.spockframework.runtime.GroovyRuntimeUtil
@@ -20,11 +23,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.mock.env.MockPropertySource
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ActiveProfilesResolver
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import reactor.util.retry.Retry
@@ -72,6 +78,9 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	@Autowired
 	OperateClient operateClient
 	
+	@Autowired
+	DocumentClient documentClient
+
 	SpecificationHelper spec = new SpecificationHelper()
 
 	@Autowired
@@ -144,7 +153,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.join()
 	}
 
-	DeploymentEvent deployScript(String name, String script) {
+	DeploymentEvent deployScript(String name, @Language("Robot") String script) {
 		return zeebeClient.newDeployResourceCommand()
 				.addResourceStringUtf8(JsonOutput.toJson([
 						id    : name,
@@ -161,7 +170,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.join()
 	}
 
-	DeploymentEvent deploySimpleRobotProcess(String processId, String scriptId, String workerLabel = "default") {
+	DeploymentEvent deploySimpleRobotProcess(String processId, String scriptId, String workerTag = "default") {
 		getClass().getResource("/simple_rpa_process_template.bpmn").withReader { r ->
 			PipedInputStream pin = new PipedInputStream()
 			PipedOutputStream pout = new PipedOutputStream(pin)
@@ -172,7 +181,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				new StreamingTemplateEngine().createTemplate(r).make([
 						processId  : processId,
 						scriptId   : scriptId,
-						workerLabel: workerLabel])
+						workerTag  : workerTag])
 						.writeTo(writer)
 
 				writer.close()
@@ -229,7 +238,10 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	Map<String, String> getInstanceVariables(long processInstanceKey) {
 		return block(operateClient.getVariables(new OperateClient.GetVariablesRequest(new OperateClient.GetVariablesRequest.Filter(processInstanceKey)))
 				.flatMapIterable(it -> it.items())
-				.collect(Collectors.toMap(kv -> kv.name(), kv -> kv.value())))
+				.collect(Collectors.toMap(
+						(OperateClient.GetVariablesResponse.Item kv) -> kv.name(),
+						(OperateClient.GetVariablesResponse.Item kv) -> 
+								objectMapper.readValue(kv.value() ?: "{}", Object))))
 	}
 
 	private class SpecificationHelper {
@@ -277,5 +289,9 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 					.retryWhen(waitForObjectRetrySpec)
 					.map { it.items() })
 		}
+	}
+
+	static InputStream download(Flux<DataBuffer> source) {
+		return DataBufferUtils.subscriberInputStream(source, 1)
 	}
 }

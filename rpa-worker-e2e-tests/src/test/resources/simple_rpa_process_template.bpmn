@@ -10,7 +10,7 @@
           <zeebe:linkedResource resourceId="${scriptId}" resourceType="RPA" linkName="RPAScript" />
         </zeebe:linkedResources>
         <zeebe:ioMapping>
-          <zeebe:input source="${workerLabel}" target="camundaRpaWorkerLabel" />
+          <zeebe:input source="${workerTag}" target="camundaRpaWorkerLabel" />
         </zeebe:ioMapping>
         <zeebe:taskHeaders>
           <zeebe:header key="camunda::timeout" />

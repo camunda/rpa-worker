@@ -59,6 +59,11 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	}
 
 	ZeebeJobService doInit() {
+
+		log.atInfo()
+				.kv("workerTags", zeebeProperties.workerTags())
+				.log("Accepting Zeebe jobs for tags");
+
 		LoopingListIterator<String> tagIterator = new LoopingListIterator<>(zeebeProperties.workerTags().stream()
 				.map(t -> zeebeProperties.rpaTaskPrefix() + t)
 				.collect(Collectors.toList()));
@@ -217,6 +222,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	private Map<String, String> getZeebeEnvironment(ActivatedJob job) {
 		return Map.of(
 				"RPA_ZEEBE_JOB_KEY", String.valueOf(job.getKey()),
+				"RPA_ZEEBE_JOB_TYPE", job.getType(),
 				"RPA_ZEEBE_BPMN_PROCESS_ID", job.getBpmnProcessId(),
 				"RPA_ZEEBE_PROCESS_INSTANCE_KEY", String.valueOf(job.getProcessInstanceKey()));
 	}

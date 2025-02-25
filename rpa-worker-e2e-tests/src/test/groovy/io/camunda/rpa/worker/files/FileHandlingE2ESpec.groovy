@@ -4,14 +4,10 @@ import com.fasterxml.jackson.core.type.TypeReference
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.io.buffer.DataBuffer
-import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.http.HttpEntity
 import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.util.MultiValueMap
-import reactor.core.publisher.Flux
 import spock.lang.PendingFeature
 
 class FileHandlingE2ESpec extends AbstractE2ESpec {
@@ -21,9 +17,6 @@ class FileHandlingE2ESpec extends AbstractE2ESpec {
 		return [CAMUNDA_RPA_SCRIPTS_SOURCE: 'zeebe']
 	}
 
-	@Autowired
-	DocumentClient documentClient
-	
 	void "Single file is provided to workspace"() {
 		given:
 		deployScript("download_from_zeebe", '''\
@@ -154,7 +147,7 @@ Upload the file
 		}
 		
 		when:
-		ZeebeDocumentDescriptor uploaded = objectMapper.readValue(
+		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(
 				getInstanceVariables(pinstance.processInstanceKey)['uploadedFile'], 
 				ZeebeDocumentDescriptor)
 
@@ -191,7 +184,7 @@ Upload the file
 		}
 
 		when:
-		ZeebeDocumentDescriptor uploaded = objectMapper.readValue(
+		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(
 				getInstanceVariables(pinstance.processInstanceKey)['uploadedFile'],
 				ZeebeDocumentDescriptor)
 
@@ -229,7 +222,7 @@ Upload the file
 		}
 
 		when:
-		List<ZeebeDocumentDescriptor> uploaded = objectMapper.readValue(
+		List<ZeebeDocumentDescriptor> uploaded = objectMapper.convertValue(
 				getInstanceVariables(pinstance.processInstanceKey)['uploadedFiles'],
 				new TypeReference<List<ZeebeDocumentDescriptor>>() {})
 
@@ -264,9 +257,5 @@ Upload the file
 		builder.part("file", content, MediaType.TEXT_PLAIN)
 
 		return builder.build()
-	}
-	
-	private static InputStream download(Flux<DataBuffer> source) {
-		return DataBufferUtils.subscriberInputStream(source, 1)
 	}
 }
