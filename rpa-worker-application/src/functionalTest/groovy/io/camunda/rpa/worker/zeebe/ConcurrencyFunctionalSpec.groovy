@@ -51,7 +51,7 @@ Don't do very much
 	}
 
 	@TestPropertySource(properties = "camunda.rpa.zeebe.max-concurrent-jobs=1")
-	static class JobLimitFunctionalSpec extends AbstractZeebeFunctionalSpec {
+	static class JobLimitFunctionalSpec extends AbstractScriptRepositoryProvidingZeebeFunctionalSpec {
 
 		@Override
 		Map<String, String> getScripts() {
@@ -120,7 +120,7 @@ Don't do very much
 	}
 
 	@TestPropertySource(properties = "camunda.rpa.zeebe.max-concurrent-jobs=2")
-	static class ConcurrentJobFunctionalSpec extends AbstractZeebeFunctionalSpec {
+	static class ConcurrentJobFunctionalSpec extends AbstractScriptRepositoryProvidingZeebeFunctionalSpec {
 
 		@Override
 		Map<String, String> getScripts() {
@@ -165,7 +165,7 @@ Don't do very much
 
 	@TestPropertySource(properties = "camunda.rpa.zeebe.max-concurrent-jobs=256")
 	@IgnoreIf({ System.getenv("CI") })
-	static class ScaleFunctionalSpec extends AbstractZeebeFunctionalSpec {
+	static class ScaleFunctionalSpec extends AbstractScriptRepositoryProvidingZeebeFunctionalSpec {
 
 		@Override
 		Map<String, String> getScripts() {
