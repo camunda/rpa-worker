@@ -17,9 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.test.annotation.DirtiesContext
 
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
@@ -29,8 +26,6 @@ import java.util.function.BiFunction
 @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 
-	static final String TASK_PREFIX = "camunda::RPA-Task::"
-	
 	BlockingQueue<ActivatedJob> jobQueue = new LinkedBlockingQueue<>()
 
 	FinalCommandStep activateFinal = Stub() {
@@ -71,20 +66,6 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 	@Autowired
 	ApplicationEventPublisher eventPublisher
 
-	abstract Map<String, String> getScripts()
-
-	void setupSpec() {
-		Path scriptsDir = Paths.get("scripts_ftest")
-		if (Files.exists(scriptsDir))
-			Files.walk(scriptsDir).filter(Files::isRegularFile).forEach(Files::delete)
-
-		Files.createDirectories(scriptsDir)
-		
-		scripts.each { k, v ->
-			scriptsDir.resolve("${k}.robot").text = v
-		}
-	}
-	
 	void setup() {
 		eventPublisher.publishEvent(new ZeebeReadyEvent(zeebeClient))
 	}
@@ -152,6 +133,6 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 							})]
 
 			getVariablesAsMap() >> inputVariables
-		}
+}
 	}
 }
