@@ -8,8 +8,8 @@ import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.robot.ExecutionResults.Result
 import io.camunda.rpa.worker.robot.RobotExecutionListener
 import io.camunda.rpa.worker.robot.RobotService
-import io.camunda.rpa.worker.script.ConfiguredScriptRepository
 import io.camunda.rpa.worker.script.RobotScript
+import io.camunda.rpa.worker.script.ScriptRepository
 import io.camunda.rpa.worker.secrets.SecretsService
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
@@ -67,7 +67,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		getSecrets() >> Mono.just([secretVar: 'secret-value'])
 	}
 	RobotScript script = new RobotScript("this_script", null)
-	ConfiguredScriptRepository scriptRepository = Stub() {
+	ScriptRepository scriptRepository = Stub() {
 		findById("this_script_latest") >> Mono.just(script)
 		getById("this_script_latest") >> Mono.just(script)
 	}

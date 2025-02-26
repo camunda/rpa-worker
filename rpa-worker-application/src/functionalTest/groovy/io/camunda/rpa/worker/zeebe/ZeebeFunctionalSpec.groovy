@@ -19,7 +19,6 @@ import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.codec.multipart.FormFieldPart
-import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Mono
 import spock.lang.Tag
@@ -29,7 +28,7 @@ import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class ZeebeFunctionalSpec extends AbstractZeebeFunctionalSpec {
+class ZeebeFunctionalSpec extends AbstractScriptRepositoryProvidingZeebeFunctionalSpec {
 
 	static final String SAMPLE_ROBOT_SCRIPT = '''\
 *** Settings ***
@@ -396,15 +395,9 @@ Assert input variable
 		}
 	}
 	
-	@TestPropertySource(properties = "camunda.rpa.scripts.source=zeebe")
 	static class ZeebeScriptSourceFunctionalSpec extends AbstractZeebeFunctionalSpec  {
 		
 		CountDownLatch handlerDidFinish = new CountDownLatch(1)
-
-		@Override
-		Map<String, String> getScripts() {
-			return [:]
-		}
 
 		void "Runs Robot task from Zeebe, fetching script from Zeebe"() {
 			given:
