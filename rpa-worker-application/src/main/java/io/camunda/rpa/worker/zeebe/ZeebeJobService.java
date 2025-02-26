@@ -15,6 +15,8 @@ import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +27,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -74,9 +77,20 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 								.maxJobsToActivate(1)
 								.requestTimeout(JOB_POLL_TIME)
 								.send())
+
+						.onErrorReturn(thrown -> thrown instanceof StatusRuntimeException srex
+								&& srex.getStatus().getCode() == Status.Code.UNAVAILABLE
+								&& srex.getStatus().getDescription().contains("shutdown"), Collections::emptyList)
+						
+						.doOnError(thrown -> log.atError()
+								.setCause(thrown)
+								.log("Error polling Zeebe for jobs"))
+						.onErrorReturn(Collections::emptyList)
+						
 						.doOnSubscribe(_ -> log.atDebug()
 								.kv("jobType", jobType)
 								.log("Polling for job"))
+						
 						.flatMapIterable(ActivateJobsResponse::getJobs)
 						.flatMap(this::handleJob), zeebeProperties.maxConcurrentJobs())
 				.subscribe();

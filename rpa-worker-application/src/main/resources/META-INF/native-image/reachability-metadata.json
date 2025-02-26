@@ -372,16 +372,55 @@
       "type": "com.fasterxml.aalto.AsyncXMLStreamReader"
     },
     {
+      "type": "com.fasterxml.jackson.annotation.JsonAutoDetect$Value"
+    },
+    {
+      "type": "com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility"
+    },
+    {
+      "type": "com.fasterxml.jackson.annotation.JsonInclude$Include"
+    },
+    {
+      "type": "com.fasterxml.jackson.annotation.JsonInclude$Value"
+    },
+    {
+      "type": "com.fasterxml.jackson.annotation.JsonSetter$Value"
+    },
+    {
+      "type": "com.fasterxml.jackson.annotation.JsonTypeInfo$As"
+    },
+    {
+      "type": "com.fasterxml.jackson.annotation.PropertyAccessor"
+    },
+    {
+      "type": "com.fasterxml.jackson.core.Base64Variant"
+    },
+    {
       "type": "com.fasterxml.jackson.core.FormatSchema"
+    },
+    {
+      "type": "com.fasterxml.jackson.core.JsonEncoding"
     },
     {
       "type": "com.fasterxml.jackson.core.JsonFactory"
     },
     {
+      "type": "com.fasterxml.jackson.core.JsonFactory$Feature"
+    },
+    {
       "type": "com.fasterxml.jackson.core.JsonGenerator"
     },
     {
+      "type": "com.fasterxml.jackson.core.JsonGenerator$Feature"
+    },
+    {
       "type": "com.fasterxml.jackson.core.JsonParser"
+    },
+    {
+      "type": "com.fasterxml.jackson.core.JsonParser$Feature"
+    },
+    {
+      "type": "com.fasterxml.jackson.core.JsonProcessingException"
     },
     {
       "type": "com.fasterxml.jackson.core.ObjectCodec",
@@ -397,6 +436,12 @@
       "type": "com.fasterxml.jackson.core.PrettyPrinter"
     },
     {
+      "type": "com.fasterxml.jackson.core.StreamReadFeature"
+    },
+    {
+      "type": "com.fasterxml.jackson.core.StreamWriteFeature"
+    },
+    {
       "type": "com.fasterxml.jackson.core.TreeCodec",
       "allDeclaredFields": true
     },
@@ -410,8 +455,17 @@
       "type": "com.fasterxml.jackson.core.TreeNode"
     },
     {
+      "type": "com.fasterxml.jackson.core.Version"
+    },
+    {
       "type": "com.fasterxml.jackson.core.Versioned",
       "allDeclaredFields": true
+    },
+    {
+      "type": "com.fasterxml.jackson.core.exc.StreamReadException"
+    },
+    {
+      "type": "com.fasterxml.jackson.core.exc.StreamWriteException"
     },
     {
       "type": "com.fasterxml.jackson.core.io.CharacterEscapes"
@@ -429,13 +483,28 @@
       "type": "com.fasterxml.jackson.databind.DatabindContext"
     },
     {
+      "type": "com.fasterxml.jackson.databind.DatabindException"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.DeserializationConfig"
+    },
+    {
       "type": "com.fasterxml.jackson.databind.DeserializationContext"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.DeserializationFeature"
     },
     {
       "type": "com.fasterxml.jackson.databind.InjectableValues"
     },
     {
       "type": "com.fasterxml.jackson.databind.JavaType"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.JsonDeserializer"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.JsonMappingException"
     },
     {
       "type": "com.fasterxml.jackson.databind.JsonNode"
@@ -445,6 +514,15 @@
     },
     {
       "type": "com.fasterxml.jackson.databind.JsonSerializable$Base"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.JsonSerializer"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.MapperFeature"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.MappingIterator"
     },
     {
       "type": "com.fasterxml.jackson.databind.Module",
@@ -474,16 +552,37 @@
       ]
     },
     {
+      "type": "com.fasterxml.jackson.databind.ObjectMapper$DefaultTyping"
+    },
+    {
       "type": "com.fasterxml.jackson.databind.ObjectMapperBeanInfo"
     },
     {
       "type": "com.fasterxml.jackson.databind.ObjectMapperCustomizer"
     },
     {
+      "type": "com.fasterxml.jackson.databind.ObjectReader"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.ObjectWriter"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.PropertyNamingStrategy"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.SerializationConfig"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.SerializationFeature"
+    },
+    {
       "type": "com.fasterxml.jackson.databind.SerializerProvider"
     },
     {
       "type": "com.fasterxml.jackson.databind.cfg.CacheProvider"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.cfg.ConstructorDetector"
     },
     {
       "type": "com.fasterxml.jackson.databind.cfg.ContextAttributes"
@@ -495,7 +594,16 @@
       "type": "com.fasterxml.jackson.databind.cfg.HandlerInstantiator"
     },
     {
+      "type": "com.fasterxml.jackson.databind.cfg.MutableCoercionConfig"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.cfg.MutableConfigOverride"
+    },
+    {
       "type": "com.fasterxml.jackson.databind.deser.DefaultDeserializationContext"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.deser.DeserializationProblemHandler"
     },
     {
       "type": "com.fasterxml.jackson.databind.ext.Java7SupportImpl",
@@ -519,6 +627,12 @@
       "type": "com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper"
     },
     {
+      "type": "com.fasterxml.jackson.databind.jsonschema.JsonSchema"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.jsontype.NamedType"
+    },
+    {
       "type": "com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator"
     },
     {
@@ -530,6 +644,15 @@
     {
       "type": "com.fasterxml.jackson.databind.module.SimpleModule",
       "allDeclaredFields": true
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.node.ArrayNode"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.node.JsonNodeFactory"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.node.ObjectNode"
     },
     {
       "type": "com.fasterxml.jackson.databind.ser.DefaultSerializerProvider"
@@ -548,6 +671,12 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.type.LogicalType"
+    },
+    {
+      "type": "com.fasterxml.jackson.databind.type.TypeFactory"
     },
     {
       "type": "com.fasterxml.jackson.dataformat.cbor.CBORFactory"
@@ -910,6 +1039,9 @@
     },
     {
       "type": "feign.Param"
+    },
+    {
+      "type": "feign.QueryMap"
     },
     {
       "type": "feign.Request",
@@ -8038,6 +8170,12 @@
           ]
         },
         {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.time.Duration"
+          ]
+        },
+        {
           "name": "defaultTimeout",
           "parameterTypes": []
         }
@@ -13962,6 +14100,15 @@
             "java.util.Set",
             "java.net.URI"
           ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.util.Set",
+            "java.net.URI",
+            "int"
+          ]
         }
       ]
     },
@@ -14285,6 +14432,15 @@
       "type": "io.camunda.zeebe.client.api.ZeebeFutureCustomizer"
     },
     {
+      "type": "io.camunda.zeebe.client.api.command.ActivateJobsCommandStep1"
+    },
+    {
+      "type": "io.camunda.zeebe.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep2"
+    },
+    {
+      "type": "io.camunda.zeebe.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep3"
+    },
+    {
       "type": "io.camunda.zeebe.client.api.command.CommandWithCommunicationApiStep",
       "allDeclaredFields": true
     },
@@ -14379,6 +14535,9 @@
     },
     {
       "type": "io.camunda.zeebe.client.api.command.UpdateJobCommandStep1Customizer"
+    },
+    {
+      "type": "io.camunda.zeebe.client.api.response.ActivateJobsResponse"
     },
     {
       "type": "io.camunda.zeebe.client.api.response.ActivatedJob",
@@ -14534,6 +14693,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "io.camunda.zeebe.client.impl.ZeebeStreamingClientFutureImpl"
+    },
+    {
       "type": "io.camunda.zeebe.client.impl.oauth.OAuthCredentialsCache$OAuthCachedCredentials",
       "allDeclaredFields": true,
       "methods": [
@@ -14550,11 +14712,101 @@
       ]
     },
     {
+      "type": "io.camunda.zeebe.client.impl.response.ActivatedJobImpl",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "getBpmnProcessId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCustomHeaders",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDeadline",
+          "parameterTypes": []
+        },
+        {
+          "name": "getElementId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getElementInstanceKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getProcessDefinitionKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getProcessDefinitionVersion",
+          "parameterTypes": []
+        },
+        {
+          "name": "getProcessInstanceKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRetries",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTenantId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getVariables",
+          "parameterTypes": []
+        },
+        {
+          "name": "getVariablesAsMap",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWorker",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.client.impl.worker.ExponentialBackoff",
       "allDeclaredFields": true
     },
     {
       "type": "io.camunda.zeebe.client.impl.worker.JobRunnableFactoryImpl"
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.JobChangeset",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "getRetries",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTimeout",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.JobUpdateRequest",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "getChangeset",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType",
@@ -16599,6 +16851,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "java.lang.AssertionError"
+    },
+    {
       "type": "java.lang.AutoCloseable",
       "allDeclaredFields": true,
       "methods": [
@@ -16807,6 +17062,9 @@
       "type": "java.lang.IllegalThreadStateExceptionCustomizer"
     },
     {
+      "type": "java.lang.IndexOutOfBoundsException"
+    },
+    {
       "type": "java.lang.Integer",
       "allDeclaredFields": true,
       "fields": [
@@ -16832,6 +17090,9 @@
           "name": "TYPE"
         }
       ]
+    },
+    {
+      "type": "java.lang.MatchException"
     },
     {
       "type": "java.lang.Module",
@@ -16860,6 +17121,9 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "java.lang.NoSuchFieldError"
     },
     {
       "type": "java.lang.NullPointerException"
@@ -17204,6 +17468,9 @@
     },
     {
       "type": "java.lang.ThrowableCustomizer"
+    },
+    {
+      "type": "java.lang.UnsupportedOperationException"
     },
     {
       "type": "java.lang.Void",
@@ -17603,6 +17870,9 @@
       ]
     },
     {
+      "type": "java.lang.runtime.ObjectMethods"
+    },
+    {
       "type": "java.math.BigDecimal",
       "methods": [
         {
@@ -17896,6 +18166,9 @@
       "type": "java.nio.file.FileVisitOption"
     },
     {
+      "type": "java.nio.file.FileVisitResult"
+    },
+    {
       "type": "java.nio.file.FileVisitor"
     },
     {
@@ -18086,6 +18359,9 @@
       "type": "java.nio.file.PathsCustomizer"
     },
     {
+      "type": "java.nio.file.SimpleFileVisitor"
+    },
+    {
       "type": "java.nio.file.StandardOpenOption",
       "allDeclaredFields": true
     },
@@ -18171,7 +18447,13 @@
       "type": "java.security.AllPermission"
     },
     {
+      "type": "java.security.DigestOutputStream"
+    },
+    {
       "type": "java.security.KeyStoreSpi"
+    },
+    {
+      "type": "java.security.MessageDigest"
     },
     {
       "type": "java.security.Provider"
@@ -18372,6 +18654,9 @@
     },
     {
       "type": "java.util.ArrayListCustomizer"
+    },
+    {
+      "type": "java.util.Arrays"
     },
     {
       "type": "java.util.Arrays$ArrayList",
@@ -18898,6 +19183,9 @@
       "type": "java.util.TimerTask"
     },
     {
+      "type": "java.util.Vector"
+    },
+    {
       "type": "java.util.concurrent.AbstractExecutorService"
     },
     {
@@ -18938,6 +19226,9 @@
       "type": "java.util.concurrent.CompletableFuture$AsyncSupply"
     },
     {
+      "type": "java.util.concurrent.CompletableFuture$UniHandle"
+    },
+    {
       "type": "java.util.concurrent.CompletableFutureBeanInfo"
     },
     {
@@ -18949,6 +19240,9 @@
     },
     {
       "type": "java.util.concurrent.ConcurrentHashMap"
+    },
+    {
+      "type": "java.util.concurrent.ConcurrentLinkedQueue"
     },
     {
       "type": "java.util.concurrent.CountDownLatch",
@@ -19056,6 +19350,12 @@
           "name": "value"
         }
       ]
+    },
+    {
+      "type": "java.util.concurrent.atomic.AtomicInteger"
+    },
+    {
+      "type": "java.util.concurrent.atomic.AtomicReference"
     },
     {
       "type": "java.util.concurrent.atomic.LongAdder",
@@ -19168,10 +19468,16 @@
       "type": "java.util.function.FunctionCustomizer"
     },
     {
+      "type": "java.util.function.IntConsumer"
+    },
+    {
       "type": "java.util.function.IntFunction"
     },
     {
       "type": "java.util.function.IntPredicate"
+    },
+    {
+      "type": "java.util.function.IntUnaryOperator"
     },
     {
       "type": "java.util.function.LongFunction"
@@ -19455,6 +19761,12 @@
         {
           "name": "getConnectionId",
           "parameterTypes": []
+        },
+        {
+          "name": "getDefaultDomain",
+          "parameterTypes": [
+            "javax.security.auth.Subject"
+          ]
         },
         {
           "name": "invoke",
@@ -20733,6 +21045,9 @@
     {
       "type": "org.apache.commons.exec.TimeoutObserver",
       "allDeclaredFields": true
+    },
+    {
+      "type": "org.apache.commons.exec.Watchdog"
     },
     {
       "type": "org.apache.commons.exec.launcher.Java13CommandLauncher"
@@ -25361,6 +25676,9 @@
       ]
     },
     {
+      "type": "org.springframework.aop.framework.ProxyFactory"
+    },
+    {
       "type": "org.springframework.aop.framework.ProxyProcessorSupport",
       "allDeclaredFields": true,
       "methods": [
@@ -27981,6 +28299,24 @@
       "methods": [
         {
           "name": "getMediaType",
+          "parameterTypes": []
+        },
+        {
+          "name": "isNegated",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.actuate.web.mappings.reactive.RequestMappingConditionsDescription$NameValueExpressionDescription",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getValue",
           "parameterTypes": []
         },
         {
@@ -32265,6 +32601,12 @@
       "type": "org.springframework.http.client.ClientHttpRequestFactory"
     },
     {
+      "type": "org.springframework.http.client.MultipartBodyBuilder"
+    },
+    {
+      "type": "org.springframework.http.client.MultipartBodyBuilder$PartBuilder"
+    },
+    {
       "type": "org.springframework.http.client.MultipartBodyBuilder$PublisherEntity",
       "allDeclaredFields": true
     },
@@ -33700,6 +34042,15 @@
       "type": "org.zeroturnaround.javarebel.ReloaderFactory"
     },
     {
+      "type": "reactivefeign.ReactiveFeign$Builder"
+    },
+    {
+      "type": "reactivefeign.client.ReactiveHttpRequest"
+    },
+    {
+      "type": "reactivefeign.client.ReactiveHttpRequestInterceptor"
+    },
+    {
       "type": "reactivefeign.webclient.WebReactiveFeign"
     },
     {
@@ -34262,6 +34613,20 @@
       ]
     },
     {
+      "type": "reactor.core.publisher.FluxFlattenIterable$FlattenIterableSubscriber",
+      "fields": [
+        {
+          "name": "error"
+        },
+        {
+          "name": "requested"
+        },
+        {
+          "name": "wip"
+        }
+      ]
+    },
+    {
       "type": "reactor.core.publisher.FluxGenerate$GenerateSubscription",
       "fields": [
         {
@@ -34305,6 +34670,9 @@
     },
     {
       "type": "reactor.core.publisher.FluxPeekFuseable$PeekConditionalSubscriber"
+    },
+    {
+      "type": "reactor.core.publisher.FluxPeekFuseable$PeekFuseableSubscriber"
     },
     {
       "type": "reactor.core.publisher.FluxPublish$PubSubInner",
@@ -34996,6 +35364,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "reactor.core.publisher.SignalType"
+    },
+    {
       "type": "reactor.core.publisher.SinkEmptyMulticast",
       "fields": [
         {
@@ -35347,6 +35718,15 @@
     },
     {
       "type": "reactor.util.context.ContextView"
+    },
+    {
+      "type": "reactor.util.function.Tuple3"
+    },
+    {
+      "type": "reactor.util.retry.Retry"
+    },
+    {
+      "type": "reactor.util.retry.Retry$RetrySignal"
     },
     {
       "type": "reactor.util.retry.RetryBackoffSpec"
@@ -37124,6 +37504,15 @@
       "glob": "SpockConfig.groovy"
     },
     {
+      "glob": "application-c8-v87-snapshot-local.xml"
+    },
+    {
+      "glob": "application-c8-v87-snapshot-local.yaml"
+    },
+    {
+      "glob": "application-c8-v87-snapshot-local.yml"
+    },
+    {
       "glob": "application-camunda-saas.yaml"
     },
     {
@@ -37212,6 +37601,18 @@
     },
     {
       "glob": "client-java.properties"
+    },
+    {
+      "glob": "config/application-c8-v87-snapshot-local.properties"
+    },
+    {
+      "glob": "config/application-c8-v87-snapshot-local.xml"
+    },
+    {
+      "glob": "config/application-c8-v87-snapshot-local.yaml"
+    },
+    {
+      "glob": "config/application-c8-v87-snapshot-local.yml"
     },
     {
       "glob": "config/application-default.properties"
@@ -37322,6 +37723,18 @@
       "glob": "config/rpa-runtime.yml"
     },
     {
+      "glob": "config/rpa-worker-c8-v87-snapshot-local.properties"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-snapshot-local.xml"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-snapshot-local.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-snapshot-local.yml"
+    },
+    {
       "glob": "config/rpa-worker-default.properties"
     },
     {
@@ -37350,6 +37763,12 @@
     },
     {
       "glob": "home/pounder/workspace/camunda/rpa-runtime-java-poc/python/venv/"
+    },
+    {
+      "glob": "home/pounder/workspace/camunda/rpa-worker/python/"
+    },
+    {
+      "glob": "home/pounder/workspace/camunda/rpa-worker/scripts/"
     },
     {
       "glob": "io/camunda/rpa/runtime/"
@@ -39638,6 +40057,18 @@
       "glob": "rpa-runtime.yml"
     },
     {
+      "glob": "rpa-worker-c8-v87-snapshot-local.properties"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-snapshot-local.xml"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-snapshot-local.yaml"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-snapshot-local.yml"
+    },
+    {
       "glob": "rpa-worker-default.properties"
     },
     {
@@ -40832,6 +41263,17 @@
     },
     {
       "type": "io.camunda.rpa.runtime.RpaRuntimeJavaPocApplication",
+      "methods": [
+        {
+          "name": "main",
+          "parameterTypes": [
+            "java.lang.String[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.RpaWorkerApplication",
       "methods": [
         {
           "name": "main",
