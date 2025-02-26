@@ -17,7 +17,7 @@ Complete the challenge
 
 *** Keywords ***
 Start the challenge
-    Open Browser   http://rpachallenge.com/
+    Open Browser   http://rpachallenge.com/    options=add_argument("--headless");
     Camunda.HTTP.Download
     ...    http://rpachallenge.com/assets/downloadFiles/challenge.xlsx
     ...    overwrite=True
