@@ -146,5 +146,23 @@ Tasks
 			}
 		}
 	}
+	
+	void "Runs the RPA Challenge"() {
+		given:
+		deployScriptFile("rpa_challenge")
+		
+		and:
+		deploySimpleRobotProcess("rpa_challenge_on_default", "rpa_challenge")
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("rpa_challenge_on_default")
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+		getInstanceVariables(pinstance.processInstanceKey)['resultText'].contains("100%")
+	}
 }
 	

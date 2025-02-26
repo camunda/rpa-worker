@@ -57,7 +57,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 
 	static final ZeebeConfiguration zeebeConfiguration = ZeebeConfiguration.get()
 
-	final Retry waitForObjectRetrySpec = Retry.fixedDelay(15, Duration.ofSeconds(3))
+	final Retry waitForObjectRetrySpec = Retry.fixedDelay(30, Duration.ofSeconds(3))
 			.filter { thrown ->
 				thrown instanceof ConditionNotSatisfiedError
 						|| thrown instanceof FeignException.NotFound
