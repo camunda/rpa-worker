@@ -22,9 +22,4 @@ class ZeebeResourceScriptRepository implements ScriptRepository {
 		return resourceClient.getRpaResource(id)
 				.map(rpa -> new RobotScript(rpa.id(), rpa.script()));
 	}
-
-	@Override
-	public Mono<RobotScript> save(RobotScript robotScript) {
-		throw new UnsupportedOperationException("Scripts cannot be deployed via the RPA Worker when using Zeebe as the script source");
-	}
 }

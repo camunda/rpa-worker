@@ -12,11 +12,6 @@ import spock.lang.PendingFeature
 
 class FileHandlingE2ESpec extends AbstractE2ESpec {
 
-	@Override
-	protected Map<String, String> getExtraEnvironment() {
-		return [CAMUNDA_RPA_SCRIPTS_SOURCE: 'zeebe']
-	}
-
 	void "Single file is provided to workspace"() {
 		given:
 		deployScript("download_from_zeebe", '''\

@@ -6,8 +6,8 @@ import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.robot.ExecutionResults;
 import io.camunda.rpa.worker.robot.RobotExecutionListener;
 import io.camunda.rpa.worker.robot.RobotService;
-import io.camunda.rpa.worker.script.ConfiguredScriptRepository;
 import io.camunda.rpa.worker.script.RobotScript;
+import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.secrets.SecretsService;
 import io.camunda.rpa.worker.util.LoopingListIterator;
 import io.camunda.rpa.worker.workspace.Workspace;
@@ -51,7 +51,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	private final ZeebeClient zeebeClient;
 	private final ZeebeProperties zeebeProperties;
 	private final RobotService robotService;
-	private final ConfiguredScriptRepository scriptRepository;
+	private final ScriptRepository scriptRepository;
 	private final ObjectMapper objectMapper;
 	private final SecretsService secretsService;
 	private final WorkspaceCleanupService workspaceCleanupService;

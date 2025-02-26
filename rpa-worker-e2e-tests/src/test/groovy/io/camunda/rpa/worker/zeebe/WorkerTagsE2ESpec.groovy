@@ -12,10 +12,7 @@ class WorkerTagsE2ESpec extends AbstractE2ESpec {
 	
 	@Override
 	protected Map<String, String> getExtraEnvironment() {
-		return [
-				CAMUNDA_RPA_SCRIPTS_SOURCE: "zeebe",
-				CAMUNDA_RPA_ZEEBE_WORKERTAGS: "blue,red"
-		]
+		return [CAMUNDA_RPA_ZEEBE_WORKERTAGS: "blue,red"]
 	}
 
 	void "Runs Zeebe jobs from correct worker tags"() {

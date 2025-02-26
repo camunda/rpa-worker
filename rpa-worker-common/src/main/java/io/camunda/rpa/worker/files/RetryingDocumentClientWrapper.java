@@ -19,10 +19,7 @@ public class RetryingDocumentClientWrapper implements DocumentClient {
 	
 	private static final Retry retrySpec = Retry
 			.backoff(3, Duration.ofSeconds(1))
-			.filter(thrown -> ! (thrown instanceof FeignException.FeignClientException))
-			.doBeforeRetry(signal -> log.atError()
-					.setCause(signal.failure())
-					.log("Error during document request to Zeebe, retrying"));
+			.filter(thrown -> ! (thrown instanceof FeignException.FeignClientException));
 	
 	private final DocumentClient delegate;
 	

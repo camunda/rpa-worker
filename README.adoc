@@ -158,16 +158,6 @@ The RPA Worker makes the following environment variables available to the Robot 
 |The path to additional Python requirements that should be installed when setting up the Python environment
 |_None_
 
-3+| *Script Properties*
-
-|camunda.rpa.scripts.path
-|The directory in which scripts deployed to the local library will be stored
-|`${user.dir}/scripts/`
-
-|camunda.rpa.scripts.source
-|The source for RPA scripts. Either the local library (`local`) or Zeebe (`zeebe`)
-|`local`
-
 
 3+| *Robot Properties*
 
