@@ -100,7 +100,7 @@ Do Nothing
 		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
 
 		when:
-		jobQueue << anRpaJob([anInputVariable: 'input-variable-value'])
+		zeebeJobService.handleJob(anRpaJob([anInputVariable: 'input-variable-value'])).subscribe()
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 		
 		then:
@@ -125,7 +125,7 @@ Do Nothing
 		withNoSecrets()
 
 		when:
-		jobQueue << anRpaJob([anInputVariable: 'UNEXPECTED-input-variable-value'])
+		zeebeJobService.handleJob(anRpaJob([anInputVariable: 'UNEXPECTED-input-variable-value'])).subscribe()
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
@@ -145,7 +145,7 @@ Do Nothing
 		withNoSecrets()
 
 		when:
-		jobQueue << anRpaJob([:], "erroring_1")
+		zeebeJobService.handleJob(anRpaJob([:], "erroring_1")).subscribe()
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
@@ -162,7 +162,7 @@ Do Nothing
 
 	void "Reports system error when couldn't run job"() {
 		when:
-		jobQueue << anRpaJob([:], "fake_script")
+		zeebeJobService.handleJob(anRpaJob([:], "fake_script")).subscribe()
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
@@ -189,7 +189,7 @@ Do Nothing
 				[anInputVariable: 'input-variable-value'])
 
 		when:
-		jobQueue << jobWithPreAndPostScripts
+		zeebeJobService.handleJob(jobWithPreAndPostScripts).subscribe()
 		handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
 		then:
@@ -223,7 +223,7 @@ Do Nothing
 		withNoSecrets()
 
 		when:
-		jobQueue << anRpaJob([:], "slow_15s")
+		zeebeJobService.handleJob(anRpaJob([:], "slow_15s")).subscribe()
 		handlerDidFinish.awaitRequired(14, TimeUnit.SECONDS)
 
 		then:
@@ -244,7 +244,7 @@ Do Nothing
 		withNoSecrets()
 
 		when:
-		jobQueue << anRpaJob([:], "slow_8s", [(ZeebeJobService.TIMEOUT_HEADER_NAME): "PT3S"])
+		zeebeJobService.handleJob(anRpaJob([:], "slow_8s", [(ZeebeJobService.TIMEOUT_HEADER_NAME): "PT3S"])).subscribe()
 		handlerDidFinish.awaitRequired(7, TimeUnit.SECONDS)
 
 		then:
@@ -291,7 +291,7 @@ Do Nothing
 		}
 
 		when:
-		jobQueue << anRpaJob([anInputVariable: 'input-variable-value'])
+		zeebeJobService.handleJob(anRpaJob([anInputVariable: 'input-variable-value'])).subscribe()
 		handlersDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then: "Workspace deleted immediately"
@@ -316,7 +316,7 @@ Assert input variable
 		withNoSecrets()
 
 		when:
-		jobQueue << anRpaJob([:], "env_check")
+		zeebeJobService.handleJob(anRpaJob([:], "env_check")).subscribe()
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
@@ -369,7 +369,7 @@ Assert input variable
 		}
 
 		when:
-		jobQueue << anRpaJob([:], "do_nothing")
+		zeebeJobService.handleJob(anRpaJob([:], "do_nothing")).subscribe()
 		handlersDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		and:
@@ -416,7 +416,7 @@ Assert input variable
 			})
 
 			when:
-			jobQueue << anRpaJob([anInputVariable: 'input-variable-value'])
+			zeebeJobService.handleJob(anRpaJob([anInputVariable: 'input-variable-value'])).subscribe()
 			handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 			then:

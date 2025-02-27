@@ -14,9 +14,10 @@ import io.camunda.rpa.worker.secrets.SecretsService
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.ZeebeFuture
-import io.camunda.zeebe.client.api.command.*
-import io.camunda.zeebe.client.api.response.ActivateJobsResponse
+import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
+import io.camunda.zeebe.client.api.command.FailJobCommandStep1
+import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
+import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
 import reactor.core.publisher.Mono
@@ -25,41 +26,12 @@ import spock.lang.Subject
 
 import java.nio.file.Path
 import java.time.Duration
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.LinkedBlockingQueue
-import java.util.concurrent.TimeUnit
-import java.util.function.BiFunction
 
 class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 	static final String TASK_PREFIX = "camunda::RPA-Task::"
 
-	BlockingQueue<ActivatedJob> jobQueue = new LinkedBlockingQueue<>()
-	
-	FinalCommandStep activateFinal = Stub() {
-		send() >> Stub(ZeebeFuture) {
-			handle(_) >> { BiFunction fn ->
-				ActivatedJob job = jobQueue.poll(200, TimeUnit.MILLISECONDS)
-				return CompletableFuture.completedFuture(
-					{ -> job ? [job] : [] } as ActivateJobsResponse).handle(fn)
-			}
-		}
-	}
-
-	ActivateJobsCommandStep1.ActivateJobsCommandStep3 activate3 = Stub() {
-		requestTimeout(ZeebeJobService.JOB_POLL_TIME) >> activateFinal
-	}
-
-	ActivateJobsCommandStep1.ActivateJobsCommandStep2 activate2 = Stub() {
-		maxJobsToActivate(1) >> activate3
-	}
-
-	ActivateJobsCommandStep1 activate1 = Mock()
-
-	ZeebeClient zeebeClient = Mock() {
-		newActivateJobsCommand() >> { activate1 }
-	}
+	ZeebeClient zeebeClient = Mock()
 	
 	ZeebeProperties zeebeProperties = new ZeebeProperties(TASK_PREFIX, ["tag-one", "tag-two"].toSet(), "http://auth/".toURI(), 1)
 	RobotService robotService = Mock()
@@ -84,23 +56,6 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 			secretsService, 
 			workspaceService)
 
-	void "Starts polling all tags on init"() {
-		when:
-		service.doInit()
-		
-		then:
-		1 * activate1.jobType(TASK_PREFIX + "tag-one") >> activate2
-		
-		then:
-		1 * activate1.jobType(TASK_PREFIX + "tag-two") >> activate2
-		
-		then:
-		1 * activate1.jobType(TASK_PREFIX + "tag-one") >> activate2
-
-		then:
-		_ * activate1._
-	}
-
 	void "Runs received task and reports success"() {
 		given:
 		ActivatedJob job = anRpaJob()
@@ -115,12 +70,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		Path workspacePath = Stub()
 		Workspace workspace = new Workspace(null, workspacePath)
 		
-		and:
-		activate1.jobType(TASK_PREFIX + "tag-one") >> activate2
-
 		when:
-		jobQueue << job
-		service.doInit()
+		block service.handleJob(job)
 
 		then:
 		1 * robotService.execute(script, [], [], _, _, null, _, expectedExtraEnv, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job]) >> { _, __, ___, ____, _____, ______, RobotExecutionListener executionListener, _______, ________ ->
@@ -155,12 +106,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		ActivatedJob job = anRpaJob()
 		Map<String, String> expectedOutputVars = [outputVar: 'output-var-value']
 		
-		and:
-		activate1.jobType(TASK_PREFIX + "tag-one") >> activate2
-
 		when:
-		jobQueue << job
-		service.doInit()
+		block service.handleJob(job)
 
 		then:
 		1 * robotService.execute(script, [], [], _, _, null, _, _, _) >> Mono.just(new ExecutionResults([main: new ExecutionResults.ExecutionResult("main", result, "", expectedOutputVars)], 
@@ -185,13 +132,9 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	void "Runs received task and reports low level failures"() {
 		given:
 		ActivatedJob job = anRpaJob()
-		
-		and:
-		activate1.jobType(TASK_PREFIX + "tag-one") >> activate2
 
 		when:
-		jobQueue << job
-		service.doInit()
+		block service.handleJob(job)
 
 		then:
 		1 * robotService.execute(script, [], [], _, _, null, _, _, _) >> Mono.error(new RuntimeException("Bang!"))
@@ -206,22 +149,17 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	}
 
 	void "Passes variables to Robot execution"() {
-		given:
-		activate1.jobType(TASK_PREFIX + "tag-one") >> activate2
-
 		when: "There are specific RPA Input Variables available"
 		ActivatedJob job1 = anRpaJob([
 				camundaRpaTaskInput: [rpaVar: 'the-value'], otherVar: 'should-not-be-used'])
-		jobQueue << job1
-		service.doInit()
+		block service.handleJob(job1)
 
 		then: "The RPA Input Variables are passed to the Robot execution"
 		1 * robotService.execute(script, [], [], [rpaVar: 'the-value'], [SECRET_SECRETVAR: 'secret-value'], null, _, _, _) >> Mono.empty()
 
 		when: "There are NO specific RPA Input Variables available"
 		ActivatedJob job2 = anRpaJob([otherVar: 'other-val'])
-		jobQueue << job2
-		service.doInit()
+		block service.handleJob(job2)
 
 		then: "The Job's main variables are passed to the Robot execution"
 		1 * robotService.execute(script, [], [], [otherVar: 'other-val'], [SECRET_SECRETVAR: 'secret-value'], null, _, _, _) >> Mono.empty()
@@ -235,12 +173,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		and:
 		ActivatedJob job = Stub()
 
-		and:
-		activate1.jobType(TASK_PREFIX + "tag-one") >> activate2
-
 		when:
-		jobQueue << job
-		service.doInit()
+		block service.handleJob(job)
 
 		then:
 		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
@@ -277,12 +211,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		scriptRepository.getById("before_1_latest") >> Mono.just(expectedBefore)
 		scriptRepository.getById("after_1_latest") >> Mono.just(expectedAfter)
 		
-		and:
-		activate1.jobType(TASK_PREFIX + "tag-one") >> activate2
-
 		when:
-		jobQueue << job
-		service.doInit()
+		block service.handleJob(job)
 
 		then:
 		1 * robotService.execute(script, [expectedBefore], [expectedAfter], _, _, null, _, _, _) >> Mono.just(new ExecutionResults(
@@ -293,13 +223,9 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		given:
 		ActivatedJob job = anRpaJob([:], [], [(ZeebeJobService.TIMEOUT_HEADER_NAME): "PT5M"])
 		
-		and:
-		activate1.jobType(TASK_PREFIX + "tag-one") >> activate2
-
 		when:
-		jobQueue << job
-		service.doInit()
-
+		block service.handleJob(job)
+		
 		then: 
 		1 * robotService.execute(script, [], [], [:], [SECRET_SECRETVAR: 'secret-value'], Duration.ofMinutes(5), _, _, _) >> {
 			throw new ProcessTimeoutException("", "")
