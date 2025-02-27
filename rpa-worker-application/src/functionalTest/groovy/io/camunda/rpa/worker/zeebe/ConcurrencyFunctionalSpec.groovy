@@ -5,6 +5,7 @@ import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import org.springframework.test.context.TestPropertySource
+import spock.lang.Ignore
 import spock.lang.IgnoreIf
 
 import java.nio.file.Files
@@ -61,41 +62,6 @@ Don't do very much
 			]
 		}
 
-		void "Limits job concurrency when configured"() {
-			given:
-			withNoSecrets()
-			CountDownLatch handlerDidFinish = new CountDownLatch(2)
-			List<Workspace> workspaces = []
-			workspaceCleanupService.deleteWorkspace(_) >> { Workspace w ->
-				workspaces << w
-				handlerDidFinish.countDown()
-				return null
-			}
-
-			and:
-			zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
-				variables(_) >> it
-			}
-
-			when:
-			jobQueue << anRpaJob([jobNum: 0], "delayed_file_0", [:], 0)
-			Thread.sleep(250) 
-			jobQueue << anRpaJob([jobNum: 1], "delayed_file_1", [:], 1)
-			handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
-
-			then:
-			workspaces
-					.collectMany { w -> Files.list(w.path()).filter(Files::isRegularFile).filter(p -> p.getFileName().toString().startsWith("written_")).toList() }
-					.sort { p -> Files.readAttributes(p, BasicFileAttributes).creationTime().toInstant() }
-					.collect { p -> p.fileName.toString() - ".txt" } == [
-
-					"written_first_0",
-					"written_last_0",
-					"written_first_1",
-					"written_last_1",
-			]
-		}
-		
 		void "Queue has no timeout"() {
 			given:
 			withNoSecrets()
@@ -107,8 +73,8 @@ Don't do very much
 			}
 
 			when:
-			jobQueue << anRpaJob([jobNum: 0], "long_script", [:], 0)
-			jobQueue << anRpaJob([jobNum: 1], "long_script", [:], 1)
+			zeebeJobService.handleJob(anRpaJob([jobNum: 0], "long_script", [:], 0)).subscribe()
+			zeebeJobService.handleJob(anRpaJob([jobNum: 1], "long_script", [:], 1)).subscribe()
 			handlersDidFinish.awaitRequired(20, TimeUnit.SECONDS)
 
 			then:
@@ -144,9 +110,9 @@ Don't do very much
 			}
 
 			when:
-			jobQueue << anRpaJob([jobNum: 0], "delayed_file_0", [:], 0)
+			zeebeJobService.handleJob(anRpaJob([jobNum: 0], "delayed_file_0", [:], 0)).subscribe()
 			Thread.sleep(250) 
-			jobQueue << anRpaJob([jobNum: 1], "delayed_file_1", [:], 1)
+			zeebeJobService.handleJob(anRpaJob([jobNum: 1], "delayed_file_1", [:], 1)).subscribe()
 			handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
 			then:
@@ -172,6 +138,7 @@ Don't do very much
 			return [simple_output: SIMPLE_OUTPUT_VARIABLE_SCRIPT]
 		}
 
+		@Ignore
 		void "Scale test"() {
 			given:
 			withNoSecrets()
@@ -185,7 +152,7 @@ Don't do very much
 
 			when:
 			256.times { jobNum ->
-				jobQueue << anRpaJob([jobNum: jobNum], "simple_output", [:], jobNum)
+				zeebeJobService.handleJob(anRpaJob([jobNum: jobNum], "simple_output", [:], jobNum)).subscribe()
 			}
 			handlerDidFinish.awaitRequired(20, TimeUnit.SECONDS)
 

@@ -9,25 +9,19 @@ import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.secrets.SecretsService;
-import io.camunda.rpa.worker.util.LoopingListIterator;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.grpc.Status;
-import io.grpc.StatusRuntimeException;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -37,7 +31,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
+class ZeebeJobService  {
 
 	public static final String ZEEBE_JOB_WORKSPACE_PROPERTY = "ZEEBE_JOB";
 
@@ -46,7 +40,6 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	static final String MAIN_SCRIPT_LINK_NAME = "RPAScript";
 	static final String BEFORE_SCRIPT_LINK_NAME = "Before";
 	static final String AFTER_SCRIPT_LINK_NAME = "After";
-	static final Duration JOB_POLL_TIME = Duration.ofMillis(200);
 
 	private final ZeebeClient zeebeClient;
 	private final ZeebeProperties zeebeProperties;
@@ -56,49 +49,7 @@ class ZeebeJobService implements ApplicationListener<ZeebeReadyEvent> {
 	private final SecretsService secretsService;
 	private final WorkspaceCleanupService workspaceCleanupService;
 
-	@Override
-	public void onApplicationEvent(ZeebeReadyEvent ignored) {
-		doInit();
-	}
-
-	ZeebeJobService doInit() {
-
-		log.atInfo()
-				.kv("workerTags", zeebeProperties.workerTags())
-				.log("Accepting Zeebe jobs for tags");
-
-		LoopingListIterator<String> tagIterator = new LoopingListIterator<>(zeebeProperties.workerTags().stream()
-				.map(t -> zeebeProperties.rpaTaskPrefix() + t)
-				.collect(Collectors.toList()));
-
-		Flux.fromIterable(() -> tagIterator)
-				.flatMap(jobType -> Mono.fromCompletionStage(zeebeClient.newActivateJobsCommand()
-								.jobType(jobType)
-								.maxJobsToActivate(1)
-								.requestTimeout(JOB_POLL_TIME)
-								.send())
-
-						.onErrorReturn(thrown -> thrown instanceof StatusRuntimeException srex
-								&& srex.getStatus().getCode() == Status.Code.UNAVAILABLE
-								&& srex.getStatus().getDescription().contains("shutdown"), Collections::emptyList)
-						
-						.doOnError(thrown -> log.atError()
-								.setCause(thrown)
-								.log("Error polling Zeebe for jobs"))
-						.onErrorReturn(Collections::emptyList)
-						
-						.doOnSubscribe(_ -> log.atDebug()
-								.kv("jobType", jobType)
-								.log("Polling for job"))
-						
-						.flatMapIterable(ActivateJobsResponse::getJobs)
-						.flatMap(this::handleJob), zeebeProperties.maxConcurrentJobs())
-				.subscribe();
-
-		return this;
-	}
-
-	private Mono<Void> handleJob(ActivatedJob job) {
+	public Mono<Void> handleJob(ActivatedJob job) {
 		log.atInfo()
 				.kv("task", job.getType())
 				.kv("job", job.getKey())
