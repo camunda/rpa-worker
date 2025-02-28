@@ -71,7 +71,9 @@ Set an output variable
 			expectNoIncident(it.key())
 			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
 		}
-		getInstanceVariables(pinstance.processInstanceKey)['anOutputVariable'] == "output-variable-value"
+		spec.expectVariables(pinstance.processInstanceKey) {
+			anOutputVariable == "output-variable-value"
+		}
 	}
 	
 	void "Reports Robot task failures"() {
@@ -157,7 +159,9 @@ Tasks
 			expectNoIncident(it.key())
 			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
 		}
-		getInstanceVariables(pinstance.processInstanceKey)['resultText'].contains("100%")
+		spec.expectVariables(pinstance.processInstanceKey) {
+			resultText.toString().contains("100%")
+		}
 	}
 }
 	
