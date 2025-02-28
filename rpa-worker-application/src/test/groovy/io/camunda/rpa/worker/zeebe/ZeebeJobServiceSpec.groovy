@@ -10,7 +10,6 @@ import io.camunda.rpa.worker.robot.RobotExecutionListener
 import io.camunda.rpa.worker.robot.RobotService
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.script.ScriptRepository
-import io.camunda.rpa.worker.secrets.SecretsService
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
@@ -29,15 +28,9 @@ import java.time.Duration
 
 class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
-	static final String TASK_PREFIX = "camunda::RPA-Task::"
-
 	ZeebeClient zeebeClient = Mock()
-	
-	ZeebeProperties zeebeProperties = new ZeebeProperties(TASK_PREFIX, ["tag-one", "tag-two"].toSet(), "http://auth/".toURI(), 1)
+
 	RobotService robotService = Mock()
-	SecretsService secretsService = Stub() {
-		getSecrets() >> Mono.just([secretVar: 'secret-value'])
-	}
 	RobotScript script = new RobotScript("this_script", null)
 	ScriptRepository scriptRepository = Stub() {
 		findById("this_script_latest") >> Mono.just(script)
@@ -49,23 +42,15 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	@Subject
 	ZeebeJobService service = new ZeebeJobService(
 			zeebeClient,
-			zeebeProperties,
 			robotService,
 			scriptRepository,
 			objectMapper, 
-			secretsService, 
 			workspaceService)
 
 	void "Runs received task and reports success"() {
 		given:
 		ActivatedJob job = anRpaJob()
 		Map<String, String> expectedOutputVars = [outputVar: 'output-var-value']
-		Map<String, String> expectedExtraEnv = [
-				RPA_ZEEBE_PROCESS_INSTANCE_KEY: "345", 
-				RPA_ZEEBE_JOB_KEY: "123", 
-				RPA_ZEEBE_BPMN_PROCESS_ID: "234",
-				RPA_ZEEBE_JOB_TYPE: "camunda::RPA-Task::default"
-		]
 		
 		Path workspacePath = Stub()
 		Workspace workspace = new Workspace(null, workspacePath)
@@ -74,7 +59,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		block service.handleJob(job)
 
 		then:
-		1 * robotService.execute(script, [], [], _, _, null, _, expectedExtraEnv, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job]) >> { _, __, ___, ____, _____, ______, RobotExecutionListener executionListener, _______, ________ ->
+		1 * robotService.execute(script, [], [], _, null, _, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job]) >> { _, __, ___, ____, _____, RobotExecutionListener executionListener, _______ ->
 			executionListener.beforeScriptExecution(workspace, Duration.ofMinutes(1))
 			executionListener.afterRobotExecution(workspace)
 			return Mono.just(new ExecutionResults(
@@ -110,7 +95,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		block service.handleJob(job)
 
 		then:
-		1 * robotService.execute(script, [], [], _, _, null, _, _, _) >> Mono.just(new ExecutionResults([main: new ExecutionResults.ExecutionResult("main", result, "", expectedOutputVars)], 
+		1 * robotService.execute(script, [], [], _, null, _, _) >> Mono.just(new ExecutionResults([main: new ExecutionResults.ExecutionResult("main", result, "", expectedOutputVars)], 
 				result, 
 				expectedOutputVars, 
 				Stub(Path)))
@@ -137,7 +122,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		block service.handleJob(job)
 
 		then:
-		1 * robotService.execute(script, [], [], _, _, null, _, _, _) >> Mono.error(new RuntimeException("Bang!"))
+		1 * robotService.execute(script, [], [], _, null, _, _) >> Mono.error(new RuntimeException("Bang!"))
 
 		and:
 		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
@@ -155,14 +140,14 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		block service.handleJob(job1)
 
 		then: "The RPA Input Variables are passed to the Robot execution"
-		1 * robotService.execute(script, [], [], [rpaVar: 'the-value'], [SECRET_SECRETVAR: 'secret-value'], null, _, _, _) >> Mono.empty()
+		1 * robotService.execute(script, [], [], [rpaVar: 'the-value'], null, _, _) >> Mono.empty()
 
 		when: "There are NO specific RPA Input Variables available"
 		ActivatedJob job2 = anRpaJob([otherVar: 'other-val'])
 		block service.handleJob(job2)
 
 		then: "The Job's main variables are passed to the Robot execution"
-		1 * robotService.execute(script, [], [], [otherVar: 'other-val'], [SECRET_SECRETVAR: 'secret-value'], null, _, _, _) >> Mono.empty()
+		1 * robotService.execute(script, [], [], [otherVar: 'other-val'], null, _, _) >> Mono.empty()
 	}
 	
 	void "Errors when can't find script in headers"() {
@@ -215,7 +200,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		block service.handleJob(job)
 
 		then:
-		1 * robotService.execute(script, [expectedBefore], [expectedAfter], _, _, null, _, _, _) >> Mono.just(new ExecutionResults(
+		1 * robotService.execute(script, [expectedBefore], [expectedAfter], _, null, _, _) >> Mono.just(new ExecutionResults(
 				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:])], null, [:], Stub(Path)))
 	}
 	
@@ -227,7 +212,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		block service.handleJob(job)
 		
 		then: 
-		1 * robotService.execute(script, [], [], [:], [SECRET_SECRETVAR: 'secret-value'], Duration.ofMinutes(5), _, _, _) >> {
+		1 * robotService.execute(script, [], [], [:], Duration.ofMinutes(5), _, _) >> {
 			throw new ProcessTimeoutException("", "")
 		}
 		
