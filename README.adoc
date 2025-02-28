@@ -62,7 +62,7 @@ camunda.client.zeebe.base-url=https://${camunda.client.region}.zeebe.dev.ultrawo
 camunda.client.zeebe.audience=zeebe.dev.ultrawombat.com
 
 camunda.rpa.zeebe.secrets.token-audience=secrets.dev.ultrawombat.com
-camunda.rpa.zeebe.auth-endpoint=https://login.cloud.dev.ultrawombat.com
+camunda.rpa.zeebe.auth-endpoint=https://login.cloud.dev.ultrawombat.com/oauth
 camunda.rpa.zeebe.secrets.secrets-endpoint=https://cluster-api.cloud.dev.ultrawombat.com
 ----
 
