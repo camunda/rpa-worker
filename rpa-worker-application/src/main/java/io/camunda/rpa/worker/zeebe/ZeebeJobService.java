@@ -8,7 +8,6 @@ import io.camunda.rpa.worker.robot.RobotExecutionListener;
 import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
-import io.camunda.rpa.worker.secrets.SecretsService;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.zeebe.client.ZeebeClient;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -42,11 +40,9 @@ class ZeebeJobService  {
 	static final String AFTER_SCRIPT_LINK_NAME = "After";
 
 	private final ZeebeClient zeebeClient;
-	private final ZeebeProperties zeebeProperties;
 	private final RobotService robotService;
 	private final ScriptRepository scriptRepository;
 	private final ObjectMapper objectMapper;
-	private final SecretsService secretsService;
 	private final WorkspaceCleanupService workspaceCleanupService;
 
 	public Mono<Void> handleJob(ActivatedJob job) {
@@ -67,44 +63,41 @@ class ZeebeJobService  {
 		Flux<RobotScript> after = getScriptKeys(job, AFTER_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
 
 		return Flux.zip(before.collectList(), main, after.collectList())
-				.flatMap(scriptSet -> getSecretsAsEnv(job)
-						.flatMap(secrets ->
+				.flatMap(scriptSet ->
 
-								robotService.execute(
+						robotService.execute(
 										scriptSet.getT2(),
 										scriptSet.getT1(),
 										scriptSet.getT3(),
 										getVariables(job),
-										secrets,
 										Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
 												.map(Duration::parse)
 												.orElse(null),
 										executionListenerFor(job),
-										getZeebeEnvironment(job),
-										Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job)))
+										Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job))
 
-						.doOnSuccess(xr -> (switch (xr.result()) {
-							case PASS -> zeebeClient
-									.newCompleteCommand(job)
-									.variables(xr.outputVariables());
+								.doOnSuccess(xr -> (switch (xr.result()) {
+									case PASS -> zeebeClient
+											.newCompleteCommand(job)
+											.variables(xr.outputVariables());
 
-							case FAIL -> zeebeClient
-									.newThrowErrorCommand(job)
-									.errorCode("ROBOT_TASKFAIL")
-									.errorMessage("There were task failures");
+									case FAIL -> zeebeClient
+											.newThrowErrorCommand(job)
+											.errorCode("ROBOT_TASKFAIL")
+											.errorMessage("There were task failures");
 
-							case ERROR -> zeebeClient
-									.newThrowErrorCommand(job)
-									.errorCode("ROBOT_ERROR")
-									.errorMessage("There were task errors");
-						}).send())
+									case ERROR -> zeebeClient
+											.newThrowErrorCommand(job)
+											.errorCode("ROBOT_ERROR")
+											.errorMessage("There were task errors");
+								}).send())
 
 
-						.doOnSuccess(xr -> log.atInfo()
-								.kv("task", job.getType())
-								.kv("job", job.getKey())
-								.kv("results", xr.results())
-								.log("Job complete")))
+								.doOnSuccess(xr -> log.atInfo()
+										.kv("task", job.getType())
+										.kv("job", job.getKey())
+										.kv("results", xr.results())
+										.log("Job complete")))
 
 				.onErrorResume(ProcessTimeoutException.class,
 						_ -> Mono.<ExecutionResults>empty()
@@ -131,6 +124,7 @@ class ZeebeJobService  {
 						.send())
 
 				.onErrorComplete()
+				.contextWrite(ctx -> ctx.put(ActivatedJob.class, job))
 				.then();
 	}
 
@@ -174,22 +168,4 @@ class ZeebeJobService  {
 		return Optional.ofNullable(((Map<String, Object>) job.getVariablesAsMap().get("camundaRpaTaskInput")))
 				.orElse(job.getVariablesAsMap());
 	}
-
-	private Mono<Map<String, String>> getSecretsAsEnv(ActivatedJob job) {
-		return secretsService.getSecrets()
-				.map(m -> m.entrySet().stream()
-						.map(kv -> Map.entry(
-								"SECRET_%s".formatted(kv.getKey().toUpperCase()),
-								kv.getValue()))
-						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-	}
-
-	private Map<String, String> getZeebeEnvironment(ActivatedJob job) {
-		return Map.of(
-				"RPA_ZEEBE_JOB_KEY", String.valueOf(job.getKey()),
-				"RPA_ZEEBE_JOB_TYPE", job.getType(),
-				"RPA_ZEEBE_BPMN_PROCESS_ID", job.getBpmnProcessId(),
-				"RPA_ZEEBE_PROCESS_INSTANCE_KEY", String.valueOf(job.getProcessInstanceKey()));
-	}
-
 }
