@@ -90,11 +90,15 @@ Tasks
 
 		when:
 		ZeebeDocumentDescriptor blueDocument = objectMapper.convertValue(
-				getInstanceVariables(pinstanceBlue.processInstanceKey)['outputFile'],
+				spec.expectVariables(pinstanceBlue.processInstanceKey) {
+					outputFile
+				}.outputFile,
 				ZeebeDocumentDescriptor)
 		
 		ZeebeDocumentDescriptor redDocument = objectMapper.convertValue(
-				getInstanceVariables(pinstanceRed.processInstanceKey)['outputFile'],
+				spec.expectVariables(pinstanceRed.processInstanceKey) {
+					outputFile
+				}.outputFile,
 				ZeebeDocumentDescriptor)
 
 		String blueContents = download(documentClient.getDocument(

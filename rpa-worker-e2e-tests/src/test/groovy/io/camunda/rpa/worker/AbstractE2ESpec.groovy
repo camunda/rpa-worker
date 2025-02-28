@@ -235,15 +235,6 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				})
 	}
 
-	Map<String, String> getInstanceVariables(long processInstanceKey) {
-		return block(operateClient.getVariables(new OperateClient.GetVariablesRequest(new OperateClient.GetVariablesRequest.Filter(processInstanceKey)))
-				.flatMapIterable(it -> it.items())
-				.collect(Collectors.toMap(
-						(OperateClient.GetVariablesResponse.Item kv) -> kv.name(),
-						(OperateClient.GetVariablesResponse.Item kv) -> 
-								objectMapper.readValue(kv.value() ?: "{}", Object))))
-	}
-
 	private class SpecificationHelper {
 
 		@ConditionBlock
@@ -266,7 +257,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 		}
 
 		@ConditionBlock
-		List expectIncidents(
+		List<OperateClient.GetIncidentsResponse.Item> expectIncidents(
 				long processInstanceKey,
 				@DelegatesTo(GetProcessInstanceResponse)
 				@ClosureParams(
@@ -288,6 +279,28 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 					}
 					.retryWhen(waitForObjectRetrySpec)
 					.map { it.items() })
+		}
+		
+		@ConditionBlock
+		Map<String, Object> expectVariables(
+				long processInstanceKey,
+				@DelegatesTo(Map)
+				@ClosureParams(
+						value = SimpleType,
+						options = "java.util.Map<java.lang.String, java.lang.Object>") Closure<?> fn) {
+
+			return operateClient.getVariables(new OperateClient.GetVariablesRequest(new OperateClient.GetVariablesRequest.Filter(processInstanceKey)))
+					.flatMapIterable(it -> it.items())
+					.collect(Collectors.toMap(
+							(OperateClient.GetVariablesResponse.Item kv) -> kv.name(),
+							(OperateClient.GetVariablesResponse.Item kv) ->
+									objectMapper.readValue(kv.value() ?: "{}", Object)))
+					.doOnNext { resp ->
+						Closure<?> fn2 = fn.rehydrate(resp, fn.owner, fn.thisObject).curry(resp)
+						GroovyRuntimeUtil.invokeClosure(fn2)
+					}
+					.retryWhen(waitForObjectRetrySpec)
+					.block()
 		}
 	}
 

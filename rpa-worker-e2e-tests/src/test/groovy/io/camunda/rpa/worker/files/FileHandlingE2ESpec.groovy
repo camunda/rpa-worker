@@ -143,7 +143,9 @@ Upload the file
 		
 		when:
 		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(
-				getInstanceVariables(pinstance.processInstanceKey)['uploadedFile'], 
+				spec.expectVariables(pinstance.processInstanceKey) {
+					uploadedFile
+				}.uploadedFile,
 				ZeebeDocumentDescriptor)
 
 		String contents = download(documentClient.getDocument(
@@ -180,7 +182,9 @@ Upload the file
 
 		when:
 		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(
-				getInstanceVariables(pinstance.processInstanceKey)['uploadedFile'],
+				spec.expectVariables(pinstance.processInstanceKey) {
+					uploadedFile
+				}.uploadedFile,
 				ZeebeDocumentDescriptor)
 
 		String contents = download(documentClient.getDocument(
@@ -218,7 +222,9 @@ Upload the file
 
 		when:
 		List<ZeebeDocumentDescriptor> uploaded = objectMapper.convertValue(
-				getInstanceVariables(pinstance.processInstanceKey)['uploadedFiles'],
+				spec.expectVariables(pinstance.processInstanceKey) {
+					uploadedFiles
+				}.uploadedFiles,
 				new TypeReference<List<ZeebeDocumentDescriptor>>() {})
 
 		String contents1 = download(uploaded.find {
