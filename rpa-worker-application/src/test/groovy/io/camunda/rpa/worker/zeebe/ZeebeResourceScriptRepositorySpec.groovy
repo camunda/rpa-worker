@@ -8,7 +8,7 @@ import spock.lang.Subject
 
 class ZeebeResourceScriptRepositorySpec extends Specification implements PublisherUtils {
 
-	ResourceClient resourceClient = Stub()
+	ResourceClient resourceClient = Mock()
 	
 	@Subject
 	ZeebeResourceScriptRepository repository = 
@@ -25,5 +25,28 @@ class ZeebeResourceScriptRepositorySpec extends Specification implements Publish
 		then:
 		script.id() == "the-resource-key"
 		script.body() == "the-script-body"
+	}
+
+	void "Caches script and uses cache when available"() {
+		given:
+
+		when:
+		RobotScript script = block repository.getById("the-resource-key")
+
+		then:
+		1 * resourceClient.getRpaResource("the-resource-key") >> Mono.just(
+				new RpaResource("the-resource-key", "the-resource-name", "", "", "the-script-body"))
+		
+		script.id() == "the-resource-key"
+		script.body() == "the-script-body"
+		
+		when:
+		RobotScript script2 = block repository.getById("the-resource-key")
+
+		then:
+		0 * resourceClient.getRpaResource(_)
+
+		script2.id() == "the-resource-key"
+		script2.body() == "the-script-body"
 	}
 }

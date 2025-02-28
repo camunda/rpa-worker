@@ -54,6 +54,7 @@ dependencies {
 	implementation libs.reactiveFeign
 	implementation libs.javaSemver
 	implementation libs.slf4j.api
+	implementation libs.caffeine
 	
 	runtimeOnly libs.springJsonLog
 
