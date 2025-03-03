@@ -447,7 +447,7 @@ jobs:
           gcp_credentials: ${{ steps.secrets.outputs.GCP_CREDENTIALS_NAME }}
           env: 'dev'
           version: ${{ github.ref_name }}
-          artifact_file: |
+          artifact_file: >-
             rpa-worker*linux_amd64
             rpa-worker*win32_amd64.exe
             rpa-worker*darwin*
