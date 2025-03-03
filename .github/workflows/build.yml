@@ -427,4 +427,31 @@ jobs:
           preserve_order: true
           generate_release_notes: true
           body_path: rpa-worker-application/build/releasenotes_header.md
+          
+      - name: Import Secrets
+        if: github.ref_type == 'tag'
+        id: secrets
+        uses: hashicorp/vault-action@v2.5.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/common/jenkins/downloads-camunda-cloud_google_sa_key DOWNLOAD_CENTER_GCLOUD_KEY_BYTES | GCP_CREDENTIALS_NAME;
+
+      - name: Upload to Camunda Download Centre
+        if: github.ref_type == 'tag'
+        uses: camunda/infra-global-github-actions/download-center-upload@main
+        with:
+          gcp_credentials: ${{ steps.secrets.outputs.GCP_CREDENTIALS_NAME }}
+          version: ${{ github.ref_name }}
+          artifact_file: >-
+            rpa-worker*linux_amd64
+            rpa-worker*win32_amd64.exe
+            rpa-worker*darwin*
+            *.jar
+            rpa-connector-*.json
+            rpa-worker-application/build/hashes/*
+            
     
