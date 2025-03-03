@@ -29,6 +29,7 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 		
 		private final Jar bootJar
 		private final Path projectRoot
+		private final Map<Path, String> hashes = [:]
 
 		@Inject
 		GenerateReleaseHeaderTask(Jar bootJar, Path projectRoot) {
@@ -45,18 +46,31 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 			Path elementTemplate = findElementTemplate(projectRoot)
 			Writable cooked = te.createTemplate(template).make([
 					jarFilename: exeJar.fileName.toString(),
-					jarHash    : sha256(exeJar),
+					jarHash    : sha256AndCache(exeJar),
 					version    : project.version.toString(),
-					nativeLinuxAmd64Hash: sha256(findFile(projectRoot, "linux_amd64")),
-					nativeWin32Amd64Hash: sha256(findFile(projectRoot, "win32_amd64")),
-					nativeDarwinAmd64Hash: sha256(findFile(projectRoot, "darwin_amd64")),
-					nativeDarwinAarch64Hash: sha256(findFile(projectRoot, "darwin_aarch64")),
+					nativeLinuxAmd64Hash: sha256AndCache(findFile(projectRoot, "linux_amd64")),
+					nativeWin32Amd64Hash: sha256AndCache(findFile(projectRoot, "win32_amd64")),
+					nativeDarwinAmd64Hash: sha256AndCache(findFile(projectRoot, "darwin_amd64")),
+					nativeDarwinAarch64Hash: sha256AndCache(findFile(projectRoot, "darwin_aarch64")),
 					elementTemplateFilename: elementTemplate.fileName.toString(),
-					elementTemplateHash: sha256(elementTemplate),
+					elementTemplateHash: sha256AndCache(elementTemplate),
 			])
 			Path out = project.layout.buildDirectory.getAsFile().get().toPath().resolve("releasenotes_header.md")
 			Files.createDirectories(out.parent)
 			out.withWriter { w -> cooked.writeTo(w) }
+			
+			
+			Path hashesDir = project.layout.buildDirectory.getAsFile().get().toPath().resolve("hashes")
+			Files.createDirectories(hashesDir)
+			hashes.each { k, v ->
+				hashesDir.resolve(k.fileName.toString() + ".sha256").text = v
+			}
+		}
+		
+		private String sha256AndCache(Path path) {
+			String hash = sha256(path)
+			hashes[path] = hash
+			return hash
 		}
 	}
 	
