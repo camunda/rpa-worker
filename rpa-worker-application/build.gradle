@@ -46,7 +46,10 @@ dependencies {
 	implementation libs.spring.boot.starter.actuator
 	implementation libs.spring.boot.starter.validation
 	implementation libs.springDocStarter
+	
+	runtimeOnly libs.prometheus.simpleclient.pushgateway
 	runtimeOnly libs.micrometer.prometheus
+	runtimeOnly libs.micrometer.prometheus.simpleclient
 
 	implementation libs.camundaStarter
 	implementation libs.vavr
