@@ -33,7 +33,7 @@ public class ProcessService {
 	private final Scheduler processExecutionScheduler;
 	private final Supplier<DefaultExecutor.Builder<?>> executorBuilderFactory;
 	
-	public record ExecutionResult(int exitCode, String stdout, String stderr) {}
+	public record ExecutionResult(int exitCode, String stdout, String stderr, Duration duration) {}
 
 	@Autowired
 	public ProcessService(Scheduler processExecutionScheduler) {
@@ -164,12 +164,14 @@ public class ProcessService {
 									.log("Process execution failed");
 						})
 						.recover(ExecuteException.class, ExecuteException::getExitValue)
-						.map(exitCode -> new ExecutionResult(
-								exitCode,
-								streamHandler.getOutString(),
-								streamHandler.getErrString()))
 						.get())
-				.subscribeOn(executionCustomizer.getScheduler()))
+						.timed()
+						.map(exitCode -> new ExecutionResult(
+								exitCode.get(),
+								streamHandler.getOutString(),
+								streamHandler.getErrString(), 
+								exitCode.elapsedSinceSubscription()))
+						.subscribeOn(executionCustomizer.getScheduler()))
 				.onErrorResume(
 						thrown -> thrown instanceof TimeoutException 
 								|| (thrown instanceof IOException && thrown.getCause() instanceof TimeoutException),

@@ -9,6 +9,7 @@ import spock.lang.Specification
 import spock.lang.Subject
 
 import java.nio.file.Paths
+import java.time.Duration
 import java.util.function.UnaryOperator
 
 class RobotStartupCheckSpec extends Specification implements PublisherUtils {
@@ -30,7 +31,7 @@ class RobotStartupCheckSpec extends Specification implements PublisherUtils {
 		then:
 		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			c.apply(executionCustomizer)
-			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_HELP_OR_VERSION_REQUEST, "Robot Framework 7.2", ""))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_HELP_OR_VERSION_REQUEST, "Robot Framework 7.2", "", Duration.ZERO))
 		}
 		
 		and:
@@ -47,7 +48,7 @@ class RobotStartupCheckSpec extends Specification implements PublisherUtils {
 		then:
 		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			c.apply(executionCustomizer)
-			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INTERNAL_ERROR, "", "Robot is poorly"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INTERNAL_ERROR, "", "Robot is poorly", Duration.ZERO))
 		}
 		
 		and:

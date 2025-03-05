@@ -38,6 +38,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	}
 	ObjectMapper objectMapper = new ObjectMapper()
 	WorkspaceCleanupService workspaceService = Mock()
+	ZeebeMetricsService metricsService = Mock()
 
 	@Subject
 	ZeebeJobService service = new ZeebeJobService(
@@ -45,7 +46,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 			robotService,
 			scriptRepository,
 			objectMapper, 
-			workspaceService)
+			workspaceService, 
+			metricsService)
 
 	void "Runs received task and reports success"() {
 		given:
@@ -59,14 +61,16 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		block service.handleJob(job)
 
 		then:
+		1 * metricsService.onZeebeJobReceived(job.type)
 		1 * robotService.execute(script, [], [], _, null, _, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job]) >> { _, __, ___, ____, _____, RobotExecutionListener executionListener, _______ ->
 			executionListener.beforeScriptExecution(workspace, Duration.ofMinutes(1))
 			executionListener.afterRobotExecution(workspace)
 			return Mono.just(new ExecutionResults(
-					[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", expectedOutputVars)],
+					[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", expectedOutputVars, Duration.ofSeconds(3))],
 					Result.PASS,
-					expectedOutputVars, 
-					Stub(Path)))
+					expectedOutputVars,
+					Stub(Path),
+					Duration.ofSeconds(3)))
 		}
 		
 		then:
@@ -83,6 +87,9 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
+		1 * metricsService.onZeebeJobSuccess("camunda::RPA-Task::default", Duration.ofSeconds(3))
+		
+		and:
 		1 * workspaceService.deleteWorkspace(workspace)
 	}
 
@@ -95,10 +102,11 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		block service.handleJob(job)
 
 		then:
-		1 * robotService.execute(script, [], [], _, null, _, _) >> Mono.just(new ExecutionResults([main: new ExecutionResults.ExecutionResult("main", result, "", expectedOutputVars)], 
+		1 * robotService.execute(script, [], [], _, null, _, _) >> Mono.just(new ExecutionResults([main: new ExecutionResults.ExecutionResult("main", result, "", expectedOutputVars, Duration.ZERO)],
 				result, 
 				expectedOutputVars, 
-				Stub(Path)))
+				Stub(Path), 
+				Duration.ZERO))
 
 		and:
 		1 * zeebeClient.newThrowErrorCommand(job) >> Mock(ThrowErrorCommandStep1) {
@@ -107,6 +115,9 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 				1 * send()
 			}
 		}
+		
+		and:
+		1 * metricsService.onZeebeJobFail(job.type, expectedCode)
 
 		where:
 		result       || expectedCode
@@ -131,6 +142,9 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 				1 * send()
 			}
 		}
+		
+		and:
+		1 * metricsService.onZeebeJobError(job.type)
 	}
 
 	void "Passes variables to Robot execution"() {
@@ -201,7 +215,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * robotService.execute(script, [expectedBefore], [expectedAfter], _, null, _, _) >> Mono.just(new ExecutionResults(
-				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:])], null, [:], Stub(Path)))
+				[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:], Duration.ZERO)], null, [:], Stub(Path), Duration.ZERO))
 	}
 	
 	void "Sets timeout when present, reports correct error when exceeded"() {
@@ -223,6 +237,9 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 				1 * send()
 			}
 		}
+		
+		and:
+		1 * metricsService.onZeebeJobFail(job.type, "ROBOT_TIMEOUT")
 	}
 
 	private ActivatedJob anRpaJob(Map<String, Object> variables = [:], List additionalResources = [], Map additionalHeaders = [:]) {

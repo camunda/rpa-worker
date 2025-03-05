@@ -46,6 +46,7 @@ dependencies {
 	implementation libs.spring.boot.starter.actuator
 	implementation libs.spring.boot.starter.validation
 	implementation libs.springDocStarter
+	runtimeOnly libs.micrometer.prometheus
 
 	implementation libs.camundaStarter
 	implementation libs.vavr
