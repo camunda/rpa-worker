@@ -89,7 +89,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		and:
 		1 * processService.execute(pythonExe, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
-			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content", Duration.ofSeconds(3)))
 		}
 		
 		and:
@@ -125,6 +125,8 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		r.results().values().first().output() == """\
 [STDOUT] stdout-content
 [STDERR] stderr-content"""
+		r.results().values().first().duration() == Duration.ofSeconds(3)
+		r.duration() == Duration.ofSeconds(3)
 		
 		and:
 		1 * executionListener.afterRobotExecution(workspace)
@@ -141,7 +143,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		processService.execute(_, _) >> { _, __ ->
-			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content", Duration.ZERO))
 		}
 
 		when:
@@ -177,7 +179,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		and:
 		processService.execute(_, _) >> { _, __ ->
 			return Mono.just(new ProcessService.ExecutionResult(
-					RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content"))
+					RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content", Duration.ZERO))
 		}
 
 		when:
@@ -202,7 +204,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		processService.execute(_, _) >> { _, __ ->
-			Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INVALID_INVOKE, "", ""))
+			Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INVALID_INVOKE, "", "", Duration.ZERO))
 		}
 
 		when:
@@ -260,7 +262,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		and:
 		processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
-			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content", Duration.ofSeconds(1)))
 		}
 
 		when:
@@ -296,10 +298,12 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 			with(result.results().keySet().find { k -> k.startsWith(sc) }) { rr ->
 				result.results()[rr].result() == ExecutionResults.Result.PASS
 				result.results()[rr].outputVariables()
+				result.results()[rr].duration() == Duration.ofSeconds(1)
 			}
 		}
 		
 		result.result() == ExecutionResults.Result.PASS
+		result.duration() == Duration.ofSeconds(5)
 		
 		result.outputVariables() == [
 				var1: 'val1',
@@ -333,7 +337,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		then:
 		1 * processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
-			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content", Duration.ZERO))
 		}
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
 		1 * executionListener.beforeScriptExecution(workspace, robotProperties.defaultTimeout())
@@ -367,7 +371,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		3 * processService.execute(_, _) >> { _, __ ->
-			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content", Duration.ZERO))
 		}
 		3 * io.withReader(workDir.resolve("outputs.yml"), _) >>> [
 				[var1: 'val1'], 
@@ -376,7 +380,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		
 		then:
 		1 * processService.execute(_, _) >> { _, __ ->
-			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INVALID_INVOKE, "stdout-content", "stderr-content"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INVALID_INVOKE, "stdout-content", "stderr-content", Duration.ZERO))
 		}
 		1 * io.withReader(workDir.resolve("outputs.yml"), _) >> [var3: 'val3']
 
@@ -405,7 +409,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		and:
 		processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
-			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content"))
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content", Duration.ZERO))
 		}
 
 		when:

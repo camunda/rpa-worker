@@ -18,6 +18,7 @@ import java.nio.channels.Channels
 import java.nio.file.FileSystem
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.Duration
 import java.util.function.Consumer
 import java.util.function.Supplier
 import java.util.function.UnaryOperator
@@ -81,7 +82,7 @@ class PythonSetupServiceSpec extends Specification {
 				1 * silent() >> it
 				1 * arg("--version") >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", "", Duration.ZERO))
 		}
 		
 		and:
@@ -92,7 +93,7 @@ class PythonSetupServiceSpec extends Specification {
 				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
 				1 * inheritEnv() >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
 		
 		and:
@@ -105,7 +106,7 @@ class PythonSetupServiceSpec extends Specification {
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
 				1 * inheritEnv() >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
 
 		and:
@@ -126,7 +127,7 @@ class PythonSetupServiceSpec extends Specification {
 				1 * silent() >> it
 				1 * arg("--version") >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", "", Duration.ZERO))
 		}
 
 		and:
@@ -137,7 +138,7 @@ class PythonSetupServiceSpec extends Specification {
 				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
 				1 * inheritEnv() >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
 
 		and:
@@ -150,7 +151,7 @@ class PythonSetupServiceSpec extends Specification {
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
 				1 * inheritEnv() >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
 
 		and:
@@ -221,7 +222,7 @@ class PythonSetupServiceSpec extends Specification {
 		and: "The Python on the path is some fake Windows store launcher thing"
 		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		processService.execute("python", _) >> Mono.just(
-				new ProcessService.ExecutionResult(PythonSetupService.WINDOWS_NO_PYTHON_EXIT_CODES.first(), "", ""))
+				new ProcessService.ExecutionResult(PythonSetupService.WINDOWS_NO_PYTHON_EXIT_CODES.first(), "", "", Duration.ZERO))
 		processService.execute(_, _) >> Mono.empty()
 
 		and:
@@ -251,7 +252,7 @@ class PythonSetupServiceSpec extends Specification {
 			fn.apply(Stub(ExecutionCustomizer) {
 				arg("--version") >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", "", Duration.ZERO))
 		}
 		
 		and:
@@ -259,7 +260,7 @@ class PythonSetupServiceSpec extends Specification {
 			fn.apply(Stub(ExecutionCustomizer) {
 				_ >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
 		
 		and:
@@ -285,7 +286,7 @@ class PythonSetupServiceSpec extends Specification {
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
 				_ >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
 
 		and:
@@ -304,7 +305,7 @@ class PythonSetupServiceSpec extends Specification {
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/extra-requirements.txt")) >> it
 				_ >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
 		1 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"), "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843", _)
 	}
@@ -348,7 +349,7 @@ class PythonSetupServiceSpec extends Specification {
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/extra-requirements.txt")) >> it
 				_ >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
 		1 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"), "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843", _)
 	}

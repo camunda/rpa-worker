@@ -44,12 +44,15 @@ class ZeebeJobService  {
 	private final ScriptRepository scriptRepository;
 	private final ObjectMapper objectMapper;
 	private final WorkspaceCleanupService workspaceCleanupService;
+	private final ZeebeMetricsService zeebeMetricsService;
 
 	public Mono<Void> handleJob(ActivatedJob job) {
 		log.atInfo()
 				.kv("task", job.getType())
 				.kv("job", job.getKey())
 				.log("Received Job from Zeebe");
+		
+		zeebeMetricsService.onZeebeJobReceived(job.getType());
 
 		Flux<RobotScript> before = getScriptKeys(job, BEFORE_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
 		Mono<RobotScript> main = getScriptKeys(job, MAIN_SCRIPT_LINK_NAME)
@@ -92,6 +95,13 @@ class ZeebeJobService  {
 											.errorMessage("There were task errors");
 								}).send())
 
+								.doOnSuccess(xr -> {
+									switch (xr.result()) {
+										case PASS -> zeebeMetricsService.onZeebeJobSuccess(job.getType(), xr.duration());
+										case FAIL -> zeebeMetricsService.onZeebeJobFail(job.getType(), "ROBOT_TASKFAIL");
+										case ERROR -> zeebeMetricsService.onZeebeJobFail(job.getType(), "ROBOT_ERROR");
+									}
+								})
 
 								.doOnSuccess(xr -> log.atInfo()
 										.kv("task", job.getType())
@@ -109,7 +119,10 @@ class ZeebeJobService  {
 
 								.doOnSubscribe(_ -> log.atWarn()
 										.kv("job", job)
-										.log("Execution aborted, timeout exceeded")))
+										.log("Execution aborted, timeout exceeded"))
+						
+								.doOnSubscribe(_ -> zeebeMetricsService.onZeebeJobFail(
+										job.getType(), "ROBOT_TIMEOUT")))
 
 				.doOnError(thrown -> log.atError()
 						.kv("task", job.getType())
@@ -122,6 +135,8 @@ class ZeebeJobService  {
 						.retries(job.getRetries() - 1)
 						.errorMessage(thrown.getMessage())
 						.send())
+				
+				.doOnError(_ -> zeebeMetricsService.onZeebeJobError(job.getType()))
 
 				.onErrorComplete()
 				.contextWrite(ctx -> ctx.put(ActivatedJob.class, job))

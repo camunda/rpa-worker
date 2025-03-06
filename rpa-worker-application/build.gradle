@@ -46,6 +46,10 @@ dependencies {
 	implementation libs.spring.boot.starter.actuator
 	implementation libs.spring.boot.starter.validation
 	implementation libs.springDocStarter
+	
+	implementation libs.prometheus.simpleclient.pushgateway
+	runtimeOnly libs.micrometer.prometheus
+	runtimeOnly libs.micrometer.prometheus.simpleclient
 
 	implementation libs.camundaStarter
 	implementation libs.vavr
@@ -87,6 +91,10 @@ tasks.withType(Test).configureEach {
 
 tasks.named("functionalTest", Test).configure { Test task ->
 	task.jvmArgs("-XX:+AllowRedefinitionToAddDeleteMethods")
+}
+
+processAot {
+	jvmArgs("-Dmanagement.prometheus.metrics.export.pushgateway.enabled=true")
 }
 
 processTestAot.enabled = false

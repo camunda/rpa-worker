@@ -133,7 +133,10 @@ public class RobotService {
 														Map.Entry::getKey,
 														Map.Entry::getValue,
 														MoreCollectors.MergeStrategy.rightPrecedence())),
-										renv.workspace().path())));
+										renv.workspace().path(), 
+										resultsMap.values().stream()
+												.map(ExecutionResults.ExecutionResult::duration)
+												.reduce(Duration.ZERO, Duration::plus))));
 	}
 
 	private Mono<RobotEnvironment> newRobotEnvironment(List<PreparedScript> scripts, Map<String, Object> variables, Map<String, Object> workspaceProperties) {
@@ -231,7 +234,7 @@ public class RobotService {
 			     ROBOT_EXIT_INVALID_INVOKE -> ExecutionResults.Result.ERROR;
 
 			default -> ExecutionResults.Result.FAIL;
-		}, mergeOutput(xr.stdout(), xr.stderr()), outputVariables);
+		}, mergeOutput(xr.stdout(), xr.stderr()), outputVariables, xr.duration());
 	}
 
 	private ExecutionResults.Result getWorstCase(Collection<ExecutionResults.ExecutionResult> results) {

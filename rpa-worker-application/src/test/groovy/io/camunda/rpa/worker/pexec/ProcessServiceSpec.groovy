@@ -54,7 +54,7 @@ class ProcessServiceSpec extends Specification implements PublisherUtils {
 		}
 		
 		Map<String, Object> expectedEnvironment = [ENV_VAR: 'env-var-value']
-		ProcessService.ExecutionResult expectedResult = new ProcessService.ExecutionResult(1, "stdout-content", "stderr-content")
+		ProcessService.ExecutionResult expectedResult = new ProcessService.ExecutionResult(1, "stdout-content", "stderr-content", java.time.Duration.ZERO)
 		
 		and:
 		ProcessService.StreamHandler streamHandler
@@ -78,7 +78,12 @@ class ProcessServiceSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
-		result == expectedResult
+		with(result) {
+			exitCode() == expectedResult.exitCode()
+			stdout() == expectedResult.stdout()
+			stderr() == expectedResult.stderr()
+			! duration().isZero()
+		}
 	}
 	
 	void "Executable can be a simple String"() {

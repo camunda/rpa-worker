@@ -8,6 +8,7 @@ import spock.lang.Specification
 import spock.lang.Subject
 
 import java.nio.file.Paths
+import java.time.Duration
 import java.util.function.UnaryOperator
 
 class PythonStartupCheckSpec extends Specification implements PublisherUtils {
@@ -29,7 +30,7 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 		then:
 		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			c.apply(executionCustomizer)
-			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", ""))
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", "", Duration.ZERO))
 		}
 		
 		and:
@@ -46,7 +47,7 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 		then:
 		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			c.apply(executionCustomizer)
-			return Mono.just(new ProcessService.ExecutionResult(255, "", "Python is poorly"))
+			return Mono.just(new ProcessService.ExecutionResult(255, "", "Python is poorly", Duration.ZERO))
 		}
 		
 		and:

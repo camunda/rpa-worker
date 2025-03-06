@@ -17,6 +17,7 @@ import spock.lang.Subject
 
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.Duration
 import java.util.function.Supplier
 import java.util.stream.Stream
 
@@ -62,9 +63,9 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 
 			return Mono.just(
 					new ExecutionResults(
-							[main: new ExecutionResults.ExecutionResult("main", ExecutionResults.Result.PASS, "the-output", outputVariables)], null,
+							[main: new ExecutionResults.ExecutionResult("main", ExecutionResults.Result.PASS, "the-output", outputVariables, Duration.ZERO)], null,
 							outputVariables,
-							workspaceDir))
+							workspaceDir, Duration.ZERO))
 		}
 		
 		and:
