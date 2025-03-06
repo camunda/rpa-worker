@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.secrets
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.robot.EnvironmentVariablesContributor
 import io.camunda.zeebe.client.api.response.ActivatedJob
@@ -10,18 +11,19 @@ import spock.lang.Subject
 class SecretsEnvironmentVariablesContributorSpec extends Specification implements PublisherUtils {
 
 	SecretsService secretsService = Stub()
+	ObjectMapper objectMapper = new ObjectMapper()
 
 	@Subject
-	EnvironmentVariablesContributor contributor = new SecretsEnvironmentVariablesContributor(secretsService)
+	EnvironmentVariablesContributor contributor = new SecretsEnvironmentVariablesContributor(secretsService, objectMapper)
 	
 	void "Returns empty variables when no Zeebe job in context"() {
 		expect:
-		block(contributor.getEnvironmentVariables(null, null)).isEmpty()
+		block(contributor.getEnvironmentVariables(null, null)) == [CAMUNDA_SECRETS: "{}"]
 	}
 
 	void "Returns correct environment variables for secrets"() {
 		given:
-		secretsService.getSecrets() >> Mono.just([SECRET_VAR: 'secretValue'])
+		secretsService.getSecrets() >> Mono.just([SECRET_VAR: 'secretValue', "Secret-Var-Two": 'secretValueTwo'])
 		ActivatedJob job = Stub()
 
 		when:
@@ -29,6 +31,10 @@ class SecretsEnvironmentVariablesContributorSpec extends Specification implement
 				.contextWrite { ctx -> ctx.put(ActivatedJob, job) }
 
 		then:
-		vars == [SECRET_SECRET_VAR: 'secretValue']
+		vars.size() == 1
+		objectMapper.readValue(vars['CAMUNDA_SECRETS'], Map) == [
+				SECRET_VAR: 'secretValue',
+				'Secret-Var-Two': 'secretValueTwo'
+		]
 	}
 }

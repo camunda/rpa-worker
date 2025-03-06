@@ -30,6 +30,11 @@ import java.util.concurrent.TimeUnit
 
 class ZeebeFunctionalSpec extends AbstractScriptRepositoryProvidingZeebeFunctionalSpec {
 
+	static final Map<String, String> SOME_SIMPLE_SECRETS = [
+			TEST_SECRET_KEY: 'TEST_SECRET_VALUE',
+			'Test-Secret-Key-2': 'TEST_SECRET_VALUE_2'
+	]
+	
 	static final String SAMPLE_ROBOT_SCRIPT = '''\
 *** Settings ***
 Library             Camunda
@@ -37,7 +42,8 @@ Library             Camunda
 *** Tasks ***
 Assert input variable
     Should Be Equal    ${anInputVariable}    input-variable-value
-    Should Be Equal    %{SECRET_TEST_SECRET_KEY}    TEST_SECRET_VALUE
+    Should Be Equal    ${SECRETS.TEST_SECRET_KEY}    TEST_SECRET_VALUE
+    Should Be Equal    ${SECRETS['Test-Secret-Key-2']}    TEST_SECRET_VALUE_2
 
 Set an output variable
     Set Output Variable     anOutputVariable      output-variable-value
@@ -97,7 +103,7 @@ Do Nothing
 
 	void "Runs Robot task from Zeebe, passing in input variables and secrets, reports success with output variables"() {
 		given:
-		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
+		withSimpleSecrets(SOME_SIMPLE_SECRETS)
 
 		when:
 		zeebeJobService.handleJob(anRpaJob([anInputVariable: 'input-variable-value'])).subscribe()
@@ -179,7 +185,7 @@ Do Nothing
 	
 	void "Runs pre and post scripts, in order, and aggregates results"() {
 		given:
-		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
+		withSimpleSecrets(SOME_SIMPLE_SECRETS)
 		
 		and:
 		ActivatedJob jobWithPreAndPostScripts = anRpaJobWithPreAndPostScripts(
@@ -268,7 +274,7 @@ Do Nothing
 
 	void "Cleans up workspace after running job"() {
 		given:
-		withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
+		withSimpleSecrets(SOME_SIMPLE_SECRETS)
 		CountDownLatch handlersDidFinish = new CountDownLatch(2)
 		
 		and:
@@ -401,7 +407,7 @@ Assert input variable
 
 		void "Runs Robot task from Zeebe, fetching script from Zeebe"() {
 			given:
-			withSimpleSecrets([TEST_SECRET_KEY: 'TEST_SECRET_VALUE'])
+			withSimpleSecrets(SOME_SIMPLE_SECRETS)
 			
 			and:
 			zeebeApi.enqueue(new MockResponse().tap {
