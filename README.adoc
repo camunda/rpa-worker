@@ -230,6 +230,11 @@ for other supported properties_
 |The token audience to use when authenticating for secrets
 |`secrets.camunda.io`
 
+
+3+| *General Properties*
+|server.address
+|Network address to which the server should bind
+|`localhost` for standalone, any for container
 |===
 
 
