@@ -93,6 +93,6 @@ class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 	
 	@PreDestroy
 	void shutdown() {
-		poller.dispose();
+		if(poller != null) poller.dispose();
 	}
 }
