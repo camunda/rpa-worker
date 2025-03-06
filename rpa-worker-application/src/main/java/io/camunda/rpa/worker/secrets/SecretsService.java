@@ -20,7 +20,11 @@ public class SecretsService {
 		if( ! isSecretsApiEnabled())
 			return Mono.just(Collections.emptyMap());
 		
-		return secretsClient.getSecrets();
+		return secretsClient.getSecrets()
+				.doOnError(thrown -> log.atError()
+						.setCause(thrown)
+						.log("Error occurred fetching secrets"))
+				.onErrorReturn(Collections.emptyMap());
 	}
 	
 	private boolean isSecretsApiEnabled() {
