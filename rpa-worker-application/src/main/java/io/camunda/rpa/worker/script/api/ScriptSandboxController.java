@@ -10,8 +10,8 @@ import io.camunda.rpa.worker.workspace.WorkspaceService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,11 +36,19 @@ class ScriptSandboxController {
 	private final WorkspaceCleanupService workspaceCleanupService;
 	private final WorkspaceService workspaceService;
 	private final IO io;
-	private final Environment environment;
+	private final ScriptSandboxProperties sandboxProperties;
 
 	@PostMapping
-	public Mono<EvaluateScriptResponse> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request) {
+	public Mono<ResponseEntity<EvaluateScriptResponse>> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request) {
 
+		if ( ! sandboxProperties.enabled())
+			return Mono.just(ResponseEntity.notFound().build());
+
+		return doEvaluateScript(request)
+				.map(ResponseEntity::ok);
+	}
+
+	private Mono<EvaluateScriptResponse> doEvaluateScript(EvaluateScriptRequest request) {
 		log.atInfo().log("Received script for sandbox evaluation");
 
 		RobotScript robotScript = new RobotScript("_eval_", request.script());

@@ -165,6 +165,13 @@ The RPA Worker makes the following environment variables available to the Robot 
 |The default timeout to use when no other timeout is specified (ISO 8601 duration string)
 |`PT5M` (5 minutes)
 
+
+3+| *Sandbox Properties*
+
+|camunda.rpa.sandbox.enabled
+|Whether the script evaluation API should be available
+|`true`
+
 3+| *Zeebe Properties*
 |camunda.client.zeebe.enabled
 |Whether the Zeebe integration should be enabled
