@@ -10,7 +10,8 @@ import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
-import org.springframework.core.env.Environment
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -22,23 +23,25 @@ import java.util.function.Supplier
 import java.util.stream.Stream
 
 class ScriptSandboxControllerSpec extends Specification implements PublisherUtils {
-	
+
 	RobotService robotService = Mock()
 	WorkspaceCleanupService workspaceCleanupService = Mock()
 	WorkspaceService workspaceService = Stub()
 	IO io = Stub() {
 		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
 	}
-	Environment environment = Stub() {
-		getProperty("server.port", Integer) >> 36227
-		getProperty(_) >> null
-	}
-	
-	@Subject
-	ScriptSandboxController controller = new ScriptSandboxController(robotService, workspaceCleanupService, workspaceService, io, environment)
-	
+
 	void "Executes script from passed-in body and returns result"() {
 		given:
+		@Subject
+		ScriptSandboxController controller = new ScriptSandboxController(
+				robotService, 
+				workspaceCleanupService,
+				workspaceService, 
+				io, 
+				new ScriptSandboxProperties(true))
+
+		and:
 		String scriptBody = "the-script-body"
 		Map<String, Object> inputVariables = [foo: 'bar']
 		Map<String, Object> outputVariables = [baz: 'bat']
@@ -56,6 +59,7 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 
 		when:
 		EvaluateScriptResponse response = block controller.evaluateScript(new EvaluateScriptRequest(scriptBody, inputVariables))
+				.map { it.body }
 		
 		then:
 		1 * robotService.execute(new RobotScript("_eval_", scriptBody), inputVariables, null, _) >> { _, __, ___, RobotExecutionListener executionListener ->
@@ -78,5 +82,25 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		
 		and:
 		1 * workspaceCleanupService.preserveLast(workspace)
+	}
+
+	void "Returns not found and does not run scripts when Sandbox is disabled"() {
+		given:
+		@Subject
+		ScriptSandboxController controller = new ScriptSandboxController(
+				robotService,
+				workspaceCleanupService,
+				workspaceService,
+				io,
+				new ScriptSandboxProperties(false))
+		
+		when:
+		ResponseEntity<EvaluateScriptResponse> response = block controller.evaluateScript(new EvaluateScriptRequest("", [:]))
+		
+		then:
+		0 * robotService._
+		
+		and:
+		response.statusCode == HttpStatus.NOT_FOUND
 	}
 }

@@ -4,10 +4,6 @@ info:
   version: 1.0.0
   
 tags:
-  - name: Local Script Library
-    description: >- 
-      Management of the Local Script Library. 
-      Temporary functionality until Zeebe manages the Robot scripts
   - name: Sandbox
     description: >-
       Direct evaluation of Robot scripts.
@@ -18,26 +14,6 @@ tags:
       Used by the Camunda Robot Python Library to fulfil document management keywords
 
 paths:
-  /script/deploy:
-    post:
-      tags:
-        - Local Script Library
-      summary: Deploy a script to this RPA Worker's local library
-      requestBody: 
-        content: 
-          application/json:
-            schema:
-              $ref: '#/components/schemas/DeployScriptRequest'
-      responses: 
-        204:
-          description: Script was persisted successfully
-        422:
-          description: Request body was invalid
-          content: 
-            application/json:
-              schema: 
-                $ref: '#/components/schemas/ValidationFailedResponse'
-    
   /script/evaluate:
     post: 
       tags:

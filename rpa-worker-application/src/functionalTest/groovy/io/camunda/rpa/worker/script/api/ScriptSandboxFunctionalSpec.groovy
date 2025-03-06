@@ -10,8 +10,10 @@ import org.spockframework.spring.SpringSpy
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.test.context.TestPropertySource
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.ClientResponse
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 
 import java.nio.file.Files
@@ -251,5 +253,30 @@ Assert input variable
 
 		then:
 		response2.statusCode() == HttpStatus.NOT_FOUND
+	}
+
+
+	@TestPropertySource(properties = "camunda.rpa.sandbox.enabled=false")
+	static class ScriptSandboxDisabledFunctionalSpec extends AbstractFunctionalSpec implements PublisherUtils {
+		
+		void "Sandbox is not available when disabled, returns not found"() {
+			when:
+			EvaluateScriptResponse r = post()
+					.uri("/script/evaluate")
+					.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+							.script('''\
+*** Tasks ***
+Tasks
+    No Operation
+''')
+							.variables([:])
+							.build()))
+					.retrieve()
+					.bodyToMono(EvaluateScriptResponse)
+					.block(Duration.ofMinutes(1))
+
+			then:
+			thrown(WebClientResponseException.NotFound)
+		}
 	}
 }
