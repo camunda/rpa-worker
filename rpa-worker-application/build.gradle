@@ -59,7 +59,8 @@ dependencies {
 	implementation libs.javaSemver
 	implementation libs.slf4j.api
 	implementation libs.caffeine
-	
+	implementation libs.aws.secretsmanager
+
 	runtimeOnly libs.springJsonLog
 
 	developmentOnly libs.spring.boot.devtools
@@ -86,6 +87,8 @@ dependencies {
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
 //	testLogging.showStandardStreams = true
+	
+//	environment("NATIVE_HINTS_HELPERS_ENABLED", "true")
 //	jvmArgs("-agentlib:native-image-agent=config-merge-dir=${project.rootDir}/rpa-worker-application/src/main/resources/META-INF/native-image/")
 }
 
