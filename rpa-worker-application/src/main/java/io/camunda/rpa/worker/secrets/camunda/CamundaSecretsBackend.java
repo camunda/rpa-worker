@@ -21,7 +21,7 @@ class CamundaSecretsBackend implements SecretsBackend {
 	}
 
 	@Override
-	public Mono<Map<String, String>> getSecrets() {
+	public Mono<Map<String, Object>> getSecrets() {
 		return camundaSecretsClient.getSecrets();
 	}
 }

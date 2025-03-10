@@ -69,6 +69,7 @@ dependencies {
 	implementation libs.slf4j.api
 	implementation libs.caffeine
 	implementation libs.htmlUnit
+	implementation libs.aws.secretsmanager
 	
 	// TODO: Forced update to transitive dependency - remove when no longer required
 	implementation libs.commons.lang
@@ -112,6 +113,8 @@ dependencies {
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
 //	testLogging.showStandardStreams = true
+	
+//	environment("NATIVE_HINTS_HELPERS_ENABLED", "true")
 //	jvmArgs("-agentlib:native-image-agent=config-merge-dir=${project.rootDir}/rpa-worker-application/src/main/resources/META-INF/native-image/")
 	
 	/* https://github.com/netty/netty/issues/16071 */
