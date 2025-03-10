@@ -2519,6 +2519,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.script.api.ScriptSandboxControllerSpec$__spock_feature_0_0_closure1MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.script.api.ScriptSandboxControllerSpec$__spock_feature_0_0_closure2MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.script.api.ScriptSandboxControllerSpec$__spock_feature_0_0_closure3MetaClass"
     },
     {
@@ -2535,6 +2538,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.script.api.ScriptSandboxControllerSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.script.api.ScriptSandboxFunctionalSpec$ScriptSandboxDisabledFunctionalSpecMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.script.api.ScriptSandboxFunctionalSpec$__spock_feature_1_0_closure1MetaClass"
@@ -2582,6 +2588,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.script.api.ScriptSandboxFunctionalSpecMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.script.api.ScriptSandboxPropertiesMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.AuthClient$AuthenticationRequestMetaClass"
     },
     {
@@ -2589,6 +2598,15 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.AuthClientMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.NoSecretsFunctionalSpec$StaticPropertyProvidingInitializerMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.NoSecretsFunctionalSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.SecretsBackendMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.SecretsClientMetaClass"
@@ -2658,6 +2676,54 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.ZeebeAuthPropertiesMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsBackendMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure3$_closure9MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure3MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure4MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_1_closure5MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_1_closure6$_closure10MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_1_closure6MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure7$_closure11MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure7MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure8$_closure12MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure8MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsServiceSpecMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.util.IterableMultiPart$MultiPartIteratorMetaClass"
@@ -3959,6 +4025,9 @@
       "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy98MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy99MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.okhttp3.HeadersMetaClass"
     },
     {
@@ -4233,6 +4302,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.reactor.core.publisher.MonoOnErrorResumeMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.reactor.core.publisher.MonoOnErrorReturnMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.reactor.core.publisher.MonoPeekFuseableMetaClass"
@@ -5157,6 +5229,12 @@
           ]
         },
         {
+          "name": "pushGatewayBeanPostProcessor",
+          "parameterTypes": [
+            "org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusProperties"
+          ]
+        },
+        {
           "name": "webClient",
           "parameterTypes": [
             "org.springframework.web.reactive.function.client.WebClient$Builder"
@@ -5206,6 +5284,10 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.RpaWorkerApplication$1",
+      "allDeclaredFields": true
     },
     {
       "type": "io.camunda.rpa.worker.TestExtension",
@@ -6716,7 +6798,23 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1442113702",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1455090895",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1540576044",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -9250,6 +9348,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$2138463086",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$255815007",
       "fields": [
         {
@@ -10549,6 +10655,16 @@
             "io.camunda.rpa.worker.workspace.WorkspaceCleanupService",
             "io.camunda.rpa.worker.workspace.WorkspaceService",
             "io.camunda.rpa.worker.io.IO",
+            "io.camunda.rpa.worker.script.api.ScriptSandboxProperties"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.robot.RobotService",
+            "io.camunda.rpa.worker.workspace.WorkspaceCleanupService",
+            "io.camunda.rpa.worker.workspace.WorkspaceService",
+            "io.camunda.rpa.worker.io.IO",
             "org.springframework.core.env.Environment"
           ]
         },
@@ -10572,6 +10688,10 @@
       "methods": [
         {
           "name": "$spock_feature_0_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_0_1",
           "parameterTypes": []
         },
         {
@@ -10604,7 +10724,7 @@
       ]
     },
     {
-      "type": "io.camunda.rpa.worker.script.api.ScriptSandboxControllerSpec$__spock_feature_0_0_closure3",
+      "type": "io.camunda.rpa.worker.script.api.ScriptSandboxControllerSpec$__spock_feature_0_0_closure2",
       "methods": [
         {
           "name": "doCall",
@@ -10615,8 +10735,34 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.script.api.ScriptSandboxControllerSpec$__spock_feature_0_0_closure3",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object",
+            "io.camunda.rpa.worker.robot.RobotExecutionListener"
+          ]
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.script.api.ScriptSandboxControllerSpec$__spock_feature_0_0_closure4",
       "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
         {
           "name": "doCall",
           "parameterTypes": [
@@ -10738,6 +10884,26 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.script.api.ScriptSandboxFunctionalSpec$ScriptSandboxDisabledFunctionalSpec",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.script.api.ScriptSandboxFunctionalSpec$ScriptSandboxDisabledFunctionalSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.script.api.ScriptSandboxFunctionalSpec$ScriptSandboxDisabledFunctionalSpecCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.script.api.ScriptSandboxFunctionalSpec$__spock_feature_1_0_closure1",
@@ -10906,6 +11072,24 @@
       "type": "io.camunda.rpa.worker.script.api.ScriptSandboxFunctionalSpecCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.script.api.ScriptSandboxProperties",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "boolean"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.script.api.ScriptSandboxPropertiesBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.script.api.ScriptSandboxPropertiesCustomizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.AuthClient",
       "allDeclaredFields": true
     },
@@ -10960,6 +11144,58 @@
     },
     {
       "type": "io.camunda.rpa.worker.secrets.AuthClientCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.NoSecretsFunctionalSpec",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.NoSecretsFunctionalSpec$StaticPropertyProvidingInitializer",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.NoSecretsFunctionalSpec$StaticPropertyProvidingInitializerBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.NoSecretsFunctionalSpec$StaticPropertyProvidingInitializerCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.NoSecretsFunctionalSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.NoSecretsFunctionalSpecCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsBackend",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "getSecrets",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsBackendBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsBackendCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.secrets.SecretsClient",
@@ -11090,6 +11326,62 @@
       "type": "io.camunda.rpa.worker.secrets.SecretsClientPropertiesCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.SecretsConfiguration",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "secretsService",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsProperties",
+            "org.springframework.beans.factory.ObjectProvider"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsConfiguration$$SpringCGLIB$$0",
+      "allDeclaredFields": true,
+      "fields": [
+        {
+          "name": "CGLIB$FACTORY_DATA"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "CGLIB$SET_STATIC_CALLBACKS",
+          "parameterTypes": [
+            "org.springframework.cglib.proxy.Callback[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsConfiguration$$SpringCGLIB$$FastClass$$0",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Class"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsConfiguration$$SpringCGLIB$$FastClass$$1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Class"
+          ]
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.SecretsEnvironmentVariablesContributor",
       "allDeclaredFields": true,
       "methods": [
@@ -11097,6 +11389,13 @@
           "name": "<init>",
           "parameterTypes": [
             "io.camunda.rpa.worker.secrets.SecretsService"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsService",
+            "com.fasterxml.jackson.databind.ObjectMapper"
           ]
         }
       ]
@@ -11353,6 +11652,18 @@
       "type": "io.camunda.rpa.worker.secrets.SecretsFunctionalSpecCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.SecretsProperties",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.SecretsService",
       "allDeclaredFields": true,
       "methods": [
@@ -11362,6 +11673,12 @@
             "io.camunda.rpa.worker.secrets.AuthClient",
             "io.camunda.rpa.worker.secrets.ZeebeAuthProperties",
             "io.camunda.rpa.worker.secrets.SecretsClient"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsBackend"
           ]
         },
         {
@@ -11398,6 +11715,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$1074252865",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$1140251501",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -11552,6 +11877,295 @@
     },
     {
       "type": "io.camunda.rpa.worker.secrets.ZeebeAuthPropertiesCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsBackend",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClient"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsBackendBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsBackendCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClient",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientConfiguration",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "secretsClient",
+          "parameterTypes": [
+            "org.springframework.web.reactive.function.client.WebClient$Builder",
+            "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientProperties"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientConfiguration$$SpringCGLIB$$0",
+      "allDeclaredFields": true,
+      "fields": [
+        {
+          "name": "CGLIB$FACTORY_DATA"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientProperties",
+            "org.springframework.beans.factory.ObjectProvider",
+            "io.camunda.rpa.worker.zeebe.ZeebeAuthProperties"
+          ]
+        },
+        {
+          "name": "CGLIB$SET_STATIC_CALLBACKS",
+          "parameterTypes": [
+            "org.springframework.cglib.proxy.Callback[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientConfiguration$$SpringCGLIB$$FastClass$$0",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Class"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientConfiguration$$SpringCGLIB$$FastClass$$1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Class"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClientProperties",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.net.URI",
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_1_1",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_1_2",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure1",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure2",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure3",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure3$_closure9",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure4",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_1_closure5",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_1_closure6",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_1_closure6$_closure10",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure7",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure7$_closure11",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure8",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure8$_closure12",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsFunctionalSpecCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsServiceSpec",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_0_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_initializeFields",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "io_camunda_rpa_worker_PublisherUtils__TIMEOUT$get",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsServiceSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsServiceSpecCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.util.IterableMultiPart",
@@ -11722,6 +12336,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1135116003",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$12785090",
       "fields": [
         {
@@ -11819,6 +12441,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$2102956611",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$301297900",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -12016,6 +12646,14 @@
         {
           "name": "init",
           "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$1163332229",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
         }
       ]
     },
@@ -15523,6 +16161,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$72729059",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerBeanInfo"
     },
     {
@@ -15868,6 +16514,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$1233282369",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$1650426803",
@@ -16732,6 +17386,14 @@
             "java.lang.String",
             "java.time.Duration"
           ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeMetricsService$SpockMock$1828555728",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
         }
       ]
     },
@@ -18172,6 +18834,14 @@
       ]
     },
     {
+      "type": "io.camunda.zeebe.spring.client.properties.CamundaClientProperties$SpockMock$1789977208",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.spring.client.properties.CamundaClientProperties$SpockMock$1887947388",
       "fields": [
         {
@@ -18357,6 +19027,14 @@
       ]
     },
     {
+      "type": "io.camunda.zeebe.spring.client.properties.common.AuthProperties$SpockMock$163780530",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.spring.client.properties.common.AuthProperties$SpockMock$1799048910",
       "fields": [
         {
@@ -18490,6 +19168,14 @@
     },
     {
       "type": "io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties$SpockMock$1940327620",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties$SpockMock$340058203",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -21090,6 +21776,9 @@
       "type": "java.net.InetAddress$CachedLookup"
     },
     {
+      "type": "java.net.InetAddressEditor"
+    },
+    {
       "type": "java.net.InetSocketAddress"
     },
     {
@@ -23169,6 +23858,12 @@
       "type": "jdk.proxy3.$Proxy98Customizer"
     },
     {
+      "type": "jdk.proxy3.$Proxy99BeanInfo"
+    },
+    {
+      "type": "jdk.proxy3.$Proxy99Customizer"
+    },
+    {
       "type": "kotlin.Metadata"
     },
     {
@@ -24109,6 +24804,14 @@
       ]
     },
     {
+      "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$1330884347",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$1349298998",
       "fields": [
         {
@@ -24188,6 +24891,14 @@
     },
     {
       "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$1033408690",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$1100925285",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -27797,6 +28508,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$951537188",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.File$SpockMock$977322593",
       "fields": [
         {
@@ -27885,6 +28604,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$489626377",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$80763800",
       "fields": [
         {
@@ -27934,6 +28661,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$1742183043",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$2000421296",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -28062,6 +28797,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.Process$SpockMock$410196918",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.Process$SpockMock$562076001",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -28258,6 +29001,17 @@
           "name": "<init>",
           "parameterTypes": [
             "spock.config.RunnerConfiguration"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.runtime.extension.builtin.IssueExtension",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "org.spockframework.report.log.ReportLogConfiguration"
           ]
         }
       ]
@@ -29471,6 +30225,14 @@
       ]
     },
     {
+      "type": "org.springframework.boot.SpringApplication$SpockMock$290070033",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.springframework.boot.SpringApplication$SpockMock$333014490",
       "fields": [
         {
@@ -30665,6 +31427,12 @@
       "type": "org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusProperties$Pushgateway",
       "allDeclaredFields": true,
       "methods": [
+        {
+          "name": "setBaseUrl",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
         {
           "name": "setEnabled",
           "parameterTypes": [
@@ -33242,6 +34010,12 @@
           "parameterTypes": []
         },
         {
+          "name": "setAddress",
+          "parameterTypes": [
+            "java.net.InetAddress"
+          ]
+        },
+        {
           "name": "setPort",
           "parameterTypes": [
             "java.lang.Integer"
@@ -35389,6 +36163,14 @@
     },
     {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$1381109709",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$1527643727",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -38865,6 +39647,16 @@
       "type": "reactor.core.publisher.MonoOnErrorResumeCustomizer"
     },
     {
+      "type": "reactor.core.publisher.MonoOnErrorReturn",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "reactor.core.publisher.MonoOnErrorReturnBeanInfo"
+    },
+    {
+      "type": "reactor.core.publisher.MonoOnErrorReturnCustomizer"
+    },
+    {
       "type": "reactor.core.publisher.MonoOperator",
       "allDeclaredFields": true
     },
@@ -40214,6 +41006,14 @@
     {
       "type": {
         "proxy": [
+          "io.camunda.rpa.worker.secrets.SecretsBackend",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
           "io.camunda.rpa.worker.secrets.SecretsClient"
         ]
       },
@@ -40223,6 +41023,22 @@
       "type": {
         "proxy": [
           "io.camunda.rpa.worker.secrets.SecretsClient",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClient"
+        ]
+      },
+      "allDeclaredFields": true
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsClient",
           "org.spockframework.mock.ISpockMockObject"
         ]
       }
@@ -41708,6 +42524,9 @@
       "glob": "io/camunda/rpa/worker/PublisherUtils.class"
     },
     {
+      "glob": "io/camunda/rpa/worker/RpaWorkerApplication.class"
+    },
+    {
       "glob": "io/camunda/rpa/worker/api/ValidatedAdvice.class"
     },
     {
@@ -41879,7 +42698,22 @@
       "glob": "io/camunda/rpa/worker/script/api/ScriptSandboxFunctionalSpec.class"
     },
     {
+      "glob": "io/camunda/rpa/worker/secrets/NoSecretsFunctionalSpec-context.xml"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/NoSecretsFunctionalSpec.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/NoSecretsFunctionalSpecContext.groovy"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/SecretsBackend.class"
+    },
+    {
       "glob": "io/camunda/rpa/worker/secrets/SecretsClientConfiguration.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/SecretsConfiguration.class"
     },
     {
       "glob": "io/camunda/rpa/worker/secrets/SecretsEnvironmentVariablesContributor.class"
@@ -41910,6 +42744,27 @@
     },
     {
       "glob": "io/camunda/rpa/worker/secrets/SecretsService.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsBackend.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsClientConfiguration.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsFunctionalSpec$__spock_feature_1_0_closure3.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsFunctionalSpec$__spock_feature_1_1_closure6.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure7.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsFunctionalSpec$__spock_feature_1_2_closure8.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsFunctionalSpec.class"
     },
     {
       "glob": "io/camunda/rpa/worker/util/IterableMultiPart.class"
@@ -45080,6 +45935,10 @@
       "customTargetConstructorClass": "java.lang.Object"
     },
     {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$951537188",
+      "customTargetConstructorClass": "java.lang.Object"
+    },
+    {
       "type": "org.spockframework.mock.codegen.File$SpockMock$977322593",
       "customTargetConstructorClass": "java.lang.Object"
     },
@@ -45117,6 +45976,10 @@
     },
     {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$1381109709",
+      "customTargetConstructorClass": "java.lang.Object"
+    },
+    {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$1527643727",
       "customTargetConstructorClass": "java.lang.Object"
     },
     {
