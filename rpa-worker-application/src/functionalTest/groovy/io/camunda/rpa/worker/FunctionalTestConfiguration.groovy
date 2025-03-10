@@ -21,7 +21,8 @@ class FunctionalTestConfiguration {
 			MockPropertySource properties = new MockPropertySource("mockProps")
 					.withProperty("camunda.rpa.scripts.dir", Files.createTempDirectory("rpaScripts"))
 					.withProperty("camunda.rpa.zeebe.auth-endpoint", "http://localhost:${AbstractFunctionalSpec.ZEEBE_MOCK_AUTH_PORT}")
-					.withProperty("camunda.rpa.zeebe.secrets.secrets-endpoint", "http://localhost:${AbstractFunctionalSpec.ZEEBE_MOCK_SECRETS_PORT}")
+					.withProperty("camunda.rpa.secrets.backend", "camunda")
+					.withProperty("camunda.rpa.secrets.camunda.secrets-endpoint", "http://localhost:${AbstractFunctionalSpec.ZEEBE_MOCK_SECRETS_PORT}")
 					.withProperty("camunda.client.zeebe.base-url", "http://localhost:${AbstractFunctionalSpec.ZEEBE_MOCK_API_PORT}")
 			
 			applicationContext.environment.propertySources.with {
