@@ -20,7 +20,7 @@ echo camunda.client.identity.base-url=http://$deploymentHost/auth/
 echo camunda.client.auth.issuer=http://$deploymentHost/auth/realms/camunda-platform/protocol/openid-connect/token
 echo camunda.rpa.zeebe.auth-endpoint=http://$deploymentHost/auth/realms/camunda-platform/protocol/openid-connect
 echo camunda.client.zeebe.base-url=http://localhost:8080/zeebe
-echo camunda.rpa.zeebe.secrets.secrets-endpoint=http://$deploymentHost
+echo camunda.rpa.secrets.camunda.secrets-endpoint=http://$deploymentHost
 echo camunda.rpa.e2e.camunda-host=$deploymentHost
 echo camunda.rpa.e2e.client-secret=$zeebeClientSecret
 echo "# Keycloak Admin password:" $keycloakAdminPassword

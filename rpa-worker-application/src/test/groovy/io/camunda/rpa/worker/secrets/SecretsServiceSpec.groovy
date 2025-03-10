@@ -8,20 +8,19 @@ import spock.lang.Subject
 
 class SecretsServiceSpec extends Specification implements PublisherUtils {
 	
-	SecretsClient secretsClient = Mock()
-
-	void "Authenticates and fetches secrets"() {
+	void "Fetches secrets from backend when enabled"() {
 		given:
-		SecretsClientProperties secretsClientProperties = new SecretsClientProperties("http://secrets".toURI(), "secrets-token-audience")
+		SecretsBackend backend = Mock()
 		
+		and:
 		@Subject
-		SecretsService service = new SecretsService(secretsClient, secretsClientProperties)
+		SecretsService service = new SecretsService(backend)
 
 		when:
 		Map<String, Object> map = block service.getSecrets()
 		
 		then:
-		1 * secretsClient.getSecrets() >> Mono.just([secretVar: 'secret-value'])
+		1 * backend.getSecrets() >> Mono.just([secretVar: 'secret-value'])
 		
 		and:
 		map == [secretVar: 'secret-value']
@@ -29,31 +28,27 @@ class SecretsServiceSpec extends Specification implements PublisherUtils {
 
 	void "Returns empty secrets when not enabled"() {
 		given:
-		SecretsClientProperties secretsClientProperties = new SecretsClientProperties(null, "secrets-token-audience")
-
 		@Subject
-		SecretsService service = new SecretsService(secretsClient, secretsClientProperties)
+		SecretsService service = new SecretsService(null)
 
 		when:
 		Map<String, Object> map = block service.getSecrets()
 
 		then:
-		0 * secretsClient._
-
-		and:
 		map == [:]
 	}
 	
 	@Issue("https://github.com/camunda/rpa-worker/issues/120")
 	void "Returns empty secrets when secrets fetching errors and do not fail"() {
 		given:
-		SecretsClientProperties secretsClientProperties = new SecretsClientProperties("http://secrets".toURI(), "secrets-token-audience")
+		SecretsBackend backend = Stub()
 
+		and:
 		@Subject
-		SecretsService service = new SecretsService(secretsClient, secretsClientProperties)
+		SecretsService service = new SecretsService(backend)
 		
 		and:
-		secretsClient.getSecrets() >> Mono.error(new RuntimeException("BANG!"))
+		backend.getSecrets() >> Mono.error(new RuntimeException("BANG!"))
 
 		when:
 		Map<String, Object> map = block service.getSecrets()
@@ -61,5 +56,4 @@ class SecretsServiceSpec extends Specification implements PublisherUtils {
 		then:
 		map == [:]
 	}
-
 }

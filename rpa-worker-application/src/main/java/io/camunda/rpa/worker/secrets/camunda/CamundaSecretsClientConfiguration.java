@@ -1,4 +1,4 @@
-package io.camunda.rpa.worker.secrets;
+package io.camunda.rpa.worker.secrets.camunda;
 
 import io.camunda.rpa.worker.zeebe.ZeebeAuthProperties;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
@@ -16,26 +16,26 @@ import java.util.Optional;
 
 @Configuration
 @RequiredArgsConstructor
-class SecretsClientConfiguration {
+class CamundaSecretsClientConfiguration {
 
-	private final SecretsClientProperties clientProperties;
+	private final CamundaSecretsClientProperties clientProperties;
 	private final ObjectProvider<ZeebeAuthenticationService> zeebeAuthenticationService;
 	private final ZeebeAuthProperties zeebeAuthProperties;
 	
 	@Bean
-	public SecretsClient secretsClient(WebClient.Builder webClientBuilder, SecretsClientProperties secretsClientProperties) {
+	public CamundaSecretsClient secretsClient(WebClient.Builder webClientBuilder, CamundaSecretsClientProperties camundaSecretsClientProperties) {
 		Mono<String> authenticator = zeebeAuthenticationService.getObject().getAuthToken(
 				zeebeAuthProperties.clientId(),
 				zeebeAuthProperties.clientSecret(),
-				secretsClientProperties.tokenAudience());
+				camundaSecretsClientProperties.tokenAudience());
 		
 		return WebReactiveFeign
-				.<SecretsClient>builder(webClientBuilder)
+				.<CamundaSecretsClient>builder(webClientBuilder)
 				.addRequestInterceptor(reactiveHttpRequest -> authenticator
 						.doOnNext(token -> reactiveHttpRequest
 								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
 						.thenReturn(reactiveHttpRequest))
-				.target(SecretsClient.class, Optional.ofNullable(clientProperties.secretsEndpoint())
+				.target(CamundaSecretsClient.class, Optional.ofNullable(clientProperties.secretsEndpoint())
 						.map(Object::toString)
 						.orElse("http://no-secrets/"));
 	}

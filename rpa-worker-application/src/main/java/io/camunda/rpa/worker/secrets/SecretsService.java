@@ -13,21 +13,20 @@ import java.util.Map;
 @Slf4j
 public class SecretsService {
 	
-	private final SecretsClient secretsClient;
-	private final SecretsClientProperties secretsClientProperties;
+	private final SecretsBackend secretsBackend;
 	
 	public Mono<Map<String, String>> getSecrets() {
-		if( ! isSecretsApiEnabled())
+		if( ! isSecretsEnabled())
 			return Mono.just(Collections.emptyMap());
 		
-		return secretsClient.getSecrets()
+		return secretsBackend.getSecrets()
 				.doOnError(thrown -> log.atError()
 						.setCause(thrown)
 						.log("Error occurred fetching secrets"))
 				.onErrorReturn(Collections.emptyMap());
 	}
 	
-	private boolean isSecretsApiEnabled() {
-		return secretsClientProperties.secretsEndpoint() != null;
+	private boolean isSecretsEnabled() {
+		return secretsBackend != null;
 	}
 }
