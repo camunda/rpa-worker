@@ -2,20 +2,18 @@ package io.camunda.rpa.worker.secrets;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.Map;
 
-@Service
 @RequiredArgsConstructor
 @Slf4j
 public class SecretsService {
 	
 	private final SecretsBackend secretsBackend;
 	
-	public Mono<Map<String, String>> getSecrets() {
+	public Mono<Map<String, Object>> getSecrets() {
 		if( ! isSecretsEnabled())
 			return Mono.just(Collections.emptyMap());
 		
