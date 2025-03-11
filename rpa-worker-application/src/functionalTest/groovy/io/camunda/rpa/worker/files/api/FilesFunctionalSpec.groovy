@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.files.api
 
+import com.fasterxml.jackson.core.type.TypeReference
 import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
@@ -13,7 +14,9 @@ import okhttp3.MediaType
 import okhttp3.MultipartReader
 import okhttp3.ResponseBody
 import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.RecordedRequest
 import org.spockframework.spring.SpringSpy
+import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -21,10 +24,12 @@ import org.springframework.http.codec.multipart.FormFieldPart
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
+import spock.lang.Issue
 
 import java.nio.file.Files
 import java.util.concurrent.TimeUnit
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 class FilesFunctionalSpec extends AbstractFunctionalSpec {
 	
 	// TODO: Use Camunda Robot library when available
@@ -59,34 +64,7 @@ Do Nothing
 		}
 		
 		and:
-		zeebeApi.setDispatcher { rr ->
-
-			MultipartReader mpr = new MultipartReader(ResponseBody.create(
-					rr.body.readUtf8(),
-					MediaType.parse(rr.headers.get("Content-Type"))))
-
-			Map<String, FormFieldPart> parts = new IterableMultiPart(mpr).collectEntries {
-				[it.name(), it]
-			}
-
-			ZeebeDocumentDescriptor.Metadata metadata = objectMapper.readValue(parts.metadata.value(), ZeebeDocumentDescriptor.Metadata)
-			
-			new MockResponse().tap {
-				setResponseCode(201)
-				setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-				setBody(new JsonOutput().toJson([
-						'camunda.document.type': 'camunda',
-						storeId: 'the-store',
-						documentId: 'document-id',
-						contentHash: 'content-hash',
-						metadata: [
-								contentType: metadata.contentType(),
-								fileName: metadata.fileName(),
-								size: metadata.size()
-						]
-				]))
-			} 
-		}
+		zeebeApi.dispatcher = this.&copyInputToOutputDispatcher
 
 		when:
 		EvaluateScriptResponse response = block post()
@@ -195,34 +173,7 @@ Do Nothing
 		}
 
 		and:
-		zeebeApi.setDispatcher { rr ->
-
-			MultipartReader mpr = new MultipartReader(ResponseBody.create(
-					rr.body.readUtf8(),
-					MediaType.parse(rr.headers.get("Content-Type"))))
-
-			Map<String, FormFieldPart> parts = new IterableMultiPart(mpr).collectEntries {
-				[it.name(), it]
-			}
-
-			ZeebeDocumentDescriptor.Metadata metadata = objectMapper.readValue(parts.metadata.value(), ZeebeDocumentDescriptor.Metadata)
-
-			new MockResponse().tap {
-				setResponseCode(201)
-				setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-				setBody(new JsonOutput().toJson([
-						'camunda.document.type': 'camunda',
-						storeId                : 'the-store',
-						documentId             : 'document-id',
-						contentHash            : 'content-hash',
-						metadata               : [
-								contentType: metadata.contentType(),
-								fileName   : metadata.fileName(),
-								size       : metadata.size()
-						]
-				]))
-			}
-		}
+		zeebeApi.dispatcher = this.&copyInputToOutputDispatcher
 
 		when:
 		EvaluateScriptResponse response = block post()
@@ -245,5 +196,90 @@ Do Nothing
 		resp.size() == 1
 		resp['main.robot'].metadata().fileName() == "main.robot"
 		resp.values()*.contentHash().every { it == "content-hash" }
+	}
+
+	private static final String UPLOAD_FILES_WITH_UNNORMALISED_PATHS_SCRIPT = '''\
+*** Settings ***
+Library    Camunda
+Library    OperatingSystem
+
+*** Tasks ***
+Test
+    Create File    one.txt
+    Create File    two/two.txt
+    Create File    two/three.txt
+    Create directory    two/four
+    Upload Documents    ./one.txt    uploaded1
+    Upload Documents    two/four/../two.txt    uploaded2
+    Upload Documents    ./tw*/four/../*.txt    uploaded3
+'''
+
+	@Issue("https://github.com/camunda/rpa-worker/issues/129")
+	void "Correctly handles upload file requests with unnormalised paths"() {
+		given:
+		bypassZeebeAuth()
+		Workspace theWorkspace
+		workspaceCleanupService.preserveLast(_) >> { Workspace w ->
+			theWorkspace = w
+			return Mono.empty()
+		}
+
+		and:
+		zeebeApi.dispatcher = this.&copyInputToOutputDispatcher
+
+		when:
+		EvaluateScriptResponse response = block post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(new EvaluateScriptRequest(UPLOAD_FILES_WITH_UNNORMALISED_PATHS_SCRIPT, [:])))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+
+		then:
+		response.result() == ExecutionResults.Result.PASS
+		with(fileOrFiles(response.variables()['uploaded1'])) {
+			size() == 1
+			first().metadata().fileName() == "one.txt"
+		}
+		with(fileOrFiles(response.variables()['uploaded2'])) {
+			size() == 1
+			first().metadata().fileName() == "two.txt"
+		}
+		with(fileOrFiles(response.variables()['uploaded3'])) {
+			size() == 2
+			it*.metadata()*.fileName().containsAll(["two.txt", "three.txt"])
+		}
+	}
+	
+	private List<ZeebeDocumentDescriptor> fileOrFiles(def variable) {
+		List<Map<String, Object>> filesRaw = variable instanceof List<Map<String, Object>> ? variable : [ variable ]
+		return objectMapper.convertValue(filesRaw, new TypeReference<List<ZeebeDocumentDescriptor>>() {})
+	}
+	
+	private MockResponse copyInputToOutputDispatcher(RecordedRequest rr) {
+		MultipartReader mpr = new MultipartReader(ResponseBody.create(
+				rr.body.readUtf8(),
+				MediaType.parse(rr.headers.get("Content-Type"))))
+
+		Map<String, FormFieldPart> parts = new IterableMultiPart(mpr).collectEntries {
+			[it.name(), it]
+		}
+
+		ZeebeDocumentDescriptor.Metadata metadata = objectMapper.readValue(parts.metadata.value(), ZeebeDocumentDescriptor.Metadata)
+
+		new MockResponse().tap {
+			setResponseCode(201)
+			setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+			setBody(new JsonOutput().toJson([
+					'camunda.document.type': 'camunda',
+					storeId                : 'the-store',
+					documentId             : 'document-id',
+					contentHash            : 'content-hash',
+					metadata               : [
+							contentType: metadata.contentType(),
+							fileName   : metadata.fileName(),
+							size       : metadata.size()
+					]
+			]))
+		}
 	}
 }
