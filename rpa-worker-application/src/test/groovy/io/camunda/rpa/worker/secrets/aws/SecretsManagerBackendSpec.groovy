@@ -2,7 +2,6 @@ package io.camunda.rpa.worker.secrets.aws
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.rpa.worker.PublisherUtils
-import io.camunda.rpa.worker.secrets.SecretsProperties
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse
@@ -14,13 +13,13 @@ import java.util.function.Supplier
 
 class SecretsManagerBackendSpec extends Specification implements PublisherUtils {
 	
-	SecretsProperties secretsProperties = new SecretsProperties("aws-secretsmanager", ["some/secrets", "more/secrets"])
+	SecretsManagerProperties secretsManagerProperties = new SecretsManagerProperties(["some/secrets", "more/secrets"])
 	SecretsManagerAsyncClient secretsManagerClient = Mock()
 	ObjectMapper objectMapper = new ObjectMapper()
 	Supplier<SecretsManagerAsyncClient> secretsManagerClientFactory = { secretsManagerClient }
 	
 	@Subject
-	SecretsManagerBackend backend = new SecretsManagerBackend(secretsProperties, objectMapper, secretsManagerClientFactory)
+	SecretsManagerBackend backend = new SecretsManagerBackend(secretsManagerProperties, objectMapper, secretsManagerClientFactory)
 	
 	
 	void "Fetches secrets from client and returns merged map"() {
