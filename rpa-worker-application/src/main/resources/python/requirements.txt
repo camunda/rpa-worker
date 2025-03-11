@@ -1,4 +1,4 @@
-camunda-utils @ https://github.com/camunda/rpa-python-libraries/releases/download/camunda-utils-v0.2.0/camunda_utils-0.2.0-py3-none-any.whl
+camunda-utils @ https://github.com/camunda/rpa-python-libraries/releases/download/camunda-utils-v0.3.0/camunda_utils-0.3.0-py3-none-any.whl
 ## ^ provides robotframework
 
 camunda-rpa @ https://github.com/camunda/rpa-python-libraries/releases/download/camunda-rpa-v0.1.0/camunda_rpa-0.1.0-py3-none-any.whl

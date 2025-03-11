@@ -1,12 +1,17 @@
 package io.camunda.rpa.worker
 
-
+import io.camunda.rpa.worker.robot.EnvironmentVariablesContributor
+import io.camunda.rpa.worker.robot.PreparedScript
+import io.camunda.rpa.worker.workspace.Workspace
 import jakarta.annotation.PostConstruct
 import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
 import org.springframework.mock.env.MockPropertySource
 import reactor.blockhound.BlockHound
+import reactor.core.publisher.Mono
 
 import java.nio.file.Files
 import java.security.SecureRandom
@@ -42,4 +47,15 @@ class FunctionalTestConfiguration {
 				.allowBlockingCallsInside(SecureRandom.class.name, "next")
 				.install()
 	}
+
+	@Bean
+	EnvironmentVariablesContributor ftestEndpointEnvVarContributor(Environment environment) {
+		return new EnvironmentVariablesContributor() {
+			@Override
+			Mono<Map<String, String>> getEnvironmentVariables(Workspace workspace, PreparedScript script) {
+				return Mono.just([RPA_BASE_URL: "http://127.0.0.1:${environment.getRequiredProperty("local.server.port")}".toString()])
+			}
+		}
+	}
+
 }
