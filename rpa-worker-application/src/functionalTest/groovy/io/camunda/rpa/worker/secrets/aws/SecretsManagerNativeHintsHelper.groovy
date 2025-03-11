@@ -1,7 +1,6 @@
 package io.camunda.rpa.worker.secrets.aws
 
 import io.camunda.rpa.worker.AbstractFunctionalSpec
-import io.camunda.rpa.worker.secrets.SecretsProperties
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials
 import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
@@ -17,8 +16,8 @@ class SecretsManagerNativeHintsHelper extends AbstractFunctionalSpec {
 	
 	void "Happy path"() {
 		when:
-		SecretsProperties secretsProperties = new SecretsProperties("aws-secretsmanager", ["test/secrets"])
-		Map<String, Object> secrets = block(new SecretsManagerBackend(secretsProperties, objectMapper, {
+		SecretsManagerProperties SecretsManagerProperties = new SecretsManagerProperties(["test/secrets"])
+		Map<String, Object> secrets = block(new SecretsManagerBackend(SecretsManagerProperties, objectMapper, {
 			SecretsManagerAsyncClient.builder()
 					.region(Region.EU_WEST_2)
 					.credentialsProvider(ProfileCredentialsProvider.builder()
@@ -33,8 +32,8 @@ class SecretsManagerNativeHintsHelper extends AbstractFunctionalSpec {
 
 	void "No secret"() {
 		when:
-		SecretsProperties secretsProperties = new SecretsProperties("aws-secretsmanager", ["test/fakesecrets"])
-		Map<String, Object> secrets = block(new SecretsManagerBackend(secretsProperties, objectMapper, {
+		SecretsManagerProperties SecretsManagerProperties = new SecretsManagerProperties(["test/fakesecrets"])
+		Map<String, Object> secrets = block(new SecretsManagerBackend(SecretsManagerProperties, objectMapper, {
 			SecretsManagerAsyncClient.builder()
 					.region(Region.EU_WEST_2)
 					.credentialsProvider(ProfileCredentialsProvider.builder()
@@ -49,8 +48,8 @@ class SecretsManagerNativeHintsHelper extends AbstractFunctionalSpec {
 	
 	void "Bad credentials 1"() {
 		when:
-		SecretsProperties secretsProperties = new SecretsProperties("aws-secretsmanager", ["test/secrets"])
-		Map<String, Object> secrets = block(new SecretsManagerBackend(secretsProperties, objectMapper, {
+		SecretsManagerProperties SecretsManagerProperties = new SecretsManagerProperties(["test/secrets"])
+		Map<String, Object> secrets = block(new SecretsManagerBackend(SecretsManagerProperties, objectMapper, {
 			SecretsManagerAsyncClient.builder()
 					.region(Region.EU_WEST_2)
 					.credentialsProvider(ProfileCredentialsProvider.builder()
@@ -65,8 +64,8 @@ class SecretsManagerNativeHintsHelper extends AbstractFunctionalSpec {
 
 	void "Bad credentials 2"() {
 		when:
-		SecretsProperties secretsProperties = new SecretsProperties("aws-secretsmanager", ["test/secrets"])
-		Map<String, Object> secrets = block(new SecretsManagerBackend(secretsProperties, objectMapper, {
+		SecretsManagerProperties SecretsManagerProperties = new SecretsManagerProperties(["test/secrets"])
+		Map<String, Object> secrets = block(new SecretsManagerBackend(SecretsManagerProperties, objectMapper, {
 			SecretsManagerAsyncClient.builder()
 					.region(Region.EU_WEST_2)
 					.credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.builder()
@@ -82,8 +81,8 @@ class SecretsManagerNativeHintsHelper extends AbstractFunctionalSpec {
 
 	void "Unconfigured"() {
 		when:
-		SecretsProperties secretsProperties = new SecretsProperties("aws-secretsmanager", ["test/secrets"])
-		Map<String, Object> secrets = block(new SecretsManagerBackend(secretsProperties, objectMapper, {
+		SecretsManagerProperties SecretsManagerProperties = new SecretsManagerProperties(["test/secrets"])
+		Map<String, Object> secrets = block(new SecretsManagerBackend(SecretsManagerProperties, objectMapper, {
 			SecretsManagerAsyncClient.builder()
 					.region(Region.EU_WEST_2)
 					.build()

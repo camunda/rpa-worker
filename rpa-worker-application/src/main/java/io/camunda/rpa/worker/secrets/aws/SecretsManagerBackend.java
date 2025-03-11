@@ -3,7 +3,6 @@ package io.camunda.rpa.worker.secrets.aws;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.secrets.SecretsBackend;
-import io.camunda.rpa.worker.secrets.SecretsProperties;
 import io.camunda.rpa.worker.util.MoreCollectors;
 import io.vavr.Lazy;
 import io.vavr.control.Try;
@@ -22,17 +21,17 @@ public class SecretsManagerBackend implements SecretsBackend {
 	
 	private static final Supplier<SecretsManagerAsyncClient> defaultSecretsManagerClientFactory = SecretsManagerAsyncClient::create;
 	
-	private final SecretsProperties secretsProperties;
+	private final SecretsManagerProperties secretsManagerProperties;
 	private final ObjectMapper objectMapper;
 	private final SecretsManagerAsyncClient secretsManagerClient;
 
 	@Autowired
-	public SecretsManagerBackend(SecretsProperties secretsProperties, ObjectMapper objectMapper) {
-		this(secretsProperties, objectMapper, defaultSecretsManagerClientFactory);
+	SecretsManagerBackend(SecretsManagerProperties secretsManagerProperties, ObjectMapper objectMapper) {
+		this(secretsManagerProperties, objectMapper, defaultSecretsManagerClientFactory);
 	}
 
-	SecretsManagerBackend(SecretsProperties secretsProperties, ObjectMapper objectMapper, Supplier<SecretsManagerAsyncClient> secretsManagerClientFactory) {
-		this.secretsProperties = secretsProperties;
+	SecretsManagerBackend(SecretsManagerProperties secretsManagerProperties, ObjectMapper objectMapper, Supplier<SecretsManagerAsyncClient> secretsManagerClientFactory) {
+		this.secretsManagerProperties = secretsManagerProperties;
 		this.objectMapper = objectMapper;
 		this.secretsManagerClient = Lazy.val(secretsManagerClientFactory, SecretsManagerAsyncClient.class);
 	}
@@ -44,7 +43,7 @@ public class SecretsManagerBackend implements SecretsBackend {
 
 	@Override
 	public Mono<Map<String, Object>> getSecrets() {
-		return Flux.fromIterable(secretsProperties.secrets())
+		return Flux.fromIterable(secretsManagerProperties.secrets())
 				.map(secretName -> GetSecretValueRequest.builder().secretId(secretName).build())
 
 				.flatMapSequential(req ->
