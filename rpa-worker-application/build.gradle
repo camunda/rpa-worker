@@ -60,6 +60,7 @@ dependencies {
 	implementation libs.slf4j.api
 	implementation libs.caffeine
 	implementation libs.aws.secretsmanager
+	implementation libs.spring.vault.core
 
 	runtimeOnly libs.springJsonLog
 

@@ -790,6 +790,9 @@
       "type": "com.github.benmanes.caffeine.cache.Caffeine"
     },
     {
+      "type": "com.github.benmanes.caffeine.cache.LoadingCache"
+    },
+    {
       "type": "com.github.benmanes.caffeine.cache.PS",
       "fields": [
         {
@@ -11979,6 +11982,31 @@
       "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerHints",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerHints$$SpringCGLIB$$0",
+      "allDeclaredFields": true,
+      "fields": [
+        {
+          "name": "CGLIB$FACTORY_DATA"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "CGLIB$SET_STATIC_CALLBACKS",
+          "parameterTypes": [
+            "org.springframework.cglib.proxy.Callback[]"
+          ]
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper",
       "allDeclaredFields": true,
       "methods": [
@@ -12365,6 +12393,19 @@
     },
     {
       "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsServiceSpecCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackend",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsProperties",
+            "org.springframework.context.ApplicationContext"
+          ]
+        }
+      ]
     },
     {
       "type": "io.camunda.rpa.worker.util.IterableMultiPart",
@@ -19597,6 +19638,9 @@
       ]
     },
     {
+      "type": "io.micrometer.core.instrument.Counter$Builder"
+    },
+    {
       "type": "io.micrometer.core.instrument.Gauge",
       "allDeclaredFields": true,
       "methods": [
@@ -19605,6 +19649,9 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "io.micrometer.core.instrument.Gauge$Builder"
     },
     {
       "type": "io.micrometer.core.instrument.Measurement",
@@ -19697,6 +19744,9 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.micrometer.core.instrument.Timer$Builder"
     },
     {
       "type": "io.micrometer.core.instrument.binder.MeterBinder"
@@ -20558,6 +20608,9 @@
     },
     {
       "type": "io.vavr.CheckedFunction0"
+    },
+    {
+      "type": "io.vavr.Lazy"
     },
     {
       "type": "io.vavr.control.Try"
@@ -24686,6 +24739,9 @@
       "type": "okhttp3.MultipartReaderCustomizer"
     },
     {
+      "type": "okhttp3.OkHttpClient"
+    },
+    {
       "type": "okhttp3.ResponseBody",
       "allDeclaredFields": true,
       "methods": [
@@ -25336,10 +25392,16 @@
       ]
     },
     {
+      "type": "org.apache.hc.client5.http.impl.async"
+    },
+    {
       "type": "org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient"
     },
     {
       "type": "org.apache.hc.client5.http.impl.async.HttpAsyncClients"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.classic.HttpClientBuilder"
     },
     {
       "type": "org.apache.hc.client5.http.impl.classic.HttpClients"
@@ -30153,6 +30215,12 @@
     },
     {
       "type": "org.springframework.aot.generate.Generated"
+    },
+    {
+      "type": "org.springframework.aot.hint.RuntimeHints"
+    },
+    {
+      "type": "org.springframework.aot.hint.RuntimeHintsRegistrar"
     },
     {
       "type": "org.springframework.aot.hint.annotation.Reflective"
@@ -37984,6 +38052,9 @@
       "type": "org.springframework.util.MultiValueMapCustomizer"
     },
     {
+      "type": "org.springframework.util.StringUtils"
+    },
+    {
       "type": "org.springframework.util.UnmodifiableMultiValueMap",
       "allDeclaredFields": true
     },
@@ -38016,6 +38087,96 @@
     {
       "type": "org.springframework.validation.beanvalidation.SpringValidatorAdapter",
       "allDeclaredFields": true
+    },
+    {
+      "type": "org.springframework.vault.authentication.VaultTokenSupplier"
+    },
+    {
+      "type": "org.springframework.vault.client.WebClientBuilder"
+    },
+    {
+      "type": "org.springframework.vault.config.AbstractReactiveVaultConfiguration"
+    },
+    {
+      "type": "org.springframework.vault.config.EnvironmentVaultConfiguration"
+    },
+    {
+      "type": "org.springframework.vault.core.ReactiveVaultOperations",
+      "methods": [
+        {
+          "name": "read",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.vault.core.ReactiveVaultTemplate"
+    },
+    {
+      "type": "org.springframework.vault.support.VaultResponse",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.vault.support.VaultResponseSupport",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "setAuth",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        },
+        {
+          "name": "setData",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "setLeaseDuration",
+          "parameterTypes": [
+            "long"
+          ]
+        },
+        {
+          "name": "setLeaseId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setRenewable",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "setRequestId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setWarnings",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setWrapInfo",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        }
+      ]
     },
     {
       "type": "org.springframework.web.bind.annotation.ControllerAdvice"
@@ -40248,6 +40409,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "reactor.core.publisher.Timed"
+    },
+    {
       "type": "reactor.core.scheduler.BoundedElasticScheduler",
       "allDeclaredFields": true
     },
@@ -40928,6 +41092,12 @@
     },
     {
       "type": "software.amazon.awssdk.services.secretsmanager.endpoints.SecretsManagerEndpointProvider"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse"
     },
     {
       "type": "software.amazon.awssdk.services.secretsmanager.model.ResourceNotFoundException"
@@ -42318,6 +42488,13 @@
     {
       "type": {
         "proxy": [
+          "org.springframework.vault.core.ReactiveVaultOperations"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
           "org.springframework.web.bind.annotation.ControllerAdvice"
         ]
       }
@@ -43407,6 +43584,9 @@
       "glob": "io/camunda/rpa/worker/secrets/aws/SecretsManagerBackend.class"
     },
     {
+      "glob": "io/camunda/rpa/worker/secrets/aws/SecretsManagerHints.class"
+    },
+    {
       "glob": "io/camunda/rpa/worker/secrets/aws/SecretsManagerNativeHintsHelper.class"
     },
     {
@@ -43429,6 +43609,9 @@
     },
     {
       "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsFunctionalSpec.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/vault/VaultBackend.class"
     },
     {
       "glob": "io/camunda/rpa/worker/util/IterableMultiPart.class"
@@ -44503,6 +44686,9 @@
     },
     {
       "glob": "org/springdoc/webflux/ui/SwaggerConfig.class"
+    },
+    {
+      "glob": "org/springframework/aot/hint/RuntimeHintsRegistrar.class"
     },
     {
       "glob": "org/springframework/aot/hint/annotation/Reflective.class"

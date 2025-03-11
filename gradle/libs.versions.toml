@@ -9,6 +9,7 @@ slf4j = "2.1.0-alpha1"
 xmachinery = "0.4.0-dev.21"
 caffeine = "3.2.0"
 awssdk = "2.30.36"
+spring-vault = "3.1.2"
 
 spock = "2.4-M5-groovy-4.0"
 byteBuddy = "1.15.11"
@@ -40,6 +41,7 @@ micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus
 micrometer-prometheus-simpleclient = { module = "io.micrometer:micrometer-registry-prometheus-simpleclient" }
 prometheus-simpleclient-pushgateway = { module = "io.prometheus:simpleclient_pushgateway" }
 aws-secretsmanager = { module = "software.amazon.awssdk:secretsmanager", version.ref = "awssdk" }
+spring-vault-core = { module = "org.springframework.vault:spring-vault-core", version.ref = "spring-vault" }
 
 reactor-test = { module = "io.projectreactor:reactor-test" }
 spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
