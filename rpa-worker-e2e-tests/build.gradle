@@ -108,7 +108,7 @@ tasks.register("updateHosts") {
 	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
 	
 	doLast {
-		String hosts = ["camunda.local", "zeebe.camunda.local", "rpa-worker.local"].collect {
+		String hosts = ["camunda.local", "zeebe.camunda.local", "rpa-worker.local", "vault.local"].collect {
 			"127.0.0.1 \t ${it}"
 		}.join("\n")
 		"sudo tee -a /etc/hosts".execute().tap {
@@ -224,6 +224,34 @@ tasks.withType(Test).configureEach {
 	if(System.getenv("CI") && ! System.getenv("E2E_SMOKE_TEST_ONLY")) {
 		it.dependsOn deployWorkerContainer
 		it.dependsOn configureClientSecret
+		it.dependsOn configureVault
+	}
+}
+
+tasks.register("installVault") {
+	dependsOn installK3s
+	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
+
+	doLast {
+		wrapProcess("k3s kubectl create ns vault".execute())
+		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/vault.helmrelease.yaml".execute())
+
+		waitForWithTimeout(
+				"k3s kubectl wait -n vault --for=condition=Ready pod -l component=server",
+				Duration.ofMinutes(10),
+				"Vault did not become ready") {
+
+			wrapProcess("k3s kubectl get pods -n vault".execute())
+		}
+	}
+}
+
+tasks.register("configureVault") {
+	dependsOn installVault
+	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
+	
+	doLast {
+		wrapProcess("k3s kubectl exec -n vault sts/vault -- vault kv put secret/test/secret foo=bar baz=bat".execute())
 	}
 }
 

@@ -1,0 +1,20 @@
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: vault
+  namespace: vault
+spec:
+  repo: https://helm.releases.hashicorp.com
+  chart: vault
+  targetNamespace: vault
+  valuesContent: |-
+    server:
+      dev:
+        enabled: true
+      podLabels:
+        "vault-active": "true"
+      ingress:
+        enabled: true
+        hosts:
+          - host: vault.local
+            paths: []
