@@ -153,6 +153,9 @@
       "type": "[Ljava.nio.file.attribute.FileAttribute;"
     },
     {
+      "type": "[Ljava.rmi.MarshalledObject;"
+    },
+    {
       "type": "[Ljava.rmi.server.ObjID;"
     },
     {
@@ -180,7 +183,13 @@
       "type": "[Ljava.util.concurrent.CompletableFuture;"
     },
     {
+      "type": "[Ljavax.management.ObjectName;"
+    },
+    {
       "type": "[Ljavax.management.openmbean.CompositeData;"
+    },
+    {
+      "type": "[Ljavax.security.auth.Subject;"
     },
     {
       "type": "[Lkotlin.annotation.AnnotationTarget;"
@@ -788,6 +797,9 @@
     },
     {
       "type": "com.github.benmanes.caffeine.cache.Caffeine"
+    },
+    {
+      "type": "com.github.benmanes.caffeine.cache.LoadingCache"
     },
     {
       "type": "com.github.benmanes.caffeine.cache.PS",
@@ -19398,6 +19410,9 @@
       ]
     },
     {
+      "type": "io.micrometer.core.instrument.Counter$Builder"
+    },
+    {
       "type": "io.micrometer.core.instrument.Gauge",
       "allDeclaredFields": true,
       "methods": [
@@ -19406,6 +19421,9 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "io.micrometer.core.instrument.Gauge$Builder"
     },
     {
       "type": "io.micrometer.core.instrument.Measurement",
@@ -19498,6 +19516,9 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.micrometer.core.instrument.Timer$Builder"
     },
     {
       "type": "io.micrometer.core.instrument.binder.MeterBinder"
@@ -23644,6 +23665,14 @@
     {
       "type": "javax.management.remote.rmi.RMIConnection",
       "methods": [
+        {
+          "name": "addNotificationListeners",
+          "parameterTypes": [
+            "javax.management.ObjectName[]",
+            "java.rmi.MarshalledObject[]",
+            "javax.security.auth.Subject[]"
+          ]
+        },
         {
           "name": "close",
           "parameterTypes": []
@@ -37725,6 +37754,9 @@
       "type": "org.springframework.util.MultiValueMapCustomizer"
     },
     {
+      "type": "org.springframework.util.StringUtils"
+    },
+    {
       "type": "org.springframework.util.UnmodifiableMultiValueMap",
       "allDeclaredFields": true
     },
@@ -39965,6 +39997,9 @@
     {
       "type": "reactor.core.publisher.SourceProducer",
       "allDeclaredFields": true
+    },
+    {
+      "type": "reactor.core.publisher.Timed"
     },
     {
       "type": "reactor.core.scheduler.BoundedElasticScheduler",
@@ -45705,6 +45740,9 @@
       "type": "java.lang.Integer"
     },
     {
+      "type": "java.lang.Integer[]"
+    },
+    {
       "type": "java.lang.Long"
     },
     {
@@ -45739,6 +45777,15 @@
     },
     {
       "type": "java.rmi.MarshalledObject"
+    },
+    {
+      "type": "java.rmi.MarshalledObject[]"
+    },
+    {
+      "type": "java.rmi.NoSuchObjectException"
+    },
+    {
+      "type": "java.rmi.RemoteException"
     },
     {
       "type": "java.rmi.dgc.Lease"
@@ -45828,6 +45875,9 @@
       "type": "javax.management.ObjectName"
     },
     {
+      "type": "javax.management.ObjectName[]"
+    },
+    {
       "type": "javax.management.OperationsException"
     },
     {
@@ -45847,6 +45897,9 @@
     },
     {
       "type": "javax.management.remote.rmi.RMIServerImpl_Stub"
+    },
+    {
+      "type": "javax.security.auth.Subject[]"
     },
     {
       "type": "org.gradle.api.internal.tasks.testing.filter.TestFilterSpec"

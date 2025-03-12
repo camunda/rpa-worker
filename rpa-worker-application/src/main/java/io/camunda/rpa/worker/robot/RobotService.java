@@ -59,12 +59,13 @@ public class RobotService {
 	private record RobotEnvironment(Workspace workspace, Path varsFile, Path outputDir, Path artifactsDir) { }
 
 	public Mono<ExecutionResults> execute(
-			RobotScript script, 
+			RobotScript script,
 			Map<String, Object> variables,
-			Duration timeout, 
-			RobotExecutionListener executionListener) {
+			Duration timeout,
+			RobotExecutionListener executionListener, 
+			String workspaceAffinityKey) {
 		
-		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, timeout, executionListener, Collections.emptyMap());
+		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, timeout, executionListener, Collections.emptyMap(), workspaceAffinityKey);
 	}
 	
 	public Mono<ExecutionResults> execute(
@@ -74,7 +75,8 @@ public class RobotService {
 			Map<String, Object> variables,
 			Duration timeout,
 			RobotExecutionListener executionListener,
-			Map<String, Object> workspaceProperties) {
+			Map<String, Object> workspaceProperties, 
+			String workspaceAffinityKey) {
 
 		AtomicInteger beforeCounter = new AtomicInteger(0);
 		AtomicInteger afterCounter = new AtomicInteger(0);
@@ -92,7 +94,7 @@ public class RobotService {
 				.flatMap(s -> s)
 				.toList();
 
-		return doExecute(scripts, variables, timeout != null ? timeout : robotProperties.defaultTimeout(), Optional.ofNullable(executionListener), workspaceProperties);
+		return doExecute(scripts, variables, timeout != null ? timeout : robotProperties.defaultTimeout(), Optional.ofNullable(executionListener), workspaceProperties, workspaceAffinityKey);
 	}
 	
 	private Mono<ExecutionResults> doExecute(
@@ -100,9 +102,10 @@ public class RobotService {
 			Map<String, Object> variables,
 			Duration timeout,
 			Optional<RobotExecutionListener> executionListener,
-			Map<String, Object> workspaceProperties) {
+			Map<String, Object> workspaceProperties, 
+			String workspaceAffinityKey) {
 
-		return newRobotEnvironment(scripts, variables, workspaceProperties)
+		return newRobotEnvironment(scripts, variables, workspaceProperties, workspaceAffinityKey)
 				.flatMap(renv ->
 						Flux.fromIterable(scripts)
 								.concatMap(script -> getEnvironmentVariables(renv, script)
@@ -139,9 +142,14 @@ public class RobotService {
 												.reduce(Duration.ZERO, Duration::plus))));
 	}
 
-	private Mono<RobotEnvironment> newRobotEnvironment(List<PreparedScript> scripts, Map<String, Object> variables, Map<String, Object> workspaceProperties) {
+	private Mono<RobotEnvironment> newRobotEnvironment(
+			List<PreparedScript> scripts, 
+			Map<String, Object> variables, 
+			Map<String, Object> workspaceProperties, 
+			String workspaceAffinityKey) {
+		
 		return io.supply(() -> {
-			Workspace workspace = workspaceService.createWorkspace(workspaceProperties);
+			Workspace workspace = workspaceService.createWorkspace(workspaceAffinityKey, workspaceProperties);
 			Path varsFile = workspace.path().resolve("variables.json");
 			Path outputDir = workspace.path().resolve("output");
 			io.createDirectories(outputDir);

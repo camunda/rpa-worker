@@ -52,7 +52,7 @@ class ScriptSandboxController {
 		log.atInfo().log("Received script for sandbox evaluation");
 
 		RobotScript robotScript = new RobotScript("_eval_", request.script());
-		return robotService.execute(robotScript, request.variables(), null, workspaceCleanupService::preserveLast)
+		return robotService.execute(robotScript, request.variables(), null, workspaceCleanupService::preserveLast, request.workspaceAffinityKey())
 
 				.doOnSuccess(xr -> log.atInfo().kv("result", xr.result()).log("Returning sandbox execution results"))
 

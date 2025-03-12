@@ -51,4 +51,28 @@ class WorkspaceCleanupServiceSpec extends Specification implements PublisherUtil
 		1 * io.deleteDirectoryRecursively(path2)
 		0 * io._(*_)
 	}
+	
+	void "Defers deletion of workspace in named queue until next"() {
+		given:
+		Path path1 = Stub()
+		Path path2 = Stub()
+		Path path3 = Stub()
+		Path path4 = Stub()
+
+		when:
+		block service.preserveLast(new Workspace(null, path1, "key-1"))
+		block service.preserveLast(new Workspace(null, path2, "key-2"))
+		block service.preserveLast(new Workspace(null, path3, "key-2"))
+		
+		then:
+		0 * io.deleteDirectoryRecursively(path1)
+		1 * io.deleteDirectoryRecursively(path2)
+		0 * io.deleteDirectoryRecursively(path3)
+		
+		when:
+		block service.preserveLast(new Workspace(null, path4, "key-1"))
+		
+		then:
+		1 * io.deleteDirectoryRecursively(path1)
+	}
 }

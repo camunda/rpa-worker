@@ -77,7 +77,8 @@ class ZeebeJobService  {
 												.map(Duration::parse)
 												.orElse(null),
 										executionListenerFor(job),
-										Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job))
+										Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job), 
+										null)
 
 								.doOnSuccess(xr -> (switch (xr.result()) {
 									case PASS -> zeebeClient

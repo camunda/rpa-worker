@@ -33,14 +33,19 @@ public class WorkspaceService {
 	}
 
 	public Workspace createWorkspace() {
-		return createWorkspace(Collections.emptyMap());
+		return createWorkspace(null, Collections.emptyMap());
 	}
-	
-	public Workspace createWorkspace(Map<String, Object> properties) {
+
+	public Workspace createWorkspace(String affinityKey) {
+		return createWorkspace(affinityKey, Collections.emptyMap());
+	}
+
+
+	public Workspace createWorkspace(String affinityKey, Map<String, Object> properties) {
 		Path workspacePath = io.createTempDirectory(workspacesDir, "workspace");
 		String workspaceID = workspacePath.getFileName().toString();
 		io.writeString(workspacePath.resolve(".workspace"), workspaceID, StandardOpenOption.CREATE_NEW);
-		workspaces.put(workspaceID, new Workspace(workspaceID, workspacePath, properties));
+		workspaces.put(workspaceID, new Workspace(workspaceID, workspacePath, properties, affinityKey));
 		return workspaces.get(workspaceID);
 	}
 
