@@ -25,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.net.URI;
 import java.nio.file.PathMatcher;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
@@ -49,7 +49,7 @@ class FilesController {
 			@PathVariable String workspaceId,
 			@Valid @RequestBody StoreFilesRequest request) {
 
-		PathMatcher pathMatcher = io.globMatcher(Paths.get(request.files()).normalize().toString());
+		PathMatcher pathMatcher = io.globMatcher(URI.create(fixSlashes(request.files())).normalize().toString());
 		
 		return io.wrap(Mono.defer(() -> {
 		Optional<Workspace> workspace = workspaceService.getById(workspaceId);
