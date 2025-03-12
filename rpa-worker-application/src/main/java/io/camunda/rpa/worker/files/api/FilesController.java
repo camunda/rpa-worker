@@ -50,11 +50,11 @@ class FilesController {
 			@Valid @RequestBody StoreFilesRequest request) {
 
 		PathMatcher pathMatcher = io.globMatcher(URI.create(fixSlashes(request.files())).normalize().toString());
-		
-		return io.wrap(Mono.defer(() -> {
-		Optional<Workspace> workspace = workspaceService.getById(workspaceId);
 
-		Stream<WorkspaceFile> filesToStore = workspace
+		return io.wrap(Mono.defer(() -> {
+			Optional<Workspace> workspace = workspaceService.getById(workspaceId);
+
+			Stream<WorkspaceFile> filesToStore = workspace
 					.stream()
 					.map(Workspace::path)
 					.flatMap(io::walk)

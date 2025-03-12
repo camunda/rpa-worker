@@ -27,6 +27,7 @@ import reactor.core.publisher.Mono
 import spock.lang.Issue
 
 import java.nio.file.Files
+import java.time.Duration
 import java.util.concurrent.TimeUnit
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
@@ -228,11 +229,12 @@ Test
 		zeebeApi.dispatcher = this.&copyInputToOutputDispatcher
 
 		when:
-		EvaluateScriptResponse response = block post()
+		EvaluateScriptResponse response = post()
 				.uri("/script/evaluate")
 				.body(BodyInserters.fromValue(new EvaluateScriptRequest(UPLOAD_FILES_WITH_UNNORMALISED_PATHS_SCRIPT, [:])))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
+				.block(Duration.ofSeconds(10))
 
 		then:
 		response.result() == ExecutionResults.Result.PASS
