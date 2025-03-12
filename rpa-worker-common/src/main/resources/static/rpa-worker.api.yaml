@@ -190,6 +190,11 @@ components:
           type: object
           description: Input variables for the execution
           additionalProperties: {}
+        workspaceAffinityKey:
+          type: string
+          description: |
+            An arbitrary string used to group executions together so as to influence the preserve-last behaviour for
+            Workspace cleanup
     
     EvaluateScriptResponse:
       type: object

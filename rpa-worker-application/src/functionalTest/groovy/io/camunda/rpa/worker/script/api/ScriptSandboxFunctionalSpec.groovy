@@ -148,6 +148,58 @@ Nothing
 		Files.exists(workspaces.remove().path())
 	}
 
+	void "Cleans up workspaces after evaluate, leaving the last one - grouped workspaces"() {
+		given:
+		String script = '''\
+*** Nothing ***
+Nothing
+'''
+		and:
+		CountDownLatch latch = new CountDownLatch(3)
+		Queue<Workspace> workspaces = new LinkedList<>()
+		workspaceCleanupService.preserveLast(_) >> { Workspace workspace ->
+			workspaces.add(workspace)
+			Mono<Void> r = callRealMethod()
+			r.doFinally { latch.countDown() }.subscribe()
+			return r
+		}
+
+		when:
+		post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+						.script(script)
+						.workspaceAffinityKey("one")
+						.build()))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+				.block(Duration.ofMinutes(1))
+		2.times {
+			post()
+					.uri("/script/evaluate")
+					.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+							.script(script)
+							.workspaceAffinityKey("two")
+							.build()))
+					.retrieve()
+					.bodyToMono(EvaluateScriptResponse)
+					.block(Duration.ofMinutes(1))
+		}
+		latch.awaitRequired(40, TimeUnit.SECONDS)
+
+		then:
+		workspaces.size() == 3
+
+		and: "First workspace not deleted (only one for key 'one')"
+		Files.exists(workspaces.remove().path())
+
+		and: "Second workspace deleted (replaced by second workspace with key 'two')"
+		Files.notExists(workspaces.remove().path())
+		
+		and: "Third workspace not deleted (most recent for key 'two')"
+		Files.exists(workspaces.remove().path())
+	}
+
 	void "Serves workspace files after run"() {
 		when:
 		EvaluateScriptResponse r = post()

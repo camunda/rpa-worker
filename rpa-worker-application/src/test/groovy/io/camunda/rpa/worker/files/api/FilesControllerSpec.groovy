@@ -27,7 +27,7 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 
 	static final String authToken = "the-auth-token"
 	
-	Workspace workspace = new Workspace("workspace123456", Paths.get("/path/to/workspaces/workspace123456/"), [:])
+	Workspace workspace = new Workspace("workspace123456", Paths.get("/path/to/workspaces/workspace123456/"), [:], null)
 	WorkspaceService workspaceService = Stub() {
 		getById("workspace123456") >> Optional.of(workspace)
 		getById(_) >> Optional.empty()

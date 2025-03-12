@@ -91,7 +91,7 @@ Do Nothing
 		when:
 		EvaluateScriptResponse response = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateScriptRequest(WRITE_SOME_FILES_SCRIPT, [:])))
+				.body(BodyInserters.fromValue(new EvaluateScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
 		
@@ -137,7 +137,7 @@ Do Nothing
 		when:
 		EvaluateScriptResponse response = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateScriptRequest(DO_NOTHING_SCRIPT, [:])))
+				.body(BodyInserters.fromValue(new EvaluateScriptRequest(DO_NOTHING_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
 
@@ -227,7 +227,7 @@ Do Nothing
 		when:
 		EvaluateScriptResponse response = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateScriptRequest(WRITE_SOME_FILES_SCRIPT, [:])))
+				.body(BodyInserters.fromValue(new EvaluateScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
 

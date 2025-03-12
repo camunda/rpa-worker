@@ -58,11 +58,11 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		}
 
 		when:
-		EvaluateScriptResponse response = block controller.evaluateScript(new EvaluateScriptRequest(scriptBody, inputVariables))
+		EvaluateScriptResponse response = block controller.evaluateScript(new EvaluateScriptRequest(scriptBody, inputVariables, null))
 				.map { it.body }
 		
 		then:
-		1 * robotService.execute(new RobotScript("_eval_", scriptBody), inputVariables, null, _) >> { _, __, ___, RobotExecutionListener executionListener ->
+		1 * robotService.execute(new RobotScript("_eval_", scriptBody), inputVariables, null, _, null) >> { _, __, ___, RobotExecutionListener executionListener, ____ ->
 			executionListener.afterRobotExecution(workspace)
 
 			return Mono.just(
@@ -95,7 +95,7 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 				new ScriptSandboxProperties(false))
 		
 		when:
-		ResponseEntity<EvaluateScriptResponse> response = block controller.evaluateScript(new EvaluateScriptRequest("", [:]))
+		ResponseEntity<EvaluateScriptResponse> response = block controller.evaluateScript(new EvaluateScriptRequest("", [:], null))
 		
 		then:
 		0 * robotService._

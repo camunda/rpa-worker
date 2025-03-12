@@ -8,7 +8,9 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
 
+import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Service
@@ -21,6 +23,7 @@ public class WorkspaceCleanupService {
 	private final IO io;
 	
 	private final Queue<Workspace> preserveLastQueue = new ConcurrentLinkedQueue<>();
+	private final Map<String, Queue<Workspace>> namedPreserveLastQueue = new ConcurrentHashMap<>();
 	private final Queue<Workspace> reapQueue = new ConcurrentLinkedQueue<>();
 
 
@@ -44,7 +47,15 @@ public class WorkspaceCleanupService {
 	/// @param workspace workspace to delete
 	/// @return A signal-only Mono signalling completion of the clean-up task
 	public Mono<Void> preserveLast(Workspace workspace) {
-		preserveLastQueue.add(workspace);
+		if(workspace.affinityKey() != null)
+			namedPreserveLastQueue.compute(workspace.affinityKey(), (_, queue) -> {
+				Queue<Workspace> rQueue = queue == null ? new ConcurrentLinkedQueue<>() : queue;
+				rQueue.add(workspace);
+				return rQueue;
+			});
+		else
+			preserveLastQueue.add(workspace);
+		
 		return run();
 	}
 	
@@ -65,6 +76,9 @@ public class WorkspaceCleanupService {
 	private void doRun() {
 		while(preserveLastQueue.size() > 1)
 			reapQueue.add(preserveLastQueue.remove());
+		
+		for(Queue<Workspace> q: namedPreserveLastQueue.values()) 
+			while(q.size() > 1) reapQueue.add(q.remove());
 		
 		for(Workspace w = reapQueue.poll(); w != null; w = reapQueue.poll())
 			io.deleteDirectoryRecursively(w.path());
