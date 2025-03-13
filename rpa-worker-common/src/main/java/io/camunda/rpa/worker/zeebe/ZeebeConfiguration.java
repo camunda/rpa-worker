@@ -29,6 +29,7 @@ import reactor.core.publisher.Mono;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 @Configuration
 @RequiredArgsConstructor
@@ -93,11 +94,11 @@ class ZeebeConfiguration {
 	}
 	
 	@Bean
-	public BeanPostProcessor zeebeHealthCheckBeanPostProcessor(CamundaClientProperties camundaClientProperties) {
+	public BeanPostProcessor zeebeHealthCheckBeanPostProcessor(ZeebeClientStatus zeebeClientStatus) {
 		return new BeanPostProcessor() {
 			@Override
 			public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-				if ( ! camundaClientProperties.getZeebe().getEnabled()
+				if ( ! zeebeClientStatus.isZeebeClientEnabled()
 						&& bean instanceof ZeebeClientHealthIndicator)
 					return new ZeebeClientHealthIndicator(null) {
 						@Override
@@ -107,5 +108,15 @@ class ZeebeConfiguration {
 				return bean;
 			}
 		};
+	}
+	
+	@Bean
+	public ZeebeClientStatus zeebeClientStatus() {
+		boolean zeebeEnabled = Optional.ofNullable(camundaClientProperties.getZeebe().getEnabled())
+				.orElse(false);
+		
+		boolean clientModeConfigured = Optional.ofNullable(camundaClientProperties.getMode()).isPresent();
+		
+		return () -> zeebeEnabled && clientModeConfigured;
 	}
 }
