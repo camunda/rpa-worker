@@ -33,7 +33,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	PythonInterpreter pythonInterpreter = new PythonInterpreter(pythonExe)
 	ProcessService processService = Mock()
 	YamlMapper yamlMapper = new YamlMapper(objectMapper)
-	RobotProperties robotProperties = new RobotProperties(Duration.ofSeconds(3))
+	RobotProperties robotProperties = new RobotProperties(Duration.ofSeconds(3), true)
 	WorkspaceService workspaceService = Mock()
 	
 	EnvironmentVariablesContributor envVarContributor1 = Mock(EnvironmentVariablesContributor)
@@ -115,6 +115,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.arg("none") >> executionCustomizer
 		1 * executionCustomizer.arg("--logtitle") >> executionCustomizer
 		1 * executionCustomizer.arg("Task log") >> executionCustomizer
+		1 * executionCustomizer.conditionalArg({ fn -> fn.getAsBoolean() }, "-X") >> executionCustomizer
 		1 * executionCustomizer.timeout(robotProperties.defaultTimeout()) >> executionCustomizer
 		1 * executionCustomizer.bindArg("script", workDir.resolve("main.robot")) >> executionCustomizer
 		

@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
@@ -79,6 +80,14 @@ public class ProcessService {
 			public ExecutionCustomizer bindArg(String name, Object value) {
 				cmdLine.addArgument("${%s}".formatted(name));
 				bindings.put(name, value instanceof Path p ? p.toFile() : value);
+				return this;
+			}
+
+			@Override
+			public ExecutionCustomizer conditionalArg(BooleanSupplier test, String arg) {
+				if(test.getAsBoolean()) 
+					cmdLine.addArgument(arg);
+				
 				return this;
 			}
 

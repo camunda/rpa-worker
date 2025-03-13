@@ -331,4 +331,53 @@ Tasks
 			thrown(WebClientResponseException.NotFound)
 		}
 	}
+
+	void "Robot script execution fails fast"() {
+		when:
+		EvaluateScriptResponse r = post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+						.script('''\
+*** Tasks ***
+One
+    Should Be Equal    one      two 
+Two
+    Should Be Equal    three    four
+''')
+						.build()))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+				.block(Duration.ofMinutes(1))
+
+		then:
+		r.result() == ExecutionResults.Result.FAIL
+		r.log().contains('one != two')
+		! r.log().contains('three != four')
+	}
+
+	@TestPropertySource(properties = "camunda.rpa.robot.fail-fast=false")
+	static class NoFailFastFunctionalSpec extends AbstractFunctionalSpec {
+		void "Robot script execution does not fail fast"() {
+			when:
+			EvaluateScriptResponse r = post()
+					.uri("/script/evaluate")
+					.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+							.script('''\
+*** Tasks ***
+One
+    Should Be Equal    one      two 
+Two
+    Should Be Equal    three    four
+''')
+							.build()))
+					.retrieve()
+					.bodyToMono(EvaluateScriptResponse)
+					.block(Duration.ofMinutes(1))
+
+			then:
+			r.result() == ExecutionResults.Result.FAIL
+			r.log().contains('one != two')
+			r.log().contains('three != four')
+		}
+	}
 }
