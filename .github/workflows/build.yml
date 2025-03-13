@@ -420,9 +420,9 @@ jobs:
         if: github.ref_type == 'tag'
         with:
           files: |
-            rpa-worker*linux_amd64
-            rpa-worker*win32_amd64.exe
-            rpa-worker*darwin*
+            rpa-worker*linux_amd64.zip
+            rpa-worker*win32_amd64.exe.zip
+            rpa-worker*darwin*.zip
             *.jar
             rpa-connector-*.json
           prerelease: ${{ contains(github.ref_name, '-') }}
