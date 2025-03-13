@@ -11,6 +11,7 @@ import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.zeebe.client.ZeebeClient;
+import io.camunda.zeebe.client.api.command.FailJobCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -85,15 +87,15 @@ class ZeebeJobService  {
 											.newCompleteCommand(job)
 											.variables(xr.outputVariables());
 
-									case FAIL -> zeebeClient
-											.newThrowErrorCommand(job)
-											.errorCode("ROBOT_TASKFAIL")
-											.errorMessage("There were task failures");
+									case FAIL -> failJob(job,
+											xr.outputVariables(), 
+											"There were task failures", 
+											xr.fullLogString());
 
-									case ERROR -> zeebeClient
-											.newThrowErrorCommand(job)
-											.errorCode("ROBOT_ERROR")
-											.errorMessage("There were task errors");
+									case ERROR -> failJob(job,
+											xr.outputVariables(),
+											"There were task errors",
+											xr.fullLogString());
 								}).send())
 
 								.doOnSuccess(xr -> {
@@ -111,11 +113,11 @@ class ZeebeJobService  {
 										.log("Job complete")))
 
 				.onErrorResume(ProcessTimeoutException.class,
-						_ -> Mono.<ExecutionResults>empty()
-								.doOnSubscribe(_ -> zeebeClient
-										.newThrowErrorCommand(job)
-										.errorCode("ROBOT_TIMEOUT")
-										.errorMessage("The execution timed out")
+						thrown -> Mono.<ExecutionResults>empty()
+								.doOnSubscribe(_ -> failJob(job,
+										Collections.emptyMap(),
+										"The execution timed out",
+										thrown.getStderr(), thrown.getStdout())
 										.send())
 
 								.doOnSubscribe(_ -> log.atWarn()
@@ -131,10 +133,9 @@ class ZeebeJobService  {
 						.setCause(thrown)
 						.log("Error while executing Job"))
 
-				.doOnError(thrown -> zeebeClient
-						.newFailCommand(job)
-						.retries(job.getRetries() - 1)
-						.errorMessage(thrown.getMessage())
+				.doOnError(thrown -> failJob(job,
+						Collections.emptyMap(),
+						thrown.getMessage())
 						.send())
 				
 				.doOnError(_ -> zeebeMetricsService.onZeebeJobError(job.getType()))
@@ -183,5 +184,13 @@ class ZeebeJobService  {
 	private Map<String, Object> getVariables(ActivatedJob job) {
 		return Optional.ofNullable(((Map<String, Object>) job.getVariablesAsMap().get("camundaRpaTaskInput")))
 				.orElse(job.getVariablesAsMap());
+	}
+	
+	private FailJobCommandStep1.FailJobCommandStep2 failJob(ActivatedJob job, Map<String, Object> variables, String... errorMessage) {
+		return zeebeClient
+				.newFailCommand(job)
+				.retries(job.getRetries() - 1)
+				.variables(variables)
+				.errorMessage(String.join("\n\n", errorMessage));
 	}
 }

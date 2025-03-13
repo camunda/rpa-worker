@@ -7,7 +7,6 @@ import io.camunda.rpa.worker.util.IterableMultiPart
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
-import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
 import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import okhttp3.MediaType
@@ -135,9 +134,10 @@ Do Nothing
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
-			1 * errorCode("ROBOT_TASKFAIL") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
-				1 * errorMessage(_) >> it
+		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
+				1 * errorMessage({ it.contains("There were task failures") }) >> it
+				_ * variables(_) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
@@ -155,9 +155,10 @@ Do Nothing
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
-			1 * errorCode("ROBOT_ERROR") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
-				1 * errorMessage(_) >> it
+		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
+				1 * errorMessage({ it.contains("There were task errors") }) >> it
+				_ * variables(_) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
@@ -175,6 +176,7 @@ Do Nothing
 		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("Script not found") }) >> it
+				_ * variables(_) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
@@ -233,9 +235,10 @@ Do Nothing
 		handlerDidFinish.awaitRequired(14, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
-			1 * errorCode("ROBOT_TIMEOUT") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
-				1 * errorMessage(_) >> it
+		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
+				1 * errorMessage({ it.contains("The execution timed out") }) >> it
+				_ * variables(_) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
@@ -261,9 +264,10 @@ Do Nothing
 		}
 		
 		and:
-		1 * zeebeClient.newThrowErrorCommand(_) >> Mock(ThrowErrorCommandStep1) {
-			1 * errorCode("ROBOT_TIMEOUT") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
-				1 * errorMessage(_) >> it
+		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
+				1 * errorMessage({ it.contains("The execution timed out") }) >> it
+				_ * variables(_) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null

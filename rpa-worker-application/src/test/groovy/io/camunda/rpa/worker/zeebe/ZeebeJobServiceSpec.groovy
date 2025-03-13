@@ -15,7 +15,6 @@ import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
-import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
 import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
@@ -93,7 +92,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		1 * workspaceService.deleteWorkspace(workspace)
 	}
 
-	void "Runs received task and reports Robot failure/error"(Result result, String expectedCode) {
+	void "Runs received task and reports Robot failure/error"(Result result, String expectedMessage) {
 		given:
 		ActivatedJob job = anRpaJob()
 		Map<String, String> expectedOutputVars = [outputVar: 'output-var-value']
@@ -109,20 +108,21 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 				Duration.ZERO))
 
 		and:
-		1 * zeebeClient.newThrowErrorCommand(job) >> Mock(ThrowErrorCommandStep1) {
-			1 * errorCode(expectedCode) >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
-				1 * errorMessage(_) >> it
+		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
+			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
+				1 * errorMessage({ m -> m.startsWith(expectedMessage) }) >> it
+				1 * variables(expectedOutputVars) >> it
 				1 * send()
 			}
 		}
 		
 		and:
-		1 * metricsService.onZeebeJobFail(job.type, expectedCode)
+		1 * metricsService.onZeebeJobFail(job.type, _)
 
 		where:
-		result       || expectedCode
-		Result.FAIL  || "ROBOT_TASKFAIL"
-		Result.ERROR || "ROBOT_ERROR"
+		result       || expectedMessage
+		Result.FAIL  || "There were task failures"
+		Result.ERROR || "There were task errors"
 	}
 
 	void "Runs received task and reports low level failures"() {
@@ -139,6 +139,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
 			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage(_) >> it
+				_ * variables(_) >> it
 				1 * send()
 			}
 		}
@@ -179,6 +180,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
 			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage(_) >> it
+				_ * variables(_) >> it
 				1 * send()
 			}
 		}
@@ -231,13 +233,14 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
-		1 * zeebeClient.newThrowErrorCommand(job) >> Mock(ThrowErrorCommandStep1) {
-			1 * errorCode("ROBOT_TIMEOUT") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
-				1 * errorMessage(_) >> it
+		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
+			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
+				1 * errorMessage({ m -> m.startsWith("The execution timed out") }) >> it
+				_ * variables(_) >> it
 				1 * send()
 			}
 		}
-		
+
 		and:
 		1 * metricsService.onZeebeJobFail(job.type, "ROBOT_TIMEOUT")
 	}
