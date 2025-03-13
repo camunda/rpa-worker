@@ -168,6 +168,10 @@ The RPA Worker makes the following environment variables available to the Robot 
 |The default timeout to use when no other timeout is specified (ISO 8601 duration string)
 |`PT5M` (5 minutes)
 
+|camunda.rpa.robot.fail-fast
+|Stops task execution if any task fails
+|`true`
+
 
 3+| *Sandbox Properties*
 

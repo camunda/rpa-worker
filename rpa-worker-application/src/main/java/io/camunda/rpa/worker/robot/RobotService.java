@@ -193,6 +193,7 @@ public class RobotService {
 						.arg("--variablefile").bindArg("varsFile", renv.varsFile())
 						.arg("--report").arg("none")
 						.arg("--logtitle").arg("Task log")
+						.conditionalArg(robotProperties::failFast, "-X")
 						.bindArg("script", renv.workspace().path().resolve("%s.robot".formatted(script.executionKey())))
 
 						.timeout(timeout)
