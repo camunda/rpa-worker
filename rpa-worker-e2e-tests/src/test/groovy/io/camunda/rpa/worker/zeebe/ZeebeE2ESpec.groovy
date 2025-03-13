@@ -4,6 +4,7 @@ import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
+import spock.lang.PendingFeature
 
 @Slf4j
 class ZeebeE2ESpec extends AbstractE2ESpec {
@@ -238,6 +239,45 @@ Tasks
 				! message().contains("main")
 				! message().contains("post_0")
 			}
+		}
+	}
+
+	@PendingFeature(reason = "Awaits Pyton lib changes - https://github.com/camunda/rpa-python-libraries/issues/6")
+	void "Sends throw error commands to Zeebe from script"() {
+		given:
+		deployScript('throw_bpmn_error', '''\
+*** Settings ***
+Library    Camunda
+
+*** Tasks ***
+Throw error
+    Set Output Variable     anOutputVariable      output-variable-value
+    Throw BPMN Error    ERROR_CODE    Bad things happened
+    Should Be Equal    one    two
+
+More Tasks
+    Should Be Equal    three    four
+''')
+		and:
+		deploySimpleRobotProcess('throw_bpmn_error_on_default', 'throw_bpmn_error')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("throw_bpmn_error_on_default")
+
+		then:
+		spec.expectIncidents(pinstance.processInstanceKey) { incidents ->
+			incidents.size() == 1
+			with(incidents.first()) {
+				type() == OperateClient.GetIncidentsResponse.Item.Type.UNHANDLED_ERROR_EVENT
+				message().contains("ERROR_CODE")
+				message().contains("Bad things happened")
+				
+				! message().contains("one != two")
+				! message().contains("three != four")
+			}
+		}
+		spec.expectVariables(pinstance.processInstanceKey) {
+			anOutputVariable == "output-variable-value"	
 		}
 	}
 }
