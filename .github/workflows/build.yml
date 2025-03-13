@@ -421,7 +421,7 @@ jobs:
         with:
           files: |
             rpa-worker*linux_amd64.zip
-            rpa-worker*win32_amd64.exe.zip
+            rpa-worker*win32_amd64.zip
             rpa-worker*darwin*.zip
             *.jar
             rpa-connector-*.json
@@ -451,7 +451,7 @@ jobs:
           version: ${{ github.ref_name }}
           artifact_file: >-
             rpa-worker*linux_amd64.zip
-            rpa-worker*win32_amd64.exe.zip
+            rpa-worker*win32_amd64.zip
             rpa-worker*darwin*.zip
             *.jar
             rpa-connector-*.json
