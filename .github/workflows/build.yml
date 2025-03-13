@@ -214,7 +214,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-linux-amd64
-          path: rpa-worker-application/build/native/nativeCompile/rpa-worker*
+          path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
           
   native_win32_amd64:
@@ -244,7 +244,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-win32-amd64
-          path: rpa-worker-application/build/native/nativeCompile/rpa-worker*
+          path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
 
   native_darwin_amd64:
@@ -274,7 +274,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-darwin-amd64
-          path: rpa-worker-application/build/native/nativeCompile/rpa-worker*
+          path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
 
   native_darwin_aarch64:
@@ -304,7 +304,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: native-darwin-aarch64
-          path: rpa-worker-application/build/native/nativeCompile/rpa-worker*
+          path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
           
   e2e:
@@ -349,6 +349,8 @@ jobs:
       - name: Build
         run: |
           export CAMUNDA_CLIENT_AUTH_CLIENTSECRET=$(k3s kubectl get secret -n camunda camunda-zeebe-identity-secret -o jsonpath='{.data.zeebe-secret}' | base64 -d | xargs)
+          unzip rpa-worker_*_linux_amd64.zip
+          rm rpa-worker_*_linux_amd64.zip
           export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_linux_amd64)
           chmod +x $CAMUNDA_RPA_E2E_PATHTOWORKER
           ./gradlew :rpa-worker-e2e-tests:check
@@ -447,9 +449,9 @@ jobs:
           gcp_credentials: ${{ steps.secrets.outputs.GCP_CREDENTIALS_NAME }}
           version: ${{ github.ref_name }}
           artifact_file: >-
-            rpa-worker*linux_amd64
-            rpa-worker*win32_amd64.exe
-            rpa-worker*darwin*
+            rpa-worker*linux_amd64.zip
+            rpa-worker*win32_amd64.exe.zip
+            rpa-worker*darwin*.zip
             *.jar
             rpa-connector-*.json
             rpa-worker-application/build/hashes/*
