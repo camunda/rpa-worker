@@ -93,8 +93,9 @@ Tasks
 		spec.expectIncidents(pinstance.processInstanceKey) { incidents ->
 			incidents.size() == 1
 			with(incidents.first()) {
-				type() == OperateClient.GetIncidentsResponse.Item.Type.UNHANDLED_ERROR_EVENT
-				message().contains("ROBOT_TASKFAIL")
+				type() == OperateClient.GetIncidentsResponse.Item.Type.JOB_NO_RETRIES
+				message().startsWith("There were task failures")
+				message().contains("1 task, 0 passed, 1 failed")
 			}
 		}
 	}
@@ -115,8 +116,9 @@ Nothing
 		spec.expectIncidents(pinstance.processInstanceKey) { incidents ->
 			incidents.size() == 1
 			with(incidents.first()) {
-				type() == OperateClient.GetIncidentsResponse.Item.Type.UNHANDLED_ERROR_EVENT
-				message().contains("ROBOT_ERROR")
+				type() == OperateClient.GetIncidentsResponse.Item.Type.JOB_NO_RETRIES
+				message().startsWith("There were task errors")
+				message().contains("Suite 'Main' contains no tests or tasks")
 			}
 		}
 	}
@@ -138,8 +140,9 @@ Tasks
 		spec.expectIncidents(pinstance.processInstanceKey) { incidents ->
 			incidents.size() == 1
 			with(incidents.first()) {
-				type() == OperateClient.GetIncidentsResponse.Item.Type.UNHANDLED_ERROR_EVENT
-				message().contains("ROBOT_TIMEOUT")
+				type() == OperateClient.GetIncidentsResponse.Item.Type.JOB_NO_RETRIES
+				message().startsWith("The execution timed out")
+				message().contains("Main")
 			}
 		}
 	}
