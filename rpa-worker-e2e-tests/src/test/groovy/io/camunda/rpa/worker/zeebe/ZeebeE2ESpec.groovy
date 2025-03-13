@@ -166,5 +166,79 @@ Tasks
 			resultText.toString().contains("100%")
 		}
 	}
+
+	void "Runs before and after scripts"() {
+		given:
+		deployScript('before_and_after_scripts_good_before', '''\
+*** Settings ***
+Library    OperatingSystem
+
+*** Tasks ***
+Tasks
+    Create File    before.txt
+''')
+		deployScript('before_and_after_scripts_good_main', '''\
+*** Settings ***
+Library    OperatingSystem
+
+*** Tasks ***
+Tasks
+    File Should Exist    before.txt
+    Create File    main.txt
+''')
+		deployScript('before_and_after_scripts_good_after', '''\
+*** Settings ***
+Library    OperatingSystem
+Library    Camunda
+
+*** Tasks ***
+Tasks
+    File Should Exist    main.txt
+    Set Output Variable    afterRan    ${True}
+''')
+		and:
+		deployProcess('before_and_after_scripts_good_on_default')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("before_and_after_scripts_good_on_default")
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+		spec.expectVariables(pinstance.processInstanceKey) {
+			afterRan
+		}
+	}
+
+	void "Stops execution and returns correct results for pre/post script failure"() {
+		given:
+		['before_and_after_scripts_fail_before', 'before_and_after_scripts_fail_main', 'before_and_after_scripts_fail_after'].each { scriptName ->
+			deployScript(scriptName, '''\
+*** Tasks ***
+Tasks
+    Fail
+''')
+		}
+		
+		and:
+		deployProcess('before_and_after_scripts_fail_on_default')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("before_and_after_scripts_fail_on_default")
+
+		then:
+		spec.expectIncidents(pinstance.processInstanceKey) { incidents ->
+			incidents.size() == 1
+			with(incidents.first()) {
+				type() == OperateClient.GetIncidentsResponse.Item.Type.JOB_NO_RETRIES
+				message().startsWith("There were task failures")
+				message().contains("pre_0")
+				! message().contains("main")
+				! message().contains("post_0")
+			}
+		}
+	}
 }
 	
