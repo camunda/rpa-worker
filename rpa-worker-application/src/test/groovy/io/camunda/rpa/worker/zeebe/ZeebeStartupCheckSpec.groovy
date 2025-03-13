@@ -16,7 +16,7 @@ import java.time.Duration
 
 class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 	
-	ZeebeClient zeebeClient = Stub()
+	ZeebeClient zeebeClient = Mock()
 	CamundaClientProperties camundaClientProperties = Stub(CamundaClientProperties) {
 		getMode() >> CamundaClientProperties.ClientMode.saas
 		getAuth() >> Stub(AuthProperties) {
@@ -32,11 +32,16 @@ class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 		}
 	}
 	
+	ZeebeClientStatus zeebeClientStatus = Stub()
+	
 	@Subject
-	ZeebeStartupCheck check = new ZeebeStartupCheck(zeebeClient, camundaClientProperties)
+	ZeebeStartupCheck check = new ZeebeStartupCheck(zeebeClient, camundaClientProperties, zeebeClientStatus)
 	
 	void "Returns ready event on successful check"() {
 		given:
+		zeebeClientStatus.isZeebeClientEnabled() >> true
+		
+		and:
 		zeebeClient.newTopologyRequest() >> Stub(TopologyRequestStep1) {
 			send() >> new ZeebeClientFutureImpl().tap {
 				complete(Stub(Topology))
@@ -50,6 +55,9 @@ class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 	@Tag("slow") // 3 retries with exponential backoff
 	void "Returns error when check is unsuccessful"() {
 		given:
+		zeebeClientStatus.isZeebeClientEnabled() >> true
+
+		and:
 		zeebeClient.newTopologyRequest() >> Stub(TopologyRequestStep1) {
 			send() >> new ZeebeClientFutureImpl().tap {
 				completeExceptionally(new ConnectException("Bang!"))
@@ -62,5 +70,19 @@ class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 		then:
 		Exception thrown = thrown(IllegalStateException)
 		thrown.cause instanceof ConnectException
+	}
+	
+	void "Skips check when Zeebe is not enabled"() {
+		given:
+		zeebeClientStatus.isZeebeClientEnabled() >> false
+
+		when:
+		ZeebeReadyEvent r = block check.check()
+		
+		then:
+		! r
+		
+		and:
+		0 * zeebeClient._(*_)
 	}
 }

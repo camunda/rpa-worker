@@ -41,7 +41,6 @@ class ZeebeConfiguration {
 
 		configProperties['json.logging.enabled'] = 'false'
 		configProperties["camunda.client.mode"] = "selfmanaged"
-		configProperties["camunda.client.zeebe.enabled"] = "true"
 		configProperties["camunda.client.auth.client-id"] = "zeebe"
 		configProperties["camunda.client.auth.client-secret"] = clientSecret
 		configProperties["camunda.client.auth.operate-secret"] = operateSecret

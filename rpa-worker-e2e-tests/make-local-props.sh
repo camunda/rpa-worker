@@ -12,7 +12,6 @@ operateClientSecret=$($KUBECTL get secret -n $deploymentName $deploymentName-ope
 
 echo camunda.client.mode=selfmanaged
 echo camunda.client.auth.client-id=zeebe
-echo camunda.client.zeebe.enabled=true
 echo camunda.client.auth.client-secret=$zeebeClientSecret
 echo camunda.client.zeebe.rest-address=http://zeebe.$deploymentHost
 echo camunda.client.zeebe.grpc-address=http://zeebe.$deploymentHost

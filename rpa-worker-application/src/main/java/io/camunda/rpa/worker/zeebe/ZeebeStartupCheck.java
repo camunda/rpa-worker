@@ -26,11 +26,12 @@ class ZeebeStartupCheck implements StartupCheck<ZeebeReadyEvent> {
 	
 	private final ZeebeClient zeebeClient;
 	private final CamundaClientProperties camundaClientProperties;
+	private final ZeebeClientStatus zeebeClientStatus;
 
 	@Override
 	public Mono<ZeebeReadyEvent> check() {
 		
-		if( ! camundaClientProperties.getZeebe().getEnabled())
+		if( ! zeebeClientStatus.isZeebeClientEnabled())
 			return Mono.<ZeebeReadyEvent>empty()
 					.doOnSubscribe(_ -> log.atInfo().log("Zeebe check skipped as client is not enabled"));
 		
