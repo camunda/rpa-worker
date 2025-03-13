@@ -178,3 +178,14 @@ tasks.register("deletePlainJar") {
 				.ifPresentOrElse(Files::delete, { throw new RuntimeException("No plain jar") })
 	}
 }
+
+tasks.register("zipNativeImage", Zip) {
+	archiveFileName = "${graalvmNative.binaries.main.imageName.get()}.zip"
+	
+	from(nativeCompile.outputFile)
+	from(project.layout.files("src/main/resources/META-INF/application.sample.properties")) {
+		rename { "application.properties" }
+	}
+}
+
+nativeCompile.finalizedBy(zipNativeImage)
