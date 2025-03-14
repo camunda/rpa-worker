@@ -2681,6 +2681,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.SecretsFunctionalSpecMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.SecretsPropertiesMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.SecretsServiceMetaClass"
     },
     {
@@ -2688,6 +2691,39 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.ZeebeAuthPropertiesMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendSpec$__spock_initializeFields_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_0_closure2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_1_closure3MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_2_closure4MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_3_closure5MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_4_closure6MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelperMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.aws.SecretsManagerPropertiesMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsBackendMetaClass"
@@ -2736,6 +2772,48 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsServiceSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultBackendMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultBackendSpec$__spock_feature_0_0_closure2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultBackendSpec$__spock_feature_0_0_closure3MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultBackendSpec$__spock_initializeFields_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultBackendSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$BadCredentials$_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$BadCredentialsMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$HappyPath$_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$HappyPathMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$NoSecret$_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$NoSecretMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelperMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultPropertiesMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.util.IterableMultiPart$MultiPartIteratorMetaClass"
@@ -3956,6 +4034,9 @@
       "type": "groovy.runtime.metaclass.java.util.Collections$SingletonListMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.java.util.Collections$UnmodifiableMapMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.java.util.CollectionsMetaClass"
     },
     {
@@ -3999,6 +4080,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.java.util.ResourceBundleMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.java.util.concurrent.CompletableFutureMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.java.util.concurrent.CountDownLatchMetaClass"
@@ -4214,6 +4298,12 @@
       "type": "groovy.runtime.metaclass.org.springframework.util.UnmodifiableMultiValueMapMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.org.springframework.vault.core.ReactiveVaultOperationsMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.org.springframework.vault.support.VaultResponseMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.org.springframework.web.reactive.function.BodyInsertersMetaClass"
     },
     {
@@ -4350,6 +4440,48 @@
     },
     {
       "type": "groovy.runtime.metaclass.reactor.util.context.Context0MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.auth.credentials.AwsBasicCredentials$BuilderMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.auth.credentials.AwsBasicCredentialsMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider$BuilderMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.auth.credentials.DefaultCredentialsProviderMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider$BuilderImplMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.auth.credentials.ProfileCredentialsProviderMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.auth.credentials.StaticCredentialsProviderMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.regions.RegionMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.services.secretsmanager.DefaultSecretsManagerAsyncClientBuilderMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest$BuilderImplMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequestMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse$BuilderImplMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponseMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.spock.lang.SpecificationMetaClass"
@@ -6810,6 +6942,30 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1226160059",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1230161922",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1235261853",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1442113702",
       "fields": [
         {
@@ -6939,6 +7095,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$925627859",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$976521463",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -9320,6 +9484,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1297251366",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1391419054",
       "fields": [
         {
@@ -9337,6 +9509,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1870502698",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1950016543",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -11672,8 +11852,21 @@
           "parameterTypes": [
             "java.lang.String"
           ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.util.List"
+          ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsPropertiesBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsPropertiesCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.secrets.SecretsService",
@@ -11774,6 +11967,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$1499706638",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$1698887666",
       "fields": [
         {
@@ -11791,6 +11992,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$434065108",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$498408888",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -11889,6 +12098,231 @@
     },
     {
       "type": "io.camunda.rpa.worker.secrets.ZeebeAuthPropertiesCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerBackend",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsProperties",
+            "com.fasterxml.jackson.databind.ObjectMapper"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsProperties",
+            "com.fasterxml.jackson.databind.ObjectMapper",
+            "java.util.function.Supplier"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.aws.SecretsManagerProperties",
+            "com.fasterxml.jackson.databind.ObjectMapper"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.aws.SecretsManagerProperties",
+            "com.fasterxml.jackson.databind.ObjectMapper",
+            "java.util.function.Supplier"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendSpec",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_0_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_initializeFields",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSecretsManagerClient",
+          "parameterTypes": []
+        },
+        {
+          "name": "io_camunda_rpa_worker_PublisherUtils__TIMEOUT$get",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendSpec$__spock_initializeFields_closure1",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerBackendSpecCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerHints",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerHints$$SpringCGLIB$$0",
+      "allDeclaredFields": true,
+      "fields": [
+        {
+          "name": "CGLIB$FACTORY_DATA"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "CGLIB$SET_STATIC_CALLBACKS",
+          "parameterTypes": [
+            "org.springframework.cglib.proxy.Callback[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_1_1",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_1_2",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_1_3",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_1_4",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_0_closure2",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_1_closure3",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_2_closure4",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_3_closure5",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$__spock_feature_1_4_closure6",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelper$_closure1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelperBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerNativeHintsHelperCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerProperties",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerPropertiesBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.aws.SecretsManagerPropertiesCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsBackend",
@@ -12180,6 +12614,308 @@
       "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsServiceSpecCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackend",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.SecretsProperties",
+            "org.springframework.context.ApplicationContext"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.vault.VaultProperties",
+            "org.springframework.context.ApplicationContext"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.vault.VaultProperties",
+            "org.springframework.context.ApplicationContext",
+            "java.util.function.Function"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackendBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackendCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackendSpec",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_0_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_initializeFields",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getVaultOps",
+          "parameterTypes": []
+        },
+        {
+          "name": "io_camunda_rpa_worker_PublisherUtils__TIMEOUT$get",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackendSpec$__spock_feature_0_0_closure2",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackendSpec$__spock_feature_0_0_closure3",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackendSpec$__spock_initializeFields_closure1",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackendSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultBackendSpecCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultHints",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultHints$$SpringCGLIB$$0",
+      "allDeclaredFields": true,
+      "fields": [
+        {
+          "name": "CGLIB$FACTORY_DATA"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "CGLIB$SET_STATIC_CALLBACKS",
+          "parameterTypes": [
+            "org.springframework.cglib.proxy.Callback[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$BadCredentials",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$static_propertyMissing",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$BadCredentials$_closure1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$BadCredentialsBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$BadCredentialsCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$HappyPath",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$static_propertyMissing",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$HappyPath$_closure1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$HappyPathBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$HappyPathCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$NoSecret",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$static_propertyMissing",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$NoSecret$_closure1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$NoSecretBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$NoSecretCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelper$_closure1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelperBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultNativeHintsHelperCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultProperties",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultPropertiesBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.vault.VaultPropertiesCustomizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.util.IterableMultiPart",
       "allDeclaredFields": true,
       "methods": [
@@ -12412,6 +13148,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1723729000",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1797987073",
       "fields": [
         {
@@ -12500,6 +13244,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$587373018",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$625537878",
       "fields": [
         {
@@ -12516,7 +13268,23 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$783802255",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$916721012",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$943034990",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -12726,6 +13494,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$2143326946",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$653133701",
       "fields": [
         {
@@ -12743,6 +13519,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$869989122",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$914750271",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -16149,6 +16933,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$1276044151",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$1435139852",
       "fields": [
         {
@@ -16166,6 +16958,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$2014319184",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$2068937144",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -16544,7 +17344,23 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$1967227329",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$2128499558",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$899978985",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -17398,6 +18214,22 @@
             "java.lang.String",
             "java.time.Duration"
           ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeMetricsService$SpockMock$1193949511",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeMetricsService$SpockMock$129783799",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
         }
       ]
     },
@@ -18822,6 +19654,14 @@
       "type": "io.camunda.zeebe.spring.client.properties.CamundaClientProperties$ClientModeEditor"
     },
     {
+      "type": "io.camunda.zeebe.spring.client.properties.CamundaClientProperties$SpockMock$1150722957",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.spring.client.properties.CamundaClientProperties$SpockMock$1343087375",
       "fields": [
         {
@@ -18871,6 +19711,14 @@
     },
     {
       "type": "io.camunda.zeebe.spring.client.properties.CamundaClientProperties$SpockMock$2022216870",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.spring.client.properties.CamundaClientProperties$SpockMock$354176740",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -19031,6 +19879,14 @@
       ]
     },
     {
+      "type": "io.camunda.zeebe.spring.client.properties.common.AuthProperties$SpockMock$1558182323",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.spring.client.properties.common.AuthProperties$SpockMock$161785262",
       "fields": [
         {
@@ -19072,6 +19928,14 @@
     },
     {
       "type": "io.camunda.zeebe.spring.client.properties.common.AuthProperties$SpockMock$535348008",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.spring.client.properties.common.AuthProperties$SpockMock$579505901",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -19163,7 +20027,23 @@
       ]
     },
     {
+      "type": "io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties$SpockMock$1606793120",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties$SpockMock$1786604040",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties$SpockMock$1807418809",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -19941,6 +20821,9 @@
       "type": "io.netty.channel.kqueue.KQueue"
     },
     {
+      "type": "io.netty.channel.pool.SimpleChannelPool$1"
+    },
+    {
       "type": "io.netty.channel.socket.nio.NioSocketChannel",
       "methods": [
         {
@@ -20004,6 +20887,9 @@
     },
     {
       "type": "io.netty.handler.codec.http.HttpServerCodec"
+    },
+    {
+      "type": "io.netty.handler.logging.LoggingHandler"
     },
     {
       "type": "io.netty.handler.ssl.SslHandler"
@@ -20374,6 +21260,9 @@
     },
     {
       "type": "io.vavr.CheckedFunction0"
+    },
+    {
+      "type": "io.vavr.Lazy"
     },
     {
       "type": "io.vavr.control.Try"
@@ -22602,6 +23491,12 @@
       "allDeclaredFields": true
     },
     {
+      "type": "java.util.Collections$UnmodifiableMapBeanInfo"
+    },
+    {
+      "type": "java.util.Collections$UnmodifiableMapCustomizer"
+    },
+    {
       "type": "java.util.Collections$UnmodifiableRandomAccessList",
       "allDeclaredFields": true
     },
@@ -23116,6 +24011,12 @@
           "name": "completeExceptionally",
           "parameterTypes": [
             "java.lang.Throwable"
+          ]
+        },
+        {
+          "name": "completedFuture",
+          "parameterTypes": [
+            "java.lang.Object"
           ]
         }
       ]
@@ -23896,6 +24797,9 @@
       "type": "kotlin.Metadata"
     },
     {
+      "type": "kotlin.Unit"
+    },
+    {
       "type": "kotlin.annotation.AnnotationRetention"
     },
     {
@@ -24501,6 +25405,9 @@
       "type": "okhttp3.MultipartReaderCustomizer"
     },
     {
+      "type": "okhttp3.OkHttpClient"
+    },
+    {
       "type": "okhttp3.ResponseBody",
       "allDeclaredFields": true,
       "methods": [
@@ -24889,6 +25796,22 @@
       ]
     },
     {
+      "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$522667702",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$542248114",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$664889169",
       "fields": [
         {
@@ -25016,6 +25939,22 @@
     },
     {
       "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$722905890",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$752070372",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$76175099",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -25151,10 +26090,16 @@
       ]
     },
     {
+      "type": "org.apache.hc.client5.http.impl.async"
+    },
+    {
       "type": "org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient"
     },
     {
       "type": "org.apache.hc.client5.http.impl.async.HttpAsyncClients"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.classic.HttpClientBuilder"
     },
     {
       "type": "org.apache.hc.client5.http.impl.classic.HttpClients"
@@ -26926,6 +27871,48 @@
       ]
     },
     {
+      "type": "org.codehaus.groovy.runtime.dgm$629",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$633",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$634",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
       "type": "org.codehaus.groovy.runtime.dgm$709",
       "methods": [
         {
@@ -28449,7 +29436,23 @@
       "type": "org.spockframework.mock.TooFewInvocationsError"
     },
     {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$1058501463",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.File$SpockMock$1163408455",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$1245305189",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -28577,7 +29580,23 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$1434699895",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$1485743653",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$1704431310",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -28673,6 +29692,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$1346965614",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$1442831522",
       "fields": [
         {
@@ -28721,6 +29748,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$42490287",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$635687600",
       "fields": [
         {
@@ -28754,6 +29789,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.Process$SpockMock$1146450142",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.Process$SpockMock$1198244989",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -28826,6 +29869,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.Process$SpockMock$410196918",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.Process$SpockMock$449505205",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -28988,6 +30039,9 @@
     },
     {
       "type": "org.spockframework.runtime.ValueRecorderCustomizer"
+    },
+    {
+      "type": "org.spockframework.runtime.WrongExceptionThrownError"
     },
     {
       "type": "org.spockframework.runtime.extension.ExtensionAnnotation"
@@ -29925,6 +30979,12 @@
       "type": "org.springframework.aot.generate.Generated"
     },
     {
+      "type": "org.springframework.aot.hint.RuntimeHints"
+    },
+    {
+      "type": "org.springframework.aot.hint.RuntimeHintsRegistrar"
+    },
+    {
       "type": "org.springframework.aot.hint.annotation.Reflective"
     },
     {
@@ -30182,6 +31242,14 @@
       "allDeclaredFields": true
     },
     {
+      "type": "org.springframework.boot.SpringApplication$SpockMock$1040385985",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.springframework.boot.SpringApplication$SpockMock$1401819528",
       "fields": [
         {
@@ -30215,6 +31283,14 @@
     },
     {
       "type": "org.springframework.boot.SpringApplication$SpockMock$1564874516",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.SpringApplication$SpockMock$1571759182",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -36231,6 +37307,14 @@
       ]
     },
     {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$1877951765",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$2050110844",
       "fields": [
         {
@@ -36240,6 +37324,14 @@
     },
     {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$47444222",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$501230646",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -37791,6 +38883,118 @@
       "allDeclaredFields": true
     },
     {
+      "type": "org.springframework.vault.VaultException"
+    },
+    {
+      "type": "org.springframework.vault.authentication.VaultTokenSupplier"
+    },
+    {
+      "type": "org.springframework.vault.client.WebClientBuilder"
+    },
+    {
+      "type": "org.springframework.vault.config.AbstractReactiveVaultConfiguration"
+    },
+    {
+      "type": "org.springframework.vault.config.EnvironmentVaultConfiguration"
+    },
+    {
+      "type": "org.springframework.vault.core.ReactiveVaultOperations",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "read",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.vault.core.ReactiveVaultOperationsBeanInfo"
+    },
+    {
+      "type": "org.springframework.vault.core.ReactiveVaultOperationsCustomizer"
+    },
+    {
+      "type": "org.springframework.vault.core.ReactiveVaultTemplate"
+    },
+    {
+      "type": "org.springframework.vault.support.VaultResponse",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.vault.support.VaultResponseBeanInfo"
+    },
+    {
+      "type": "org.springframework.vault.support.VaultResponseCustomizer"
+    },
+    {
+      "type": "org.springframework.vault.support.VaultResponseSupport",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "setAuth",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        },
+        {
+          "name": "setData",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "setLeaseDuration",
+          "parameterTypes": [
+            "long"
+          ]
+        },
+        {
+          "name": "setLeaseId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setRenewable",
+          "parameterTypes": [
+            "boolean"
+          ]
+        },
+        {
+          "name": "setRequestId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setWarnings",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setWrapInfo",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.vault.support.VaultResponseSupportBeanInfo"
+    },
+    {
+      "type": "org.springframework.vault.support.VaultResponseSupportCustomizer"
+    },
+    {
       "type": "org.springframework.web.bind.annotation.ControllerAdvice"
     },
     {
@@ -39144,6 +40348,28 @@
       "type": "reactor.core.publisher.FluxMapFuseable$MapFuseableSubscriber"
     },
     {
+      "type": "reactor.core.publisher.FluxMergeSequential$MergeSequentialInner",
+      "fields": [
+        {
+          "name": "subscription"
+        }
+      ]
+    },
+    {
+      "type": "reactor.core.publisher.FluxMergeSequential$MergeSequentialMain",
+      "fields": [
+        {
+          "name": "error"
+        },
+        {
+          "name": "requested"
+        },
+        {
+          "name": "wip"
+        }
+      ]
+    },
+    {
       "type": "reactor.core.publisher.FluxOnAssembly$OnAssemblyException"
     },
     {
@@ -40346,6 +41572,608 @@
       "type": "reactor.util.retry.RetryBackoffSpec"
     },
     {
+      "type": "scala.util.Properties",
+      "methods": [
+        {
+          "name": "versionNumberString",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.AwsBasicCredentials",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "builder",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.AwsBasicCredentials$Builder",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "accessKeyId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "secretAccessKey",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.AwsBasicCredentials$BuilderBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.AwsBasicCredentials$BuilderCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.AwsBasicCredentialsBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.AwsBasicCredentialsCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.AwsCredentials",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.AwsCredentialsProvider",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "builder",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider$Builder",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "profileName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider$BuilderBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider$BuilderCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.DefaultCredentialsProviderBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.DefaultCredentialsProviderCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "builder",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider$Builder",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "profileName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider$BuilderImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider$BuilderImplBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider$BuilderImplCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.ProfileCredentialsProviderBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.ProfileCredentialsProviderCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.StaticCredentialsProvider",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "create",
+          "parameterTypes": [
+            "software.amazon.awssdk.auth.credentials.AwsCredentials"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.StaticCredentialsProviderBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.auth.credentials.StaticCredentialsProviderCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsClient",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsRequest",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsRequest$Builder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsRequest$BuilderImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsRequest$BuilderImplBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsRequest$BuilderImplCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsRequestBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsRequestCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsResponse",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsResponse$Builder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsResponse$BuilderImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsResponse$BuilderImplBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsResponse$BuilderImplCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsResponseBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsResponseCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.AwsResponseMetadata"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.client.builder.AwsAsyncClientBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.client.builder.AwsClientBuilder",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "credentialsProvider",
+          "parameterTypes": [
+            "software.amazon.awssdk.auth.credentials.AwsCredentialsProvider"
+          ]
+        },
+        {
+          "name": "region",
+          "parameterTypes": [
+            "software.amazon.awssdk.regions.Region"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.client.builder.AwsDefaultClientBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.client.builder.AwsDefaultClientBuilderBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.client.builder.AwsDefaultClientBuilderCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkClient",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkPlugin"
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkPojo",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkRequest",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkRequest$Builder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkRequestBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkRequestCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkResponse",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkResponse$Builder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkResponse$BuilderImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkResponse$BuilderImplBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkResponse$BuilderImplCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkResponseBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkResponseCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.core.client.builder.SdkAsyncClientBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.client.builder.SdkClientBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.client.builder.SdkDefaultClientBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.core.client.builder.SdkDefaultClientBuilderBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.core.client.builder.SdkDefaultClientBuilderCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.core.exception.SdkClientException"
+    },
+    {
+      "type": "software.amazon.awssdk.http.SdkHttpClient"
+    },
+    {
+      "type": "software.amazon.awssdk.http.SdkHttpClient$Builder"
+    },
+    {
+      "type": "software.amazon.awssdk.http.SdkHttpResponse"
+    },
+    {
+      "type": "software.amazon.awssdk.http.async.SdkAsyncHttpClient"
+    },
+    {
+      "type": "software.amazon.awssdk.http.async.SdkAsyncHttpClient$Builder"
+    },
+    {
+      "type": "software.amazon.awssdk.http.auth.spi.scheme.AuthScheme"
+    },
+    {
+      "type": "software.amazon.awssdk.http.nio.netty.NettySdkAsyncHttpService"
+    },
+    {
+      "type": "software.amazon.awssdk.http.nio.netty.internal.FutureCancelHandler"
+    },
+    {
+      "type": "software.amazon.awssdk.http.nio.netty.internal.IdleConnectionReaperHandler"
+    },
+    {
+      "type": "software.amazon.awssdk.http.nio.netty.internal.ResponseHandler"
+    },
+    {
+      "type": "software.amazon.awssdk.http.nio.netty.internal.SslCloseCompletionEventHandler"
+    },
+    {
+      "type": "software.amazon.awssdk.http.nio.netty.internal.UnusedChannelExceptionHandler"
+    },
+    {
+      "type": "software.amazon.awssdk.http.nio.netty.internal.nrs.HttpStreamsClientHandler"
+    },
+    {
+      "type": "software.amazon.awssdk.http.nio.netty.internal.nrs.HttpStreamsHandler$1"
+    },
+    {
+      "type": "software.amazon.awssdk.http.nio.netty.internal.nrs.HttpStreamsHandler$3"
+    },
+    {
+      "type": "software.amazon.awssdk.identity.spi.AwsCredentialsIdentity",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.identity.spi.Identity",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.identity.spi.IdentityProvider",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.identity.spi.ResolveIdentityRequest"
+    },
+    {
+      "type": "software.amazon.awssdk.regions.Region",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.regions.RegionBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.regions.RegionCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.DefaultSecretsManagerAsyncClientBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.DefaultSecretsManagerAsyncClientBuilderBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.DefaultSecretsManagerAsyncClientBuilderCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.DefaultSecretsManagerBaseClientBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.DefaultSecretsManagerBaseClientBuilderBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.DefaultSecretsManagerBaseClientBuilderCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "builder",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSecretValue",
+          "parameterTypes": [
+            "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClientCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.SecretsManagerBaseClientBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.auth.scheme.SecretsManagerAuthSchemeProvider"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.endpoints.SecretsManagerEndpointProvider"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "builder",
+          "parameterTypes": []
+        },
+        {
+          "name": "equals",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest$Builder",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "secretId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest$BuilderImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest$BuilderImplBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest$BuilderImplCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequestBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequestCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "builder",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse$Builder",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "secretString",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse$BuilderImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse$BuilderImplBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse$BuilderImplCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponseBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponseCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.ResourceNotFoundException"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerException"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerRequest",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerRequest$Builder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerRequest$BuilderImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerRequest$BuilderImplBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerRequest$BuilderImplCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerRequestBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerRequestCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerResponse",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerResponse$Builder",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "build",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerResponse$BuilderImpl",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerResponse$BuilderImplBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerResponse$BuilderImplCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerResponseBeanInfo"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerResponseCustomizer"
+    },
+    {
+      "type": "software.amazon.awssdk.utils.SdkAutoCloseable",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.utils.builder.Buildable",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.utils.builder.CopyableBuilder",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "software.amazon.awssdk.utils.builder.SdkBuilder",
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "build",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "software.amazon.awssdk.utils.builder.ToCopyableBuilder",
+      "allDeclaredFields": true
+    },
+    {
       "type": "spock.config.RunnerConfiguration",
       "methods": [
         {
@@ -41386,6 +43214,13 @@
     {
       "type": {
         "proxy": [
+          "java.util.function.Supplier"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
           "net.bytebuddy.description.method.MethodDescription$InDefinedShape$AbstractBase$Executable"
         ]
       }
@@ -41702,6 +43537,21 @@
     {
       "type": {
         "proxy": [
+          "org.springframework.vault.core.ReactiveVaultOperations"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "org.springframework.vault.core.ReactiveVaultOperations",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
           "org.springframework.web.bind.annotation.ControllerAdvice"
         ]
       }
@@ -41953,6 +43803,21 @@
       "type": {
         "proxy": [
           "reactor.blockhound.shaded.net.bytebuddy.utility.JavaModule$Resolver"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient",
+          "org.spockframework.mock.ISpockMockObject"
         ]
       }
     }
@@ -42781,6 +44646,15 @@
       "glob": "io/camunda/rpa/worker/secrets/SecretsService.class"
     },
     {
+      "glob": "io/camunda/rpa/worker/secrets/aws/SecretsManagerBackend.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/aws/SecretsManagerHints.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/aws/SecretsManagerNativeHintsHelper.class"
+    },
+    {
       "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsBackend.class"
     },
     {
@@ -42800,6 +44674,24 @@
     },
     {
       "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsFunctionalSpec.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/vault/VaultBackend.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/vault/VaultHints.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/vault/VaultNativeHintsHelper$BadCredentials.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/vault/VaultNativeHintsHelper$HappyPath.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/vault/VaultNativeHintsHelper$NoSecret.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/vault/VaultNativeHintsHelper.class"
     },
     {
       "glob": "io/camunda/rpa/worker/util/IterableMultiPart.class"
@@ -43874,6 +45766,9 @@
     },
     {
       "glob": "org/springdoc/webflux/ui/SwaggerConfig.class"
+    },
+    {
+      "glob": "org/springframework/aot/hint/RuntimeHintsRegistrar.class"
     },
     {
       "glob": "org/springframework/aot/hint/annotation/Reflective.class"
@@ -45264,11 +47159,27 @@
     },
     {
       "module": "java.base",
+      "glob": "java/nio/channels/SelectableChannel.class"
+    },
+    {
+      "module": "java.base",
+      "glob": "java/nio/channels/SelectionKey.class"
+    },
+    {
+      "module": "java.base",
+      "glob": "java/nio/channels/Selector.class"
+    },
+    {
+      "module": "java.base",
       "glob": "java/nio/channels/ServerSocketChannel.class"
     },
     {
       "module": "java.base",
       "glob": "java/nio/channels/SocketChannel.class"
+    },
+    {
+      "module": "java.base",
+      "glob": "java/nio/channels/spi/SelectorProvider.class"
     },
     {
       "module": "java.base",
@@ -45734,6 +47645,9 @@
       "type": "java.lang.Exception"
     },
     {
+      "type": "java.lang.IllegalArgumentException"
+    },
+    {
       "type": "java.lang.IllegalStateException"
     },
     {
@@ -45944,7 +47858,15 @@
       "type": "org.spockframework.mock.TooFewInvocationsError"
     },
     {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$1058501463",
+      "customTargetConstructorClass": "java.lang.Object"
+    },
+    {
       "type": "org.spockframework.mock.codegen.File$SpockMock$1163408455",
+      "customTargetConstructorClass": "java.lang.Object"
+    },
+    {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$1245305189",
       "customTargetConstructorClass": "java.lang.Object"
     },
     {
@@ -46005,6 +47927,9 @@
       "type": "org.spockframework.runtime.SpockAssertionError"
     },
     {
+      "type": "org.spockframework.runtime.WrongExceptionThrownError"
+    },
+    {
       "type": "org.spockframework.runtime.model.TextPosition"
     },
     {
@@ -46048,11 +47973,19 @@
       "customTargetConstructorClass": "java.lang.Object"
     },
     {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$1877951765",
+      "customTargetConstructorClass": "java.lang.Object"
+    },
+    {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$2050110844",
       "customTargetConstructorClass": "java.lang.Object"
     },
     {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$47444222",
+      "customTargetConstructorClass": "java.lang.Object"
+    },
+    {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$501230646",
       "customTargetConstructorClass": "java.lang.Object"
     },
     {
@@ -46090,6 +48023,9 @@
       "type": "org.springframework.util.MultiValueMapAdapter"
     },
     {
+      "type": "org.springframework.vault.VaultException"
+    },
+    {
       "type": "org.springframework.web.reactive.function.client.WebClientException"
     },
     {
@@ -46106,6 +48042,33 @@
     },
     {
       "type": "reactor.core.publisher.FluxOnAssembly$OnAssemblyException"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.exception.AwsErrorDetails"
+    },
+    {
+      "type": "software.amazon.awssdk.awscore.exception.AwsServiceException"
+    },
+    {
+      "type": "software.amazon.awssdk.core.SdkBytes"
+    },
+    {
+      "type": "software.amazon.awssdk.core.exception.SdkClientException"
+    },
+    {
+      "type": "software.amazon.awssdk.core.exception.SdkException"
+    },
+    {
+      "type": "software.amazon.awssdk.core.exception.SdkServiceException"
+    },
+    {
+      "type": "software.amazon.awssdk.http.DefaultSdkHttpFullResponse"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.ResourceNotFoundException"
+    },
+    {
+      "type": "software.amazon.awssdk.services.secretsmanager.model.SecretsManagerException"
     }
   ],
   "jni": [

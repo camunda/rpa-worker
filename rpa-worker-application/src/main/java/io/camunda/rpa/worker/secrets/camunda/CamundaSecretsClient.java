@@ -7,5 +7,5 @@ import java.util.Map;
 
 interface CamundaSecretsClient {
 	@RequestLine("GET /secrets")
-	Mono<Map<String, String>> getSecrets();
+	Mono<Map<String, Object>> getSecrets();
 }
