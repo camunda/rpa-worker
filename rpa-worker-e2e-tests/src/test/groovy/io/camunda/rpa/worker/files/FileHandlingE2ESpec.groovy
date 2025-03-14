@@ -8,6 +8,7 @@ import org.springframework.http.HttpEntity
 import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.util.MultiValueMap
+import spock.lang.Issue
 import spock.lang.PendingFeature
 
 class FileHandlingE2ESpec extends AbstractE2ESpec {
@@ -240,6 +241,54 @@ Upload the file
 		then:
 		contents1 == "one"
 		contents2 == "two"
+	}
+
+	@Issue("https://github.com/camunda/rpa-worker/issues/129")
+	void "Multiple files are uploaded from workspace - unnormalised paths"() {
+		given:
+		deployScript('upload_multiple_to_zeebe_unnormalised', '''\
+*** Settings ***
+Library    Camunda
+Library    OperatingSystem
+
+*** Tasks ***
+Test
+    Create File    one.txt
+    Create File    two/two.txt
+    Create File    two/three.txt
+    Create directory    two/four
+    Upload Documents    ./one.txt    uploaded1
+    Upload Documents    two/four/../two.txt    uploaded2
+    Upload Documents    ./tw*/four/../*.txt    uploaded3
+''')
+
+		and:
+		deploySimpleRobotProcess('upload_multiple_to_zeebe_unnormalised_on_default', 'upload_multiple_to_zeebe_unnormalised')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance('upload_multiple_to_zeebe_unnormalised_on_default')
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+
+		when:
+		Map<String, List<ZeebeDocumentDescriptor>> uploaded = objectMapper.convertValue(
+				spec.expectVariables(pinstance.processInstanceKey) {
+					uploaded1
+					uploaded2
+					uploaded3
+				}.with {
+					[uploaded1: uploaded1, uploaded2: uploaded2, uploaded3: uploaded3]
+				}.collectEntries { k, v -> [k, v instanceof List ? v : [v] ] },
+				new TypeReference<Map<String, List<ZeebeDocumentDescriptor>>>() {})
+
+		then:
+		uploaded['uploaded1'].size() == 1
+		uploaded['uploaded2'].size() == 1
+		uploaded['uploaded3'].size() == 2
 	}
 
 	private static MultiValueMap<String, HttpEntity<?>> uploadDocumentRequest(String filename, String content) {
