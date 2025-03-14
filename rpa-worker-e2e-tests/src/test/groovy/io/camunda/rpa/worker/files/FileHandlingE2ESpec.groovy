@@ -9,7 +9,6 @@ import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.util.MultiValueMap
 import spock.lang.Issue
-import spock.lang.PendingFeature
 
 class FileHandlingE2ESpec extends AbstractE2ESpec {
 
@@ -81,32 +80,31 @@ Download the file
 		}
 	}
 	
-	@PendingFeature(reason = "Files are downloaded into a directory with the custom name with the original name?")
-	void "Single file is provided to workspace - custom filename"() {
+	void "Single file is provided to workspace - custom output directory"() {
 		given:
-		deployScript('download_from_zeebe_custom_filename', '''\
+		deployScript('download_from_zeebe_custom_dir', '''\
 *** Settings ***
 Library    OperatingSystem
 Library    Camunda
 
 *** Tasks ***
 Download the file
-    Download Documents    ${theFile}    downloaded.txt
-    ${fileContents}=    Get File    downloaded.txt
+    Download Documents    ${theFile}    downloaded
+    ${fileContents}=    Get File    downloaded/one.txt
     Should Be Equal    ${fileContents}    one
 ''')
 
 		and:
 		deploySimpleRobotProcess(
-				'download_from_zeebe_custom_filename_on_default',
-				'download_from_zeebe_custom_filename')
+				'download_from_zeebe_custom_dir_on_default',
+				'download_from_zeebe_custom_dir')
 
 		and:
 		ZeebeDocumentDescriptor uploaded = documentClient.uploadDocument(
 				uploadDocumentRequest("one.txt", "one"), null).block()
 
 		when:
-		ProcessInstanceEvent pinstance = createInstance('download_from_zeebe_custom_filename_on_default',
+		ProcessInstanceEvent pinstance = createInstance('download_from_zeebe_custom_dir_on_default',
 				theFile: uploaded)
 
 		then:

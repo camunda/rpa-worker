@@ -18,6 +18,7 @@ import okhttp3.mockwebserver.RecordedRequest
 import org.spockframework.spring.SpringSpy
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.codec.multipart.FormFieldPart
 import org.springframework.web.reactive.function.BodyInserters
@@ -30,10 +31,10 @@ import java.util.concurrent.TimeUnit
 
 class FilesFunctionalSpec extends AbstractFunctionalSpec {
 	
-	// TODO: Use Camunda Robot library when available
 	private static final String WRITE_SOME_FILES_SCRIPT = '''\
 *** Settings ***
 Library    OperatingSystem
+Library    Camunda
 
 *** Tasks ***
 Write Some Files
@@ -41,6 +42,8 @@ Write Some Files
     Create File    outputs/two.yes    two
     Create File    outputs/three.no    three
     Create File    outputs/four.no    four
+    
+    Upload Documents    outputs/*.yes
 '''
 	
 	private static final String DO_NOTHING_SCRIPT = '''\
@@ -52,6 +55,8 @@ Do Nothing
 	@SpringSpy
 	WorkspaceCleanupService workspaceCleanupService
 	
+	private Queue<ZeebeDocumentDescriptor.Metadata> uploadRequests = new LinkedList<>()
+	
 	void "Request to store files triggers upload of workspace files to Zeebe"() {
 		given:
 		bypassZeebeAuth()
@@ -62,30 +67,32 @@ Do Nothing
 		}
 		
 		and:
-		zeebeApi.dispatcher = this.&copyInputToOutputDispatcher
+		zeebeApi.dispatcher = this.&copyInputToOutput
 
 		when:
-		EvaluateScriptResponse response = block post()
+		EvaluateScriptResponse response = post()
 				.uri("/script/evaluate")
 				.body(BodyInserters.fromValue(new EvaluateScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
+		.block()
 		
 		then:
 		response.result() == ExecutionResults.Result.PASS
-
-		when:
-		Map<String, ZeebeDocumentDescriptor> resp = block post()
-				.uri("/file/store/${theWorkspace.path().fileName.toString()}")
-				.body(BodyInserters.fromValue(new StoreFilesRequest("**/*.yes")))
-				.retrieve()
-				.bodyToMono(new ParameterizedTypeReference<Map<String, ZeebeDocumentDescriptor>>() {})
 		
-		then:
-		resp.size() == 2
-		resp['one.yes'].metadata().fileName() == "one.yes"
-		resp['two.yes'].metadata().fileName() == "two.yes"
-		resp.values()*.contentHash().every { it == "content-hash" }
+		and:
+		2.times {
+			with(zeebeApi.takeRequest(3, TimeUnit.SECONDS)) { req ->
+				URI.create(req.path).path == "/v2/documents"
+				req.method == HttpMethod.POST.toString()
+			}
+		}
+		
+		and:
+		with([uploadRequests.poll(), uploadRequests.poll()]*.fileName().findAll()) {
+			size() == 2
+			containsAll("one.yes", "two.yes")
+		}
 	}
 	
 	void "Request to retrieve files downloads from Zeebe into workspace"() {
@@ -171,7 +178,7 @@ Do Nothing
 		}
 
 		and:
-		zeebeApi.dispatcher = this.&copyInputToOutputDispatcher
+		zeebeApi.dispatcher = this.&copyInputToOutput
 
 		when:
 		EvaluateScriptResponse response = block post()
@@ -223,7 +230,7 @@ Test
 		}
 
 		and:
-		zeebeApi.dispatcher = this.&copyInputToOutputDispatcher
+		zeebeApi.dispatcher = this.&copyInputToOutput
 
 		when:
 		EvaluateScriptResponse response = block post()
@@ -253,7 +260,7 @@ Test
 		return objectMapper.convertValue(filesRaw, new TypeReference<List<ZeebeDocumentDescriptor>>() {})
 	}
 	
-	private MockResponse copyInputToOutputDispatcher(RecordedRequest rr) {
+	private MockResponse copyInputToOutput(RecordedRequest rr) {
 		MultipartReader mpr = new MultipartReader(ResponseBody.create(
 				rr.body.readUtf8(),
 				MediaType.parse(rr.headers.get("Content-Type"))))
@@ -263,6 +270,7 @@ Test
 		}
 
 		ZeebeDocumentDescriptor.Metadata metadata = objectMapper.readValue(parts.metadata.value(), ZeebeDocumentDescriptor.Metadata)
+		uploadRequests << metadata
 
 		new MockResponse().tap {
 			setResponseCode(201)
