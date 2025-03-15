@@ -3,6 +3,9 @@ package io.camunda.rpa.worker.robot;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.io.IO;
+import io.camunda.rpa.worker.pexec.AbortProcessSilentlyException;
+import io.camunda.rpa.worker.pexec.ProcessControl;
+import io.camunda.rpa.worker.pexec.ProcessExecutionListener;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.python.PythonInterpreter;
@@ -29,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -55,6 +59,8 @@ public class RobotService {
 	private final WorkspaceService workspaceService;
 	private final Scheduler robotWorkScheduler;
 	private final ObjectProvider<EnvironmentVariablesContributor> environmentContributors;
+	
+	private final Map<String, ProcessControl> runningExecutions = new ConcurrentHashMap<>();
 
 	private record RobotEnvironment(Workspace workspace, Path varsFile, Path outputDir, Path artifactsDir) { }
 
@@ -116,6 +122,9 @@ public class RobotService {
 								.onErrorResume(RobotFailureException.class, thrown ->
 										Mono.just(thrown.getExecutionResult()))
 
+								.onErrorResume(AbortProcessSilentlyException.class, _ -> Mono.just(
+										new ExecutionResults.ExecutionResult("", ExecutionResults.Result.PASS, "The execution was aborted", Collections.emptyMap(), Duration.ZERO)))
+								
 								.onErrorMap(thrown -> ! (thrown instanceof ProcessTimeoutException),
 										thrown -> new RobotErrorException(thrown))
 
@@ -197,6 +206,7 @@ public class RobotService {
 						.bindArg("script", renv.workspace().path().resolve("%s.robot".formatted(script.executionKey())))
 
 						.timeout(timeout)
+						.executionListener(executionListener(renv.workspace()))
 						.scheduleOn(robotWorkScheduler))
 
 				.doOnSubscribe(_ -> executionListener.ifPresent(
@@ -251,5 +261,23 @@ public class RobotService {
 				.map(ExecutionResults.ExecutionResult::result)
 				.max(Comparator.naturalOrder())
 				.orElseThrow(() -> new NoSuchElementException("The result set contained no results"));
+	}
+
+	public Optional<ProcessControl> findExecutionByWorkspace(String workspaceId) {
+		return Optional.ofNullable(runningExecutions.get(workspaceId));
+	}
+
+	private ProcessExecutionListener executionListener(Workspace workspace) {
+		return new ProcessExecutionListener() {
+			@Override
+			public void processStarted(ProcessControl processControl) {
+				runningExecutions.put(workspace.id(), processControl);
+			}
+
+			@Override
+			public void processEnded(ProcessService.ExecutionResult ignored) {
+				runningExecutions.remove(workspace.id());
+			}
+		};
 	}
 }

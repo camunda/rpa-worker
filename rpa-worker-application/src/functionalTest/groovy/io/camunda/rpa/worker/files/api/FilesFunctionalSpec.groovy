@@ -25,8 +25,10 @@ import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import spock.lang.Issue
+import spock.util.concurrent.PollingConditions
 
 import java.nio.file.Files
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
 class FilesFunctionalSpec extends AbstractFunctionalSpec {
@@ -55,7 +57,7 @@ Do Nothing
 	@SpringSpy
 	WorkspaceCleanupService workspaceCleanupService
 	
-	private Queue<ZeebeDocumentDescriptor.Metadata> uploadRequests = new LinkedList<>()
+	private List<ZeebeDocumentDescriptor.Metadata> uploadRequests = new CopyOnWriteArrayList<>()
 	
 	void "Request to store files triggers upload of workspace files to Zeebe"() {
 		given:
@@ -82,17 +84,17 @@ Do Nothing
 		
 		and:
 		2.times {
-			with(zeebeApi.takeRequest(3, TimeUnit.SECONDS)) { req ->
+			with(zeebeApi.takeRequest(5, TimeUnit.SECONDS)) { req ->
 				URI.create(req.path).path == "/v2/documents"
 				req.method == HttpMethod.POST.toString()
 			}
 		}
 		
 		and:
-		with([uploadRequests.poll(), uploadRequests.poll()]*.fileName().findAll()) {
-			size() == 2
-			containsAll("one.yes", "two.yes")
-		}
+		new PollingConditions().eventually {
+			uploadRequests.size() == 2
+			uploadRequests*.fileName().containsAll("one.yes", "two.yes")
+		}	
 	}
 	
 	void "Request to retrieve files downloads from Zeebe into workspace"() {

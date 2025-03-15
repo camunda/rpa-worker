@@ -2,5 +2,6 @@ camunda-utils @ https://github.com/camunda/rpa-python-libraries/releases/downloa
 ## ^ provides robotframework
 
 requests
+robotframework-requests
 
 PyYAML

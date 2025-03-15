@@ -9168,6 +9168,13 @@
           ]
         },
         {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.time.Duration",
+            "boolean"
+          ]
+        },
+        {
           "name": "defaultTimeout",
           "parameterTypes": []
         }

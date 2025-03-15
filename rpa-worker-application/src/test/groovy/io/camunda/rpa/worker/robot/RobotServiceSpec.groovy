@@ -3,8 +3,7 @@ package io.camunda.rpa.worker.robot
 import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.io.IO
-import io.camunda.rpa.worker.pexec.ExecutionCustomizer
-import io.camunda.rpa.worker.pexec.ProcessService
+import io.camunda.rpa.worker.pexec.*
 import io.camunda.rpa.worker.python.PythonInterpreter
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.util.YamlMapper
@@ -116,6 +115,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.arg("--logtitle") >> executionCustomizer
 		1 * executionCustomizer.arg("Task log") >> executionCustomizer
 		1 * executionCustomizer.conditionalArg({ fn -> fn.getAsBoolean() }, "-X") >> executionCustomizer
+		1 * executionCustomizer.executionListener(_) >> executionCustomizer
 		1 * executionCustomizer.timeout(robotProperties.defaultTimeout()) >> executionCustomizer
 		1 * executionCustomizer.bindArg("script", workDir.resolve("main.robot")) >> executionCustomizer
 		
@@ -420,5 +420,67 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		then:
 		1 * executionCustomizer.timeout(Duration.ofMinutes(3)) >> executionCustomizer
 		1 * executionListener.beforeScriptExecution(workspace, Duration.ofMinutes(3))
+	}
+	
+	void "Returns dummy pass result when aborting process silently"() {
+		given:
+		RobotScript script = new RobotScript("some-script", "some-script-body")
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace(null, [:]) >> workspace
+		io.notExists(workDir.resolve("outputs.yml")) >> true
+
+		and:
+		processService.execute(_, _) >> { _, __ ->
+			Mono.error(new AbortProcessSilentlyException())
+		}
+
+		when:
+		ExecutionResults result = block service.execute(script, [:], null, executionListener, null)
+
+		then:
+		result.results().values().first().result() == ExecutionResults.Result.PASS
+	}
+	
+	void "Returns active executions by workspace ID"() {
+		given:
+		RobotScript script = new RobotScript("some-script", "some-script-body")
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace(null, [:]) >> workspace
+		io.notExists(workDir.resolve("outputs.yml")) >> true
+
+		and:
+		Mono<ProcessService.ExecutionResult> process = Mono.never()
+		ProcessExecutionListener listener
+		ProcessControl processControl = Mock()
+		ExecutionCustomizer executionCustomizer = Stub() {
+			it.executionListener(_) >> { ProcessExecutionListener l -> listener = l; it }
+		}
+		processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(executionCustomizer)
+			listener.processStarted(processControl)
+			return process
+		}
+
+		when:
+		service.execute(script, [:], null, executionListener, null).subscribe()
+
+		and:
+		Optional<ProcessControl> pc = service.findExecutionByWorkspace(workspace.id())
+
+		then:
+		pc.isPresent()
+		
+		when:
+		pc.get().abort(false)
+		listener.processEnded(null)
+		
+		then:
+		service.findExecutionByWorkspace(workspace.id()).empty
 	}
 }

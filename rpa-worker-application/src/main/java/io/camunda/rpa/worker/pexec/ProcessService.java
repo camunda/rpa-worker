@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeoutException;
 import java.util.function.BooleanSupplier;
@@ -69,6 +70,9 @@ public class ProcessService {
 			
 			@Getter
 			private boolean silent = false;
+			
+			@Getter
+			private Optional<ProcessExecutionListener> executionListener = Optional.empty();
 
 			@Override
 			public ExecutionCustomizer arg(String arg) {
@@ -148,6 +152,12 @@ public class ProcessService {
 				this.silent = true;
 				return this;
 			}
+
+			@Override
+			public ExecutionCustomizer executionListener(ProcessExecutionListener listener) {
+				this.executionListener = Optional.of(listener);
+				return this;
+			}
 		};
 		customization.apply(executionCustomizer);
 
@@ -157,8 +167,8 @@ public class ProcessService {
 				? null
 				: allowedExitCodes.stream().mapToInt(i -> i).toArray());
 		ExecuteWatchdog2 watchdog = executionCustomizer.getTimeout() != null
-				? new ExecuteWatchdog2(executionCustomizer.getTimeout().toMillis())
-				: new ExecuteWatchdog2();
+				? new ExecuteWatchdog2(executionCustomizer.getTimeout().toMillis(), executionCustomizer.getExecutionListener())
+				: new ExecuteWatchdog2(executionCustomizer.getExecutionListener());
 		defaultExecutor.setWatchdog(watchdog);
 
 		StreamHandler streamHandler = new StreamHandler();
@@ -180,18 +190,21 @@ public class ProcessService {
 								streamHandler.getOutString(),
 								streamHandler.getErrString(), 
 								exitCode.elapsedSinceSubscription()))
+						.doOnNext(xr -> executionCustomizer.getExecutionListener()
+								.ifPresent(l -> l.processEnded(xr)))
 						.subscribeOn(executionCustomizer.getScheduler()))
 				.onErrorResume(
 						thrown -> thrown instanceof TimeoutException 
 								|| (thrown instanceof IOException && thrown.getCause() instanceof TimeoutException),
-						thrown -> Mono.error(() -> 
-						new ProcessTimeoutException(streamHandler.getOutString(), streamHandler.getErrString(), thrown)));
+						thrown -> Mono.error(() ->
+								new ProcessTimeoutException(streamHandler.getOutString(), streamHandler.getErrString(), thrown)));
 	}
 	
 	private interface IntrospectableExecutionCustomizer extends ExecutionCustomizer {
 		Duration getTimeout();
 		Scheduler getScheduler();
 		boolean isSilent();
+		Optional<ProcessExecutionListener> getExecutionListener();
 	}
 
 	static class StreamHandler extends PumpStreamHandler {
