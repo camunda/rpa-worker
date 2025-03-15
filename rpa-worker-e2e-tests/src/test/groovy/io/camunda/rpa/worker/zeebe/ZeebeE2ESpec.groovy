@@ -248,6 +248,7 @@ Tasks
 		deployScript('throw_bpmn_error', '''\
 *** Settings ***
 Library    Camunda
+Library    RequestsLibrary
 
 *** Tasks ***
 Throw error
@@ -257,6 +258,32 @@ Throw error
 
 More Tasks
     Should Be Equal    three    four
+
+*** Keywords ***
+Run on teardown
+    Set Output Variable    teardownDidRun    true
+        
+####################################################################################################
+## STUB IMPLEMENTATIONS
+####################################################################################################
+
+Abort the Execution 
+    ${reqBody}=    Create Dictionary    silent=${True}
+    POST    http://127.0.0.1:36227/execution/%{RPA_WORKSPACE_ID}/abort    json=${reqBody}
+    Sleep    15s
+    Fail    Should never reach this
+
+Throw BPMN Error
+    ## Real Python lib should do Variables things
+    [Arguments]    ${errorCode}    ${errorMessage}=${None}
+    IF    '${errorMessage} != ${None}\'
+        ${reqBody}=    Create Dictionary    errorCode=${errorCode}    errorMessage=${errorMessage}
+    ELSE
+        ${reqBody}=    Create Dictionary    errorMessage=${errorCode}
+    END
+    
+    POST    http://127.0.0.1:36227/zeebe/job/%{RPA_ZEEBE_JOB_KEY}/throw    json=${reqBody}
+    Abort the Execution
 ''')
 		and:
 		deploySimpleRobotProcess('throw_bpmn_error_on_default', 'throw_bpmn_error')

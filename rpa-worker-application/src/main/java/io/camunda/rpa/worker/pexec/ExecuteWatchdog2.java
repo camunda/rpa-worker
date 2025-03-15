@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.pexec;
 
 import io.vavr.control.Try;
 import lombok.Getter;
+import org.apache.commons.exec.ExecuteException;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Watchdog;
 
@@ -30,7 +31,7 @@ class ExecuteWatchdog2 extends ExecuteWatchdog {
 	public synchronized void start(Process processToMonitor) {
 		super.start(processToMonitor);
 		this.process = processToMonitor;
-		executionListener.ifPresent(l -> l.processStarted(this::abortSilently));
+		executionListener.ifPresent(l -> l.processStarted(this::abort));
 	}
 
 	@Override
@@ -51,10 +52,11 @@ class ExecuteWatchdog2 extends ExecuteWatchdog {
 		failedToStart(new TimeoutException());
 	}
 
-	private void abortSilently() {
+	private void abort(boolean silent) {
 		process.toHandle().destroy();
 		Try.run(() -> process.waitFor(10, TimeUnit.SECONDS));
-		process.toHandle().destroyForcibly();
-		failedToStart(new AbortProcessSilentlyException());
+		
+		if(silent) failedToStart(new AbortProcessSilentlyException());
+		else       failedToStart(new ExecuteException("Process was aborted", 253));
 	}
 }

@@ -185,7 +185,6 @@ public class ProcessService {
 						.recover(ExecuteException.class, ExecuteException::getExitValue)
 						.get())
 						.timed()
-						.onErrorComplete(AbortProcessSilentlyException.class)
 						.map(exitCode -> new ExecutionResult(
 								exitCode.get(),
 								streamHandler.getOutString(),
