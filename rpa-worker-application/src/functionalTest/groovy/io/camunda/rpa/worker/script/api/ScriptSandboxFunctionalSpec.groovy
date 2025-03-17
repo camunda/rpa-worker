@@ -4,8 +4,10 @@ import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.api.ValidationFailureDto
 import io.camunda.rpa.worker.robot.ExecutionResults
+import io.camunda.rpa.worker.secrets.SecretsService
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
+import org.spockframework.spring.SpringBean
 import org.spockframework.spring.SpringSpy
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -25,6 +27,11 @@ class ScriptSandboxFunctionalSpec extends AbstractFunctionalSpec implements Publ
 	
 	@SpringSpy
 	WorkspaceCleanupService workspaceCleanupService
+	
+	@SpringBean
+	SecretsService secretsService = Stub() {
+		getSecrets() >> Mono.just(Collections.emptyMap())
+	}
 
 	void "Evaluate script fails on missing required data"() {
 		when:

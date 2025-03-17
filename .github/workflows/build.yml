@@ -321,7 +321,20 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-          
+
+      - name: Import Secrets for E2E
+        id: secrets
+        uses: hashicorp/vault-action@v2.5.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/products/rpa/ci/worker_e2e_secrets_camunda clientSecret | CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTSECRET ;
+            secret/data/products/rpa/ci/worker_e2e_secrets_camunda clusterId    | CAMUNDA_E2E_SECRETS_CAMUNDA_CLUSTERID ;
+            secret/data/products/rpa/ci/worker_e2e_secrets_camunda clientId     | CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTID ;
+      
       - name: Setup Camunda
         run: |
           echo "## Updating hosts"
@@ -345,7 +358,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: native-linux-amd64
-          
+      
       - name: Build
         run: |
           export CAMUNDA_CLIENT_AUTH_CLIENTSECRET=$(k3s kubectl get secret -n camunda camunda-zeebe-identity-secret -o jsonpath='{.data.zeebe-secret}' | base64 -d | xargs)

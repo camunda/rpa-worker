@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.robot.EnvironmentVariablesContributor;
 import io.camunda.rpa.worker.robot.PreparedScript;
 import io.camunda.rpa.worker.workspace.Workspace;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,10 +21,7 @@ class SecretsEnvironmentVariablesContributor implements EnvironmentVariablesCont
 	
 	@Override
 	public Mono<Map<String, String>> getEnvironmentVariables(Workspace workspace, PreparedScript script) {
-		return Mono.deferContextual(ctx -> Mono.justOrEmpty(
-						ctx.<ActivatedJob>getOrEmpty(ActivatedJob.class))
-
-				.flatMap(_ -> secretsService.getSecrets()))
+		return secretsService.getSecrets()
 				.defaultIfEmpty(Collections.emptyMap())
 				.map(secrets -> Try.of(() -> objectMapper.writeValueAsString(secrets)).get())
 				.map(secretsJson -> Map.of("CAMUNDA_SECRETS", secretsJson));
