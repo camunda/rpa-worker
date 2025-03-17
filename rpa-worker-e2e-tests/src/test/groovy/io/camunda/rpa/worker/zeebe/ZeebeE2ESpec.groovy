@@ -240,5 +240,176 @@ Tasks
 			}
 		}
 	}
+
+	void "Sends throw error commands to Zeebe from script"() {
+		given:
+		deployScript('throw_bpmn_error', '''\
+*** Settings ***
+Library    Camunda
+Library    RequestsLibrary
+Test Teardown    Run on teardown
+
+*** Tasks ***
+Throw error
+    Set Output Variable    anOutputVariable    output-variable-value
+    Throw BPMN Error    ERROR_CODE    Bad things happened
+
+*** Keywords ***
+Run on teardown
+    Set Output Variable    teardownDidRun    ${True}
+''')
+		and:
+		deploySimpleRobotProcess('throw_bpmn_error_on_default', 'throw_bpmn_error')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("throw_bpmn_error_on_default")
+
+		then:
+		spec.expectIncidents(pinstance.processInstanceKey) { incidents ->
+			incidents.size() == 1
+			with(incidents.first()) {
+				type() == OperateClient.GetIncidentsResponse.Item.Type.UNHANDLED_ERROR_EVENT
+				message().contains("ERROR_CODE")
+				message().contains("Bad things happened")
+			}
+		}
+		spec.expectVariables(pinstance.processInstanceKey) {
+			anOutputVariable == 'output-variable-value'
+			teardownDidRun
+		}
+	}
+
+	void "Sends throw error commands to Zeebe from script - no message"() {
+		given:
+		deployScript('throw_bpmn_error', '''\
+*** Settings ***
+Library    Camunda
+Library    RequestsLibrary
+Test Teardown    Run on teardown
+
+*** Tasks ***
+Throw error
+    Set Output Variable    anOutputVariable    output-variable-value
+    Throw BPMN Error    ERROR_CODE
+
+*** Keywords ***
+Run on teardown
+    Set Output Variable    teardownDidRun    ${True}
+''')
+		and:
+		deploySimpleRobotProcess('throw_bpmn_error_on_default', 'throw_bpmn_error')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("throw_bpmn_error_on_default")
+
+		then:
+		spec.expectIncidents(pinstance.processInstanceKey) { incidents ->
+			incidents.size() == 1
+			with(incidents.first()) {
+				type() == OperateClient.GetIncidentsResponse.Item.Type.UNHANDLED_ERROR_EVENT
+				message().contains("ERROR_CODE")
+			}
+		}
+		spec.expectVariables(pinstance.processInstanceKey) {
+			anOutputVariable == 'output-variable-value'
+			teardownDidRun
+		}
+	}
+
+	void "Sends throw error commands to Zeebe from script - with variables"() {
+		given:
+		deployScript('throw_bpmn_error', '''\
+*** Settings ***
+Library    Camunda
+Library    RequestsLibrary
+Test Teardown    Run on teardown
+
+*** Tasks ***
+Throw error
+    Set Output Variable    anOutputVariable    output-variable-value
+    ${errorVars}=    Create Dictionary    errorVariable=error-variable-value
+    Throw BPMN Error    ERROR_CODE    Bad things happened    ${errorVars}
+
+*** Keywords ***
+Run on teardown
+    Set Output Variable    teardownDidRun    ${True}
+''')
+
+		and:
+		deployScript('catch_bpmn_error', '''\
+*** Settings ***
+Library    Camunda
+
+*** Tasks ***
+Catch error
+    Should Be Equal    ${errorVariable}    error-variable-value
+    Set Output Variable    catchDidRun    ${True}
+''')
+
+		and:
+		deployProcess("throw_and_catch_bpmn_error_on_default")
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("throw_and_catch_bpmn_error_on_default")
+
+		then:
+		expectNoIncident(pinstance.processInstanceKey)
+
+		and:
+		spec.expectVariables(pinstance.processInstanceKey) {
+			anOutputVariable == 'output-variable-value'
+			teardownDidRun
+			catchDidRun
+			errorVariable == 'error-variable-value'
+		}
+	}
+
+	void "Sends throw error commands to Zeebe from script - with variables, no message"() {
+		given:
+		deployScript('throw_bpmn_error', '''\
+*** Settings ***
+Library    Camunda
+Library    RequestsLibrary
+Test Teardown    Run on teardown
+
+*** Tasks ***
+Throw error
+    Set Output Variable    anOutputVariable    output-variable-value
+    ${errorVars}=    Create Dictionary    errorVariable=error-variable-value
+    Throw BPMN Error    ERROR_CODE    variables=${errorVars}
+
+*** Keywords ***
+Run on teardown
+    Set Output Variable    teardownDidRun    ${True}
+''')
+
+		and:
+		deployScript('catch_bpmn_error', '''\
+*** Settings ***
+Library    Camunda
+
+*** Tasks ***
+Catch error
+    Should Be Equal    ${errorVariable}    error-variable-value
+    Set Output Variable    catchDidRun    ${True}
+''')
+
+		and:
+		deployProcess("throw_and_catch_bpmn_error_on_default")
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("throw_and_catch_bpmn_error_on_default")
+
+		then:
+		expectNoIncident(pinstance.processInstanceKey)
+
+		and:
+		spec.expectVariables(pinstance.processInstanceKey) {
+			anOutputVariable == 'output-variable-value'
+			teardownDidRun
+			catchDidRun
+			errorVariable == 'error-variable-value'
+		}
+	}
 }
 	

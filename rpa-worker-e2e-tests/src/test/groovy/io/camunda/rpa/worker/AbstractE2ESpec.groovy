@@ -12,6 +12,7 @@ import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.files.DocumentClient
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.rpa.worker.operate.OperateClient.GetProcessInstanceResponse
+import io.camunda.rpa.worker.operate.OperateClient.GetVariablesResponse.Item
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.response.DeploymentEvent
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
@@ -272,7 +273,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 						value = FromString,
 						options = "java.util.List<io.camunda.rpa.worker.operate.OperateClient.GetIncidentsResponse.Item>") Closure<?> fn) {
 
-			return block(getProcessInstance(processInstanceKey)
+			return getProcessInstance(processInstanceKey)
 					.flatMap { pinstance ->
 						operateClient.getIncidents(
 								new OperateClient.GetIncidentsRequest(
@@ -286,7 +287,8 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 						GroovyRuntimeUtil.invokeClosure(fn2)
 					}
 					.retryWhen(waitForObjectRetrySpec)
-					.map { it.items() })
+					.map { it.items() }
+					.block()
 		}
 		
 		@ConditionBlock
@@ -299,10 +301,11 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 
 			return operateClient.getVariables(new OperateClient.GetVariablesRequest(new OperateClient.GetVariablesRequest.Filter(processInstanceKey)))
 					.flatMapIterable(it -> it.items())
-					.collect(Collectors.toMap(
-							(OperateClient.GetVariablesResponse.Item kv) -> kv.name(),
-							(OperateClient.GetVariablesResponse.Item kv) ->
-									objectMapper.readValue(kv.value() ?: "{}", Object)))
+					.collect(Collectors.groupingBy((Item it) -> it.name(),
+							Collectors.collectingAndThen(
+									Collectors.collectingAndThen(
+											Collectors.maxBy((Item l, Item r) -> l.key() <=> r.key()), o -> o.get()),
+									(Item kv) -> objectMapper.readValue(kv.value() ?: "{}", Object))))
 					.doOnNext { resp ->
 						Closure<?> fn2 = fn.rehydrate(resp, fn.owner, fn.thisObject).curry(resp)
 						GroovyRuntimeUtil.invokeClosure(fn2)

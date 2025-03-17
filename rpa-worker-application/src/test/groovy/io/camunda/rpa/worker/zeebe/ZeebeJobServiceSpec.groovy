@@ -15,6 +15,7 @@ import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
+import io.camunda.zeebe.client.api.command.SetVariablesCommandStep1
 import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
@@ -90,6 +91,13 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		
 		and:
 		1 * workspaceService.deleteWorkspace(workspace)
+		
+		and:
+		1 * zeebeClient.newSetVariablesCommand(job.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
+			1 * variables(expectedOutputVars) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				1 * send()
+			}
+		}
 	}
 
 	void "Runs received task and reports Robot failure/error"(Result result, String expectedMessage) {
@@ -118,6 +126,13 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		
 		and:
 		1 * metricsService.onZeebeJobFail(job.type, _)
+
+		and:
+		1 * zeebeClient.newSetVariablesCommand(job.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
+			1 * variables(expectedOutputVars) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				1 * send()
+			}
+		}
 
 		where:
 		result       || expectedMessage
@@ -245,21 +260,68 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		1 * metricsService.onZeebeJobFail(job.type, "ROBOT_TIMEOUT")
 	}
 
+	void "Does not process results of detached execution"() {
+		given:
+		ActivatedJob job = anRpaJob()
+		Map<String, String> expectedOutputVars = [outputVar: 'output-var-value']
+
+		Path workspacePath = Stub()
+		Workspace workspace = new Workspace(null, workspacePath)
+
+		when:
+		block service.handleJob(job)
+
+		then:
+		1 * metricsService.onZeebeJobReceived(job.type)
+		1 * robotService.execute(script, [], [], _, null, _, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job], null) >> { _, __, ___, ____, _____, RobotExecutionListener executionListener, _______, ________ ->
+			executionListener.beforeScriptExecution(workspace, Duration.ofMinutes(1))
+			executionListener.afterRobotExecution(workspace)
+			service.pushDetached(123L)
+			return Mono.just(new ExecutionResults(
+					[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:], Duration.ofSeconds(3))],
+					Result.FAIL,
+					expectedOutputVars,
+					Stub(Path),
+					Duration.ofSeconds(3)))
+		}
+
+		and:
+		1 * zeebeClient.newUpdateJobCommand(job) >> Mock(UpdateJobCommandStep1) {
+			1 * updateTimeout(Duration.ofMinutes(1)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
+				1 * send()
+			}
+		}
+
+		then:
+		0 * zeebeClient._(*_)
+
+		and:
+		1 * workspaceService.deleteWorkspace(workspace)
+		
+		then:
+		1 * zeebeClient.newSetVariablesCommand(job.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
+			1 * variables(expectedOutputVars) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				1 * send()
+			}
+		}
+
+	}
+
 	private ActivatedJob anRpaJob(Map<String, Object> variables = [:], List additionalResources = [], Map additionalHeaders = [:]) {
 		return Stub(ActivatedJob) {
 			getCustomHeaders() >> [
 					(ZeebeJobService.LINKED_RESOURCES_HEADER_NAME): JsonOutput.toJson([
-									new ZeebeLinkedResource(
-											"this_script",
-											ZeebeBindingType.latest,
-											"RPA",
-											"?",
-											ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
-											"this_script_latest"),
+							new ZeebeLinkedResource(
+									"this_script",
+									ZeebeBindingType.latest,
+									"RPA",
+									"?",
+									ZeebeJobService.MAIN_SCRIPT_LINK_NAME,
+									"this_script_latest"),
 
-									*additionalResources
-							]),
-					
+							*additionalResources
+					]),
+
 					*: additionalHeaders
 			]
 
@@ -269,6 +331,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 			getProcessInstanceKey() >> 345
 			getRetries() >> 3
 			getType() >> "camunda::RPA-Task::default"
+			getElementInstanceKey() >> 456
 		}
 	}
 }
