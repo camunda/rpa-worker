@@ -347,7 +347,6 @@ jobs:
           name: native-linux-amd64
           
       - name: Import Secrets for E2E
-        if: github.ref_type == 'tag'
         id: secrets
         uses: hashicorp/vault-action@v2.5.0
         with:
