@@ -20,6 +20,7 @@ class CamundaSecretsE2ESpec extends AbstractE2ESpec {
 				CAMUNDA_RPA_SECRETS_CAMUNDA_TOKENAUDIENCE  : "secrets.dev.ultrawombat.com",
 				CAMUNDA_RPA_ZEEBE_AUTHENDPOINT             : "https://login.cloud.dev.ultrawombat.com/oauth",
 				CAMUNDA_RPA_SECRETS_CAMUNDA_SECRETSENDPOINT: "https://cluster-api.cloud.dev.ultrawombat.com",
+				CAMUNDA_CLIENT_ZEEBE_ENABLED               : "false",
 
 				CAMUNDA_CLIENT_AUTH_CLIENTID               : System.getenv("CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTID"),
 				CAMUNDA_CLIENT_AUTH_CLIENTSECRET           : System.getenv("CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTSECRET"),
