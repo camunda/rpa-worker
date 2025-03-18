@@ -334,6 +334,8 @@ jobs:
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clientSecret | CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTSECRET ;
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clusterId    | CAMUNDA_E2E_SECRETS_CAMUNDA_CLUSTERID ;
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clientId     | CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTID ;
+            secret/data/products/rpa/ci/worker_e2e_secrets_aws accessKeyId      | CAMUNDA_E2E_SECRETS_AWS_ACCESSKEYID ;
+            secret/data/products/rpa/ci/worker_e2e_secrets_aws secretAccessKey  | CAMUNDA_E2E_SECRETS_AWS_SECRETACCESSKEY ;
       
       - name: Setup Camunda
         run: |
