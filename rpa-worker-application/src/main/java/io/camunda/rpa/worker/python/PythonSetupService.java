@@ -241,4 +241,9 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 						.arg("-r").bindArg("requirementsTxt", requirements)
 						.inheritEnv());
 	}
+
+	public Mono<Void> purgeEnvironment() {
+		return io.run(() -> io.deleteDirectoryRecursively(pythonProperties.path()));
+	}
+
 }

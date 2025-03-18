@@ -115,6 +115,10 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	static Process process
 
 	void setup() {
+		startWorker()
+	}
+
+	void startWorker() {
 		ProcessBuilder pb = new ProcessBuilder(e2eProperties.pathToWorker().toAbsolutePath().toString())
 		pb.environment().putAll(getEnvironment())
 		pb.inheritIO()
@@ -126,13 +130,17 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.retrieve()
 				.toBodilessEntity()
 				.retryWhen(Retry.fixedDelay(100, Duration.ofSeconds(3))
-						.filter { ( ! process) || process.alive })
+						.filter { (!process) || process.alive })
 				.onErrorMap(thrown -> new IllegalStateException("RPA Worker did not become available", thrown))
 				.block()
 	}
 
 	void cleanup() {
-		if( ! process) return
+		stopWorker()
+	}
+	
+	void stopWorker() {
+		if ( ! process) return
 		process.toHandle().destroy()
 		process.waitFor(10, TimeUnit.SECONDS)
 		process.toHandle().destroyForcibly()

@@ -22,9 +22,9 @@ class CamundaSecretsE2ESpec extends AbstractE2ESpec {
 				CAMUNDA_RPA_SECRETS_CAMUNDA_SECRETSENDPOINT: "https://cluster-api.cloud.dev.ultrawombat.com",
 				CAMUNDA_CLIENT_ZEEBE_ENABLED               : "false",
 
-				CAMUNDA_CLIENT_AUTH_CLIENTID               : System.getenv("CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTID"),
-				CAMUNDA_CLIENT_AUTH_CLIENTSECRET           : System.getenv("CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTSECRET"),
-				CAMUNDA_CLIENT_CLUSTERID                   : System.getenv("CAMUNDA_E2E_SECRETS_CAMUNDA_CLUSTERID"),
+				CAMUNDA_CLIENT_AUTH_CLIENTID               : zeebeConfiguration.getEnv("CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTID"),
+				CAMUNDA_CLIENT_AUTH_CLIENTSECRET           : zeebeConfiguration.getEnv("CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTSECRET"),
+				CAMUNDA_CLIENT_CLUSTERID                   : zeebeConfiguration.getEnv("CAMUNDA_E2E_SECRETS_CAMUNDA_CLUSTERID"),
 				CAMUNDA_CLIENT_REGION                      : "lpp-1",
 		]
 	}
