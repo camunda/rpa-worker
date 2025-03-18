@@ -4,6 +4,8 @@ import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
 import io.camunda.rpa.worker.python.PythonInterpreter
+import io.camunda.rpa.worker.python.PythonSetupService
+import io.camunda.rpa.worker.util.ApplicationRestarter
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -13,12 +15,14 @@ import java.time.Duration
 import java.util.function.UnaryOperator
 
 class RobotStartupCheckSpec extends Specification implements PublisherUtils {
-	
+
+	PythonSetupService pythonSetupService = Mock()
+	ApplicationRestarter applicationRestarter = Mock()
 	ProcessService processService = Mock()
 	PythonInterpreter pythonInterpreter = new PythonInterpreter(Paths.get("/path/to/python"))
 	
 	@Subject
-	RobotStartupCheck check = new RobotStartupCheck(processService, pythonInterpreter)
+	RobotStartupCheck check = new RobotStartupCheck(pythonSetupService, applicationRestarter, processService, pythonInterpreter)
 
 	ExecutionCustomizer executionCustomizer = Mock() {
 		_ >> it
@@ -41,23 +45,37 @@ class RobotStartupCheckSpec extends Specification implements PublisherUtils {
 		event
 	}
 
-	void "Returns error when check is unsuccessful (post-invoke)"() {
+	void "Purges Python environment and restarts once when check is unsuccessful (post-invoke)"() {
 		when:
-		block check.check()
+		check.check().subscribe()
 
 		then:
 		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
 			c.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INTERNAL_ERROR, "", "Robot is poorly", Duration.ZERO))
 		}
-		
+
 		and:
-		thrown(Exception)
+		1 * pythonSetupService.purgeEnvironment() >> Mono.empty()
+		1 * applicationRestarter.restart()
+
+		when:
+		check.check().subscribe()
+
+		then:
+		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
+			c.apply(executionCustomizer)
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INTERNAL_ERROR, "", "Robot is poorly", Duration.ZERO))
+		}
+
+		and:
+		0 * pythonSetupService.purgeEnvironment()
+		0 * applicationRestarter.restart()
 	}
 
 	void "Returns error when check is unsuccessful (pre-invoke)"() {
 		when:
-		block check.check()
+		check.check().subscribe()
 
 		then:
 		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
@@ -65,6 +83,19 @@ class RobotStartupCheckSpec extends Specification implements PublisherUtils {
 		}
 
 		and:
-		thrown(Exception)
+		1 * pythonSetupService.purgeEnvironment() >> Mono.empty()
+		1 * applicationRestarter.restart()
+		
+		when:
+		check.check().subscribe()
+
+		then:
+		1 * processService.execute(pythonInterpreter.path(), _) >> { __, UnaryOperator<ExecutionCustomizer> c ->
+			return Mono.error(new IOException("No Python"))
+		}
+
+		and:
+		0 * pythonSetupService.purgeEnvironment()
+		0 * applicationRestarter.restart()
 	}
 }

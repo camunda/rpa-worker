@@ -35,7 +35,7 @@ import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
-class DefaultIO implements IO {
+public class DefaultIO implements IO {
 
 	private final Scheduler ioScheduler;
 

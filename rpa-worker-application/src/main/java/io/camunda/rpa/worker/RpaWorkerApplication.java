@@ -24,7 +24,13 @@ public class RpaWorkerApplication {
 
 	public static void main(String[] args) {
 		System.setProperty("spring.config.name", "application,rpa-worker");
-		SpringApplication.run(RpaWorkerApplication.class, args);
+		startApplication(args);
+	}
+
+	public static void startApplication(String[] args) {
+		SpringApplication springApplication = new SpringApplication(RpaWorkerApplication.class);
+		springApplication.setMainApplicationClass(RpaWorkerApplication.class);
+		springApplication.run(args);
 	}
 
 	@Bean

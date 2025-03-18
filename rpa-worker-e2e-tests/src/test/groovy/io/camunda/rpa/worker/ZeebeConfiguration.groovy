@@ -55,7 +55,7 @@ class ZeebeConfiguration {
 		configProperties["camunda.rpa.e2e.operate-client"] = operateClient
 		configProperties["camunda.rpa.e2e.operate-client-secret"] = operateSecret
 		configProperties["logging.level.io.camunda.zeebe.client.impl.ZeebeCallCredentials"] = "OFF"
-
+		
 		configProperties.putAll(overrides)
 	}
 
@@ -73,5 +73,12 @@ class ZeebeConfiguration {
 			propertySource.withProperty(k, v)
 		}
 		return propertySource
+	}
+
+	String getEnv(String name) {
+		if(configProperties.containsKey(name))
+			return configProperties[name]
+		
+		return System.getenv(name)
 	}
 }
