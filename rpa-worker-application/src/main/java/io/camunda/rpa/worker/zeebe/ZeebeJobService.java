@@ -27,11 +27,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-class ZeebeJobService  {
+public class ZeebeJobService  {
 
 	public static final String ZEEBE_JOB_WORKSPACE_PROPERTY = "ZEEBE_JOB";
 
@@ -47,6 +49,8 @@ class ZeebeJobService  {
 	private final ObjectMapper objectMapper;
 	private final WorkspaceCleanupService workspaceCleanupService;
 	private final ZeebeMetricsService zeebeMetricsService;
+	
+	private final Set<Long> detachedJobs = new ConcurrentSkipListSet<>();
 
 	public Mono<Void> handleJob(ActivatedJob job) {
 		log.atInfo()
@@ -81,8 +85,15 @@ class ZeebeJobService  {
 										executionListenerFor(job),
 										Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job), 
 										null)
+								
+								.doOnNext(xr -> zeebeClient
+										.newSetVariablesCommand(job.getProcessInstanceKey())
+										.variables(xr.outputVariables())
+										.send())
+								
+								.filter(_ -> ! detachedJobs.remove(job.getKey()))
 
-								.doOnSuccess(xr -> (switch (xr.result()) {
+								.doOnNext(xr -> (switch (xr.result()) {
 									case PASS -> zeebeClient
 											.newCompleteCommand(job)
 											.variables(xr.outputVariables());
@@ -98,7 +109,7 @@ class ZeebeJobService  {
 											xr.fullLogString());
 								}).send())
 
-								.doOnSuccess(xr -> {
+								.doOnNext(xr -> {
 									switch (xr.result()) {
 										case PASS -> zeebeMetricsService.onZeebeJobSuccess(job.getType(), xr.duration());
 										case FAIL -> zeebeMetricsService.onZeebeJobFail(job.getType(), "ROBOT_TASKFAIL");
@@ -106,7 +117,7 @@ class ZeebeJobService  {
 									}
 								})
 
-								.doOnSuccess(xr -> log.atInfo()
+								.doOnNext(xr -> log.atInfo()
 										.kv("task", job.getType())
 										.kv("job", job.getKey())
 										.kv("results", xr.results())
@@ -192,5 +203,9 @@ class ZeebeJobService  {
 				.retries(job.getRetries() - 1)
 				.variables(variables)
 				.errorMessage(String.join("\n\n", errorMessage));
+	}
+	
+	public void pushDetached(long jobKey) {
+		detachedJobs.add(jobKey);
 	}
 }

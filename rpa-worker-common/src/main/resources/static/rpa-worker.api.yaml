@@ -12,6 +12,7 @@ tags:
     description: >-
       Upload and download files to/from Zeebe.
       Used by the Camunda Robot Python Library to fulfil document management keywords
+  - name: Zeebe & Job Control
 
 paths:
   /script/evaluate:
@@ -147,9 +148,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationFailedResponse'
+                
+  /zeebe/job/{jobKey}/throw:
+    post:
+      tags:
+        - Zeebe & Job Control
+      summary: >- 
+        Issue a `Throw Error` command to Zeebe for the given Job. The Worker will detach itself from the execution, do 
+        no further processing, and not report any results to Zeebe when the process finishes. 
+      parameters:
+        - in: path
+          name: jobKey
+          required: true
+          schema:
+            type: numeric
+          description: The Job key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/JobThrowErrorRequest'
+            example:
+              'errorCode': "THE_ERROR_CODE"
+              'errorMessage': "The error message"
+              'variables':
+                var1: "value1"
+                var2: "value2"
+      responses:
+        202:
+          description: The request was processed successfully, and the command will be sent to Zeebe
+        422:
+          description: Request body was invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationFailedResponse'
 
 components:
-  schemas: 
+  schemas:
     DeployScriptRequest:
       type: object
       properties: 
@@ -276,3 +313,23 @@ components:
             customProperties:
               type: object
               additionalProperties: {}
+              
+    JobThrowErrorRequest:
+      type: object
+      properties:
+        errorCode:
+          type: string
+          required: true
+          description: The error code for the error
+        errorMessage:
+          type: string
+          required: false
+          description: >- 
+            Provide an error message describing the reason for the non-technical error. 
+            If the error is not caught by an error catch event, this message will be a part of the raised incident
+        variables:
+          type: object
+          required: false
+          additionalProperties: { }
+          description: Set the variables for the command
+
