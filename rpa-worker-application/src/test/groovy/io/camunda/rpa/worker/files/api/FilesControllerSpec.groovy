@@ -3,6 +3,7 @@ package io.camunda.rpa.worker.files.api
 import feign.FeignException
 import feign.Request
 import io.camunda.rpa.worker.PublisherUtils
+import io.camunda.rpa.worker.api.StubbedResponseGenerator
 import io.camunda.rpa.worker.files.DocumentClient
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.io.IO
@@ -11,6 +12,7 @@ import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpEntity
+import org.springframework.http.ResponseEntity
 import org.springframework.util.MultiValueMap
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -38,12 +40,16 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	}
 
 	DocumentClient documentClient = Stub()
+	StubbedResponseGenerator stubbedResponseGenerator = Stub()
 
 	@Subject
-	FilesController controller = new FilesController(workspaceService, io, documentClient)
+	FilesController controller = new FilesController(workspaceService, io, documentClient, stubbedResponseGenerator)
 	
 	void "Uploads files from workspace to Zeebe"() {
 		given:
+		stubbedResponseGenerator.stubbedResponse("DocumentClient", "uploadDocument", _) >> Mono.empty()
+		
+		and:
 		Path matchingWorkspaceFile1 = workspace.path().resolve("outputs/one.pdf")
 		Path matchingWorkspaceFile2 = workspace.path().resolve("outputs/two.pdf")
 		Path nonMatchingWorkspaceFile = workspace.path().resolve("outputs/ignored.tmp")
@@ -89,8 +95,9 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		pathMatcher.matches(workspace.path().relativize(nonMatchingWorkspaceFile)) >> false
 
 		when:
-		Map<String, ZeebeDocumentDescriptor> map = block controller.storeFiles(
-				"workspace123456", new StoreFilesRequest("**/*.pdf"))
+		Map<String, ZeebeDocumentDescriptor> map = block(controller.storeFiles(
+				"workspace123456", new StoreFilesRequest("**/*.pdf")))
+				.getBody()
 		
 		then:
 		map.size() == 2
@@ -101,6 +108,9 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	
 	void "Downloads files from Zeebe into workspace"() {
 		given:
+		stubbedResponseGenerator.stubbedResponse("DocumentClient", "getDocument", _) >> Mono.empty()
+
+		and:
 		Path file1Destination = workspace.path().resolve("input/file1.txt")
 		documentClient.getDocument("document-id-1", "store-id", _) >> Flux.error(
 				new FeignException.NotFound("", new Request(Request.HttpMethod.GET, "", [:], null, null), [] as byte[], [:]))
@@ -113,7 +123,7 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 
 
 		when:
-		Map<String, FilesController.RetrieveFileResult> r = block controller.retrieveFiles("workspace123456", [
+		Map<String, FilesController.RetrieveFileResult> r = block(controller.retrieveFiles("workspace123456", [
 				"input/file1.txt": new ZeebeDocumentDescriptor(
 						"store-id",
 						"document-id-1",
@@ -152,7 +162,7 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 								null, 
 								[:]), 
 						"f3hash")
-		])
+		])).getBody()
 		
 		then:
 		1 * io.write(_ as Flux<DataBuffer>, file1Destination) >> { Flux<DataBuffer> data, Path dest, _ -> 
@@ -171,4 +181,43 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		r['input/file2.txt'].result() == "ERROR"
 		r['input/file3.txt'].result() == "OK"
 	}
+	
+	void "Returns stubbed response for upload"() {
+		given:
+		ResponseEntity<?> stubbedResponse = Stub()
+		stubbedResponseGenerator.stubbedResponse("DocumentClient", "uploadDocument", _) >> Mono.just(stubbedResponse)
+
+		when:
+		ResponseEntity<?> r = block controller.storeFiles(
+				"workspace123456", new StoreFilesRequest("**/*.pdf"))
+
+		then:
+		r == stubbedResponse
+	}
+
+	void "Returns stubbed response for download"() {
+		given:
+		ResponseEntity<?> stubbedResponse = Stub()
+		stubbedResponseGenerator.stubbedResponse("DocumentClient", "getDocument", _) >> Mono.just(stubbedResponse)
+		
+		when:
+		ResponseEntity<?> r = block(controller.retrieveFiles("workspace123456", [
+				"input/file1.txt": new ZeebeDocumentDescriptor(
+						"store-id",
+						"document-id-1",
+						new ZeebeDocumentDescriptor.Metadata(
+								"text/plain",
+								"file1.txt",
+								null,
+								123,
+								null,
+								null,
+								[:]),
+						"f1hash"),
+		]))
+
+		then:
+		r == stubbedResponse
+	}
+
 }

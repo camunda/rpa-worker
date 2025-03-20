@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.files.api;
 
 import feign.FeignException;
+import io.camunda.rpa.worker.api.StubbedResponseGenerator;
 import io.camunda.rpa.worker.files.DocumentClient;
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor;
 import io.camunda.rpa.worker.io.IO;
@@ -15,6 +16,7 @@ import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,11 +44,20 @@ class FilesController {
 	private final WorkspaceService workspaceService;
 	private final IO io;
 	private final DocumentClient documentClient;
+	private final StubbedResponseGenerator stubbedResponseGenerator;
 
 	@PostMapping("/store/{workspaceId}")
-	public Mono<Map<String, ZeebeDocumentDescriptor>> storeFiles(
+	public Mono<ResponseEntity<?>> storeFiles(
 			@PathVariable String workspaceId,
 			@Valid @RequestBody StoreFilesRequest request) {
+
+		return stubbedResponseGenerator.stubbedResponse("DocumentClient", "uploadDocument", request)
+				.switchIfEmpty(Mono.defer(() -> doStoreFiles(workspaceId, request)));
+	}
+
+	private Mono<ResponseEntity<Map<String, ZeebeDocumentDescriptor>>> doStoreFiles(
+			String workspaceId,
+			StoreFilesRequest request) {
 
 		return io.wrap(Mono.defer(() -> Mono.justOrEmpty(workspaceService.getById(workspaceId))
 				.flatMapMany(w -> Flux.fromStream(() -> {
@@ -60,7 +71,8 @@ class FilesController {
 								toZeebeStoreDocumentRequest(p, getZeebeJobInfoForWorkspace(w)), null)))
 				.collect(Collectors.toMap(
 						r -> r.metadata().fileName(),
-						r -> r))));
+						r -> r))))
+				.map(ResponseEntity::ok);
 	}
 
 	private record ZeebeJobInfo(String procesDefinitionId, Long processInstanceKey) {}
@@ -98,11 +110,19 @@ class FilesController {
 	record RetrieveFileResult(String result, String details) {}
 
 	@PostMapping("/retrieve/{workspaceId}")
-	public Mono<Map<String, RetrieveFileResult>> retrieveFiles(
+	public Mono<ResponseEntity<?>> retrieveFiles(
 			@PathVariable String workspaceId,
 			@Valid @RequestBody Map<String, @Valid ZeebeDocumentDescriptor> request) {
 
-		return io.supply(() -> workspaceService.getById(workspaceId))
+		return stubbedResponseGenerator.stubbedResponse("DocumentClient", "getDocument", request)
+				.switchIfEmpty(Mono.defer(() -> doRetrieveFiles(workspaceId, request)));
+	}
+
+	private Mono<ResponseEntity<Map<String, RetrieveFileResult>>> doRetrieveFiles (
+				@PathVariable String workspaceId,
+				Map<String, ZeebeDocumentDescriptor > request) {
+		
+			return io.supply(() -> workspaceService.getById(workspaceId))
 				.flatMap(Mono::justOrEmpty)
 				.flatMap(ws -> Flux.fromIterable(request.entrySet())
 
@@ -124,6 +144,7 @@ class FilesController {
 								.onErrorResume(thrown -> Mono.just(Map.entry(kv.getKey(),
 										new RetrieveFileResult("ERROR", "%s: %s".formatted(thrown.getClass().getSimpleName(), thrown.getMessage()))))))
 
-						.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+						.collect(Collectors.toMap(Map.Entry::getKey, java.util.Map.Entry::getValue)))
+					.map(ResponseEntity::ok);
 	}
 }
