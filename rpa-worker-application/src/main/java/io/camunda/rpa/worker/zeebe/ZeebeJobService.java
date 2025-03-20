@@ -82,21 +82,22 @@ public class ZeebeJobService  {
 										Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
 												.map(Duration::parse)
 												.orElse(null),
-										executionListenerFor(job),
+										Collections.singletonList(executionListenerFor(job)),
 										Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job), 
 										null)
-								
-								.doOnNext(xr -> zeebeClient
-										.newSetVariablesCommand(job.getProcessInstanceKey())
-										.variables(xr.outputVariables())
-										.send())
+
+
+								.flatMap(xr -> Mono.fromCompletionStage(zeebeClient
+												.newSetVariablesCommand(job.getProcessInstanceKey())
+												.variables(xr.outputVariables())
+												.send())
+										.thenReturn(xr))
 								
 								.filter(_ -> ! detachedJobs.remove(job.getKey()))
 
 								.doOnNext(xr -> (switch (xr.result()) {
 									case PASS -> zeebeClient
-											.newCompleteCommand(job)
-											.variables(xr.outputVariables());
+											.newCompleteCommand(job);
 
 									case FAIL -> failJob(job,
 											xr.outputVariables(), 
@@ -201,7 +202,6 @@ public class ZeebeJobService  {
 		return zeebeClient
 				.newFailCommand(job)
 				.retries(job.getRetries() - 1)
-				.variables(variables)
 				.errorMessage(String.join("\n\n", errorMessage));
 	}
 	

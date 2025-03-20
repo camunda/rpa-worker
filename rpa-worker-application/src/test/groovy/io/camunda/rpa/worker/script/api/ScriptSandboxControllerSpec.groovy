@@ -62,8 +62,8 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 				.map { it.body }
 		
 		then:
-		1 * robotService.execute(new RobotScript("_eval_", scriptBody), inputVariables, null, _, null) >> { _, __, ___, RobotExecutionListener executionListener, ____ ->
-			executionListener.afterRobotExecution(workspace)
+		1 * robotService.execute(new RobotScript("_eval_", scriptBody), inputVariables, null, _, null) >> { _, __, ___, List<RobotExecutionListener> executionListeners, ____ ->
+			executionListeners*.afterRobotExecution(workspace)
 
 			return Mono.just(
 					new ExecutionResults(

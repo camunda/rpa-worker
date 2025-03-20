@@ -17,6 +17,8 @@ import java.nio.file.Paths
 @TestPropertySource(properties = "camunda.rpa.python.path=python_ftest/")
 class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 	
+	private static final String FTEST_REQUIREMENTS_HASH = "49d346cb3921381779f31645b3305df8d25f1f428b03ffa0884bd3667d99bed3"
+	
 	private static Path ftestPythonEnv
 	
 	@Autowired
@@ -217,13 +219,13 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 
 		void "Skips re-installing base requirements when they have not changed"() {
 			expect:
-			ftestPythonEnv.parent.resolve("requirements.last").text == "1554bc27f971dd74b7d8b483266337e8121a1b3392871473d986cbaa2cdc06e0"
+			ftestPythonEnv.parent.resolve("requirements.last").text == FTEST_REQUIREMENTS_HASH
 
 			when:
 			pythonSetupService.getObject()
 
 			then:
-			ftestPythonEnv.parent.resolve("requirements.last").text == "1554bc27f971dd74b7d8b483266337e8121a1b3392871473d986cbaa2cdc06e0"
+			ftestPythonEnv.parent.resolve("requirements.last").text == FTEST_REQUIREMENTS_HASH
 
 			and:
 			0 * processService._
@@ -259,7 +261,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 			pythonSetupService.getObject()
 
 			then:
-			ftestPythonEnv.parent.resolve("requirements.last").text == "1554bc27f971dd74b7d8b483266337e8121a1b3392871473d986cbaa2cdc06e0"
+			ftestPythonEnv.parent.resolve("requirements.last").text == FTEST_REQUIREMENTS_HASH
 
 			and:
 			1 * processService.execute({ it.toString().contains("pip") }, _)

@@ -7,8 +7,10 @@ import io.camunda.rpa.worker.util.IterableMultiPart
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1
+import io.camunda.zeebe.client.api.command.SetVariablesCommandStep1
 import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
+import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl
 import okhttp3.MediaType
 import okhttp3.MultipartReader
 import okhttp3.ResponseBody
@@ -117,10 +119,16 @@ Do Nothing
 		
 		and:
 		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
-			1 * variables([anOutputVariable: 'output-variable-value']) >> it
 			1 * send() >> {
 				handlerDidFinish.countDown()
 				return null
+			}
+		}
+
+		and:
+		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+			1 * variables([anOutputVariable: 'output-variable-value']) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 	}
@@ -134,10 +142,16 @@ Do Nothing
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
+		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+			1 * variables([:]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+			}
+		}
+
+		and:
 		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("There were task failures") }) >> it
-				_ * variables(_) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
@@ -155,10 +169,16 @@ Do Nothing
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
+		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+			1 * variables([:]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+			}
+		}
+		
+		and:
 		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("There were task errors") }) >> it
-				_ * variables(_) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
@@ -209,6 +229,14 @@ Do Nothing
 		
 		and:
 		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			1 * send() >> {
+				handlerDidFinish.countDown()
+				return null
+			}
+		}
+		
+		and:
+		1 * zeebeClient.newSetVariablesCommand(jobWithPreAndPostScripts.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
 			1 * variables([
 					anOutputVariableFrom_pre0: "output-value-from-companion",
 					anOutputVariableSameName: "output-value-from-companion-post1",
@@ -216,11 +244,8 @@ Do Nothing
 					anOutputVariable: "output-variable-value",
 					anOutputVariableFrom_post0: "output-value-from-companion",
 					anOutputVariableFrom_post1: "output-value-from-companion",
-			]) >> it
-			
-			1 * send() >> {
-				handlerDidFinish.countDown()
-				return null
+			]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 	}
@@ -238,7 +263,6 @@ Do Nothing
 		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("The execution timed out") }) >> it
-				_ * variables(_) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
@@ -267,7 +291,6 @@ Do Nothing
 		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("The execution timed out") }) >> it
-				_ * variables(_) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
@@ -292,8 +315,10 @@ Do Nothing
 		}
 		
 		and:
+
+
+		and:
 		zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Stub(CompleteJobCommandStep1) {
-			variables(_) >> it
 			send() >> {
 				handlersDidFinish.countDown()
 				return null
@@ -331,7 +356,6 @@ Assert input variable
 
 		then:
 		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
-			variables(_) >> it
 			1 * send() >> {
 				handlerDidFinish.countDown()
 				return null
@@ -371,7 +395,6 @@ Assert input variable
 		
 		and:
 		zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
-			variables(_) >> it
 			send() >> {
 				handlersDidFinish.countDown()
 				return null
@@ -438,10 +461,16 @@ Assert input variable
 			
 			and:
 			1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
-				1 * variables([anOutputVariable: 'output-variable-value']) >> it
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
+				}
+			}
+
+			and:
+			1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+				1 * variables([anOutputVariable: 'output-variable-value']) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+					1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 				}
 			}
 		}
