@@ -311,6 +311,7 @@ jobs:
     needs:
       - build
       - native_linux_amd64
+      - images
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     env: 
@@ -352,7 +353,7 @@ jobs:
           k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml
           timeout 10m bash -c "while true; do k3s kubectl get pods -n camunda; k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform && break ||: ; done"
           
-          sed -i "s/9.9.9-CHANGEME/${GITHUB_REF_NAME}/" rpa-worker-e2e-tests/rpa-worker.deployment.yaml
+          sed -i "s|9.9.9-CHANGEME|${{ steps.meta.outputs.tags }}|" rpa-worker-e2e-tests/rpa-worker.deployment.yaml
           k3s kubectl create ns rpa-worker
           k3s kubectl apply -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml
           
