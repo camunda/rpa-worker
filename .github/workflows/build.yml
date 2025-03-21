@@ -96,6 +96,8 @@ jobs:
 
       - name: Build
         run: |
+          git config core.eol
+          git config core.autocrlf
           ./gradlew setVersion
           ./gradlew check
 
