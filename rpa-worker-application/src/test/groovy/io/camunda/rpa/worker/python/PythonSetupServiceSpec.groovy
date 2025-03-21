@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.python
 
+import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
@@ -24,7 +25,7 @@ import java.util.function.Supplier
 import java.util.function.UnaryOperator
 import java.util.stream.Stream
 
-class PythonSetupServiceSpec extends Specification {
+class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 	
 	private static final String ZERO_DATA_SHA_256_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
 	
@@ -65,6 +66,7 @@ class PythonSetupServiceSpec extends Specification {
 		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 		
 		and:
+		1 * io.supply(_) >> Mono.empty()
 		0 * io._(*_)
 	}
 	
@@ -97,8 +99,10 @@ class PythonSetupServiceSpec extends Specification {
 		}
 		
 		and:
-		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
-		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
+		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
+		1 * io.newOutputStream(_) >> Stub(OutputStream)
+		1 * io.transferTo(_, _) >> 0L
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
@@ -142,8 +146,10 @@ class PythonSetupServiceSpec extends Specification {
 		}
 
 		and:
-		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
-		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
+		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
+		1 * io.newOutputStream(_) >> Stub(OutputStream)
+		1 * io.transferTo(_, _) >> 0L
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
@@ -279,8 +285,10 @@ class PythonSetupServiceSpec extends Specification {
 		serviceWithExtraRequirements.getObject()
 
 		then:
-		1 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
-		1 * io.copy(_, Paths.get("/tmp/requirements.txt"), _)
+		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
+		1 * io.newOutputStream(Paths.get("/tmp/requirements.txt")) >> Stub(OutputStream)
+		1 * io.transferTo(_, _) >> 0L
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
@@ -291,14 +299,9 @@ class PythonSetupServiceSpec extends Specification {
 
 		and:
 		1 * io.createTempFile("extra-requirements", ".txt") >> Paths.get("/tmp/extra-requirements.txt")
-		1 * io.readString(extraRequirements) >> "extra-requirements"
+		1 * io.newInputStream(extraRequirements) >> { new ByteArrayInputStream("extra-requirements".bytes) }
 		1 * io.newOutputStream(Paths.get("/tmp/extra-requirements.txt")) >> Stub(OutputStream)
-		1 * io.write("extra-requirements", _ as OutputStream) >> { String data, OutputStream target ->
-			new OutputStreamWriter(target).tap {
-				write(data)
-				close()
-			}
-		}
+		1 * io.transferTo(_, _) >> { l, r -> l.transferTo(r) }
 		1 * io.notExists(Paths.get("/path/to/python/extra-requirements.last")) >> true
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
@@ -330,18 +333,10 @@ class PythonSetupServiceSpec extends Specification {
 		serviceWithExtraRequirements.getObject()
 
 		then:
-		0 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
-
-		and:
 		1 * io.createTempFile("extra-requirements", ".txt") >> Paths.get("/tmp/extra-requirements.txt")
-		1 * io.readString(extraRequirements) >> "extra-requirements"
+		1 * io.newInputStream(extraRequirements) >> { new ByteArrayInputStream("extra-requirements".bytes) }
 		1 * io.newOutputStream(Paths.get("/tmp/extra-requirements.txt")) >> Stub(OutputStream)
-		1 * io.write("extra-requirements", _ as OutputStream) >> { String data, OutputStream target ->
-			new OutputStreamWriter(target).tap {
-				write(data)
-				close()
-			}
-		}
+		1 * io.transferTo(_, _) >> { l, r -> l.transferTo(r) }
 		1 * io.notExists(Paths.get("/path/to/python/extra-requirements.last")) >> false
 		1 * io.readString(Paths.get("/path/to/python/extra-requirements.last")) >> "old-checksum"
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
@@ -378,14 +373,9 @@ class PythonSetupServiceSpec extends Specification {
 
 		and:
 		1 * io.createTempFile("extra-requirements", ".txt") >> Paths.get("/tmp/extra-requirements.txt")
-		1 * io.readString(extraRequirements) >> "extra-requirements"
+		1 * io.newInputStream(extraRequirements) >> { new ByteArrayInputStream("extra-requirements".bytes) }
 		1 * io.newOutputStream(Paths.get("/tmp/extra-requirements.txt")) >> Stub(OutputStream)
-		1 * io.write("extra-requirements", _ as OutputStream) >> { String data, OutputStream target ->
-			new OutputStreamWriter(target).tap {
-				write(data)
-				close()
-			}
-		}
+		1 * io.transferTo(_, _) >> { l, r -> l.transferTo(r) }
 		1 * io.notExists(Paths.get("/path/to/python/extra-requirements.last")) >> false
 		1 * io.readString(Paths.get("/path/to/python/extra-requirements.last")) >> "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843"
 		0 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _)
@@ -420,5 +410,53 @@ class PythonSetupServiceSpec extends Specification {
 
 		then:
 		thrown(IllegalStateException)
+	}
+
+	void "Re-installs base requirements into existing environments when they have changed"() {
+		given:
+		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
+
+		when:
+		service.getObject()
+
+		then:
+		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+		1 * io.newOutputStream(Paths.get("/tmp/requirements.txt")) >> Stub(OutputStream)
+		1 * io.transferTo(_, _) >> { l, r -> l.transferTo(r) }
+		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> false
+		1 * io.readString(Paths.get("/path/to/python/requirements.last")) >> "old-checksum"
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
+				_ >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+		1 * io.writeString(Paths.get("/path/to/python/requirements.last"), "10a430375a4b01225317e1e297bc629512f7f7c002d0c5907780d68ca56f9561", _)
+	}
+
+	void "Skips installing base requirements into existing environments when they have not changed"() {
+		given:
+		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
+
+		when:
+		service.getObject()
+
+		then:
+		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+		1 * io.newOutputStream(Paths.get("/tmp/requirements.txt")) >> Stub(OutputStream)
+		1 * io.transferTo(_, _) >> { l, r -> l.transferTo(r) }
+		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> false
+		1 * io.readString(Paths.get("/path/to/python/requirements.last")) >> "10a430375a4b01225317e1e297bc629512f7f7c002d0c5907780d68ca56f9561"
+		0 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _)
+		0 * io.writeString(Paths.get("/path/to/python/requirements.last"))
+	}
+
+	void "Purges entire Python environment"() {
+		when:
+		block service.purgeEnvironment()
+		
+		then:
+		1 * io.deleteDirectoryRecursively(Paths.get("/path/to/python/"))
 	}
 }

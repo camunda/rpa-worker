@@ -94,4 +94,8 @@ public interface IO {
 	PathMatcher globMatcher(String glob);
 	
 	void write(String source, OutputStream outputStream);
+
+	InputStream newInputStream(Path path, OpenOption... openOptions);
+	
+	long transferTo(InputStream inputStream, OutputStream outputStream);
 }
