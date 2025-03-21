@@ -340,6 +340,7 @@ jobs:
           echo "## Updating hosts"
           echo -e "127.0.0.1 \t camunda.local" | sudo tee -a /etc/hosts
           echo -e "127.0.0.1 \t zeebe.camunda.local" | sudo tee -a /etc/hosts
+          echo -e "127.0.0.1 \t rpa-worker.local" | sudo tee -a /etc/hosts
           
           echo "## Installing k3s"
           curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sudo -E sh -s
@@ -350,6 +351,10 @@ jobs:
           k3s kubectl create ns camunda
           k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml
           timeout 10m bash -c "while true; do k3s kubectl get pods -n camunda; k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform && break ||: ; done"
+          
+          sed -i "s/9.9.9-CHANGEME/${GITHUB_REF_NAME}/" rpa-worker-e2e-tests/rpa-worker.deployment.yaml
+          k3s kubectl create ns rpa-worker
+          k3s kubectl apply -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml
           
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
