@@ -194,4 +194,75 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 			}
 		}
 	}
+	
+	@TestPropertySource(properties = "camunda.rpa.python.path=python_ftest_basecheck/")
+	static class PythonSetupWithBaseRequirementsNoChangesWhenAlreadyInstalledFunctionalSpec extends AbstractFunctionalSpec {
+
+		private static Path ftestPythonEnv
+
+		@Autowired
+		PythonSetupService pythonSetupService
+
+		@SpringSpy
+		ProcessService processService
+
+		@Autowired
+		PythonInterpreter pythonInterpreter
+
+		void setupSpec() {
+			ftestPythonEnv = Paths.get("python_ftest_basecheck/venv/").toAbsolutePath()
+			assert ftestPythonEnv.toString().contains("python_ftest")
+			alwaysRealIO.deleteDirectoryRecursively(ftestPythonEnv.parent)
+		}
+
+		void "Skips re-installing base requirements when they have not changed"() {
+			expect:
+			ftestPythonEnv.parent.resolve("requirements.last").text == "1554bc27f971dd74b7d8b483266337e8121a1b3392871473d986cbaa2cdc06e0"
+
+			when:
+			pythonSetupService.getObject()
+
+			then:
+			ftestPythonEnv.parent.resolve("requirements.last").text == "1554bc27f971dd74b7d8b483266337e8121a1b3392871473d986cbaa2cdc06e0"
+
+			and:
+			0 * processService._
+		}
+
+	}
+
+	@TestPropertySource(properties = "camunda.rpa.python.path=python_ftest_basecheck/")
+	static class PythonSetupWithBaseRequirementsChangedInExistingEnvironmentFunctionalSpec extends AbstractFunctionalSpec {
+
+		private static Path ftestPythonEnv
+
+		@Autowired
+		PythonSetupService pythonSetupService
+
+		@SpringSpy
+		ProcessService processService
+
+		@Autowired
+		PythonInterpreter pythonInterpreter
+
+		void setupSpec() {
+			ftestPythonEnv = Paths.get("python_ftest_basecheck/venv/").toAbsolutePath()
+			assert ftestPythonEnv.toString().contains("python_ftest")
+			alwaysRealIO.deleteDirectoryRecursively(ftestPythonEnv.parent)
+		}
+
+		void "Re-installs extra requirements into existing environments when they have changed"() {
+			given:
+			ftestPythonEnv.parent.resolve("requirements.last").text = "old-checksum"
+
+			when:
+			pythonSetupService.getObject()
+
+			then:
+			ftestPythonEnv.parent.resolve("requirements.last").text == "1554bc27f971dd74b7d8b483266337e8121a1b3392871473d986cbaa2cdc06e0"
+
+			and:
+			1 * processService.execute({ it.toString().contains("pip") }, _)
+		}
+	}
 }
