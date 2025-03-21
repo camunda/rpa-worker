@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.python;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.zafarkhaja.semver.Version;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
@@ -44,6 +45,8 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	private final IO io;
 	private final ProcessService processService;
 	private final WebClient webClient;
+	
+	private static final ObjectMapper Z_omTmp = new ObjectMapper();
 
 	@Override
 	public Class<?> getObjectType() {
@@ -168,7 +171,13 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		return Mono.using(() -> new BufferedOutputStream(io.newOutputStream(destination)),
 				fileOut -> Mono.using(() -> new DigestOutputStream(fileOut, md),
 						digestOut -> Mono.fromRunnable(() -> io.transferTo(contents, digestOut))
-								.then(Mono.fromSupplier(() -> HexFormat.of().formatHex(digestOut.getMessageDigest().digest())))));
+								.then(Mono.fromSupplier(() -> HexFormat.of().formatHex(digestOut.getMessageDigest().digest())))))
+				
+				
+				.doOnNext(checksum -> log.atInfo()
+						.kv("checksum", checksum)
+						.kv("contents", Z_omTmp.convertValue(io.readString(destination), String.class))
+						.log("Wrote reqs file with checksum"));
 	}
 
 	private Mono<Void> writeWithIntegrityCheck(Flux<DataBuffer> dataBuffers, Path destination, String expected) {
@@ -211,6 +220,14 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		Path lastChecksumFile = pythonProperties.path().resolve("%s.last".formatted(requirementsSetName));
 
 		return io.supply(() -> io.createTempFile(requirementsSetName, ".txt"))
+				.doOnNext(_ ->
+						Try.withResources(requirementsContents::call)
+								.of(InputStream::readAllBytes)
+								.onSuccess(bytes ->
+										log.atWarn()
+												.kv("contents", Try.of(() -> Z_omTmp.writeValueAsString(new String(bytes))).get())
+												.kv("bytes", HexFormat.of().formatHex(bytes))
+												.log("reqs contents !!!")))
 				.flatMap(requirementsDst -> Mono.using(requirementsContents, is -> writeWithChecksum(is, requirementsDst))
 						.filter(newChecksum -> io.notExists(lastChecksumFile)
 								|| ! io.readString(lastChecksumFile).equals(newChecksum))
