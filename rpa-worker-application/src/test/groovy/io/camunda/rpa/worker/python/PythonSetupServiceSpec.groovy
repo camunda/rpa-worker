@@ -28,7 +28,9 @@ import java.util.stream.Stream
 class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 	
 	private static final String ZERO_DATA_SHA_256_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-	
+	private static final String REAL_BASE_REQUIREMENTS_SHA_256_HASH = "10a430375a4b01225317e1e297bc629512f7f7c002d0c5907780d68ca56f9561"
+	private static final String STUB_EXTRA_REQUIREMENTS_SHA_256_HASH = "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843"
+
 	PythonProperties pythonProperties = PythonProperties.builder()
 			.path(Paths.get("/path/to/python/"))
 			.downloadUrl("https://python/python".toURI())
@@ -310,7 +312,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
-		1 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"), "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843", _)
+		1 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"), STUB_EXTRA_REQUIREMENTS_SHA_256_HASH, _)
 	}
 
 	void "Installs user requirements into existing environments when they have changed"() {
@@ -346,7 +348,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
-		1 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"), "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843", _)
+		1 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"), STUB_EXTRA_REQUIREMENTS_SHA_256_HASH, _)
 	}
 
 	void "Skips installing user requirements into existing environments when they have not changed"() {
@@ -377,7 +379,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		1 * io.newOutputStream(Paths.get("/tmp/extra-requirements.txt")) >> Stub(OutputStream)
 		1 * io.transferTo(_, _) >> { l, r -> l.transferTo(r) }
 		1 * io.notExists(Paths.get("/path/to/python/extra-requirements.last")) >> false
-		1 * io.readString(Paths.get("/path/to/python/extra-requirements.last")) >> "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843"
+		1 * io.readString(Paths.get("/path/to/python/extra-requirements.last")) >> STUB_EXTRA_REQUIREMENTS_SHA_256_HASH
 		0 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _)
 		0 * io.writeString(Paths.get("/path/to/python/extra-requirements.last"))
 	}
@@ -432,7 +434,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
-		1 * io.writeString(Paths.get("/path/to/python/requirements.last"), "10a430375a4b01225317e1e297bc629512f7f7c002d0c5907780d68ca56f9561", _)
+		1 * io.writeString(Paths.get("/path/to/python/requirements.last"), REAL_BASE_REQUIREMENTS_SHA_256_HASH, _)
 	}
 
 	void "Skips installing base requirements into existing environments when they have not changed"() {
@@ -447,7 +449,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		1 * io.newOutputStream(Paths.get("/tmp/requirements.txt")) >> Stub(OutputStream)
 		1 * io.transferTo(_, _) >> { l, r -> l.transferTo(r) }
 		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> false
-		1 * io.readString(Paths.get("/path/to/python/requirements.last")) >> "10a430375a4b01225317e1e297bc629512f7f7c002d0c5907780d68ca56f9561"
+		1 * io.readString(Paths.get("/path/to/python/requirements.last")) >> REAL_BASE_REQUIREMENTS_SHA_256_HASH
 		0 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _)
 		0 * io.writeString(Paths.get("/path/to/python/requirements.last"))
 	}
