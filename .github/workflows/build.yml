@@ -128,8 +128,7 @@ jobs:
   images:
     needs: 
       - build
-      - windows_test
-    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -406,7 +405,6 @@ jobs:
   
   release:
     needs:
-      - images
       - native_linux_amd64
       - native_win32_amd64
       - native_darwin_amd64
