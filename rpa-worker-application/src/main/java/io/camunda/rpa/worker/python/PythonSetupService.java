@@ -16,14 +16,15 @@ import reactor.core.publisher.Mono;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.Callable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -52,6 +53,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	@Override
 	public PythonInterpreter getObject() {
 		return Mono.justOrEmpty(existingPythonEnvironment())
+				.flatMap(p -> maybeReinstallBaseRequirements().thenReturn(p))
 				.flatMap(p -> maybeReinstallExtraRequirements().thenReturn(p))
 				.switchIfEmpty(Mono.defer(this::createPythonEnvironment))
 				.map(PythonInterpreter::new)
@@ -83,10 +85,8 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 								.kv("dir", pythonProperties.path())
 								.log("Creating new Python environment")))
 				
-				.flatMap(_ -> writeBaseRequirements()
-						.flatMap(this::installWithPip)
-						.doOnSubscribe(_ -> log.atInfo().log("Installing base Python dependencies")))
-				.flatMap(_ -> maybeReinstallExtraRequirements())
+				.then(maybeReinstallBaseRequirements())
+				.then(maybeReinstallExtraRequirements())
 
 				.thenReturn(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
 	}
@@ -145,14 +145,6 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		});
 	}
 
-	private Mono<Path> writeBaseRequirements() {
-		return io.supply(() -> {
-			Path requirementsTxt = io.createTempFile("python_requirements", ".txt");
-			io.copy(getClass().getClassLoader().getResourceAsStream(pythonProperties.requirementsName()), requirementsTxt, StandardCopyOption.REPLACE_EXISTING);
-			return requirementsTxt;
-		});
-	}
-
 	record PythonExecutionEnvironment(Path binDir, String exeSuffix) {
 
 		public static PythonExecutionEnvironment get() {
@@ -170,12 +162,12 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 		}
 	}
 
-	private Mono<String> writeWithChecksum(String string, Path destination) {
+	private Mono<String> writeWithChecksum(InputStream contents, Path destination) {
 		MessageDigest md = Try.of(() -> MessageDigest.getInstance("sha-256")).get();
 
 		return Mono.using(() -> new BufferedOutputStream(io.newOutputStream(destination)),
 				fileOut -> Mono.using(() -> new DigestOutputStream(fileOut, md),
-						digestOut -> Mono.fromRunnable(() -> io.write(string, digestOut))
+						digestOut -> Mono.fromRunnable(() -> io.transferTo(contents, digestOut))
 								.then(Mono.fromSupplier(() -> HexFormat.of().formatHex(digestOut.getMessageDigest().digest())))));
 	}
 
@@ -198,36 +190,48 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 				.then();
 	}
 
+	private Mono<Void> maybeReinstallBaseRequirements() {
+		return maybeReinstallRequirements("requirements",
+				() -> getClass().getClassLoader().getResourceAsStream(pythonProperties.requirementsName()))
+				.doOnSubscribe(_ -> log.atInfo().log("Checking base requirements"));
+	}
+
 	private Mono<Void> maybeReinstallExtraRequirements() {
 		if (pythonProperties.extraRequirements() == null)
 			return Mono.<Void>empty()
 					.doOnSubscribe(_ -> log.atInfo().log("There are no extra requirements configured"));
 
-		Path extraRequirementsLastChecksumFile = pythonProperties.path().resolve("extra-requirements.last");
-
-		return io.supply(() -> io.createTempFile("extra-requirements", ".txt"))
-				.flatMap(extraRequirementsDst -> {
-					String extraRequirementsContents = io.readString(pythonProperties.extraRequirements());
-					return writeWithChecksum(extraRequirementsContents, extraRequirementsDst)
-							.filter(newExRequirementsChecksum -> io.notExists(extraRequirementsLastChecksumFile)
-									|| ! io.readString(extraRequirementsLastChecksumFile).equals(newExRequirementsChecksum))
-							
-							.doOnNext(_ -> log.atInfo()
-									.kv("source", pythonProperties.extraRequirements())
-									.log("Extra requirements have changed, re-installing"))
-
-							.switchIfEmpty(Mono.<String>empty().doOnSubscribe(_ ->
-									log.atInfo().log("Extra requirements have not changed, skipping install")))
-							
-							.flatMap(newExRequirementsChecksum -> installExtraRequirements(extraRequirementsDst, newExRequirementsChecksum));
-				});
+		return maybeReinstallRequirements("extra-requirements", () -> io.newInputStream(pythonProperties.extraRequirements()))
+				.doOnSubscribe(_ -> log.atInfo()
+						.kv("source", pythonProperties.extraRequirements())
+						.log("Checking extra requirements"));
 	}
 
-	private Mono<Void> installExtraRequirements(Path extraRequirements, String extraRequirementsChecksum) {
-		Path extraRequirementsLastChecksumFile = pythonProperties.path().resolve("extra-requirements.last");
-		return io.run(() -> io.deleteIfExists(extraRequirementsLastChecksumFile))
-				.then(installWithPip(extraRequirements)
-						.doOnSuccess(_ -> io.writeString(extraRequirementsLastChecksumFile, extraRequirementsChecksum)))
+	private Mono<Void> maybeReinstallRequirements(String requirementsSetName, Callable<InputStream> requirementsContents) {
+		Path lastChecksumFile = pythonProperties.path().resolve("%s.last".formatted(requirementsSetName));
+
+		return io.supply(() -> io.createTempFile(requirementsSetName, ".txt"))
+				.flatMap(requirementsDst -> Mono.using(requirementsContents, is -> writeWithChecksum(is, requirementsDst))
+						.filter(newChecksum -> io.notExists(lastChecksumFile)
+								|| ! io.readString(lastChecksumFile).equals(newChecksum))
+
+						.doOnNext(_ -> log.atInfo()
+								.kv("requirements", requirementsSetName)
+								.log("Requirements install is necessary"))
+
+						.switchIfEmpty(Mono.<String>empty().doOnSubscribe(_ -> log.atInfo()
+								.kv("requirements", requirementsSetName)
+								.log("Requirements install is not necessary")))
+
+						.flatMap(newExRequirementsChecksum -> 
+								installRequirements(requirementsSetName, requirementsDst, newExRequirementsChecksum)));
+	}
+		
+	private Mono<Void> installRequirements(String requirementsSetName, Path requirementsFile, String requirementsFileChecksum) {
+		Path lastChecksumFile = pythonProperties.path().resolve("%s.last".formatted(requirementsSetName));
+		return io.run(() -> io.deleteIfExists(lastChecksumFile))
+				.then(installWithPip(requirementsFile)
+						.doOnSuccess(_ -> io.writeString(lastChecksumFile, requirementsFileChecksum)))
 				.then();
 	}
 
@@ -239,11 +243,13 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 				c -> c
 						.arg("install")
 						.arg("-r").bindArg("requirementsTxt", requirements)
-						.inheritEnv());
+						.inheritEnv())
+				.doOnSubscribe(_ -> log.atInfo()
+						.kv("requirements", requirements)
+						.log("Installing Python requirements"));
 	}
 
 	public Mono<Void> purgeEnvironment() {
 		return io.run(() -> io.deleteDirectoryRecursively(pythonProperties.path()));
 	}
-
 }

@@ -320,4 +320,24 @@ public class DefaultIO implements IO {
 	public PathMatcher globMatcher(String glob) {
 		return FileSystems.getDefault().getPathMatcher("glob:%s".formatted(glob));
 	}
+
+	@Override
+	public InputStream newInputStream(Path path, OpenOption... openOptions) {
+		try {
+			return Files.newInputStream(path, openOptions);
+		} 
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
+	public long transferTo(InputStream inputStream, OutputStream outputStream) {
+		try {
+			return inputStream.transferTo(outputStream);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
 }
