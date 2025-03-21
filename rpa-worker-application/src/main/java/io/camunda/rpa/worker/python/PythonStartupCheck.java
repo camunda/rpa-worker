@@ -47,4 +47,8 @@ class PythonStartupCheck extends AbstractPythonPurgingStartupCheck<PythonReadyEv
 	public int getExitCodeForFailure() {
 		return RpaWorkerApplication.EXIT_NO_PYTHON;
 	}
+
+	void reset() {
+		repairAttempted = false;
+	}
 }

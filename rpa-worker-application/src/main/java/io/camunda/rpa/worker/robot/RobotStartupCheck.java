@@ -52,4 +52,8 @@ class RobotStartupCheck extends AbstractPythonPurgingStartupCheck<RobotReadyEven
 	public int getExitCodeForFailure() {
 		return RpaWorkerApplication.EXIT_NO_ROBOT;
 	}
+	
+	void reset() {
+		repairAttempted = false;
+	}
 }

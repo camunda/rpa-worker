@@ -25,6 +25,10 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 	ExecutionCustomizer executionCustomizer = Mock() {
 		_ >> it
 	}
+	
+	void setup() {
+		check.reset()
+	}
 
 	void "Returns ready event on successful check"() {
 		when:

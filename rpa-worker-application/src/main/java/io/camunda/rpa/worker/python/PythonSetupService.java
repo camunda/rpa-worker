@@ -243,7 +243,8 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 				c -> c
 						.arg("install")
 						.arg("-r").bindArg("requirementsTxt", requirements)
-						.inheritEnv())
+						.inheritEnv()
+						.required())
 				.doOnSubscribe(_ -> log.atInfo()
 						.kv("requirements", requirements)
 						.log("Installing Python requirements"));

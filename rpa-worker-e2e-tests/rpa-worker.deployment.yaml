@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rpa-worker
+  labels:
+    app: rpa-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rpa-worker
+  template:
+    metadata:
+      name: rpa-worker
+      labels:
+        app: rpa-worker
+    spec:
+      containers:
+        - name: rpa-worker
+          image: ghcr.io/camunda/rpa-worker@999_DIGEST_999
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CAMUNDA_CLIENT_ZEEBE_ENABLED
+              value: "false"
+          startupProbe:
+            httpGet:
+              port: worker-api
+              path: /actuator/health
+            failureThreshold: 10
+            periodSeconds: 15
+          ports:
+            - containerPort: 36227
+              protocol: TCP
+              name: worker-api
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rpa-worker
+spec:
+  selector:
+    app: rpa-worker
+  ports:
+    - protocol: TCP
+      port: 36228
+      targetPort: worker-api
+  type: LoadBalancer
+    
+      
+    
