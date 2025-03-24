@@ -361,7 +361,7 @@ jobs:
           sed -i "s|999_DIGEST_999|$WORKER_IMAGE_DIGEST|" rpa-worker-e2e-tests/rpa-worker.deployment.yaml
           cat rpa-worker-e2e-tests/rpa-worker.deployment.yaml
           k3s kubectl create ns rpa-worker
-          k3s kubectl apply -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml
+          k3s kubectl apply -n rpa-worker -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml
           timeout 5m bash -c "while true; do k3s kubectl get pods -n rpa-worker; k3s kubectl wait -n rpa-worker --for=condition=Ready pod -l app=rpa-worker && break ||: ; done"
       
       - name: Setup Gradle
