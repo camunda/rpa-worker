@@ -54,7 +54,7 @@ jobs:
       
       - name: Upload JAR
         uses: actions/upload-artifact@v4
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || github.event_name == 'pull_request'
         with:
           name: executable-application-jar
           path: rpa-worker-application/build/libs/*.jar
@@ -169,6 +169,8 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=false
 
       - name: Build and push Docker image
         id: build-and-push
@@ -315,6 +317,7 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       E2E: "1"
+      WORKER_IMAGE_DIGEST: ${{ steps.build-and-push.outputs.digest }}
     
     steps:
       - uses: actions/checkout@v4
@@ -352,7 +355,7 @@ jobs:
           k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml
           timeout 10m bash -c "while true; do k3s kubectl get pods -n camunda; k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform && break ||: ; done"
           
-          sed -i "s|999_DIGEST_999|${{ steps.build-and-push.outputs.digest }}|" rpa-worker-e2e-tests/rpa-worker.deployment.yaml
+          sed -i "s|999_DIGEST_999|$WORKER_IMAGE_DIGEST|" rpa-worker-e2e-tests/rpa-worker.deployment.yaml
           cat rpa-worker-e2e-tests/rpa-worker.deployment.yaml
           k3s kubectl create ns rpa-worker
           k3s kubectl apply -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml
