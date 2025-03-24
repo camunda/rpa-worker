@@ -22,6 +22,12 @@ spec:
           env:
             - name: CAMUNDA_CLIENT_ZEEBE_ENABLED
               value: "false"
+          startupProbe:
+            httpGet:
+              port: worker-api
+              path: /actuator/health
+            failureThreshold: 10
+            periodSeconds: 15
           ports:
             - containerPort: 36227
               protocol: TCP
