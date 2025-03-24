@@ -6,10 +6,12 @@ import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import spock.lang.Ignore
 import spock.lang.PendingFeature
 
 import java.time.Duration
 
+@Ignore("Temporarily removing rpaframework from base deps")
 class ContainerBrowserAutomationE2ESpec extends AbstractE2ESpec {
 
 	@Override
