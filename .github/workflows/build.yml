@@ -134,6 +134,8 @@ jobs:
       contents: read
       packages: write
       id-token: write
+    outputs:
+      workerImageDigest: ${{ steps.build-and-push.outputs.digest }}
 
     steps:
       - name: Checkout repository
@@ -183,6 +185,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: ${{ github.event_name != 'pull_request' && 'linux/amd64,linux/aarch64' || 'linux/amd64' }}
+        
 
       - name: Sign the published Docker image
         env:
@@ -317,7 +320,8 @@ jobs:
     runs-on: ubuntu-latest
     env: 
       E2E: "1"
-      WORKER_IMAGE_DIGEST: ${{ steps.build-and-push.outputs.digest }}
+      WORKER_IMAGE_DIGEST: ${{ needs.images.outputs.workerImageDigest }}
+      DIGEST: ${{ steps.build-and-push.outputs.digest }}
     
     steps:
       - uses: actions/checkout@v4
