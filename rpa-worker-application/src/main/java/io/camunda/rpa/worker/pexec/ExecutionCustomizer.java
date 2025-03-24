@@ -21,4 +21,5 @@ public interface ExecutionCustomizer {
 	ExecutionCustomizer timeout(Duration timeout);
 	ExecutionCustomizer scheduleOn(Scheduler scheduler);
 	ExecutionCustomizer silent();
+	ExecutionCustomizer required();
 }

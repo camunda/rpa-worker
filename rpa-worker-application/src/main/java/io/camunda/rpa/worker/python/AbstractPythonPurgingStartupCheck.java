@@ -14,7 +14,7 @@ public abstract class AbstractPythonPurgingStartupCheck<T extends ApplicationEve
 	private final PythonSetupService pythonSetupService;
 	private final ApplicationRestarter applicationRestarter;
 	
-	private volatile boolean repairAttempted = false;
+	protected static volatile boolean repairAttempted = false;
 	
 	public Mono<T> purgeAndRestart() {
 		if(repairAttempted)
