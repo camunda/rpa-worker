@@ -28,7 +28,7 @@ import java.util.stream.Stream
 class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 	
 	private static final String ZERO_DATA_SHA_256_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-	private static final String REAL_BASE_REQUIREMENTS_SHA_256_HASH = "059ed4e717570c67aea51fd49fdf67b7049950f68c4435fb88d520508fbd1024"
+	private static final String REAL_BASE_REQUIREMENTS_SHA_256_HASH = "b516202f1697e1ddc701ed5089d265f474bf14f52e06c4feb3cf580ebd633acc"
 	private static final String STUB_EXTRA_REQUIREMENTS_SHA_256_HASH = "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843"
 
 	PythonProperties pythonProperties = PythonProperties.builder()
@@ -101,6 +101,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
 		1 * io.newOutputStream(_) >> Stub(OutputStream)
@@ -109,6 +110,8 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
 				1 * arg("-r") >> it
+				1 * arg("--no-build-isolation") >> it
+				1 * arg("--no-cache-dir") >> it
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
 				1 * inheritEnv() >> it
 			})
@@ -148,6 +151,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		and:
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
 		1 * io.newOutputStream(_) >> Stub(OutputStream)
@@ -156,6 +160,8 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
 				1 * arg("-r") >> it
+				1 * arg("--no-build-isolation") >> it
+				1 * arg("--no-cache-dir") >> it
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
 				1 * inheritEnv() >> it
 			})
@@ -218,7 +224,8 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		and:
 		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 
-		then:
+		and:
+		processService.execute(_, _) >> Mono.empty()
 		processService.execute(_, _) >> Mono.empty()
 	}
 
@@ -291,6 +298,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
 		1 * io.newOutputStream(Paths.get("/tmp/requirements.txt")) >> Stub(OutputStream)
 		1 * io.transferTo(_, _) >> 0L
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
@@ -427,6 +435,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		1 * io.transferTo(_, _) >> { l, r -> l.transferTo(r) }
 		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> false
 		1 * io.readString(Paths.get("/path/to/python/requirements.last")) >> "old-checksum"
+//		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it

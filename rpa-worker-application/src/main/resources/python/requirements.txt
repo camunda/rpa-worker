@@ -1,3 +1,4 @@
+setuptools==76.1.0
 camunda-utils @ https://github.com/camunda/rpa-python-libraries/releases/download/camunda-utils-v0.4.1/camunda_utils-0.4.1-py3-none-any.whl
 ## ^ provides robotframework
 

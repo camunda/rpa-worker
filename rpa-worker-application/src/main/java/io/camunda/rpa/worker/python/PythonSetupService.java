@@ -85,6 +85,21 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 								.kv("dir", pythonProperties.path())
 								.log("Creating new Python environment")))
 				
+				.then(processService.execute(pythonProperties.path()
+								.resolve("venv/")
+								.resolve(pyExeEnv.binDir())
+								.resolve(pyExeEnv.pipExe()),
+						c -> c
+								.arg("install")
+								.arg(pythonProperties.newEnvironmentPipLine())
+								.inheritEnv()
+								.required())
+				.doOnSubscribe(_ -> log.atInfo()
+						.kv("requirements", pythonProperties.newEnvironmentPipLine())
+						.log("Installing Python pre-requirements"))
+				
+						.doOnNext(xr -> log.atInfo().kv("xr", xr.toString()).log("Pre-reqs")))
+				
 				.then(maybeReinstallBaseRequirements())
 				.then(maybeReinstallExtraRequirements())
 
@@ -242,6 +257,8 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 						.resolve(pyExeEnv.pipExe()),
 				c -> c
 						.arg("install")
+						.arg("--no-build-isolation")
+						.arg("--no-cache-dir")
 						.arg("-r").bindArg("requirementsTxt", requirements)
 						.inheritEnv()
 						.required())
