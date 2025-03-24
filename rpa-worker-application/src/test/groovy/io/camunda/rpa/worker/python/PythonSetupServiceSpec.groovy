@@ -28,7 +28,7 @@ import java.util.stream.Stream
 class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 	
 	private static final String ZERO_DATA_SHA_256_HASH = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-	private static final String REAL_BASE_REQUIREMENTS_SHA_256_HASH = "b516202f1697e1ddc701ed5089d265f474bf14f52e06c4feb3cf580ebd633acc"
+	private static final String REAL_BASE_REQUIREMENTS_SHA_256_HASH = "f5d2d8c94b0e7bba6698a963512c95b96f84f17c66cced5c440950edf3dbfa7c"
 	private static final String STUB_EXTRA_REQUIREMENTS_SHA_256_HASH = "0a106a4361167bf5f9650af8385e7ac01d836841db65bc909c4b5713879eb843"
 
 	PythonProperties pythonProperties = PythonProperties.builder()
