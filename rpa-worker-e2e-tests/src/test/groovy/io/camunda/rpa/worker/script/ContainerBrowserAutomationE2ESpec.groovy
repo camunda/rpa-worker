@@ -6,6 +6,7 @@ import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
+import spock.lang.PendingFeature
 
 import java.time.Duration
 
@@ -28,6 +29,7 @@ class ContainerBrowserAutomationE2ESpec extends AbstractE2ESpec {
 		return $$webClient
 	}
 
+	@PendingFeature(reason = "Selenium version used by RPA libs too old, Selenium Manager cannot provision Firefox")
 	void "Runs RPA Challenge in container"() {
 		given:
 		String scriptBody = getClass().getResource("/rpa_challenge.robot").text
