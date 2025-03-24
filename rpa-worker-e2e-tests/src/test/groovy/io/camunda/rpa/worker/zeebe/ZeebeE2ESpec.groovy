@@ -4,7 +4,7 @@ import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
-import spock.lang.Ignore
+import spock.lang.PendingFeature
 
 @Slf4j
 class ZeebeE2ESpec extends AbstractE2ESpec {
@@ -148,8 +148,7 @@ Tasks
 		}
 	}
 	
-//	@PendingFeature(reason = "Selenium version used by RPA libs too old, Selenium Manager cannot provision Firefox")
-	@Ignore("Temporarily removing rpaframework from base deps")
+	@PendingFeature(reason = "Selenium version used by RPA libs too old, Selenium Manager cannot provision Firefox")
 	void "Runs the RPA Challenge"() {
 		given:
 		deployScriptFile("rpa_challenge")
