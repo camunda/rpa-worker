@@ -69,6 +69,9 @@ public class ProcessService {
 			
 			@Getter
 			private boolean silent = false;
+			
+			@Getter
+			private boolean required = false;
 
 			@Override
 			public ExecutionCustomizer arg(String arg) {
@@ -148,6 +151,12 @@ public class ProcessService {
 				this.silent = true;
 				return this;
 			}
+
+			@Override
+			public ExecutionCustomizer required() {
+				this.required = true;
+				return this;
+			}
 		};
 		customization.apply(executionCustomizer);
 
@@ -172,8 +181,10 @@ public class ProcessService {
 									.addKeyValue("stdout", streamHandler.getOutString())
 									.log("Process execution failed");
 						})
-						.recover(ExecuteException.class, ExecuteException::getExitValue)
 						.get())
+						.onErrorResume(ExecuteException.class, thrown -> executionCustomizer.isRequired() 
+								? Mono.error(thrown) 
+								: Mono.just(thrown.getExitValue()))
 						.timed()
 						.map(exitCode -> new ExecutionResult(
 								exitCode.get(),
@@ -192,6 +203,7 @@ public class ProcessService {
 		Duration getTimeout();
 		Scheduler getScheduler();
 		boolean isSilent();
+		boolean isRequired();
 	}
 
 	static class StreamHandler extends PumpStreamHandler {

@@ -85,7 +85,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	SpecificationHelper spec = new SpecificationHelper()
 
 	@Autowired
-	private WebClient.Builder webClientBuilder
+	protected WebClient.Builder webClientBuilder
 
 	private WebClient $$webClient
 	@Delegate

@@ -54,7 +54,7 @@ jobs:
       
       - name: Upload JAR
         uses: actions/upload-artifact@v4
-        if: github.ref_type == 'tag'
+        if: github.ref_type == 'tag' || github.event_name == 'pull_request'
         with:
           name: executable-application-jar
           path: rpa-worker-application/build/libs/*.jar
@@ -128,13 +128,14 @@ jobs:
   images:
     needs: 
       - build
-      - windows_test
-    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
       id-token: write
+    outputs:
+      workerImageDigest: ${{ steps.build-and-push.outputs.digest }}
 
     steps:
       - name: Checkout repository
@@ -170,18 +171,21 @@ jobs:
         uses: docker/metadata-action@96383f45573cb7f253c731d3b3ab81c87ef81934 # v5.0.0
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=false
 
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          platforms: linux/amd64,linux/aarch64
+          platforms: ${{ github.event_name != 'pull_request' && 'linux/amd64,linux/aarch64' || 'linux/amd64' }}
+        
 
       - name: Sign the published Docker image
         env:
@@ -311,10 +315,12 @@ jobs:
     needs:
       - build
       - native_linux_amd64
+      - images
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     env: 
       E2E: "1"
+      WORKER_IMAGE_DIGEST: ${{ needs.images.outputs.workerImageDigest }}
     
     steps:
       - uses: actions/checkout@v4
@@ -340,6 +346,7 @@ jobs:
           echo "## Updating hosts"
           echo -e "127.0.0.1 \t camunda.local" | sudo tee -a /etc/hosts
           echo -e "127.0.0.1 \t zeebe.camunda.local" | sudo tee -a /etc/hosts
+          echo -e "127.0.0.1 \t rpa-worker.local" | sudo tee -a /etc/hosts
           
           echo "## Installing k3s"
           curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sudo -E sh -s
@@ -351,6 +358,11 @@ jobs:
           k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml
           timeout 10m bash -c "while true; do k3s kubectl get pods -n camunda; k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform && break ||: ; done"
           
+          sed -i "s|999_DIGEST_999|$WORKER_IMAGE_DIGEST|" rpa-worker-e2e-tests/rpa-worker.deployment.yaml
+          k3s kubectl create ns rpa-worker
+          k3s kubectl apply -n rpa-worker -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml
+          timeout 5m bash -c "while true; do k3s kubectl get pods -n rpa-worker; k3s kubectl wait -n rpa-worker --for=condition=Ready pod -l app=rpa-worker && break ||: ; done"
+      
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
@@ -399,7 +411,6 @@ jobs:
   
   release:
     needs:
-      - images
       - native_linux_amd64
       - native_win32_amd64
       - native_darwin_amd64
