@@ -4,10 +4,10 @@ import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.ZeebeFuture
 import io.camunda.zeebe.client.api.command.SetVariablesCommandStep1
 import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
+import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
 import org.spockframework.spring.SpringBean
 import org.spockframework.spring.SpringSpy
@@ -24,9 +24,9 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 			updateTimeout(_) >> Stub(UpdateJobCommandStep1.UpdateJobCommandStep2)
 		}
 		
-		newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
-			variables(_) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				send() >> Stub(ZeebeFuture)
+		newSetVariablesCommand(_) >> Stub(SetVariablesCommandStep1) {
+			variables(_) >> Stub(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 	}
@@ -106,6 +106,6 @@ abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 							})]
 
 			getVariablesAsMap() >> inputVariables
-}
+		}
 	}
 }

@@ -1,8 +1,5 @@
 package io.camunda.rpa.worker.robot;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import io.camunda.rpa.worker.util.YamlMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,10 +23,5 @@ class RobotConfiguration {
 				"robot",
 				60,
 				true);
-	}
-
-	@Bean
-	public YamlMapper yamlMapper(ObjectMapper objectMapper) {
-		return new YamlMapper(objectMapper.copyWith(new YAMLFactory()));
 	}
 }

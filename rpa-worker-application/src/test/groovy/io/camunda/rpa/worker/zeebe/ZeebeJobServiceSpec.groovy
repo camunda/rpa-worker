@@ -18,6 +18,7 @@ import io.camunda.zeebe.client.api.command.FailJobCommandStep1
 import io.camunda.zeebe.client.api.command.SetVariablesCommandStep1
 import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
+import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
 import reactor.core.publisher.Mono
 import spock.lang.Specification
@@ -62,9 +63,9 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * metricsService.onZeebeJobReceived(job.type)
-		1 * robotService.execute(script, [], [], _, null, _, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job], null) >> { _, __, ___, ____, _____, RobotExecutionListener executionListener, _______, ________ ->
-			executionListener.beforeScriptExecution(workspace, Duration.ofMinutes(1))
-			executionListener.afterRobotExecution(workspace)
+		1 * robotService.execute(script, [], [], _, null, _, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job], null) >> { _, __, ___, ____, _____, List<RobotExecutionListener> executionListeners, _______, ________ ->
+			executionListeners*.beforeScriptExecution(workspace, Duration.ofMinutes(1))
+			executionListeners*.afterRobotExecution(workspace)
 			return Mono.just(new ExecutionResults(
 					[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", expectedOutputVars, Duration.ofSeconds(3))],
 					Result.PASS,
@@ -82,7 +83,6 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * zeebeClient.newCompleteCommand(job) >> Mock(CompleteJobCommandStep1) {
-			1 * variables(expectedOutputVars) >> it
 			1 * send()
 		}
 		
@@ -95,7 +95,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		and:
 		1 * zeebeClient.newSetVariablesCommand(job.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
 			1 * variables(expectedOutputVars) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send()
+				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 	}
@@ -119,7 +119,6 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
 			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ m -> m.startsWith(expectedMessage) }) >> it
-				1 * variables(expectedOutputVars) >> it
 				1 * send()
 			}
 		}
@@ -130,7 +129,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		and:
 		1 * zeebeClient.newSetVariablesCommand(job.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
 			1 * variables(expectedOutputVars) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send()
+				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 
@@ -154,7 +153,6 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
 			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage(_) >> it
-				_ * variables(_) >> it
 				1 * send()
 			}
 		}
@@ -195,7 +193,6 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
 			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage(_) >> it
-				_ * variables(_) >> it
 				1 * send()
 			}
 		}
@@ -251,7 +248,6 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		1 * zeebeClient.newFailCommand(job) >> Mock(FailJobCommandStep1) {
 			1 * retries(job.retries - 1) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ m -> m.startsWith("The execution timed out") }) >> it
-				_ * variables(_) >> it
 				1 * send()
 			}
 		}
@@ -273,9 +269,9 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * metricsService.onZeebeJobReceived(job.type)
-		1 * robotService.execute(script, [], [], _, null, _, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job], null) >> { _, __, ___, ____, _____, RobotExecutionListener executionListener, _______, ________ ->
-			executionListener.beforeScriptExecution(workspace, Duration.ofMinutes(1))
-			executionListener.afterRobotExecution(workspace)
+		1 * robotService.execute(script, [], [], _, null, _, [(ZeebeJobService.ZEEBE_JOB_WORKSPACE_PROPERTY): job], null) >> { _, __, ___, ____, _____, List<RobotExecutionListener> executionListeners, _______, ________ ->
+			executionListeners*.beforeScriptExecution(workspace, Duration.ofMinutes(1))
+			executionListeners*.afterRobotExecution(workspace)
 			service.pushDetached(123L)
 			return Mono.just(new ExecutionResults(
 					[main: new ExecutionResults.ExecutionResult("main", Result.PASS, "", [:], Duration.ofSeconds(3))],
@@ -301,7 +297,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		then:
 		1 * zeebeClient.newSetVariablesCommand(job.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
 			1 * variables(expectedOutputVars) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send()
+				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 

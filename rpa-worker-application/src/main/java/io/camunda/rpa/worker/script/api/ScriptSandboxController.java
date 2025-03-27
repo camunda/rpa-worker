@@ -20,6 +20,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -52,7 +53,7 @@ class ScriptSandboxController {
 		log.atInfo().log("Received script for sandbox evaluation");
 
 		RobotScript robotScript = new RobotScript("_eval_", request.script());
-		return robotService.execute(robotScript, request.variables(), null, workspaceCleanupService::preserveLast, request.workspaceAffinityKey())
+		return robotService.execute(robotScript, request.variables(), null, Collections.singletonList(workspaceCleanupService::preserveLast), request.workspaceAffinityKey())
 
 				.doOnSuccess(xr -> log.atInfo().kv("result", xr.result()).log("Returning sandbox execution results"))
 

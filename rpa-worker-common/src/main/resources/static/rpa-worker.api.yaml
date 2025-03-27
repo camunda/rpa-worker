@@ -13,6 +13,7 @@ tags:
       Upload and download files to/from Zeebe.
       Used by the Camunda Robot Python Library to fulfil document management keywords
   - name: Zeebe & Job Control
+  - name: Workspace
 
 paths:
   /script/evaluate:
@@ -184,6 +185,57 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidationFailedResponse'
+                
+  /workspace/{workspaceId}/{path}:
+    get:
+      tags: [Workspace]
+      summary: Proxy a file from a Workspace
+      parameters:
+        - in: path
+          name: workspaceId
+          description: The Workspace ID
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: path
+          description: The file path, relative to the Workspace root
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: attachment
+          description: Whether to set file attachment headers on response (flag)
+          schema: false
+          
+  /workspace/{workspaceId}/variables:
+    post:
+      tags: [ Workspace ]
+      summary: Attach tags to a Workspace
+      parameters:
+        - in: path
+          name: workspaceId
+          description: The Workspace ID
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              $ref: '#/components/schemas/AttachVariablesRequest'
+      responses:
+        200:
+          description: The variables were added to the current Workspace
+        404:
+          description: A Workspace with the provided ID was not found
+        422:
+          description: Request body was invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationFailedResponse'
 
 components:
   schemas:
@@ -332,4 +384,14 @@ components:
           required: false
           additionalProperties: { }
           description: Set the variables for the command
+          
+    AttachVariablesRequest:
+      type: object
+      properties:
+        variables: 
+          type: object
+          required: true
+          additionalProperties: { }
+          description: The variables to attach to the Workspace
+        
 

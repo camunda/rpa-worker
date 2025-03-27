@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.robot;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
@@ -8,9 +7,9 @@ import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.util.MoreCollectors;
-import io.camunda.rpa.worker.util.YamlMapper;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
+import io.camunda.rpa.worker.workspace.WorkspaceVariablesManager;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +27,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -50,11 +48,11 @@ public class RobotService {
 	private final ObjectMapper objectMapper;
 	private final PythonInterpreter pythonInterpreter;
 	private final ProcessService processService;
-	private final YamlMapper yamlMapper;
 	private final RobotProperties robotProperties;
 	private final WorkspaceService workspaceService;
 	private final Scheduler robotWorkScheduler;
 	private final ObjectProvider<EnvironmentVariablesContributor> environmentContributors;
+	private final WorkspaceVariablesManager workspaceVariablesManager;
 
 	private record RobotEnvironment(Workspace workspace, Path varsFile, Path outputDir, Path artifactsDir) { }
 
@@ -62,10 +60,10 @@ public class RobotService {
 			RobotScript script,
 			Map<String, Object> variables,
 			Duration timeout,
-			RobotExecutionListener executionListener, 
+			List<RobotExecutionListener> executionListeners, 
 			String workspaceAffinityKey) {
 		
-		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, timeout, executionListener, Collections.emptyMap(), workspaceAffinityKey);
+		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, timeout, executionListeners, Collections.emptyMap(), workspaceAffinityKey);
 	}
 	
 	public Mono<ExecutionResults> execute(
@@ -74,7 +72,7 @@ public class RobotService {
 			List<RobotScript> afterScripts,
 			Map<String, Object> variables,
 			Duration timeout,
-			RobotExecutionListener executionListener,
+			List<RobotExecutionListener> executionListeners,
 			Map<String, Object> workspaceProperties, 
 			String workspaceAffinityKey) {
 
@@ -94,14 +92,16 @@ public class RobotService {
 				.flatMap(s -> s)
 				.toList();
 
-		return doExecute(scripts, variables, timeout != null ? timeout : robotProperties.defaultTimeout(), Optional.ofNullable(executionListener), workspaceProperties, workspaceAffinityKey);
+		
+		List<RobotExecutionListener> allListeners = Stream.concat(Stream.of(workspaceVariablesManager), executionListeners.stream()).toList();
+		return doExecute(scripts, variables, timeout != null ? timeout : robotProperties.defaultTimeout(), allListeners, workspaceProperties, workspaceAffinityKey);
 	}
 	
 	private Mono<ExecutionResults> doExecute(
 			List<PreparedScript> scripts,
 			Map<String, Object> variables,
 			Duration timeout,
-			Optional<RobotExecutionListener> executionListener,
+			List<RobotExecutionListener> executionListeners,
 			Map<String, Object> workspaceProperties, 
 			String workspaceAffinityKey) {
 
@@ -111,7 +111,7 @@ public class RobotService {
 								.concatMap(script -> getEnvironmentVariables(renv, script)
 
 										.flatMap(envVars ->
-												executeRobot(timeout, executionListener, renv, script, envVars)))
+												executeRobot(timeout, executionListeners, renv, script, envVars)))
 
 								.onErrorResume(RobotFailureException.class, thrown ->
 										Mono.just(thrown.getExecutionResult()))
@@ -124,7 +124,7 @@ public class RobotService {
 										kv -> kv,
 										MoreCollectors.MergeStrategy.noDuplicatesExpected()))
 
-								.doFinally(_ -> executionListener.ifPresent(
+								.doFinally(_ -> executionListeners.forEach(
 										l -> l.afterRobotExecution(renv.workspace())))
 
 								.map(resultsMap -> new ExecutionResults(
@@ -174,7 +174,7 @@ public class RobotService {
 
 	private Mono<ExecutionResults.ExecutionResult> executeRobot(
 			Duration timeout,
-			Optional<RobotExecutionListener> executionListener,
+			List<RobotExecutionListener> executionListeners,
 			RobotEnvironment renv,
 			PreparedScript script,
 			Map<String, String> envVars) {
@@ -198,29 +198,22 @@ public class RobotService {
 
 						.timeout(timeout)
 						.scheduleOn(robotWorkScheduler))
+				
+				.doOnSubscribe(_ -> executionListeners.forEach(l -> 
+						l.beforeScriptExecution(renv.workspace(), timeout)))
 
-				.doOnSubscribe(_ -> executionListener.ifPresent(
-						l -> l.beforeScriptExecution(renv.workspace(), timeout)))
-
-				.flatMap(xr -> getOutputVariables(renv)
-						.map(outputVariables -> toRobotExecutionResult(
+				.map(xr -> toRobotExecutionResult(
 								script.executionKey(),
 								xr,
-								outputVariables)))
+								getOutputVariables(renv)))
 
 				.flatMap(xr -> xr.result() != ExecutionResults.Result.PASS
 						? Mono.error(new RobotFailureException(xr))
 						: Mono.just(xr));
 	}
 
-	private Mono<Map<String, Object>> getOutputVariables(RobotEnvironment robotEnvironment) {
-		return io.supply(() -> {
-			Path outputs = robotEnvironment.workspace().path().resolve("outputs.yml");
-			if (io.notExists(outputs)) return Collections.emptyMap();
-			
-			return io.withReader(outputs, r -> 
-					yamlMapper.readValue(r, new TypeReference<Map<String, Object>>() {}));
-		});
+	private Map<String, Object> getOutputVariables(RobotEnvironment robotEnvironment) {
+		return workspaceVariablesManager.getVariables(robotEnvironment.workspace().id());
 	}
 
 	private String mergeOutput(String stdout, String stderr) {
