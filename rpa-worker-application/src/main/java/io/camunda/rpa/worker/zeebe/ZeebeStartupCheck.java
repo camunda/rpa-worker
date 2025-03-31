@@ -37,16 +37,7 @@ class ZeebeStartupCheck implements StartupCheck<ZeebeReadyEvent> {
 		
 		return Mono.fromCompletionStage(() -> zeebeClient.newTopologyRequest().send())
 				.retryWhen(Retry.backoff(NUM_ATTEMPTS, Duration.ofSeconds(2)))
-
-				.doOnError(thrown -> log.atError()
-						.setCause(thrown)
-						.log(("Failed to communicate with Zeebe after %s attempts, please verify all necessary configuration is provided. " +
-								"If using a configuration file to configure the RPA Worker ensure it contains all required properties, " +
-								"is named rpa-worker.properties, rpa-worker.yaml, application.properties, or application.yaml, and " +
-								"is either in the current directory or the config/ directory. ").formatted(NUM_ATTEMPTS)))
-
-				.map(_ -> new ZeebeReadyEvent(zeebeClient))
-
+				
 				.doOnSubscribe(_ -> log.atInfo()
 						.kv("client-mode", camundaClientProperties.getMode())
 						.kv("client-id", Optional.ofNullable(camundaClientProperties.getAuth()).map(AuthProperties::getClientId).orElse(null))
@@ -55,7 +46,16 @@ class ZeebeStartupCheck implements StartupCheck<ZeebeReadyEvent> {
 						.kv("zeebe-grpc-address", Optional.ofNullable(camundaClientProperties.getZeebe()).map(ZeebeClientProperties::getGrpcAddress).orElse(null))
 						.kv("zeebe-rest-address", Optional.ofNullable(camundaClientProperties.getZeebe()).map(ZeebeClientProperties::getRestAddress).orElse(null))
 						.kv("zeebe-prefer-rest-over-grpc", Optional.ofNullable(camundaClientProperties.getZeebe()).map(ZeebeClientProperties::isPreferRestOverGrpc).orElse(null))
-						.log("Checking Zeebe connection"));
+						.log("Checking Zeebe connection"))
+
+				.doOnError(thrown -> log.atError()
+						.setCause(thrown)
+						.log(("Failed to communicate with Zeebe after %s attempts, please verify all necessary configuration is provided. " +
+								"If using a configuration file to configure the RPA Worker ensure it contains all required properties, " +
+								"is named rpa-worker.properties, rpa-worker.yaml, application.properties, or application.yaml, and " +
+								"is either in the current directory or the config/ directory. ").formatted(NUM_ATTEMPTS)))
+
+				.map(_ -> new ZeebeReadyEvent(zeebeClient));
 	}
 
 	@Override
