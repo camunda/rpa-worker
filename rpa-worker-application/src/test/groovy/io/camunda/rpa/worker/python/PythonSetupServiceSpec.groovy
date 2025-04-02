@@ -166,6 +166,59 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 	}
 
+	void "Creates new environment using system Python (exe name custom from properties)"() {
+		Path interpreter = Paths.get("/my/custom/interpreter")
+		given:
+		@Subject PythonSetupService serviceForCustomPythonInterp = new PythonSetupService(
+				pythonProperties.toBuilder().interpreter(interpreter).build(), 
+				io, 
+				processService, 
+				webClient)
+
+		when:
+		PythonInterpreter r = serviceForCustomPythonInterp.getObject()
+
+		then:
+		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
+		1 * processService.execute(interpreter, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", "", Duration.ZERO))
+		}
+
+		and:
+		1 * processService.execute(interpreter, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
+				1 * inheritEnv() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+
+		and:
+		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
+		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
+		1 * io.newOutputStream(_) >> Stub(OutputStream)
+		1 * io.transferTo(_, _) >> 0L
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("install") >> it
+				1 * arg("-r") >> it
+				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
+				1 * inheritEnv() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+
+		and:
+		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
+	}
+
+
 	@RestoreSystemProperties
 	void "Downloads Python if no system Python available"() {
 		given:

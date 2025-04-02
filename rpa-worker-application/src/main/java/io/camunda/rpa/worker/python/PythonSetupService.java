@@ -92,7 +92,9 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	}
 
 	private Mono<Object> systemPython() {
-		return Flux.<Object>just("python3", "python")
+		return Mono.<Object>justOrEmpty(pythonProperties.interpreter())
+				.flux()
+				.switchIfEmpty(Flux.<Object>just("python3", "python"))
 				.flatMap(exeName -> processService.execute(exeName, c -> c.silent().arg("--version"))
 						.onErrorComplete(IOException.class)
 						.filter(xr -> ! WINDOWS_NO_PYTHON_EXIT_CODES.contains(xr.exitCode()))
