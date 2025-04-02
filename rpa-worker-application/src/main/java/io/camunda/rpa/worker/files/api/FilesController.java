@@ -31,7 +31,6 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static io.camunda.rpa.worker.util.PathUtils.fixSlashes;
 
@@ -49,30 +48,24 @@ class FilesController {
 			@PathVariable String workspaceId,
 			@Valid @RequestBody StoreFilesRequest request) {
 
-		PathMatcher pathMatcher = io.globMatcher(URI.create(fixSlashes(request.files())).normalize().toString());
-
-		return io.wrap(Mono.defer(() -> {
-			Optional<Workspace> workspace = workspaceService.getById(workspaceId);
-
-			Stream<WorkspaceFile> filesToStore = workspace
-					.stream()
-					.map(Workspace::path)
-					.flatMap(io::walk)
-					.map(p -> workspace.get().path().relativize(p))
-					.filter(pathMatcher::matches)
-					.flatMap(p -> workspaceService.getWorkspaceFile(workspace.get(), p.toString()).stream());
-
-			return Flux.fromStream(filesToStore)
-					.flatMap(p -> documentClient.uploadDocument(toZeebeStoreDocumentRequest(p, getZeebeJobInfoForWorkspace(workspace)), null))
-					.collect(Collectors.toMap(
-							r -> r.metadata().fileName(),
-							r -> r));
-		}));
+		return io.wrap(Mono.defer(() -> Mono.justOrEmpty(workspaceService.getById(workspaceId))
+				.flatMapMany(w -> Flux.fromStream(() -> {
+							PathMatcher pathMatcher = io.globMatcher(URI.create(fixSlashes(request.files()).replaceAll(fixSlashes(w.path().toAbsolutePath()) + "/?", "")).normalize().toString());
+							return io.walk(w.path())
+									.map(p -> w.path().relativize(p))
+									.filter(path -> pathMatcher.matches(path))
+									.flatMap(p -> workspaceService.getWorkspaceFile(w, p.toString()).stream());
+						})
+						.flatMap(p -> documentClient.uploadDocument(
+								toZeebeStoreDocumentRequest(p, getZeebeJobInfoForWorkspace(w)), null)))
+				.collect(Collectors.toMap(
+						r -> r.metadata().fileName(),
+						r -> r))));
 	}
 
 	private record ZeebeJobInfo(String procesDefinitionId, Long processInstanceKey) {}
-	private ZeebeJobInfo getZeebeJobInfoForWorkspace(Optional<Workspace> workspace) {
-		return workspace
+	private ZeebeJobInfo getZeebeJobInfoForWorkspace(Workspace workspace) {
+		return Optional.of(workspace)
 				.map(w -> w.<ActivatedJob>getProperty("ZEEBE_JOB"))
 				.map(j -> new ZeebeJobInfo(
 						j.getBpmnProcessId(),
