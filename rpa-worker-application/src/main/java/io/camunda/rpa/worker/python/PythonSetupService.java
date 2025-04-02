@@ -102,7 +102,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 						.doOnNext(version -> log.atError()
 								.kv("pythonVersion", version)
 								.kv("pythonVersionSupported", 
-										version.isLowerThan(MINIMUM_PYTHON_VERSION) || version.isHigherThan(MAXIMUM_PYTHON_VERSION))
+										! (version.isLowerThan(MINIMUM_PYTHON_VERSION) || version.isHigherThan(MAXIMUM_PYTHON_VERSION)))
 								.log("""
 						The Pip invocation has failed, and the Python requirements were not able to be installed into the environment.
 						Potential causes for a Pip failure include:
