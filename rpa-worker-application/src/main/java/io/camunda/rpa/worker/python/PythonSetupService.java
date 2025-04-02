@@ -100,7 +100,6 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 							return Version.parse(matcher.group("version"));
 						})
 						.doOnNext(version -> log.atError()
-								.setCause(thrown)
 								.kv("pythonVersion", version)
 								.kv("pythonVersionSupported", 
 										version.isLowerThan(MINIMUM_PYTHON_VERSION) || version.isHigherThan(MAXIMUM_PYTHON_VERSION))
