@@ -1,6 +1,6 @@
 package io.camunda.rpa.worker.zeebe
 
-
+import com.fasterxml.jackson.core.type.TypeReference
 import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
@@ -93,13 +93,15 @@ Tasks
 				spec.expectVariables(pinstanceBlue.processInstanceKey) {
 					outputFile
 				}.outputFile,
-				ZeebeDocumentDescriptor)
+				new TypeReference<List<ZeebeDocumentDescriptor>>() {})
+				.first()
 		
 		ZeebeDocumentDescriptor redDocument = objectMapper.convertValue(
 				spec.expectVariables(pinstanceRed.processInstanceKey) {
 					outputFile
 				}.outputFile,
-				ZeebeDocumentDescriptor)
+				new TypeReference<List<ZeebeDocumentDescriptor>>() {})
+				.first()
 
 		String blueContents = download(documentClient.getDocument(
 				blueDocument.documentId(), blueDocument.storeId(), blueDocument.contentHash())).text

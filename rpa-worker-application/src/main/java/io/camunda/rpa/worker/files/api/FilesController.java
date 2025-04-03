@@ -53,7 +53,7 @@ class FilesController {
 							PathMatcher pathMatcher = io.globMatcher(URI.create(fixSlashes(request.files()).replaceAll(fixSlashes(w.path().toAbsolutePath()) + "/?", "")).normalize().toString());
 							return io.walk(w.path())
 									.map(p -> w.path().relativize(p))
-									.filter(path -> pathMatcher.matches(path))
+									.filter(pathMatcher::matches)
 									.flatMap(p -> workspaceService.getWorkspaceFile(w, p.toString()).stream());
 						})
 						.flatMap(p -> documentClient.uploadDocument(

@@ -17,7 +17,7 @@ import java.nio.file.Paths
 @TestPropertySource(properties = "camunda.rpa.python.path=python_ftest/")
 class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 	
-	private static final String FTEST_REQUIREMENTS_HASH = "49d346cb3921381779f31645b3305df8d25f1f428b03ffa0884bd3667d99bed3"
+	private static final String FTEST_REQUIREMENTS_HASH = "a49629b7d3e9160b64d105075ebd3f1d408c4ccc434b0cd06a9eacb86aeb892f"
 	
 	private static Path ftestPythonEnv
 	
