@@ -263,7 +263,54 @@ Test
 			it*.metadata()*.fileName().containsAll(["two.txt", "three.txt"])
 		}
 	}
-	
+
+	private static final String UPLOAD_FILES_WITH_ABSOLUTE_PATHS_SCRIPT = '''\
+*** Settings ***
+Library    OperatingSystem
+Library    Camunda
+
+*** Tasks ***
+Main
+    Create File    %{RPA_WORKSPACE}/test.txt
+    ${testDocument}=    Upload Documents    %{RPA_WORKSPACE}/test.txt
+    Create Directory    downloaded
+    Download Documents    ${testDocument}    %{RPA_WORKSPACE}/downloaded
+    File Should Exist    downloaded/test.txt
+'''
+
+	@Issue("https://github.com/camunda/rpa-worker/issues/167")
+	void "Correctly handles upload file requests with absolute paths"() {
+		given:
+		bypassZeebeAuth()
+		Workspace theWorkspace
+		workspaceCleanupService.preserveLast(_) >> { Workspace w ->
+			theWorkspace = w
+			return Mono.empty()
+		}
+
+		and:
+		zeebeApi.setDispatcher { rr ->
+			String path = URI.create(rr.path).path
+			return path.endsWith("document-id")
+					? new MockResponse().tap {
+						setResponseCode(HttpStatus.OK.value())
+						setBody("")
+					}
+					: copyInputToOutput(rr)
+		}
+
+		when:
+		EvaluateScriptResponse response = block post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(new EvaluateScriptRequest(UPLOAD_FILES_WITH_ABSOLUTE_PATHS_SCRIPT, [:], null)))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+
+		then:
+		response.result() == ExecutionResults.Result.PASS
+	}
+
+
 	private List<ZeebeDocumentDescriptor> fileOrFiles(def variable) {
 		List<Map<String, Object>> filesRaw = variable instanceof List<Map<String, Object>> ? variable : [ variable ]
 		return objectMapper.convertValue(filesRaw, new TypeReference<List<ZeebeDocumentDescriptor>>() {})
