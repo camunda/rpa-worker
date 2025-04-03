@@ -145,7 +145,8 @@ Upload the file
 				spec.expectVariables(pinstance.processInstanceKey) {
 					uploadedFile
 				}.uploadedFile,
-				ZeebeDocumentDescriptor)
+				new TypeReference<List<ZeebeDocumentDescriptor>>() {})
+				.first()
 
 		String contents = download(documentClient.getDocument(
 				uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())).text
@@ -184,7 +185,8 @@ Upload the file
 				spec.expectVariables(pinstance.processInstanceKey) {
 					uploadedFile
 				}.uploadedFile,
-				ZeebeDocumentDescriptor)
+				new TypeReference<List<ZeebeDocumentDescriptor>>() {})
+				.first()
 
 		String contents = download(documentClient.getDocument(
 				uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())).text
