@@ -36,6 +36,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	static final Set<Integer> WINDOWS_NO_PYTHON_EXIT_CODES = Set.of(49, 9009);
 	
 	private static final Version MINIMUM_PYTHON_VERSION = Version.of(3, 8);
+	private static final Version MAXIMUM_PYTHON_VERSION = Version.of(3, 11);
 	private static final Pattern PYTHON_VERSION_PATTERN = Pattern.compile("Python (?<version>[0-9a-zA-Z-.+]+)");
 
 	static final PythonExecutionEnvironment pyExeEnv = PythonExecutionEnvironment.get();
@@ -87,6 +88,33 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 				
 				.then(maybeReinstallBaseRequirements())
 				.then(maybeReinstallExtraRequirements())
+
+				.onErrorResume(PipFailureException.class, thrown -> processService.execute(pythonProperties.path()
+										.resolve("venv/")
+										.resolve(pyExeEnv.binDir())
+										.resolve(pyExeEnv.pythonExe()),
+								c -> c.arg("--version"))
+						.map(xr -> {
+							Matcher matcher = PYTHON_VERSION_PATTERN.matcher(xr.stdout());
+							matcher.find();
+							return Version.parse(matcher.group("version"));
+						})
+						.doOnNext(version -> log.atError()
+								.kv("pythonVersion", version)
+								.kv("pythonVersionSupported", 
+										! (version.isLowerThan(MINIMUM_PYTHON_VERSION) || version.isHigherThan(MAXIMUM_PYTHON_VERSION)))
+								.log("""
+						The Pip invocation has failed, and the Python requirements were not able to be installed into the environment.
+						Potential causes for a Pip failure include:
+						* Invalid extra-requirements being configured
+						* A dependency conflict between the core dependencies and dependencies specified in extra-requirements
+						* An unsupported Python version being used (< 3.8 or >= 3.13)
+						* Disk space or internet connectivity issues
+						
+						For more information on working around unsupported Python versions please see
+						https://github.com/camunda/rpa-worker/discussions/170
+						"""))
+						.then(Mono.error(thrown)))
 
 				.thenReturn(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
 	}
@@ -249,7 +277,8 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 						.required())
 				.doOnSubscribe(_ -> log.atInfo()
 						.kv("requirements", requirements)
-						.log("Installing Python requirements"));
+						.log("Installing Python requirements"))
+				.onErrorMap(thrown -> new PipFailureException(thrown));
 	}
 
 	public Mono<Void> purgeEnvironment() {
