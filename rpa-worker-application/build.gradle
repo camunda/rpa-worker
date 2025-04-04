@@ -180,12 +180,16 @@ tasks.register("deletePlainJar") {
 }
 
 tasks.register("zipNativeImage", Zip) {
+	mustRunAfter(nativeCompile)
+
 	archiveFileName = "${graalvmNative.binaries.main.imageName.get()}.zip"
 	
-	from(nativeCompile.outputFile)
+	from(nativeCompile.outputs.files.singleFile) {
+		exclude("*.so", "*.dll", "*.dynlib", "*.args")
+	}
+
 	from(project.layout.files("src/main/resources/META-INF/application.sample.properties")) {
 		rename { "application.properties" }
 	}
-}
 
-nativeCompile.finalizedBy(zipNativeImage)
+}
