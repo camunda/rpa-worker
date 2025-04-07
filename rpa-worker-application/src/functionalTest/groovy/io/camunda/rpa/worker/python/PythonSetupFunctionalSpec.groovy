@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.python
 
 import io.camunda.rpa.worker.AbstractFunctionalSpec
+import io.camunda.rpa.worker.FileHashUtils
 import io.camunda.rpa.worker.pexec.ProcessService
 import org.spockframework.spring.SpringSpy
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +18,8 @@ import java.nio.file.Paths
 @TestPropertySource(properties = "camunda.rpa.python.path=python_ftest/")
 class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 	
-	private static final String FTEST_REQUIREMENTS_HASH = "a49629b7d3e9160b64d105075ebd3f1d408c4ccc434b0cd06a9eacb86aeb892f"
+	private static final String FTEST_REQUIREMENTS_HASH =
+			FileHashUtils.hashFile(PythonSetupFunctionalSpec.classLoader.getResource("python/requirements-ftest.txt").text)
 	
 	private static Path ftestPythonEnv
 	

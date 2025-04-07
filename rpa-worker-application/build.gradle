@@ -71,6 +71,7 @@ dependencies {
 	testImplementation libs.reactor.test
 	testImplementation libs.spock.core
 	testImplementation libs.groovy.json
+	testImplementation libs.groovy.nio
 
 	testRuntimeOnly libs.junit.platformLauncher
 	testRuntimeOnly libs.byteBuddy
