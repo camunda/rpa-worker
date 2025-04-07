@@ -251,6 +251,49 @@ for other supported properties_
 |===
 
 
+== Supported Configuration
+
+The RPA Worker will source its configuration from configuration files and/or environment variables.
+The precedence order is documented in https://docs.spring.io/spring-boot/reference/features/external-config.html[Spring's Externalized Configuration] documentation.
+
+.Configuration Files
+A configuration file can be a Properties or a YAML document. 
+It can have the name `application` or `rpa-worker`. 
+It can be placed in the working directory of the Worker, or in a directory named `config` therein. 
+The following are all valid paths to RPA Worker configuration files:
+
+* `rpa-worker.properties`
+* `application.properties`
+* `rpa-worker.yaml`
+* `application.yaml`
+* `config/rpa-worker.properties`
+* `config/application.properties`
+* etc
+
+.Environment Variables
+Preferable for container-based deployments, the RPA Worker can source its configuration from environment variables. 
+The name of the environment variables follow https://docs.spring.io/spring-boot/reference/features/external-config.html#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables[Spring's Binding Rules],
+which can be briefly summarised as:
+
+. Convert the property name to upper-case
+. Replace dots with underscores
+. Remove hyphens
+
+For example `camunda.rpa.zeebe.worker-tags` would become `CAMUNDA_RPA_ZEEBE_WORKERTAGS`.
+
+Launching a dev container with Zeebe connection details, mapping the Worker's listener port to the host, might look like:
+[source,shell]
+----
+$ docker run --rm -it \
+    -p 36227:36227 \
+    -e CAMUNDA_CLIENT_MODE=saas \
+    -e CAMUNDA_CLIENT_AUTH_CLIENTID=abc123 \
+    -e CAMUNDA_CLIENT_AUTH_CLIENTSECRET=def234 \
+    -e CAMUNDA_CLICNE_CLUSTERID=ghi345 \
+    -e CAMUNDA_CLIENT_REGION=lpp-1 \
+    ghcr.io/camunda/rpa-worker:0.8.0
+----
+
 
 == License
 
