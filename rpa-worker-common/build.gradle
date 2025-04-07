@@ -30,6 +30,8 @@ repositories {
 }
 
 dependencies {
+	implementation group: 'org.jetbrains', name: 'annotations', version: '26.0.2'
+	
 	implementation libs.spring.boot.starter.validation
 
 	implementation libs.vavr

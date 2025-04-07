@@ -45,7 +45,6 @@ class ZeebeStartupCheck implements StartupCheck<ZeebeReadyEvent> {
 						.kv("region", camundaClientProperties.getRegion())
 						.kv("zeebe-grpc-address", Optional.ofNullable(camundaClientProperties.getZeebe()).map(ZeebeClientProperties::getGrpcAddress).orElse(null))
 						.kv("zeebe-rest-address", Optional.ofNullable(camundaClientProperties.getZeebe()).map(ZeebeClientProperties::getRestAddress).orElse(null))
-						.kv("zeebe-prefer-rest-over-grpc", Optional.ofNullable(camundaClientProperties.getZeebe()).map(ZeebeClientProperties::isPreferRestOverGrpc).orElse(null))
 						.log("Checking Zeebe connection"))
 
 				.doOnError(thrown -> log.atError()
