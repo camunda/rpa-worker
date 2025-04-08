@@ -37,8 +37,8 @@ camunda.client.zeebe.rest-address=http://zeebe.camunda.local
 camunda.client.mode=saas
 camunda.client.auth.client-id=<client id>
 camunda.client.auth.client-secret=<client secret>
-camunda.client.cluster-id=<cluster id>
-camunda.client.region=<region>
+camunda.client.cloud.cluster-id=<cluster id>
+camunda.client.cloud.region=<region>
 
 camunda.rpa.secrets.backend=camunda
 ----
@@ -47,16 +47,16 @@ camunda.rpa.secrets.backend=camunda
 ----
 camunda.client.mode=selfmanaged
 
-camunda.client.cluster-id=<cluster id>
-camunda.client.region=<region>
+camunda.client.cloud.cluster-id=<cluster id>
+camunda.client.cloud.region=<region>
 
 camunda.client.auth.issuer=https://login.cloud.dev.ultrawombat.com/oauth/token
 camunda.client.auth.client-id=<client id>
 camunda.client.auth.client-secret=<client secret>
 
-camunda.client.zeebe.rest-address=https://${camunda.client.cluster-id}.${camunda.client.region}.zeebe.dev.ultrawombat.com
-camunda.client.zeebe.grpc-address=grpcs://${camunda.client.cluster-id}.${camunda.client.region}.zeebe.dev.ultrawombat.com
-camunda.client.zeebe.base-url=https://${camunda.client.region}.zeebe.dev.ultrawombat.com/${camunda.client.cluster-id}
+camunda.client.zeebe.rest-address=https://${camunda.client.cloud.cluster-id}.${camunda.client.cloud.region}.zeebe.dev.ultrawombat.com
+camunda.client.zeebe.grpc-address=grpcs://${camunda.client.cloud.cluster-id}.${camunda.client.cloud.region}.zeebe.dev.ultrawombat.com
+camunda.client.zeebe.base-url=https://${camunda.client.cloud.region}.zeebe.dev.ultrawombat.com/${camunda.client.cloud.cluster-id}
 camunda.client.zeebe.audience=zeebe.dev.ultrawombat.com
 
 camunda.rpa.zeebe.auth-endpoint=https://login.cloud.dev.ultrawombat.com/oauth
@@ -205,17 +205,17 @@ The RPA Worker makes the following environment variables available to the Robot 
 |The token audience to use when authenticating for Zeebe
 |`zeebe.camunda.io`
 
-|camunda.client.region
+|camunda.client.cloud.region
 |The region for Camunda SaaS
 |_None_
 
-|camunda.client.cluster-id
+|camunda.client.cloud.cluster-id
 |The cluster ID for Camunda SaaS
 |_None_
 
 |camunda.client.zeebe.base-url
 |The region for Camunda SaaS
-|`https://${camunda.client.region}.zeebe.camunda.io/${camunda.client.cluster-id}`
+|`https://${camunda.client.cloud.region}.zeebe.camunda.io/${camunda.client.cloud.cluster-id}`
 
 |camunda.client.auth.client-id
 |The client ID to use when authenticating with Zeebe
