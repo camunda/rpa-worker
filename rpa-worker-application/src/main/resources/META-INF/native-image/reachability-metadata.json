@@ -23162,6 +23162,16 @@
       "type": "io.camunda.zeebe.client.api.worker.JobWorkerCustomizer"
     },
     {
+      "type": "io.camunda.zeebe.client.impl.NoopCredentialsProvider",
+      "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.zeebe.client.impl.RetriableClientFutureImpl"
+    },
+    {
+      "type": "io.camunda.zeebe.client.impl.ZeebeCallCredentials"
+    },
+    {
       "type": "io.camunda.zeebe.client.impl.ZeebeClientCredentials",
       "allDeclaredFields": true,
       "methods": [
@@ -23221,6 +23231,9 @@
     },
     {
       "type": "io.camunda.zeebe.client.impl.ZeebeStreamingClientFutureImpl"
+    },
+    {
+      "type": "io.camunda.zeebe.client.impl.oauth.OAuthCredentialsCache"
     },
     {
       "type": "io.camunda.zeebe.client.impl.oauth.OAuthCredentialsCache$OAuthCachedCredentials",
@@ -23848,9 +23861,21 @@
       "allDeclaredFields": true,
       "methods": [
         {
+          "name": "setBaseUrl",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
           "name": "setClusterId",
           "parameterTypes": [
             "java.lang.String"
+          ]
+        },
+        {
+          "name": "setPort",
+          "parameterTypes": [
+            "java.lang.Integer"
           ]
         },
         {
@@ -27171,10 +27196,19 @@
       "type": "java.net.ConnectExceptionCustomizer"
     },
     {
+      "type": "java.net.Inet6AddressImpl"
+    },
+    {
       "type": "java.net.InetAddress"
     },
     {
       "type": "java.net.InetAddress$CachedLookup"
+    },
+    {
+      "type": "java.net.InetAddress$NameServiceAddresses"
+    },
+    {
+      "type": "java.net.InetAddress$PlatformResolver"
     },
     {
       "type": "java.net.InetAddressEditor"
@@ -36410,6 +36444,9 @@
       "type": "org.springframework.boot.SpringApplicationHook"
     },
     {
+      "type": "org.springframework.boot.SpringApplicationShutdownHook"
+    },
+    {
       "type": "org.springframework.boot.SpringBootConfiguration"
     },
     {
@@ -42664,6 +42701,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "org.springframework.context.support.DefaultLifecycleProcessor$LifecycleGroup"
+    },
+    {
       "type": "org.springframework.context.support.GenericApplicationContext",
       "allDeclaredFields": true
     },
@@ -46732,6 +46772,15 @@
       ]
     },
     {
+      "type": "sun.net.www.protocol.http.ntlm.NTLMAuthentication",
+      "methods": [
+        {
+          "name": "supportsTransparentAuth",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.nio.ch.SelectorImpl",
       "fields": [
         {
@@ -50199,6 +50248,9 @@
     },
     {
       "glob": "mockito-extensions/org.mockito.plugins.StackTraceCleanerProvider"
+    },
+    {
+      "glob": "modes/saas.yaml"
     },
     {
       "glob": "modes/self-managed.yaml"
