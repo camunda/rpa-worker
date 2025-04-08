@@ -55,7 +55,7 @@ camunda.client.auth.client-id=<client id>
 camunda.client.auth.client-secret=<client secret>
 
 camunda.client.zeebe.rest-address=https://${camunda.client.cloud.cluster-id}.${camunda.client.cloud.region}.zeebe.dev.ultrawombat.com
-camunda.client.zeebe.grpc-address=grpcs://${camunda.client.cloud.cluster-id}.${camunda.client.cloud.region}.zeebe.dev.ultrawombat.com
+camunda.client.zeebe.grpc-address=https://${camunda.client.cloud.cluster-id}.${camunda.client.cloud.region}.zeebe.dev.ultrawombat.com
 camunda.client.zeebe.base-url=https://${camunda.client.cloud.region}.zeebe.dev.ultrawombat.com/${camunda.client.cloud.cluster-id}
 camunda.client.zeebe.audience=zeebe.dev.ultrawombat.com
 
@@ -291,7 +291,7 @@ $ docker run --rm -it \
     -e CAMUNDA_CLIENT_AUTH_CLIENTSECRET=def234 \
     -e CAMUNDA_CLICNE_CLUSTERID=ghi345 \
     -e CAMUNDA_CLIENT_REGION=lpp-1 \
-    ghcr.io/camunda/rpa-worker:0.8.0
+    ghcr.io/camunda/rpa-worker:<version>
 ----
 
 
