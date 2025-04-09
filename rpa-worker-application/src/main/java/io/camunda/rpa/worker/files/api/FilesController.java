@@ -51,28 +51,33 @@ class FilesController {
 			@PathVariable String workspaceId,
 			@Valid @RequestBody StoreFilesRequest request) {
 
-		return stubbedResponseGenerator.stubbedResponse("DocumentClient", "uploadDocument", request)
-				.switchIfEmpty(Mono.defer(() -> doStoreFiles(workspaceId, request)));
-	}
-
-	private Mono<ResponseEntity<Map<String, ZeebeDocumentDescriptor>>> doStoreFiles(
-			String workspaceId,
-			StoreFilesRequest request) {
-
 		return io.wrap(Mono.defer(() -> Mono.justOrEmpty(workspaceService.getById(workspaceId))
-				.flatMapMany(w -> Flux.fromStream(() -> {
+				.flatMap(w -> Flux.fromStream(() -> {
 							PathMatcher pathMatcher = io.globMatcher(URI.create(fixSlashes(request.files()).replaceAll(fixSlashes(w.path().toAbsolutePath()) + "/?", "")).normalize().toString());
 							return io.walk(w.path())
 									.map(p -> w.path().relativize(p))
 									.filter(pathMatcher::matches)
 									.flatMap(p -> workspaceService.getWorkspaceFile(w, p.toString()).stream());
 						})
-						.flatMap(p -> documentClient.uploadDocument(
-								toZeebeStoreDocumentRequest(p, getZeebeJobInfoForWorkspace(w)), null)))
-				.collect(Collectors.toMap(
-						r -> r.metadata().fileName(),
-						r -> r))))
-				.map(ResponseEntity::ok);
+
+						.collect(Collectors.toMap(
+								it -> it,
+								it -> toMetadata(it, getZeebeJobInfoForWorkspace(w))))
+
+						.flatMap(files -> stubbedResponseGenerator
+								.stubbedResponse("DocumentClient", "uploadDocument", files.entrySet().stream()
+										.collect(Collectors.toMap(
+												kv -> w.path().relativize(kv.getKey().path()),
+												Map.Entry::getValue)))
+								.switchIfEmpty(Flux.fromStream(files.entrySet().stream())
+
+										.flatMap(kv -> documentClient.uploadDocument(
+												toZeebeStoreDocumentRequest(kv.getKey(), kv.getValue()), null))
+										.collect(Collectors.toMap(
+												(ZeebeDocumentDescriptor zdd) -> zdd.metadata().fileName(),
+												((ZeebeDocumentDescriptor zdd) -> zdd)))
+
+										.map(ResponseEntity::ok))))));
 	}
 
 	private record ZeebeJobInfo(String procesDefinitionId, Long processInstanceKey) {}
@@ -85,17 +90,24 @@ class FilesController {
 				.orElse(new ZeebeJobInfo(null, null));
 	}
 
-	private static MultiValueMap<String, HttpEntity<?>> toZeebeStoreDocumentRequest(WorkspaceFile file, ZeebeJobInfo zeebeJobInfo) {
+	private static ZeebeDocumentDescriptor.Metadata toMetadata(WorkspaceFile file, ZeebeJobInfo zeebeJobInfo) {
+		return new ZeebeDocumentDescriptor.Metadata(
+				file.contentType(),
+				fixSlashes(file.path().getFileName()),
+				null,
+				file.size(),
+				zeebeJobInfo.procesDefinitionId(),
+				zeebeJobInfo.processInstanceKey(),
+				Collections.emptyMap());
+	}
+
+	private static MultiValueMap<String, HttpEntity<?>> toZeebeStoreDocumentRequest(
+			WorkspaceFile file, 
+			ZeebeDocumentDescriptor.Metadata metadata) {
+		
 		MultipartBodyBuilder builder = new MultipartBodyBuilder();
 
-		builder.part("metadata", new ZeebeDocumentDescriptor.Metadata(
-						file.contentType(),
-						fixSlashes(file.path().getFileName()),
-						null,
-						file.size(),
-						zeebeJobInfo.procesDefinitionId(),
-						zeebeJobInfo.processInstanceKey(),
-						Collections.emptyMap()))
+		builder.part("metadata", metadata)
 				.contentType(MediaType.APPLICATION_JSON);
 
 		builder.asyncPart("file",

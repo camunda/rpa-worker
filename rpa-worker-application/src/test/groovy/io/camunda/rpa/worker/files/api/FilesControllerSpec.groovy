@@ -185,7 +185,38 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	void "Returns stubbed response for upload"() {
 		given:
 		ResponseEntity<?> stubbedResponse = Stub()
-		stubbedResponseGenerator.stubbedResponse("DocumentClient", "uploadDocument", _) >> Mono.just(stubbedResponse)
+		stubbedResponseGenerator.stubbedResponse(
+				"DocumentClient", 
+				"uploadDocument",
+				{ Map m -> m.size() == 2 }) >> Mono.just(stubbedResponse)
+		
+		and:
+		Path matchingWorkspaceFile1 = workspace.path().resolve("outputs/one.pdf")
+		Path matchingWorkspaceFile2 = workspace.path().resolve("outputs/two.pdf")
+		Path nonMatchingWorkspaceFile = workspace.path().resolve("outputs/ignored.tmp")
+
+		and:
+		PathMatcher pathMatcher = Stub()
+		io.globMatcher("**/*.pdf") >> pathMatcher
+
+		and:
+		io.walk(workspace.path()) >> {
+			Stream.of(
+					matchingWorkspaceFile1,
+					matchingWorkspaceFile2,
+					nonMatchingWorkspaceFile)
+		}
+
+		and:
+		workspaceService.getWorkspaceFile(workspace, workspace.path().relativize(matchingWorkspaceFile1).toString()) >> Optional.of(
+				new WorkspaceFile(workspace, "application/pdf", 123, matchingWorkspaceFile1))
+		workspaceService.getWorkspaceFile(workspace, workspace.path().relativize(matchingWorkspaceFile2).toString()) >> Optional.of(
+				new WorkspaceFile(workspace, "application/pdf", 123, matchingWorkspaceFile2))
+
+		and:
+		pathMatcher.matches(workspace.path().relativize(matchingWorkspaceFile1)) >> true
+		pathMatcher.matches(workspace.path().relativize(matchingWorkspaceFile2)) >> true
+		pathMatcher.matches(workspace.path().relativize(nonMatchingWorkspaceFile)) >> false
 
 		when:
 		ResponseEntity<?> r = block controller.storeFiles(
