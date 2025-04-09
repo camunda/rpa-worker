@@ -48,7 +48,12 @@ Tasks
 		getLog(r).contains('''\
 STUB: DocumentClient→uploadDocument
 {
-    "files": "some-file.txt"
+    "some-file.txt": {
+        "contentType": "text/plain",
+        "fileName": "some-file.txt",
+        "size": 0,
+        "customProperties": {}
+    }
 }''')
 		
 		and:
