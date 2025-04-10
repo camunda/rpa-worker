@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
-import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.util.MoreCollectors;
 import io.camunda.rpa.worker.workspace.Workspace;
@@ -46,13 +45,12 @@ public class RobotService {
 
 	private final IO io;
 	private final ObjectMapper objectMapper;
-	private final PythonInterpreter pythonInterpreter;
-	private final ProcessService processService;
 	private final RobotProperties robotProperties;
 	private final WorkspaceService workspaceService;
 	private final Scheduler robotWorkScheduler;
 	private final ObjectProvider<EnvironmentVariablesContributor> environmentContributors;
 	private final WorkspaceVariablesManager workspaceVariablesManager;
+	private final RobotExecutionStrategy robotExecutionStrategy;
 
 	private record RobotEnvironment(Workspace workspace, Path varsFile, Path outputDir, Path artifactsDir) { }
 
@@ -179,15 +177,14 @@ public class RobotService {
 			PreparedScript script,
 			Map<String, String> envVars) {
 
-		return processService.execute(pythonInterpreter.path(), c -> c
-
+		return robotExecutionStrategy.executeRobot(c -> c
+				
 						.workDir(renv.workspace().path())
 						.allowExitCodes(ROBOT_TASK_FAILURE_EXIT_CODES)
 
 						.inheritEnv()
 						.env(envVars)
 
-						.arg("-m").arg("robot")
 						.arg("--rpa")
 						.arg("--outputdir").bindArg("outputDir", renv.outputDir().resolve(script.executionKey()))
 						.arg("--variablefile").bindArg("varsFile", renv.varsFile())
