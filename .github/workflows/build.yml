@@ -311,7 +311,7 @@ jobs:
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
         with:
-          name: native-darwin-amd64
+          name: unsigned-native-darwin-amd64
           path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
 
@@ -341,7 +341,7 @@ jobs:
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
         with:
-          name: native-darwin-aarch64
+          name: unsigned-native-darwin-aarch64
           path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
           
@@ -443,12 +443,104 @@ jobs:
           files: |
             rpa-worker-e2e-tests/build/test-results/**/*.xml
   
+  macos_sign_and_notarize:
+    needs:
+      - native_darwin_amd64
+      - native_darwin_aarch64
+    runs-on: macos-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Import Secrets
+        id: secrets
+        uses: hashicorp/vault-action@7709c609789c5e27b757a85817483caadbb5939a # v3.3.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/products/distribution/ci APPLE_CERTIFICATE;
+            secret/data/products/distribution/ci APPLE_CERTIFICATE_PASSWORD;
+            secret/data/products/distribution/ci APPLE_DEVELOPER_ID;
+            secret/data/products/distribution/ci APPLE_DEVELOPER_PASSWORD;
+            secret/data/products/distribution/ci APPLE_TEAM_ID;
+            secret/data/products/distribution/ci APPLE_COMMON_NAME;
+
+      - name: Download MacOS Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: unsigned-native-darwin-amd64
+          path: artifacts/darwin-amd64
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: unsigned-native-darwin-aarch64
+          path: artifacts/darwin-aarch64
+
+      - name: Unzip MacOS Artifacts and save zip file name for later
+        id: unzip_artifacts
+        run: |
+          original_amd64_zip=$(ls artifacts/darwin-amd64/rpa-worker*.zip)
+          echo "amd64_zip_name=${original_amd64_zip##*/}" >> $GITHUB_ENV
+          unzip $original_amd64_zip -d artifacts/darwin-amd64/unziped
+
+          original_aarch64_zip=$(ls artifacts/darwin-aarch64/rpa-worker*.zip)
+          echo "aarch64_zip_name=${original_aarch64_zip##*/}" >> $GITHUB_ENV
+          unzip $original_aarch64_zip -d artifacts/darwin-aarch64/unziped
+
+      - name: Sign and notarize amd64
+        uses: ./.github/actions/sign-and-notarize
+        with:
+          p12-base64: ${{ steps.secrets.outputs.APPLE_CERTIFICATE }}
+          p12-password: ${{ steps.secrets.outputs.APPLE_CERTIFICATE_PASSWORD }}
+          developer-id-cert-name: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
+          apple-id: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
+          app-password: ${{ steps.secrets.outputs.APPLE_DEVELOPER_PASSWORD }}
+          team-id: ${{ steps.secrets.outputs.APPLE_TEAM_ID }}
+          path: artifacts/darwin-amd64/unziped
+
+      - name: Sign and notarize aarch64
+        uses: ./.github/actions/sign-and-notarize
+        with:
+          p12-base64: ${{ steps.secrets.outputs.APPLE_CERTIFICATE }}
+          p12-password: ${{ steps.secrets.outputs.APPLE_CERTIFICATE_PASSWORD }}
+          developer-id-cert-name: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
+          apple-id: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
+          app-password: ${{ steps.secrets.outputs.APPLE_DEVELOPER_PASSWORD }}
+          team-id: ${{ steps.secrets.outputs.APPLE_TEAM_ID }}
+          path: artifacts/darwin-aarch64/unziped
+
+      - name: Rezip Signed MacOS Artifacts
+        run: |
+          zip -r artifacts/${{ env.amd64_zip_name }} artifacts/darwin-amd64/unziped/*
+          zip -r artifacts/${{ env.aarch64_zip_name }} artifacts/darwin-aarch64/unziped/*
+
+      # Replaces existing artifacts with the signed ones and retains original zip names
+      - name: Upload Signed MacOS Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-darwin-amd64
+          path: artifacts/${{ env.amd64_zip_name }}
+          retention-days: 1
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: native-darwin-aarch64
+          path: artifacts/${{ env.aarch64_zip_name }}
+          retention-days: 1
+
   release:
     needs:
       - native_linux_amd64
       - native_win32_amd64
-      - native_darwin_amd64
-      - native_darwin_aarch64
+      - macos_sign_and_notarize
       - e2e
     if: github.ref_type == 'tag' && ! contains(github.ref_name, 'dev')
     runs-on: ubuntu-latest
@@ -463,10 +555,17 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
       
-      - name: Download Artefacts
+      - name: Download Release Artefacts
         uses: actions/download-artifact@v4
         with:
+          pattern: native-*
           merge-multiple: true
+      - uses: actions/download-artifact@v4
+        with:
+          name: executable-application-jar
+      - uses: actions/download-artifact@v4
+        with:
+          name: element-template
           
       - name: Generate Release Header
         run: |
