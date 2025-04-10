@@ -97,7 +97,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew check
+          ./gradlew -PnativePlatform=win32 -PnativeArch=amd64 check
 
       - name: Upload Unit Test Results
         uses: actions/upload-artifact@v4
