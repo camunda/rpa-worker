@@ -53,6 +53,7 @@ public class RobotService {
 	private final Scheduler robotWorkScheduler;
 	private final ObjectProvider<EnvironmentVariablesContributor> environmentContributors;
 	private final WorkspaceVariablesManager workspaceVariablesManager;
+	private final RobotExecutionStrategy robotExecutionStrategy;
 
 	private record RobotEnvironment(Workspace workspace, Path varsFile, Path outputDir, Path artifactsDir) { }
 
@@ -179,15 +180,14 @@ public class RobotService {
 			PreparedScript script,
 			Map<String, String> envVars) {
 
-		return processService.execute(pythonInterpreter.path(), c -> c
-
+		return robotExecutionStrategy.executeRobot(c -> c
+				
 						.workDir(renv.workspace().path())
 						.allowExitCodes(ROBOT_TASK_FAILURE_EXIT_CODES)
 
 						.inheritEnv()
 						.env(envVars)
 
-						.arg("-m").arg("robot")
 						.arg("--rpa")
 						.arg("--outputdir").bindArg("outputDir", renv.outputDir().resolve(script.executionKey()))
 						.arg("--variablefile").bindArg("varsFile", renv.varsFile())
