@@ -37,10 +37,16 @@ repositories {
 	maven {
 		url 'https://gitlab.com/api/v4/projects/50731191/packages/maven'
 	}
+	maven {
+		url 'https://artifacts.camunda.com/artifactory/public'
+	}
 }
 
 dependencies {
 	implementation project(":rpa-worker-common")
+	
+	if(project.hasProperty("nativePlatform") && project.hasProperty("nativeArch"))
+		runtimeOnly group: 'io.camunda.rpa', name: 'rpa-worker-static-runtime', version: staticRuntimeVersion, classifier: "${project.property("nativePlatform")}_${project.property("nativeArch")}"
 	
 	implementation libs.spring.boot.starter.webflux
 	implementation libs.spring.boot.starter.actuator
@@ -85,6 +91,7 @@ dependencies {
 	testRuntimeOnly libs.junit.platformLauncher
 	testRuntimeOnly libs.byteBuddy
 	testRuntimeOnly libs.objenesis
+	testRuntimeOnly group: 'io.camunda.rpa', name: 'rpa-worker-static-runtime', version: staticRuntimeVersion,  classifier: "${project.getProperties().getOrDefault("nativePlatform", "linux")}_${project.getProperties().getOrDefault("nativeArch", "amd64")}"
 
 	functionalTestImplementation libs.spring.boot.starter.test
 	functionalTestImplementation libs.spock.spring
