@@ -519,8 +519,8 @@ jobs:
 
       - name: Rezip Signed MacOS Artifacts
         run: |
-          zip -r artifacts/${{ env.amd64_zip_name }} artifacts/darwin-amd64/unziped/*
-          zip -r artifacts/${{ env.aarch64_zip_name }} artifacts/darwin-aarch64/unziped/*
+            cd artifacts/darwin-amd64/unziped && zip -r ../../${{ env.amd64_zip_name }} . && cd -
+            cd artifacts/darwin-aarch64/unziped && zip -r ../../${{ env.aarch64_zip_name }} . && cd -
 
       # Replaces existing artifacts with the signed ones and retains original zip names
       - name: Upload Signed MacOS Artifacts
