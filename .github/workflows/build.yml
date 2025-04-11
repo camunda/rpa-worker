@@ -56,7 +56,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: github.ref_type == 'tag' || github.event_name == 'pull_request'
         with:
-          name: executable-application-jar
+          name: release-executable-application-jar
           path: rpa-worker-application/build/libs/*.jar
           retention-days: 1
           
@@ -64,7 +64,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: github.ref_type == 'tag'
         with:
-          name: element-template
+          name: release-element-template
           path: element-template/build/*.json
           retention-days: 1
       
@@ -217,7 +217,7 @@ jobs:
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
         with:
-          name: native-linux-amd64
+          name: release-native-linux-amd64
           path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
           
@@ -236,47 +236,13 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Import Secrets for signing
-        id: secrets
-        uses: hashicorp/vault-action@v2.5.0
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          secrets: |
-            secret/data/products/rpa/ci/azure CERT_PROFILE_NAME  | AZURE_CERT_PROFILE_NAME ;
-            secret/data/products/rpa/ci/azure CLIENT_ID          | AZURE_CLIENT_ID ;
-            secret/data/products/rpa/ci/azure CLIENT_SECRET      | AZURE_CLIENT_SECRET ;
-            secret/data/products/rpa/ci/azure CODE_SIGNING_NAME  | AZURE_CODE_SIGNING_NAME ;
-            secret/data/products/rpa/ci/azure SIGNING_ENDPOINT   | AZURE_ENDPOINT ;
-            secret/data/products/rpa/ci/azure TENANT_ID          | AZURE_TENANT_ID ;
-
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile
-
-      - name: Azure Trusted Signing
-        uses: azure/trusted-signing-action@v0.5.1
-        with:
-          azure-tenant-id: ${{ steps.secrets.outputs.AZURE_TENANT_ID }}
-          azure-client-id: ${{ steps.secrets.outputs.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ steps.secrets.outputs.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ steps.secrets.outputs.AZURE_ENDPOINT }}
-          trusted-signing-account-name: ${{ steps.secrets.outputs.AZURE_CODE_SIGNING_NAME }}
-          certificate-profile-name: ${{ steps.secrets.outputs.AZURE_CERT_PROFILE_NAME }}
-          
-          # Sign all exes inside the folder
-          files-folder: rpa-worker-application/build/native/nativeCompile
-          files-folder-filter: exe
-
-      - name: Zip
-        run: |
-          ./gradlew -PnativePlatform=win32 -PnativeArch=amd64 zipNativeImage 
+          ./gradlew -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile zipNativeImage
 
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
@@ -311,7 +277,7 @@ jobs:
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
         with:
-          name: unsigned-native-darwin-amd64
+          name: native-darwin-amd64
           path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
 
@@ -341,7 +307,7 @@ jobs:
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
         with:
-          name: unsigned-native-darwin-aarch64
+          name: native-darwin-aarch64
           path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
           
@@ -443,6 +409,70 @@ jobs:
           files: |
             rpa-worker-e2e-tests/build/test-results/**/*.xml
   
+  windows_sign:
+    needs:
+      - native_win32_amd64
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: native-win32-amd64
+          path: artifacts/native-win32-amd64
+
+      - name: Import Secrets for signing
+        id: secrets
+        uses: hashicorp/vault-action@v2.5.0
+        with:
+          url: ${{ secrets.VAULT_ADDR }}
+          method: approle
+          roleId: ${{ secrets.VAULT_ROLE_ID }}
+          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          secrets: |
+            secret/data/products/rpa/ci/azure CERT_PROFILE_NAME  | AZURE_CERT_PROFILE_NAME ;
+            secret/data/products/rpa/ci/azure CLIENT_ID          | AZURE_CLIENT_ID ;
+            secret/data/products/rpa/ci/azure CLIENT_SECRET      | AZURE_CLIENT_SECRET ;
+            secret/data/products/rpa/ci/azure CODE_SIGNING_NAME  | AZURE_CODE_SIGNING_NAME ;
+            secret/data/products/rpa/ci/azure SIGNING_ENDPOINT   | AZURE_ENDPOINT ;
+            secret/data/products/rpa/ci/azure TENANT_ID          | AZURE_TENANT_ID ;
+
+      - name: Unzip Windows Artifacts and save zip file name for later
+        id: unzip_artifacts
+        run: |
+          $original_zip = Get-ChildItem -Path artifacts\native-win32-amd64\rpa-worker*.zip | Select-Object -ExpandProperty FullName
+          echo "zip_name=$($original_zip | Split-Path -Leaf)" >> $env:GITHUB_ENV
+          Expand-Archive -Path $original_zip -DestinationPath artifacts\native-win32-amd64\unziped
+
+      - name: Azure Trusted Signing
+        uses: azure/trusted-signing-action@v0.5.1
+        with:
+          azure-tenant-id: ${{ steps.secrets.outputs.AZURE_TENANT_ID }}
+          azure-client-id: ${{ steps.secrets.outputs.AZURE_CLIENT_ID }}
+          azure-client-secret: ${{ steps.secrets.outputs.AZURE_CLIENT_SECRET }}
+          endpoint: ${{ steps.secrets.outputs.AZURE_ENDPOINT }}
+          trusted-signing-account-name: ${{ steps.secrets.outputs.AZURE_CODE_SIGNING_NAME }}
+          certificate-profile-name: ${{ steps.secrets.outputs.AZURE_CERT_PROFILE_NAME }}
+          
+          # Sign all exes inside the folder
+          files-folder: artifacts\native-win32-amd64\unziped
+          files-folder-filter: exe
+
+      - name: Rezip Signed Artifacts
+        run: |
+          $rezip_path = "artifacts\native-win32-amd64\unziped"
+          $output_zip = "artifacts\$env:zip_name"
+          Compress-Archive -Path "$rezip_path\*" -DestinationPath $output_zip
+
+      - name: Upload Signed Windows Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-native-win32-amd64
+          path: artifacts/${{ env.zip_name }}
+          retention-days: 1
+
+
   macos_sign_and_notarize:
     needs:
       - native_darwin_amd64
@@ -452,6 +482,7 @@ jobs:
       contents: read
 
     steps:
+      # Required for local action
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -476,12 +507,12 @@ jobs:
       - name: Download MacOS Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: unsigned-native-darwin-amd64
+          name: native-darwin-amd64
           path: artifacts/darwin-amd64
 
       - uses: actions/download-artifact@v4
         with:
-          name: unsigned-native-darwin-aarch64
+          name: native-darwin-aarch64
           path: artifacts/darwin-aarch64
 
       - name: Unzip MacOS Artifacts and save zip file name for later
@@ -522,24 +553,23 @@ jobs:
             cd artifacts/darwin-amd64/unziped && zip -r ../../${{ env.amd64_zip_name }} . && cd -
             cd artifacts/darwin-aarch64/unziped && zip -r ../../${{ env.aarch64_zip_name }} . && cd -
 
-      # Replaces existing artifacts with the signed ones and retains original zip names
       - name: Upload Signed MacOS Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: native-darwin-amd64
+          name: release-native-darwin-amd64
           path: artifacts/${{ env.amd64_zip_name }}
           retention-days: 1
 
       - uses: actions/upload-artifact@v4
         with:
-          name: native-darwin-aarch64
+          name: release-native-darwin-aarch64
           path: artifacts/${{ env.aarch64_zip_name }}
           retention-days: 1
 
   release:
     needs:
       - native_linux_amd64
-      - native_win32_amd64
+      - windows_sign
       - macos_sign_and_notarize
       - e2e
     if: github.ref_type == 'tag' && ! contains(github.ref_name, 'dev')
@@ -558,14 +588,8 @@ jobs:
       - name: Download Release Artefacts
         uses: actions/download-artifact@v4
         with:
-          pattern: native-*
+          pattern: release-*
           merge-multiple: true
-      - uses: actions/download-artifact@v4
-        with:
-          name: executable-application-jar
-      - uses: actions/download-artifact@v4
-        with:
-          name: element-template
           
       - name: Generate Release Header
         run: |
