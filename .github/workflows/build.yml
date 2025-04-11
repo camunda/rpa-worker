@@ -369,7 +369,7 @@ jobs:
       - name: Download Artefacts
         uses: actions/download-artifact@v4
         with:
-          name: native-linux-amd64
+          name: release-native-linux-amd64
       
       - name: Build
         run: |
