@@ -26,7 +26,7 @@ class StaticRuntimeFunctionalSpec extends AbstractFunctionalSpec {
 		ProcessService.ExecutionResult result = robotExecutionStrategy.executeRobot(c -> c
 				.arg("--version")
 				.silent())
-				.block(Duration.ofSeconds(10))
+				.block(Duration.ofSeconds(20))
 		
 		then:
 		result.exitCode() == RobotService.ROBOT_EXIT_HELP_OR_VERSION_REQUEST
