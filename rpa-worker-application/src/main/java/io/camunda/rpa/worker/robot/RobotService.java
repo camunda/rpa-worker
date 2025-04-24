@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
-import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.util.MoreCollectors;
 import io.camunda.rpa.worker.workspace.Workspace;
@@ -46,8 +45,6 @@ public class RobotService {
 
 	private final IO io;
 	private final ObjectMapper objectMapper;
-	private final PythonInterpreter pythonInterpreter;
-	private final ProcessService processService;
 	private final RobotProperties robotProperties;
 	private final WorkspaceService workspaceService;
 	private final Scheduler robotWorkScheduler;

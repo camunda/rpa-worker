@@ -9,7 +9,6 @@ import reactor.core.publisher.Mono;
 import java.util.function.UnaryOperator;
 
 @RequiredArgsConstructor
-//@Component
 class PythonRobotExecutionStrategy implements RobotExecutionStrategy {
 	
 	private final ProcessService processService;
@@ -20,5 +19,10 @@ class PythonRobotExecutionStrategy implements RobotExecutionStrategy {
 		return processService.execute(pythonInterpreter.path(), c -> customizer.apply(c
 				.arg("-m").arg("robot")
 		));
+	}
+
+	@Override
+	public boolean shouldCheck() {
+		return true;
 	}
 }

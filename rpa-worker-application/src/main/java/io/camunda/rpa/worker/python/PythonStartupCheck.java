@@ -2,8 +2,10 @@ package io.camunda.rpa.worker.python;
 
 import io.camunda.rpa.worker.RpaWorkerApplication;
 import io.camunda.rpa.worker.pexec.ProcessService;
+import io.camunda.rpa.worker.robot.RobotExecutionStrategy;
 import io.camunda.rpa.worker.util.ApplicationRestarter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
@@ -15,23 +17,30 @@ import reactor.core.publisher.Mono;
 class PythonStartupCheck extends AbstractPythonPurgingStartupCheck<PythonReadyEvent> {
 	
 	private final ProcessService processService;
-	private final PythonInterpreter pythonInterpreter;
+	private final ObjectProvider<PythonInterpreter> pythonInterpreter;
+	private final RobotExecutionStrategy robotExecutionStrategy;
 
-	public PythonStartupCheck(PythonSetupService pythonSetupService, ApplicationRestarter applicationRestarter, ProcessService processService, PythonInterpreter pythonInterpreter) {
+	public PythonStartupCheck(PythonSetupService pythonSetupService, ApplicationRestarter applicationRestarter, ProcessService processService, ObjectProvider<PythonInterpreter> pythonInterpreter, RobotExecutionStrategy robotExecutionStrategy) {
 		super(pythonSetupService, applicationRestarter);
 		this.processService = processService;
 		this.pythonInterpreter = pythonInterpreter;
+		this.robotExecutionStrategy = robotExecutionStrategy;
 	}
 
 	@Override
 	public Mono<PythonReadyEvent> check() {
-		return processService.execute(pythonInterpreter.path(), c -> c.arg("--version").noFail())
+		
+		if( ! robotExecutionStrategy.shouldCheck())
+			return Mono.<PythonReadyEvent>empty()
+					.doOnSubscribe(_ -> log.atInfo().log("Python check skipped because static runtime in use"));
+
+		return processService.execute(pythonInterpreter.getObject().path(), c -> c.arg("--version").noFail())
 				
 				.flatMap(xr -> xr.exitCode() == 0 && xr.stdout().startsWith("Python") 
-						? Mono.just(new PythonReadyEvent(pythonInterpreter) )
+						? Mono.just(new PythonReadyEvent(pythonInterpreter.getObject()) )
 						: purgeAndRestart()
 								.doOnSubscribe(_ -> log.atError()
-												.kv("pythonInterpreter", pythonInterpreter.path().toAbsolutePath())
+												.kv("pythonInterpreter", pythonInterpreter.getObject().path().toAbsolutePath())
 												.kv("exitCode", xr.exitCode())
 												.kv("stdout", xr.stdout())
 												.kv("stderr", xr.stderr())

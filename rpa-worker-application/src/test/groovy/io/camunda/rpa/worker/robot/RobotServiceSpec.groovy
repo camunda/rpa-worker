@@ -5,7 +5,6 @@ import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
-import io.camunda.rpa.worker.python.PythonInterpreter
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceService
@@ -29,9 +28,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
 	}
 	ObjectMapper objectMapper = new ObjectMapper()
-	Path pythonExe = Paths.get("/path/to/python/bin/python")
-	PythonInterpreter pythonInterpreter = new PythonInterpreter(pythonExe)
-	ProcessService processService = Mock()
+	RobotExecutionStrategy robotExecutionStrategy = Mock()
 	WorkspaceVariablesManager workspaceVariablesManager = Mock()
 	RobotProperties robotProperties = new RobotProperties(Duration.ofSeconds(3), true)
 	WorkspaceService workspaceService = Mock()
@@ -44,13 +41,12 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	RobotService service = new RobotService(
 			io, 
 			objectMapper, 
-			pythonInterpreter, 
-			processService, 
 			robotProperties, 
 			workspaceService, 
 			Schedulers.single(), 
 			envVarContributors, 
-			workspaceVariablesManager)
+			workspaceVariablesManager, 
+			robotExecutionStrategy)
 	
 	RobotExecutionListener executionListener = Mock()
 
@@ -88,7 +84,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * io.write(workDir.resolve("variables.json"), objectMapper.writeValueAsBytes([rpaVar: 'rpa-var-value']), [])
 
 		and:
-		1 * processService.execute(pythonExe, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
+		1 * robotExecutionStrategy.executeRobot(_) >> { UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content", Duration.ofSeconds(3)))
 		}
@@ -104,8 +100,6 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.inheritEnv() >> executionCustomizer
 		1 * executionCustomizer.env([ENV_VAR_ONE: 'envVarOneValue', ENV_VAR_TWO: 'envVarTwoValue']) >> executionCustomizer
 
-		1 * executionCustomizer.arg("-m") >> executionCustomizer
-		1 * executionCustomizer.arg("robot") >> executionCustomizer
 		1 * executionCustomizer.arg("--rpa") >> executionCustomizer
 		1 * executionCustomizer.arg("--outputdir") >> executionCustomizer
 		1 * executionCustomizer.bindArg("outputDir", workDir.resolve("output/main/")) >> executionCustomizer
@@ -147,7 +141,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		workspaceService.createWorkspace(null, [:]) >> workspace
 
 		and:
-		processService.execute(_, _) >> { _, __ ->
+		robotExecutionStrategy.executeRobot(_) >> { _ ->
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content", Duration.ZERO))
 		}
 
@@ -172,7 +166,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		workspaceVariablesManager.getVariables(workspace.id()) >> [:]
 
 		and:
-		processService.execute(_, _) >> { _, __ ->
+		robotExecutionStrategy.executeRobot(_) >> { _ ->
 			return Mono.just(new ProcessService.ExecutionResult(
 					RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content", Duration.ZERO))
 		}
@@ -198,7 +192,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		workspaceVariablesManager.getVariables(workspace.id()) >> [:]
 
 		and:
-		processService.execute(_, _) >> { _, __ ->
+		robotExecutionStrategy.executeRobot(_) >> { _ ->
 			Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INVALID_INVOKE, "", "", Duration.ZERO))
 		}
 
@@ -223,7 +217,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		workspaceVariablesManager.getVariables(workspace.id()) >> [:]
 
 		and:
-		processService.execute(_, _) >> { _, __ ->
+		robotExecutionStrategy.executeRobot(_) >> { _ ->
 			Mono.error(new RuntimeException("Bang!"))
 		}
 
@@ -254,7 +248,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		and:
-		processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
+		robotExecutionStrategy.executeRobot(_) >> { UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content", Duration.ofSeconds(1)))
 		}
@@ -328,7 +322,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], null, [executionListener], [:], null)
 
 		then:
-		1 * processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
+		1 * robotExecutionStrategy.executeRobot(_) >> { UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content", Duration.ZERO))
 		}
@@ -337,7 +331,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * workspaceVariablesManager.getVariables(workspace.id()) >> [var1: 'val1']
 
 		then:
-		0 * processService._
+		0 * robotExecutionStrategy._
 
 		and:
 		result.results().size() == 1
@@ -362,7 +356,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], null, [], [:], null)
 
 		then:
-		3 * processService.execute(_, _) >> { _, __ ->
+		3 * robotExecutionStrategy.executeRobot(_) >> { _ ->
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content", Duration.ZERO))
 		}
 		3 * workspaceVariablesManager.getVariables(workspace.id()) >>> [
@@ -371,13 +365,13 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 				[var3: 'val3']]
 		
 		then:
-		1 * processService.execute(_, _) >> { _, __ ->
+		1 * robotExecutionStrategy.executeRobot(_) >> { _ ->
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_INVALID_INVOKE, "stdout-content", "stderr-content", Duration.ZERO))
 		}
 		1 * workspaceVariablesManager.getVariables(workspace.id()) >> [var3: 'val3']
 
 		then:
-		0 * processService._
+		0 * robotExecutionStrategy._
 
 		and:
 		result.results().size() == 4
@@ -399,7 +393,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		and:
-		processService.execute(_, _) >> { _, UnaryOperator<ExecutionCustomizer> customizer ->
+		robotExecutionStrategy.executeRobot(_) >> { UnaryOperator<ExecutionCustomizer> customizer ->
 			customizer.apply(executionCustomizer)
 			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES[0], "stdout-content", "stderr-content", Duration.ZERO))
 		}
