@@ -43,16 +43,26 @@ class RobotExecutionStrategyFactoryBean implements FactoryBean<RobotExecutionStr
 	}
 
 	private Mono<RobotExecutionStrategy> detectStrategy() {
-		return Mono.justOrEmpty(existingEnvironmentProvider.existingPythonEnvironment()
-				.<RobotExecutionStrategy>map(_ -> pythonStrategy()))
+		return Mono.justOrEmpty(existingEnvironmentProvider.existingPythonEnvironment())
 				.doOnNext(_ -> log.atInfo()
 						.log("Found existing Python environment, will use Python execution strategy"))
+				.<RobotExecutionStrategy>map(_ -> pythonStrategy())
+
 				.switchIfEmpty(Mono.defer(systemPythonProvider::systemPython)
-								.flatMap(_ -> internetConnectivityProvider.hasConnectivity())
-								.filter(it -> it)
-								.doOnNext(_ -> log.atInfo()
-										.log("Found supported system Python and internet connectivity, will use Python execution strategy"))
-								.map(_ -> pythonStrategy()))
+						.flatMap(_ -> internetConnectivityProvider.hasConnectivity())
+						.filter(it -> it)
+						.doOnNext(_ -> log.atInfo()
+								.log("Found supported system Python and internet connectivity, will use Python execution strategy"))
+						.map(_ -> pythonStrategy()))
+
+				.switchIfEmpty(Mono.defer(() -> Mono.just(System.getProperty("os.name").contains("Windows")))
+						.filter(it -> it)
+						.flatMap(_ -> internetConnectivityProvider.hasConnectivity())
+						.filter(it -> it)
+						.doOnNext(_ -> log.atInfo()
+								.log("Found Python provision-capable platform and internet connectivity, will use Python execution strategy"))
+						.map(_ -> pythonStrategy()))
+
 				.switchIfEmpty(Mono.defer(() -> Mono.just(staticStrategy())
 						.doOnNext(_ -> log.atInfo()
 								.log("Python strategy not supported (no supported Python or no internet connectivity), will use Static execution strategy"))));

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.ObjectProvider
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
+import spock.util.environment.RestoreSystemProperties
 
 import java.nio.file.Paths
 
@@ -57,7 +58,11 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		r.toString().contains("StaticRobotExecutionStrategy")
 	}
 
+	@RestoreSystemProperties
 	void "Returns correct strategy for auto - Python because existing"() {
+		given:
+		platformIsNotWindows()
+		
 		when:
 		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
 
@@ -72,7 +77,11 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		r.toString().contains("PythonRobotExecutionStrategy")
 	}
 
+	@RestoreSystemProperties
 	void "Returns correct strategy for auto - Python because system Python and internet good"() {
+		given:
+		platformIsNotWindows()
+		
 		when:
 		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
 
@@ -85,7 +94,28 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		r.toString().contains("PythonRobotExecutionStrategy")
 	}
 
+	@RestoreSystemProperties
+	void "Returns correct strategy for auto - Python because Windows and internet good"() {
+		given:
+		platformIsWindows()
+		
+		when:
+		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
+
+		then:
+		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		1 * systemPythonProvider.systemPython() >> Mono.empty()
+		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(true)
+
+		and:
+		r.toString().contains("PythonRobotExecutionStrategy")
+	}
+
+	@RestoreSystemProperties
 	void "Returns correct strategy for auto - Static because no system Python"() {
+		given:
+		platformIsNotWindows()
+		
 		when:
 		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
 
@@ -98,8 +128,12 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		r.toString().contains("StaticRobotExecutionStrategy")
 	}
 
+	@RestoreSystemProperties
 	void "Returns correct strategy for auto - Static because no internet"() {
+		given:
+		platformIsNotWindows()
 		when:
+		
 		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
 
 		then:
@@ -109,5 +143,13 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 
 		and:
 		r.toString().contains("StaticRobotExecutionStrategy")
+	}
+	
+	private static void platformIsNotWindows() {
+		System.setProperty("os.name", "Linux")
+	}
+	
+	private static void platformIsWindows() {
+		System.setProperty("os.name", "Windows")
 	}
 }
