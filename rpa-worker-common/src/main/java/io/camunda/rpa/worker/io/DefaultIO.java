@@ -29,6 +29,8 @@ import java.nio.file.PathMatcher;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -335,6 +337,16 @@ public class DefaultIO implements IO {
 	public long transferTo(InputStream inputStream, OutputStream outputStream) {
 		try {
 			return inputStream.transferTo(outputStream);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
+	public Path setPosixFilePermissions(Path path, Set<PosixFilePermission> permissions) {
+		try {
+			return Files.setPosixFilePermissions(path, permissions);
 		}
 		catch (IOException ioex) {
 			throw new UncheckedIOException(ioex);

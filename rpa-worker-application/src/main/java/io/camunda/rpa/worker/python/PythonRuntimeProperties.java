@@ -9,7 +9,7 @@ public record PythonRuntimeProperties(
 		PythonRuntimeEnvironment type) {
 	
 	public enum PythonRuntimeEnvironment {
-		Python, Static
+		Auto, Python, Static
 	}
 	
 }

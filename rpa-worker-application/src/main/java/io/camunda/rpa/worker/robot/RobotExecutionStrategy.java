@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono;
 
 import java.util.function.UnaryOperator;
 
-@FunctionalInterface
-interface RobotExecutionStrategy {
+public interface RobotExecutionStrategy {
 	Mono<ProcessService.ExecutionResult> executeRobot(UnaryOperator<ExecutionCustomizer> customizer);
+	boolean shouldCheck();
 }
