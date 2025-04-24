@@ -55,6 +55,7 @@ class ZeebeConfiguration {
 		configProperties["camunda.rpa.e2e.operate-client"] = operateClient
 		configProperties["camunda.rpa.e2e.operate-client-secret"] = operateSecret
 		configProperties["logging.level.io.camunda.zeebe.client.impl.ZeebeCallCredentials"] = "OFF"
+		configProperties['camunda.rpa.python-runtime.type'] = "python"
 		
 		configProperties.putAll(overrides)
 	}
