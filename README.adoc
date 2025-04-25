@@ -3,10 +3,6 @@
 The Camunda RPA Runtime is designed to bridge the gap between Robotic Process Automation (RPA) bots and the Camunda
 workflow engine, enabling you to seamlessly integrate your task workers with Camunda.
 
-NOTE: *Experimental Features Notice:* The code in this repository is in the experimental stage and may be unstable.
-Use at your own risk and avoid using in production environments.
-
-
 == Getting Started
 
 === Obtaining the RPA Worker
