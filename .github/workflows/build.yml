@@ -34,6 +34,8 @@ jobs:
         run: |
           ./gradlew setVersion
           ./gradlew build elementTemplate
+          ./gradlew -PnativePlatform=linux -PnativeArch=amd64 -PdockerJar assemble
+          ./gradlew -PnativePlatform=linux -PnativeArch=aarch64 -PdockerJar assemble
           ./gradlew deletePlainJar
           
       - name: Upload Unit Test Results
