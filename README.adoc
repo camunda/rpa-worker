@@ -101,6 +101,55 @@ no dependencies will be removed. If the Python environment is deleted then the R
 
 == Robot Job Execution
 
+=== Robot Runtimes
+
+The RPA Worker supports two runtimes for executing Robotframework. 
+
+==== The Python Runtime
+
+The Python runtime creates a dedicated Virtual Environment using an available Python distribution. 
+The Python distribution may already be present on the host, or it may be provisioned automatically by the RPA Worker on 
+platforms where this is supported. 
+
+The first time the environment is created the RPA Worker will install the necessary base dependencies into the 
+environment. 
+It will also install, if configured, any additional user-supplied extra requirements. 
+If the base requirements change, such as a new version of the RPA Worker updating these dependencies, or the extra 
+requirements are updated, then the RPA Worker will update the environment with the new dependencies automatically. 
+
+As dependencies are fetched from the internet, the Python Runtime requires an internet connection.
+
+==== The Static Runtime
+
+The Static Runtime is a pre-built Python environment which is bundled with the RPA Worker. 
+It contains a Python interpreter, as well as all the base dependencies, statically linked together in a single 
+executable.
+As such, when using the Static Runtime it is not possible to install any extra requirements. 
+
+As the base dependencies are included in the Static Runtime, it does not require an internet connection.
+
+
+==== Choosing a Runtime
+
+The choice of runtime can be configured via the `camunda.rpa.python-runtime.type` configuration property. 
+It supports three values: `auto` (the default), `static`, and `runtime`. 
+
+When the runtime is set to `auto`, the RPA Worker will run the following checks to see if the Python Runtime is 
+supported:
+
+* If there is an existing Python environment created by the RPA Worker then this will be used
+* If an internet connection is detected, **AND**:
+** There is a local Python distribution at a supported version (>=3.8,<3.12) then this will be used to create a new
+Virtual Environment, **OR**
+** There is no local Python, but it can be provisioned automatically on the current platform (Windows), then Python 
+will be provisioned in this way and used to create a new Virtual Environment
+
+If these conditions are not satisfied then the RPA Worker will fall back to the Static Runtime.
+
+NOTE: The Static Runtime is not supported in the JAR distribution of the RPA Worker
+
+=== Built-in Variables
+
 The RPA Worker makes the following environment variables available to the Robot execution:
 
 
@@ -161,6 +210,10 @@ The RPA Worker makes the following environment variables available to the Robot 
 |camunda.rpa.python.interpreter
 |Path to a specific Python interpreter to use, rather than searching the path
 |_None_
+
+|camunda.rpa.python-runtime.type
+|Which runtime to use for executing Robot. Can be `auto`, `python`, or `static`
+|`auto`
 
 
 3+| *Robot Properties*
