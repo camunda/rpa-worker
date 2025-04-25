@@ -228,7 +228,7 @@ jobs:
       - build
       - windows_test
     runs-on: windows-2025
-    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
       contents: read
 
