@@ -568,10 +568,56 @@ jobs:
           path: artifacts/${{ env.aarch64_zip_name }}
           retention-days: 1
 
+  smoke_test_win32:
+    needs:
+      - windows_sign
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    runs-on: windows-2025
+    env:
+      E2E: "1"
+      E2E_SMOKE_TEST_ONLY: "true"
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      - name: Download Artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-native-win32-amd64
+
+      - name: Build
+        run: |
+          Expand-Archive -Path rpa-worker_*_win32_amd64.zip
+          rm rpa-worker_*_win32_amd64.zip
+          Resolve-Path rpa-worker_*_win32_amd64 | Select-Object -ExpandProperty Path > workerpath.txt
+          ./gradlew :rpa-worker-e2e-tests:check
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: win32-smoke-test-reports
+          path: rpa-worker-e2e-tests/build/reports/tests/test/
+          retention-days: 1
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          check_name: 'Windows Smoke Test Results'
+          files: |
+            rpa-worker-e2e-tests/build/test-results/**/*.xml
+
   release:
     needs:
       - native_linux_amd64
-      - windows_sign
+      - smoke_test_win32
       - macos_sign_and_notarize
       - e2e
     if: github.ref_type == 'tag' && ! contains(github.ref_name, 'dev')
