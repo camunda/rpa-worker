@@ -201,3 +201,8 @@ tasks.register("zipNativeImage", Zip) {
 	}
 
 }
+
+bootJar {
+	if(project.hasProperty("dockerJar"))
+		archiveBaseName = "${archiveBaseName.get()}-docker-${project.property("nativeArch")}"
+}
