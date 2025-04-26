@@ -258,7 +258,7 @@ jobs:
       - build
       - windows_test
     runs-on: macos-13
-    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
       contents: read
 
@@ -288,7 +288,7 @@ jobs:
       - build
       - windows_test
     runs-on: macos-latest
-    if: github.ref_type == 'tag'
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
       contents: read
 
@@ -615,13 +615,112 @@ jobs:
           check_name: 'Windows Smoke Test Results'
           files: |
             rpa-worker-e2e-tests/build/test-results/**/*.xml
+            
+  smoke_test_darwin_amd64:
+    needs:
+      - macos_sign_and_notarize
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    runs-on: macos-13
+    env:
+      E2E: "1"
+      E2E_SMOKE_TEST_ONLY: "true"
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      - name: Download Artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-native-darwin-amd64
+
+      - name: Build
+        run: |
+          unzip rpa-worker_*_darwin_amd64.zip
+          rm rpa-worker_*_darwin_amd64.zip
+          export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_darwin_amd64)
+          chmod +x $CAMUNDA_RPA_E2E_PATHTOWORKER
+          ./gradlew :rpa-worker-e2e-tests:check
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: darwin-amd64-smoke-test-reports
+          path: rpa-worker-e2e-tests/build/reports/tests/test/
+          retention-days: 1
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          comment_mode: 'off'
+          job_summary: false
+          check_name: 'Darwin amd64 Smoke Test Results'
+          files: |
+            rpa-worker-e2e-tests/build/test-results/**/*.xml
+            
+            
+  smoke_test_darwin_aarch64:
+    needs:
+      - macos_sign_and_notarize
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    runs-on: macos-latest
+    env:
+      E2E: "1"
+      E2E_SMOKE_TEST_ONLY: "true"
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+
+      - name: Download Artefacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-native-darwin-aarch64
+
+      - name: Build
+        run: |
+          unzip rpa-worker_*_darwin_aarch64.zip
+          rm rpa-worker_*_darwin_aarch64.zip
+          export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_darwin_aarch64)
+          chmod +x $CAMUNDA_RPA_E2E_PATHTOWORKER
+          ./gradlew :rpa-worker-e2e-tests:check
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: darwin-aarch64-smoke-test-reports
+          path: rpa-worker-e2e-tests/build/reports/tests/test/
+          retention-days: 1
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        if: always()
+        with:
+          comment_mode: 'off'
+          job_summary: false
+          check_name: 'Darwin aarch64 Smoke Test Results'
+          files: |
+            rpa-worker-e2e-tests/build/test-results/**/*.xml
 
   release:
     needs:
-      - native_linux_amd64
-      - smoke_test_win32
-      - macos_sign_and_notarize
       - e2e
+      - smoke_test_win32
+      - smoke_test_darwin_amd64
+      - smoke_test_darwin_aarch64
     if: github.ref_type == 'tag' && ! contains(github.ref_name, 'dev')
     runs-on: ubuntu-latest
     container: "ghcr.io/camunda/rpa-worker-base-image:202501291438"
