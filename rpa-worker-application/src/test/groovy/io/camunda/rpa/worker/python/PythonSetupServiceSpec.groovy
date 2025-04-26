@@ -72,7 +72,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		Path pythonPath = pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 		
 		when:
-		PythonInterpreter r = service.getObject()
+		PythonInterpreter r = block service.getPythonInterpreter()
 		
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(pythonPath)
@@ -91,7 +91,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		processService.execute("python3", _) >> Mono.error(new IOException())
 		
 		when:
-		PythonInterpreter r = service.getObject()
+		PythonInterpreter r = block service.getPythonInterpreter()
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
@@ -139,7 +139,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 				systemPythonProvider)
 
 		when:
-		PythonInterpreter r = serviceForCustomPythonInterp.getObject()
+		PythonInterpreter r = block serviceForCustomPythonInterp.getPythonInterpreter()
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
@@ -188,7 +188,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		PythonInterpreter r = service.getObject()
+		PythonInterpreter r = block service.getPythonInterpreter()
 
 		then: "Existing Python venv is checked (not there) and system Python is checked (not there)"
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
@@ -263,7 +263,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 						systemPythonProvider)
 
 		when:
-		serviceWithExtraRequirements.getObject()
+		block serviceWithExtraRequirements.getPythonInterpreter()
 
 		then:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
@@ -313,7 +313,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 						systemPythonProvider)
 
 		when:
-		serviceWithExtraRequirements.getObject()
+		block serviceWithExtraRequirements.getPythonInterpreter()
 
 		then:
 		1 * io.createTempFile("extra-requirements", ".txt") >> Paths.get("/tmp/extra-requirements.txt")
@@ -351,7 +351,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 						systemPythonProvider)
 
 		when:
-		serviceWithExtraRequirements.getObject()
+		block serviceWithExtraRequirements.getPythonInterpreter()
 
 		then:
 		0 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
@@ -390,7 +390,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		io.write(_, _) >> { Flux<DataBuffer> buffers, OutputStream os -> DataBufferUtils.write(buffers, os) }
 
 		when:
-		service.getObject()
+		block service.getPythonInterpreter()
 
 		then:
 		thrown(IllegalStateException)
@@ -401,7 +401,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(Paths.get("venv/"))
 
 		when:
-		service.getObject()
+		block service.getPythonInterpreter()
 
 		then:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
@@ -424,7 +424,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(Paths.get("venv/"))
 
 		when:
-		service.getObject()
+		block service.getPythonInterpreter()
 
 		then:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")

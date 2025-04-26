@@ -20,7 +20,7 @@ class StaticRuntimeFunctionalSpec extends AbstractFunctionalSpec {
 	
 	void "Uses static runtime when configured"() {
 		expect:
-		robotExecutionStrategy.toString().contains("StaticRobotExecutionStrategy")
+		robotExecutionStrategy instanceof StaticRobotExecutionStrategy
 
 		when:
 		ProcessService.ExecutionResult result = robotExecutionStrategy.executeRobot(c -> c

@@ -7,7 +7,6 @@ import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.python.PythonRuntimeProperties;
 import io.camunda.rpa.worker.python.SystemPythonProvider;
 import io.camunda.rpa.worker.util.InternetConnectivityProvider;
-import io.vavr.Lazy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
@@ -26,7 +25,7 @@ class RobotExecutionStrategyFactoryBean implements FactoryBean<RobotExecutionStr
 	private final SystemPythonProvider systemPythonProvider;
 	private final InternetConnectivityProvider internetConnectivityProvider;
 	private final IO io;
-	private final ObjectProvider<PythonInterpreter> pythonInterpreterProvider;
+	private final ObjectProvider<PythonInterpreter> pythonInterpreter;
 	
 	@Override
 	public Class<?> getObjectType() {
@@ -35,18 +34,18 @@ class RobotExecutionStrategyFactoryBean implements FactoryBean<RobotExecutionStr
 
 	@Override
 	public RobotExecutionStrategy getObject() throws Exception {
-		return switch(pythonRuntimeProperties.type()) {
+		return (switch(pythonRuntimeProperties.type()) {
 			case Auto -> detectStrategy().block();
 			case Python -> pythonStrategy();
 			case Static -> staticStrategy();
-		};
+		});
 	}
 
 	private Mono<RobotExecutionStrategy> detectStrategy() {
 		return Mono.justOrEmpty(existingEnvironmentProvider.existingPythonEnvironment())
 				.doOnNext(_ -> log.atInfo()
 						.log("Found existing Python environment, will use Python execution strategy"))
-				.<RobotExecutionStrategy>map(_ -> pythonStrategy())
+				.map(_ -> pythonStrategy())
 
 				.switchIfEmpty(Mono.defer(systemPythonProvider::systemPython)
 						.flatMap(_ -> internetConnectivityProvider.hasConnectivity())
@@ -69,13 +68,10 @@ class RobotExecutionStrategyFactoryBean implements FactoryBean<RobotExecutionStr
 	}
 
 	private RobotExecutionStrategy pythonStrategy() {
-		return Lazy.val(() -> new PythonRobotExecutionStrategy(
-						processService,
-						pythonInterpreterProvider.getObject()),
-				RobotExecutionStrategy.class);
+		return new PythonRobotExecutionStrategy(processService, pythonInterpreter);
 	}
 
 	private RobotExecutionStrategy staticStrategy() {
-		return Lazy.val(() -> new StaticRobotExecutionStrategy(processService, io), RobotExecutionStrategy.class);
+		return new StaticRobotExecutionStrategy(processService, io);
 	}
 }
