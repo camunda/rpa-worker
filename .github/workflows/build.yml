@@ -597,13 +597,14 @@ jobs:
           rm rpa-worker_*_win32_amd64.zip
           Resolve-Path rpa-worker_*_win32_amd64.exe | Select-Object -ExpandProperty Path > workerpath.txt
           cat workerpath.txt
+          ls
           ./gradlew :rpa-worker-e2e-tests:check
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: win32-smoke-test-reports
+          name: smoke-test-reports-windows
           path: rpa-worker-e2e-tests/build/reports/tests/test/
           retention-days: 1
 
@@ -656,7 +657,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: darwin-amd64-smoke-test-reports
+          name: smoke-test-reports-darwin-amd64
           path: rpa-worker-e2e-tests/build/reports/tests/test/
           retention-days: 1
 
@@ -710,7 +711,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: darwin-aarch64-smoke-test-reports
+          name: smoke-test-reports-darwin-aarch64
           path: rpa-worker-e2e-tests/build/reports/tests/test/
           retention-days: 1
 

@@ -70,8 +70,15 @@ tasks.withType(Test).configureEach {
 
 	java.nio.file.Path workerPath = project.rootDir.toPath().resolve("workerpath.txt")
 	if (Files.exists(workerPath)) {
+		String raw = workerPath.text
+		println "Raw: ${raw}"
 		String pathToWorker = Paths.get(workerPath.text.trim()).toAbsolutePath().toString()
 		println "Path to worker: ${pathToWorker}"
+
+		Files.walk(project.rootDir.toPath())
+				.filter { Files.isRegularFile(it) }
+				.forEach { println it.toAbsolutePath().toString() }
+		
 		environment("CAMUNDA_RPA_E2E_PATHTOWORKER", pathToWorker)
 	}
 
