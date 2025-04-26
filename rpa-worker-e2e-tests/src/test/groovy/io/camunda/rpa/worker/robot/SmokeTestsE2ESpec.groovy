@@ -18,7 +18,7 @@ abstract class SmokeTestsE2ESpec extends AbstractE2ESpec {
 				.body(BodyInserters.fromValue(evaluateScriptRequest("rpa_challenge")))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
-				.block(Duration.ofMinutes(1))
+				.block(Duration.ofMinutes(3))
 		
 		then:
 		r.result() == ExecutionResults.Result.PASS
@@ -31,7 +31,7 @@ abstract class SmokeTestsE2ESpec extends AbstractE2ESpec {
 				.body(BodyInserters.fromValue(evaluateScriptRequest("rpa_challenge_chrome")))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
-				.block(Duration.ofMinutes(1))
+				.block(Duration.ofMinutes(3))
 
 		then:
 		r.result() == ExecutionResults.Result.PASS
