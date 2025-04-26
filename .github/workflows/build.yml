@@ -607,9 +607,11 @@ jobs:
           retention-days: 1
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action/windows@v2
         if: always()
         with:
+          comment_mode: 'off'
+          job_summary: false
           check_name: 'Windows Smoke Test Results'
           files: |
             rpa-worker-e2e-tests/build/test-results/**/*.xml
