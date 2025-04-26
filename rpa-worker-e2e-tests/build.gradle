@@ -1,5 +1,4 @@
 import java.nio.file.Files
-import java.nio.file.Paths
 
 plugins {
 	id 'java'
@@ -68,7 +67,7 @@ dependencies {
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
 
-	java.nio.file.Path workerPath = Paths.get("workerpath.txt")
+	java.nio.file.Path workerPath = project.rootDir.toPath().resolve("workerpath.txt")
 	if (Files.exists(workerPath))
 		environment("CAMUNDA_RPA_E2E_PATHTOWORKER", workerPath.text.trim())
 
