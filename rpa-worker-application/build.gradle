@@ -108,6 +108,9 @@ tasks.withType(Test).configureEach {
 
 tasks.named("functionalTest", Test).configure { Test task ->
 	task.jvmArgs("-XX:+AllowRedefinitionToAddDeleteMethods")
+	
+	if(System.getProperty("os.name").contains("Linux"))
+		task.systemProperty("camunda.rpa.python.allow-unsupported-python", "true")
 }
 
 processAot {

@@ -47,7 +47,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Python).getObject()
 		
 		then:
-		r.toString().contains("PythonRobotExecutionStrategy")
+		r instanceof PythonRobotExecutionStrategy
 	}
 
 	void "Returns correct strategy for static config - Static"() {
@@ -55,7 +55,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Static).getObject()
 
 		then:
-		r.toString().contains("StaticRobotExecutionStrategy")
+		r instanceof StaticRobotExecutionStrategy
 	}
 
 	@RestoreSystemProperties
@@ -74,7 +74,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		0 * internetConnectivityProvider._
 		
 		and:
-		r.toString().contains("PythonRobotExecutionStrategy")
+		r instanceof PythonRobotExecutionStrategy
 	}
 
 	@RestoreSystemProperties
@@ -91,7 +91,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(true)
 
 		and:
-		r.toString().contains("PythonRobotExecutionStrategy")
+		r instanceof PythonRobotExecutionStrategy
 	}
 
 	@RestoreSystemProperties
@@ -108,7 +108,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(true)
 
 		and:
-		r.toString().contains("PythonRobotExecutionStrategy")
+		r instanceof PythonRobotExecutionStrategy
 	}
 
 	@RestoreSystemProperties
@@ -125,7 +125,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		0 * internetConnectivityProvider.hasConnectivity() 
 
 		and:
-		r.toString().contains("StaticRobotExecutionStrategy")
+		r instanceof StaticRobotExecutionStrategy
 	}
 
 	@RestoreSystemProperties
@@ -142,7 +142,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(false)
 
 		and:
-		r.toString().contains("StaticRobotExecutionStrategy")
+		r instanceof StaticRobotExecutionStrategy
 	}
 	
 	private static void platformIsNotWindows() {
