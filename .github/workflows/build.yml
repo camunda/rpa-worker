@@ -596,6 +596,7 @@ jobs:
           Expand-Archive -Path rpa-worker_*_win32_amd64.zip
           rm rpa-worker_*_win32_amd64.zip
           Resolve-Path rpa-worker_*_win32_amd64.exe | Select-Object -ExpandProperty Path > workerpath.txt
+          cat workerpath.txt
           ./gradlew :rpa-worker-e2e-tests:check
 
       - name: Upload Test Results
@@ -638,6 +639,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-native-darwin-amd64
+          
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
       - name: Build
         run: |
@@ -688,6 +693,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-native-darwin-aarch64
+          
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
 
       - name: Build
         run: |
@@ -706,7 +715,7 @@ jobs:
           retention-days: 1
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@macos/v2
+        uses: EnricoMi/publish-unit-test-result-action/macos@v2
         if: always()
         with:
           comment_mode: 'off'

@@ -21,7 +21,7 @@ public class SystemPythonProvider {
 	static final Set<Integer> WINDOWS_NO_PYTHON_EXIT_CODES = Set.of(49, 9009);
 
 	private static final Version MINIMUM_PYTHON_VERSION = Version.of(3, 8);
-	private static final Version MAXIMUM_PYTHON_VERSION = Version.of(3, 11);
+	private static final Version MAXIMUM_PYTHON_VERSION = Version.of(3, 13);
 	private static final Pattern PYTHON_VERSION_PATTERN = Pattern.compile("Python (?<version>[0-9a-zA-Z-.+]+)");
 
 	private final PythonProperties pythonProperties;
@@ -46,7 +46,7 @@ public class SystemPythonProvider {
 					boolean found = matcher.find();
 					if ( ! found) return false;
 					Version version = Version.parse(matcher.group("version"));
-					boolean valid = version.isHigherThanOrEquivalentTo(MINIMUM_PYTHON_VERSION) || version.isLowerThan(MAXIMUM_PYTHON_VERSION);
+					boolean valid = version.isHigherThanOrEquivalentTo(MINIMUM_PYTHON_VERSION) && (version.isLowerThan(MAXIMUM_PYTHON_VERSION) || pythonProperties.allowUnsupportedPython());
 					if( ! valid) log.atWarn()
 							.kv("version", version)
 							.kv("interpreter", exeName)
