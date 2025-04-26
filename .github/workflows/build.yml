@@ -595,7 +595,7 @@ jobs:
         run: |
           Expand-Archive -Path rpa-worker_*_win32_amd64.zip
           rm rpa-worker_*_win32_amd64.zip
-          Resolve-Path rpa-worker_*_win32_amd64.exe | Select-Object -ExpandProperty Path > workerpath.txt
+          Resolve-Path rpa-worker_*_win32_amd64/rpa-worker_*_win32_amd64.exe | Select-Object -ExpandProperty Path > workerpath.txt
           cat workerpath.txt
           ls
           ./gradlew :rpa-worker-e2e-tests:check

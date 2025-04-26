@@ -35,7 +35,7 @@ public class PythonSetupService {
 	private final ExistingEnvironmentProvider existingEnvironmentProvider;
 	private final SystemPythonProvider systemPythonProvider;
 
-	public Mono<PythonInterpreter> getPythonInterpreter() {
+	Mono<PythonInterpreter> getPythonInterpreter() {
 		return Mono.justOrEmpty(existingEnvironmentProvider.existingPythonEnvironment())
 				.flatMap(p -> maybeReinstallBaseRequirements().thenReturn(p))
 				.flatMap(p -> maybeReinstallExtraRequirements().thenReturn(p))

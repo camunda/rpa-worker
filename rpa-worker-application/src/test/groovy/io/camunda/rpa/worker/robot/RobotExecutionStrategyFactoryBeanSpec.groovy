@@ -2,8 +2,12 @@ package io.camunda.rpa.worker.robot
 
 import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.pexec.ProcessService
-import io.camunda.rpa.worker.python.*
+import io.camunda.rpa.worker.python.ExistingEnvironmentProvider
+import io.camunda.rpa.worker.python.PythonInterpreter
+import io.camunda.rpa.worker.python.PythonRuntimeProperties
+import io.camunda.rpa.worker.python.SystemPythonProvider
 import io.camunda.rpa.worker.util.InternetConnectivityProvider
+import org.springframework.beans.factory.ObjectProvider
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -21,8 +25,8 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		run(_) >> { Mono.empty() }
 	}
 	PythonInterpreter pythonInterpreter = new PythonInterpreter(Paths.get("/path/to/python"))
-	PythonSetupService pythonSetupService = Stub() {
-		getPythonInterpreter() >> { Mono.just(pythonInterpreter) }
+	ObjectProvider<PythonInterpreter> pythonInterpreterProvider = Stub() {
+		getObject() >> pythonInterpreter
 	}
 
 	@Subject
@@ -35,7 +39,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 				systemPythonProvider,
 				internetConnectivityProvider,
 				io, 
-				pythonSetupService)
+				pythonInterpreterProvider)
 	}
 	
 	void "Returns correct strategy for static config - Python"() {
