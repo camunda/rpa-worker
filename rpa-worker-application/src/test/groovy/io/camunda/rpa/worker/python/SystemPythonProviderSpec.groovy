@@ -96,4 +96,44 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		then: "Fake Python is ignored and returns empty"
 		! r
 	}
+
+	void "Returns empty when system Python is not valid - Too Old"() {
+		given:
+		processService.execute("python", _) >> Mono.error(new IOException())
+
+		when:
+		Object r = block provider.systemPython()
+
+		then:
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.6.0", "", null))
+		}
+
+		and:
+		! r
+	}
+
+	void "Returns empty when system Python is not valid - Too New"() {
+		given:
+		processService.execute("python", _) >> Mono.error(new IOException())
+
+		when:
+		Object r = block provider.systemPython()
+
+		then:
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.13.0", "", null))
+		}
+
+		and:
+		! r
+	}
 }
