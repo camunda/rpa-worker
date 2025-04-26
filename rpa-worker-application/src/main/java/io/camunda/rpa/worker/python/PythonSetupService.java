@@ -5,8 +5,6 @@ import io.camunda.rpa.worker.pexec.ProcessService;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.FactoryBean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.stereotype.Service;
@@ -26,8 +24,7 @@ import java.util.concurrent.Callable;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Lazy
-public class PythonSetupService implements FactoryBean<PythonInterpreter> {
+public class PythonSetupService {
 	
 	static final PythonExecutionEnvironment pyExeEnv = PythonExecutionEnvironment.get();
 	
@@ -38,13 +35,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 	private final ExistingEnvironmentProvider existingEnvironmentProvider;
 	private final SystemPythonProvider systemPythonProvider;
 
-	@Override
-	public Class<?> getObjectType() {
-		return PythonInterpreter.class;
-	}
-
-	@Override
-	public PythonInterpreter getObject() {
+	public Mono<PythonInterpreter> getPythonInterpreter() {
 		return Mono.justOrEmpty(existingEnvironmentProvider.existingPythonEnvironment())
 				.flatMap(p -> maybeReinstallBaseRequirements().thenReturn(p))
 				.flatMap(p -> maybeReinstallExtraRequirements().thenReturn(p))
@@ -52,8 +43,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 				.map(PythonInterpreter::new)
 				.doOnNext(pi -> log.atInfo()
 						.kv("path", pi.path().toAbsolutePath())
-						.log("Using Python interpreter"))
-				.block();
+						.log("Using Python interpreter"));
 	}
 
 	private Mono<Path> createPythonEnvironment() {
