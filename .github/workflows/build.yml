@@ -750,8 +750,8 @@ jobs:
           
       - name: Generate Release Header
         run: |
+          rm *docker*.jar
           ./gradlew setVersion
-          ls
           ./gradlew generateReleaseHeader
       
       - name: Release
