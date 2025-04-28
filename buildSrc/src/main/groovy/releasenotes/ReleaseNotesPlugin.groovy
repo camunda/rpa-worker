@@ -42,7 +42,7 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 			URL template = getClass().getResource("/releasenotes_header.md")
 			TemplateEngine te = new GStringTemplateEngine()
 
-			Path exeJar = findFile(projectRoot, "rpa-worker-${project.version}", ".jar")
+			Path exeJar = findFile(projectRoot, "rpa-worker_${project.version}", ".jar")
 			Path elementTemplate = findElementTemplate(projectRoot)
 			Writable cooked = te.createTemplate(template).make([
 					jarFilename: exeJar.fileName.toString(),
