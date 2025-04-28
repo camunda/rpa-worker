@@ -6,5 +6,5 @@ import java.util.Map;
 
 public interface SecretsBackend {
 	String getKey();
-	Mono<Map<String, String>> getSecrets();
+	Mono<Map<String, Object>> getSecrets();
 }
