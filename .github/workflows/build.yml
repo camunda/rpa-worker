@@ -751,6 +751,7 @@ jobs:
       - name: Generate Release Header
         run: |
           ./gradlew setVersion
+          ls
           ./gradlew generateReleaseHeader
       
       - name: Release
