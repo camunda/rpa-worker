@@ -131,7 +131,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.retrieve()
 				.toBodilessEntity()
 				.retryWhen(Retry.fixedDelay(100, Duration.ofSeconds(3))
-						.filter { (!process) || process.alive })
+						.filter { ( ! process) || process.alive })
 				.onErrorMap(thrown -> new IllegalStateException("RPA Worker did not become available", thrown))
 				.block()
 	}

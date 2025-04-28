@@ -42,7 +42,7 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 			URL template = getClass().getResource("/releasenotes_header.md")
 			TemplateEngine te = new GStringTemplateEngine()
 
-			Path exeJar = findFile(projectRoot, "rpa-worker", ".jar")
+			Path exeJar = findFile(projectRoot, "rpa-worker-application-${project.version}", ".jar")
 			Path elementTemplate = findElementTemplate(projectRoot)
 			Writable cooked = te.createTemplate(template).make([
 					jarFilename: exeJar.fileName.toString(),
@@ -88,7 +88,7 @@ class ReleaseNotesPlugin implements Plugin<Project> {
 				.filter(Files::isRegularFile)
 				.filter(p -> Arrays.stream(queries).allMatch { query ->  p.getFileName().toString().contains(query) })
 				.findFirst()
-				.orElseThrow()
+				.orElseThrow(() -> new NoSuchElementException("Could not find file matching queries %s".formatted(queries)))
 	}
 
 	static Path findElementTemplate(Path root) {

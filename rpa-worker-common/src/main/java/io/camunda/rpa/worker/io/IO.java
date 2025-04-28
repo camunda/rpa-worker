@@ -17,6 +17,8 @@ import java.nio.file.OpenOption;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -98,4 +100,6 @@ public interface IO {
 	InputStream newInputStream(Path path, OpenOption... openOptions);
 	
 	long transferTo(InputStream inputStream, OutputStream outputStream);
+	
+	Path setPosixFilePermissions(Path path, Set<PosixFilePermission> permissions);
 }

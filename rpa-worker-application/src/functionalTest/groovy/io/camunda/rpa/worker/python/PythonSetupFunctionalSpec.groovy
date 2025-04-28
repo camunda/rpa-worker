@@ -27,7 +27,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 	ProcessService processService
 	
 	@Autowired
-	PythonInterpreter pythonInterpreter
+	PythonSetupService pythonSetupService
 	
 	void setupSpec() {
 		ftestPythonEnv = Paths.get("python_ftest/venv/").toAbsolutePath()
@@ -41,7 +41,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 		Files.isRegularFile(ftestPythonEnv.resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe())))
 		
 		and: "That is the environment which is made available to the application"
-		pythonInterpreter.path().toAbsolutePath() == ftestPythonEnv.resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
+		(block pythonSetupService.pythonInterpreter).path().toAbsolutePath() == ftestPythonEnv.resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 
 		when:
 		ProcessService.ExecutionResult deps = block processService.execute(ftestPythonEnv.resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), c -> c
@@ -63,9 +63,6 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 
 		@Autowired
 		ProcessService processService
-
-		@Autowired
-		PythonInterpreter pythonInterpreter
 
 		void setupSpec() {
 			ftestPythonEnv = Paths.get("python_ftest_extra/venv/").toAbsolutePath()
@@ -111,9 +108,6 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 
 		@SpringSpy
 		ProcessService processService
-
-		@Autowired
-		PythonInterpreter pythonInterpreter
 		
 
 		void setupSpec() {
@@ -127,7 +121,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 			ftestPythonEnv.parent.resolve("extra-requirements.last").text == "ec72420df5dfbdce4111f715c96338df3b7cb75f58e478d2449c9720e560de8c"
 
 			when:
-			pythonSetupService.getObject()
+			block pythonSetupService.getPythonInterpreter()
 			
 			then:
 			ftestPythonEnv.parent.resolve("extra-requirements.last").text == "ec72420df5dfbdce4111f715c96338df3b7cb75f58e478d2449c9720e560de8c"
@@ -158,9 +152,6 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 
 		@SpringSpy
 		ProcessService processService
-
-		@Autowired
-		PythonInterpreter pythonInterpreter
 		
 		static Path extraRequirementsFile
 
@@ -179,7 +170,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 			extraRequirementsFile.text = "requests\nchardet"
 			
 			and:
-			pythonSetupService.getObject()
+			block pythonSetupService.getPythonInterpreter()
 
 			then:
 			ftestPythonEnv.parent.resolve("extra-requirements.last").text == "52c5f32fb0f9e9d921d39386dedd2c1d33ca46cbe87e96c8db9f394a1d3691a7"
@@ -210,9 +201,6 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 		@SpringSpy
 		ProcessService processService
 
-		@Autowired
-		PythonInterpreter pythonInterpreter
-
 		void setupSpec() {
 			ftestPythonEnv = Paths.get("python_ftest_basecheck/venv/").toAbsolutePath()
 			assert ftestPythonEnv.toString().contains("python_ftest")
@@ -224,7 +212,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 			ftestPythonEnv.parent.resolve("requirements.last").text == FTEST_REQUIREMENTS_HASH
 
 			when:
-			pythonSetupService.getObject()
+			block pythonSetupService.getPythonInterpreter()
 
 			then:
 			ftestPythonEnv.parent.resolve("requirements.last").text == FTEST_REQUIREMENTS_HASH
@@ -246,9 +234,6 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 		@SpringSpy
 		ProcessService processService
 
-		@Autowired
-		PythonInterpreter pythonInterpreter
-
 		void setupSpec() {
 			ftestPythonEnv = Paths.get("python_ftest_basecheck/venv/").toAbsolutePath()
 			assert ftestPythonEnv.toString().contains("python_ftest")
@@ -260,7 +245,7 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 			ftestPythonEnv.parent.resolve("requirements.last").text = "old-checksum"
 
 			when:
-			pythonSetupService.getObject()
+			block pythonSetupService.getPythonInterpreter()
 
 			then:
 			ftestPythonEnv.parent.resolve("requirements.last").text == FTEST_REQUIREMENTS_HASH

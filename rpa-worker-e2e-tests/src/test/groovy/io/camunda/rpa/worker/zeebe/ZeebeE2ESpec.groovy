@@ -4,7 +4,6 @@ import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
-import spock.lang.PendingFeature
 
 @Slf4j
 class ZeebeE2ESpec extends AbstractE2ESpec {
@@ -145,27 +144,6 @@ Tasks
 				message().startsWith("The execution timed out")
 				message().contains("Main")
 			}
-		}
-	}
-	
-	@PendingFeature(reason = "Selenium version used by RPA libs too old, Selenium Manager cannot provision Firefox")
-	void "Runs the RPA Challenge"() {
-		given:
-		deployScriptFile("rpa_challenge")
-		
-		and:
-		deploySimpleRobotProcess("rpa_challenge_on_default", "rpa_challenge")
-
-		when:
-		ProcessInstanceEvent pinstance = createInstance("rpa_challenge_on_default")
-
-		then:
-		spec.waitForProcessInstance(pinstance.processInstanceKey) {
-			expectNoIncident(it.key())
-			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
-		}
-		spec.expectVariables(pinstance.processInstanceKey) {
-			resultText.toString().contains("100%")
 		}
 	}
 

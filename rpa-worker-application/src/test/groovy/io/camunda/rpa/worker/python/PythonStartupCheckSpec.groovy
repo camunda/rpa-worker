@@ -3,7 +3,9 @@ package io.camunda.rpa.worker.python
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
+import io.camunda.rpa.worker.robot.RobotExecutionStrategy
 import io.camunda.rpa.worker.util.ApplicationRestarter
+import org.springframework.beans.factory.ObjectProvider
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -18,9 +20,18 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 	ApplicationRestarter applicationRestarter = Mock()
 	ProcessService processService = Mock()
 	PythonInterpreter pythonInterpreter = new PythonInterpreter(Paths.get("/path/to/python"))
+	ObjectProvider<PythonInterpreter> pythonInterpreterProvider = Stub() {
+		getObject() >> { pythonInterpreter }
+	}
+	RobotExecutionStrategy robotExecutionStrategy = Stub()
 	
 	@Subject
-	PythonStartupCheck check = new PythonStartupCheck(pythonSetupService, applicationRestarter, processService, pythonInterpreter)
+	PythonStartupCheck check = new PythonStartupCheck(
+			pythonSetupService, 
+			applicationRestarter, 
+			processService, 
+			pythonInterpreterProvider, 
+			robotExecutionStrategy)
 
 	ExecutionCustomizer executionCustomizer = Mock() {
 		_ >> it
@@ -31,6 +42,9 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 	}
 
 	void "Returns ready event on successful check"() {
+		given:
+		robotExecutionStrategy.shouldCheck() >> true
+		
 		when:
 		PythonReadyEvent event = block check.check()
 		
@@ -48,6 +62,9 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 	}
 
 	void "Purges Python environment and restarts once when check is unsuccessful (post-invoke)"() {
+		given:
+		robotExecutionStrategy.shouldCheck() >> true
+
 		when:
 		check.check().subscribe()
 
@@ -76,6 +93,9 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 	}
 
 	void "Purges Python environment and restarts once when check is unsuccessful (pre-invoke)"() {
+		given:
+		robotExecutionStrategy.shouldCheck() >> true
+
 		when:
 		check.check().subscribe()
 
@@ -99,5 +119,19 @@ class PythonStartupCheckSpec extends Specification implements PublisherUtils {
 		and:
 		0 * pythonSetupService.purgeEnvironment()
 		0 * applicationRestarter.restart()
+	}
+	
+	void "Skips check when not required by Robot strategy"() {
+		given:
+		robotExecutionStrategy.shouldCheck() >> false
+		
+		when:
+		PythonReadyEvent event = block check.check()
+
+		then:
+		0 * processService._
+
+		and:
+		! event
 	}
 }

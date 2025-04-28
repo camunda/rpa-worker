@@ -1,9 +1,7 @@
 package io.camunda.rpa.worker.robot;
 
 import io.camunda.rpa.worker.RpaWorkerApplication;
-import io.camunda.rpa.worker.pexec.ProcessService;
 import io.camunda.rpa.worker.python.AbstractPythonPurgingStartupCheck;
-import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.python.PythonSetupService;
 import io.camunda.rpa.worker.util.ApplicationRestarter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,20 +13,22 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Order
 class RobotStartupCheck extends AbstractPythonPurgingStartupCheck<RobotReadyEvent> {
-	
-	private final ProcessService processService;
-	private final PythonInterpreter pythonInterpreter;
 
-	public RobotStartupCheck(PythonSetupService pythonSetupService, ApplicationRestarter applicationRestarter, ProcessService processService, PythonInterpreter pythonInterpreter) {
+	private final RobotExecutionStrategy robotExecutionStrategy;
+
+	public RobotStartupCheck(PythonSetupService pythonSetupService, ApplicationRestarter applicationRestarter, RobotExecutionStrategy robotExecutionStrategy) {
 		super(pythonSetupService, applicationRestarter);
-		this.processService = processService;
-		this.pythonInterpreter = pythonInterpreter;
+		this.robotExecutionStrategy = robotExecutionStrategy;
 	}
 
 	@Override
 	public Mono<RobotReadyEvent> check() {
-		return processService.execute(pythonInterpreter.path(), c -> c
-						.arg("-m").arg("robot")
+		
+		if( ! robotExecutionStrategy.shouldCheck())
+			return Mono.<RobotReadyEvent>empty()
+					.doOnSubscribe(_ -> log.atInfo().log("Robot check skipped because static runtime in use"));
+		
+		return robotExecutionStrategy.executeRobot(c -> c
 						.arg("--version")
 						.noFail())
 
@@ -36,7 +36,6 @@ class RobotStartupCheck extends AbstractPythonPurgingStartupCheck<RobotReadyEven
 						? Mono.just(new RobotReadyEvent())
 						: purgeAndRestart()
 								.doOnSubscribe(_ -> log.atError()
-										.kv("pythonInterpreter", pythonInterpreter.path().toAbsolutePath())
 										.kv("exitCode", xr.exitCode())
 										.kv("stdout", xr.stdout())
 										.kv("stderr", xr.stderr())
