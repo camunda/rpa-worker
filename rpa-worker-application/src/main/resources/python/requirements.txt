@@ -1,6 +1,0 @@
-camunda-utils @ https://github.com/camunda/rpa-python-libraries/releases/download/camunda-utils-v1.1.0/camunda_utils-1.1.0-py3-none-any.whl
-## ^ provides robotframework
-
-camunda-rpa @ https://github.com/camunda/rpa-python-libraries/releases/download/camunda-rpa-v1.0.0/camunda_rpa-1.0.0-py3-none-any.whl
-
-PyYAML

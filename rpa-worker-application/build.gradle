@@ -44,9 +44,10 @@ repositories {
 
 dependencies {
 	implementation project(":rpa-worker-common")
+	implementation libs.rpaWorkerPythonRequirements
 	
 	if(project.hasProperty("nativePlatform") && project.hasProperty("nativeArch"))
-		runtimeOnly group: 'io.camunda.rpa', name: 'rpa-worker-static-runtime', version: staticRuntimeVersion, classifier: "${project.property("nativePlatform")}_${project.property("nativeArch")}"
+		runtimeOnly group: 'io.camunda.rpa', name: 'rpa-worker-static-runtime', version: libs.versions.rpaRuntime.get(), classifier: "${project.property("nativePlatform")}_${project.property("nativeArch")}"
 	
 	implementation libs.spring.boot.starter.webflux
 	implementation libs.spring.boot.starter.actuator
@@ -82,7 +83,7 @@ dependencies {
 	testRuntimeOnly libs.junit.platformLauncher
 	testRuntimeOnly libs.byteBuddy
 	testRuntimeOnly libs.objenesis
-	testRuntimeOnly group: 'io.camunda.rpa', name: 'rpa-worker-static-runtime', version: staticRuntimeVersion,  classifier: "${project.getProperties().getOrDefault("nativePlatform", "linux")}_${project.getProperties().getOrDefault("nativeArch", "amd64")}"
+	testRuntimeOnly group: 'io.camunda.rpa', name: 'rpa-worker-static-runtime', version: libs.versions.rpaRuntime.get(),  classifier: "${project.getProperties().getOrDefault("nativePlatform", "linux")}_${project.getProperties().getOrDefault("nativeArch", "amd64")}"
 
 	functionalTestImplementation libs.spring.boot.starter.test
 	functionalTestImplementation libs.spock.spring
