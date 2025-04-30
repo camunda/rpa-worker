@@ -21,6 +21,8 @@ import java.security.MessageDigest;
 import java.util.HexFormat;
 import java.util.concurrent.Callable;
 
+import static io.camunda.rpa.worker.util.ArchiveUtils.extractArchive;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -78,7 +80,7 @@ public class PythonSetupService {
 
 				.doOnSubscribe(_ -> log.atInfo().log("Downloading Python"))
 
-				.then(io.run(() -> extractArchive(pythonArchive, pythonProperties.path()))
+				.then(io.run(() -> extractArchive(io, pythonArchive, pythonProperties.path()))
 						.doOnSubscribe(_ -> log.atInfo()
 								.kv("archive", pythonArchive.toString())
 								.kv("dest", pythonProperties.path())
@@ -88,18 +90,6 @@ public class PythonSetupService {
 						.findFirst()
 						.map(it -> it.resolve("python/").resolve(pyExeEnv.pythonExe()))
 						.orElseThrow()));
-	}
-	
-	private void extractArchive(Path archive, Path destination) {
-		io.doWithFileSystem(archive, zip -> {
-			Path root = zip.getPath("/");
-			io.walk(root)
-					.filter(io::isRegularFile)
-					.forEach(p -> {
-						io.createDirectories(destination.resolve(root.relativize(p).getParent().toString()));
-						io.copy(p, destination.resolve(root.relativize(p).toString()));
-					});
-		});
 	}
 
 	record PythonExecutionEnvironment(Path binDir, String exeSuffix) {

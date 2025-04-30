@@ -30,6 +30,7 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -196,6 +197,16 @@ public class DefaultIO implements IO {
 	}
 
 	@Override
+	public void doWithFileSystem(Path path, Map<String, ?> env, Consumer<FileSystem> fn) {
+		try (FileSystem fs = FileSystems.newFileSystem(path, env)) {
+			fn.accept(fs);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
 	public Stream<Path> walk(Path path, FileVisitOption... fileVisitOptions) {
 		try {
 			return Files.walk(path, fileVisitOptions);
@@ -347,6 +358,16 @@ public class DefaultIO implements IO {
 	public Path setPosixFilePermissions(Path path, Set<PosixFilePermission> permissions) {
 		try {
 			return Files.setPosixFilePermissions(path, permissions);
+		}
+		catch (IOException ioex) {
+			throw new UncheckedIOException(ioex);
+		}
+	}
+
+	@Override
+	public Set<PosixFilePermission> getPosixFilePermissions(Path path, LinkOption... linkOptions) {
+		try {
+			return Files.getPosixFilePermissions(path, linkOptions);
 		}
 		catch (IOException ioex) {
 			throw new UncheckedIOException(ioex);
