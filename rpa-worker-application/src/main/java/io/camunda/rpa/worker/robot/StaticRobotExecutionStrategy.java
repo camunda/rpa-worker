@@ -5,6 +5,7 @@ import io.camunda.rpa.worker.pexec.ExecutionCustomizer;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import io.vavr.control.Try;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import reactor.core.publisher.Flux;
@@ -37,10 +38,9 @@ class StaticRobotExecutionStrategy implements RobotExecutionStrategy {
 
 		io.run(() -> Flux.fromArray(Try.of(() -> resourceResolver.getResources("runtime/**")).get())
 						.filter(Resource::isReadable)
-						.cast(ClassPathResource.class)
 						.flatMap(r -> Flux.using(r::getInputStream, Flux::just)
 								.doOnNext(in -> {
-									Path target = runtimeDir.resolve(r.getPath());
+									Path target = runtimeDir.resolve(getPath(r));
 									io.createDirectories(target.getParent());
 									io.copy(in, target);
 								}))
@@ -51,7 +51,18 @@ class StaticRobotExecutionStrategy implements RobotExecutionStrategy {
 						.block())
 				.block();
 	}
-	
+
+	private String getPath(Resource r) {
+		String p = switch (r) {
+			case ClassPathResource cpr -> cpr.getPath();
+			case FileSystemResource fsr -> fsr.getPath();
+			default -> throw new IllegalStateException(r.getClass().getName());
+		};
+		
+		if(p.startsWith("/")) p = p.substring(1);
+		return p;
+	}
+
 	@Override
 	public Mono<ProcessService.ExecutionResult> executeRobot(UnaryOperator<ExecutionCustomizer> customizer) {
 		return processService.execute(

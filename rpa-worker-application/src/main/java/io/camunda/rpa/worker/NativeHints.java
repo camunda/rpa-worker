@@ -12,7 +12,6 @@ class NativeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		hints.resources().registerPattern("runtime/robot");
-		hints.resources().registerPattern("runtime/robot.exe");
+		hints.resources().registerPattern("runtime/*");
 	}
 }
