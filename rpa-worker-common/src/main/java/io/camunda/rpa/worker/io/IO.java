@@ -18,6 +18,7 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -68,7 +69,9 @@ public interface IO {
 	boolean notExists(Path path, LinkOption... linkOptions);
 
 	void doWithFileSystem(Path path, Consumer<FileSystem> fn);
-	
+
+	void doWithFileSystem(Path path, Map<String, ?> env, Consumer<FileSystem> fn);
+
 	Stream<Path> walk(Path path, FileVisitOption... fileVisitOptions);
 
 	Mono<Void> write(Publisher<DataBuffer> source, Path destination, OpenOption... openOptions);
@@ -102,4 +105,6 @@ public interface IO {
 	long transferTo(InputStream inputStream, OutputStream outputStream);
 	
 	Path setPosixFilePermissions(Path path, Set<PosixFilePermission> permissions);
+
+	Set<PosixFilePermission> getPosixFilePermissions(Path path, LinkOption... linkOptions);
 }

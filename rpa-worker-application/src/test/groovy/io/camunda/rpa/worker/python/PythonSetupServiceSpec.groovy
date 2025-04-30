@@ -209,7 +209,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		1 * io.write({ it }, _) >> Flux.empty()
 		
 		and: "The downloaded Python archive is extracted"
-		1 * io.doWithFileSystem(_, _) >> { __, Consumer<FileSystem> fn -> fn.accept(pythonArchiveFs) }
+		1 * io.doWithFileSystem(_, _, _) >> { __, ___, Consumer<FileSystem> fn -> fn.accept(pythonArchiveFs) }
 		1 * io.walk(pythonArchiveRootDir) >> Stream.of(
 				Paths.get("/aDir/anotherDir/aFile"),
 				Paths.get("/aDir/differentDir/anotherFile"))
