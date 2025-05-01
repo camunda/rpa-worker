@@ -12,6 +12,6 @@ class NativeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		hints.resources().registerPattern("runtime/*");
+		hints.resources().registerPattern("runtime.zip");
 	}
 }
