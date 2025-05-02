@@ -3,16 +3,15 @@ package io.camunda.rpa.worker.robot;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer;
 import io.camunda.rpa.worker.pexec.ProcessService;
-import io.vavr.control.Try;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.io.BufferedInputStream;
 import java.nio.file.Path;
-import java.nio.file.attribute.PosixFilePermission;
-import java.util.EnumSet;
 import java.util.function.UnaryOperator;
+
+import static io.camunda.rpa.worker.util.ArchiveUtils.extractArchive;
 
 class StaticRobotExecutionStrategy implements RobotExecutionStrategy {
 	
@@ -26,24 +25,26 @@ class StaticRobotExecutionStrategy implements RobotExecutionStrategy {
 	public StaticRobotExecutionStrategy(ProcessService processService, IO io) {
 		this.processService = processService;
 
-		ClassPathResource staticRuntimeResource = new ClassPathResource("runtime/%s".formatted(robotExeName));
-		if( ! staticRuntimeResource.exists())
+		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
+		Resource staticRuntimeZipResource = resolver.getResource("runtime.zip");
+
+		if ( ! staticRuntimeZipResource.exists())
 			throw new IllegalStateException("The static runtime is not supported in this distribution");
 
 		runtimeDir = io.createTempDirectory("rpa-worker-runtime");
-		io.run(() -> Flux.using(staticRuntimeResource::getInputStream,
-								is -> Mono.just(new BufferedInputStream(is)))
-						.doOnNext(is -> io.copy(is, runtimeDir.resolve(robotExeName)))
-						.doOnNext(_ -> Try.run(() -> io.setPosixFilePermissions(runtimeDir.resolve(robotExeName), EnumSet.allOf(PosixFilePermission.class))))
-						.single()
+		Path staticRuntimeZip = runtimeDir.resolve("runtime.zip");
+		io.run(() -> Flux.using(staticRuntimeZipResource::getInputStream, Flux::just)
+						.doOnNext(in -> io.copy(in, staticRuntimeZip))
+						.doOnNext(_ -> extractArchive(io, staticRuntimeZip, runtimeDir))
+						.then()
 						.block())
 				.block();
 	}
-	
+
 	@Override
 	public Mono<ProcessService.ExecutionResult> executeRobot(UnaryOperator<ExecutionCustomizer> customizer) {
 		return processService.execute(
-				runtimeDir.resolve(robotExeName),
+				runtimeDir.resolve("runtime/").resolve(robotExeName),
 				customizer);
 	}
 
