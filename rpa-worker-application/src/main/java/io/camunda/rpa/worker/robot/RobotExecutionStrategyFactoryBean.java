@@ -13,6 +13,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Component
 @RequiredArgsConstructor
@@ -53,6 +54,8 @@ class RobotExecutionStrategyFactoryBean implements FactoryBean<RobotExecutionStr
 						.doOnNext(_ -> log.atInfo()
 								.log("Found supported system Python and internet connectivity, will use Python execution strategy"))
 						.map(_ -> pythonStrategy()))
+				
+				.publishOn(Schedulers.boundedElastic())
 
 				.switchIfEmpty(Mono.defer(() -> Mono.just(System.getProperty("os.name").contains("Windows")))
 						.filter(it -> it)
