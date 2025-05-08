@@ -189,6 +189,7 @@ public class PythonSetupService {
 						.resolve(pyExeEnv.pipExe()),
 				c -> c
 						.arg("install")
+						.arg("-vvv")
 						.arg("-r").bindArg("requirementsTxt", requirements)
 						.inheritEnv()
 						.required())

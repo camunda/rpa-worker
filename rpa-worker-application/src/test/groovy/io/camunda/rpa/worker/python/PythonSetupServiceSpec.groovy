@@ -116,6 +116,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
+				1 * arg("-vvv") >> it
 				1 * arg("-r") >> it
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
 				1 * inheritEnv() >> it
@@ -164,6 +165,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("install") >> it
+				1 * arg("-vvv") >> it
 				1 * arg("-r") >> it
 				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
 				1 * inheritEnv() >> it
