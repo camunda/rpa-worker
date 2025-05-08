@@ -3,7 +3,6 @@ package io.camunda.rpa.worker.robot
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
 import io.camunda.rpa.worker.python.PythonInterpreter
-import org.springframework.beans.factory.ObjectProvider
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -15,12 +14,9 @@ class PythonRobotExecutionStrategySpec extends Specification {
 	
 	ProcessService processService = Mock()
 	PythonInterpreter pythonInterpreter = new PythonInterpreter(Paths.get("/path/to/python"))
-	ObjectProvider<PythonInterpreter> pythonInterpreterProvider = Stub() {
-		getObject() >> { pythonInterpreter }
-	}
 	
 	@Subject
-	PythonRobotExecutionStrategy strategy = new PythonRobotExecutionStrategy(processService, pythonInterpreterProvider)
+	PythonRobotExecutionStrategy strategy = new PythonRobotExecutionStrategy(processService, pythonInterpreter)
 	
 	void "Configures execution and executes with Python interpreter"() {
 		given:

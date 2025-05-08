@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.python;
 
+import io.camunda.rpa.worker.robot.ResolvedRobotExecutionStrategyType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.stereotype.Component;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 class PythonInterpreterFactoryBean implements FactoryBean<PythonInterpreter> {
 	
-	private final PythonRuntimeProperties pythonRuntimeProperties;
+	private final ResolvedRobotExecutionStrategyType strategyType;
 	private final PythonSetupService pythonSetupService;
 
 	@Override
@@ -18,7 +19,7 @@ class PythonInterpreterFactoryBean implements FactoryBean<PythonInterpreter> {
 
 	@Override
 	public PythonInterpreter getObject() throws Exception {
-		if(pythonRuntimeProperties.type() == PythonRuntimeProperties.PythonRuntimeEnvironment.Static)
+		if(strategyType.getType() == PythonRuntimeProperties.PythonRuntimeEnvironment.Static)
 			return null;
 		
 		return pythonSetupService.getPythonInterpreter().block();
