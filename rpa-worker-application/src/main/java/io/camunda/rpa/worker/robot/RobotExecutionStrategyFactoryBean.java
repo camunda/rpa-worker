@@ -71,7 +71,7 @@ class RobotExecutionStrategyFactoryBean implements FactoryBean<RobotExecutionStr
 	}
 
 	private RobotExecutionStrategy pythonStrategy() {
-		return new PythonRobotExecutionStrategy(processService, pythonInterpreter);
+		return new PythonRobotExecutionStrategy(processService, pythonInterpreter.getObject());
 	}
 
 	private RobotExecutionStrategy staticStrategy() {
