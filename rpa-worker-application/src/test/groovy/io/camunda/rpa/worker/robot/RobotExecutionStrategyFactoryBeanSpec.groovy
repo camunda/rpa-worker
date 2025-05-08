@@ -132,8 +132,8 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 	void "Returns correct strategy for auto - Static because no internet"() {
 		given:
 		platformIsNotWindows()
-		when:
 		
+		when:
 		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
 
 		then:
