@@ -46,39 +46,33 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 	void "Returns correct strategy for static config - Python"() {
 		given:
 		@Subject
-		RobotExecutionStrategyFactoryBean factoryBean = new RobotExecutionStrategyFactoryBean(
+		RobotExecutionStrategyResolver factoryBean = new RobotExecutionStrategyResolver(
 				cfg(PythonRuntimeEnvironment.Python),
-				processService,
 				existingEnvironmentProvider,
 				systemPythonProvider,
-				connectivityProvider,
-				io,
-				pythonProvider)
+				connectivityProvider)
 
 		when:
-		RobotExecutionStrategy r = factoryBean.getObject()
+		PythonRuntimeEnvironment r = factoryBean.getObject().getType()
 		
 		then:
-		r instanceof PythonRobotExecutionStrategy
+		r == PythonRuntimeEnvironment.Python
 	}
 
 	void "Returns correct strategy for static config - Static"() {
 		given:
 		@Subject
-		RobotExecutionStrategyFactoryBean factoryBean = new RobotExecutionStrategyFactoryBean(
+		RobotExecutionStrategyResolver factoryBean = new RobotExecutionStrategyResolver(
 				cfg(PythonRuntimeEnvironment.Static),
-				processService,
 				existingEnvironmentProvider,
 				systemPythonProvider,
-				connectivityProvider,
-				io,
-				pythonProvider)
+				connectivityProvider)
 
 		when:
-		RobotExecutionStrategy r = factoryBean.getObject()
+		PythonRuntimeEnvironment r = factoryBean.getObject().getType()
 
 		then:
-		r instanceof StaticRobotExecutionStrategy
+		r == PythonRuntimeEnvironment.Static
 	}
 
 	@RestoreSystemProperties
@@ -91,20 +85,17 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 		
 		and:
 		@Subject
-		RobotExecutionStrategyFactoryBean factoryBean = new RobotExecutionStrategyFactoryBean(
+		RobotExecutionStrategyResolver factoryBean = new RobotExecutionStrategyResolver(
 				cfg(PythonRuntimeEnvironment.Auto),
-				processService,
 				existingEnvironmentProvider,
 				systemPythonProvider,
-				connectivityProvider,
-				io,
-				pythonProvider)
+				connectivityProvider)
 
 		when:
-		RobotExecutionStrategy r = factoryBean.getObject()
+		PythonRuntimeEnvironment r = factoryBean.getObject().getType()
 
 		then:
-		r instanceof PythonRobotExecutionStrategy
+		r == PythonRuntimeEnvironment.Python
 	}
 
 	@RestoreSystemProperties
@@ -119,20 +110,17 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 
 		and:
 		@Subject
-		RobotExecutionStrategyFactoryBean factoryBean = new RobotExecutionStrategyFactoryBean(
+		RobotExecutionStrategyResolver factoryBean = new RobotExecutionStrategyResolver(
 				cfg(PythonRuntimeEnvironment.Auto),
-				processService,
 				existingEnvironmentProvider,
 				systemPythonProvider,
-				connectivityProvider,
-				io,
-				pythonProvider)
+				connectivityProvider)
 
 		when:
-		RobotExecutionStrategy r = factoryBean.getObject()
+		PythonRuntimeEnvironment r = factoryBean.getObject().getType()
 
 		then:
-		r instanceof PythonRobotExecutionStrategy
+		r == PythonRuntimeEnvironment.Python
 	}
 	
 	@RestoreSystemProperties
@@ -147,20 +135,17 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 
 		and:
 		@Subject
-		RobotExecutionStrategyFactoryBean factoryBean = new RobotExecutionStrategyFactoryBean(
+		RobotExecutionStrategyResolver factoryBean = new RobotExecutionStrategyResolver(
 				cfg(PythonRuntimeEnvironment.Auto),
-				processService,
 				existingEnvironmentProvider,
 				systemPythonProvider,
-				connectivityProvider,
-				io,
-				pythonProvider)
+				connectivityProvider)
 
 		when:
-		RobotExecutionStrategy r = factoryBean.getObject()
+		PythonRuntimeEnvironment r = factoryBean.getObject().getType()
 
 		then:
-		r instanceof PythonRobotExecutionStrategy
+		r == PythonRuntimeEnvironment.Python
 	}
 
 	@RestoreSystemProperties
@@ -175,20 +160,17 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 
 		and:
 		@Subject
-		RobotExecutionStrategyFactoryBean factoryBean = new RobotExecutionStrategyFactoryBean(
+		RobotExecutionStrategyResolver factoryBean = new RobotExecutionStrategyResolver(
 				cfg(PythonRuntimeEnvironment.Auto),
-				processService,
 				existingEnvironmentProvider,
 				systemPythonProvider,
-				connectivityProvider,
-				io,
-				pythonProvider)
+				connectivityProvider)
 
 		when:
-		RobotExecutionStrategy r = factoryBean.getObject()
+		PythonRuntimeEnvironment r = factoryBean.getObject().getType()
 
 		then:
-		r instanceof StaticRobotExecutionStrategy
+		r == PythonRuntimeEnvironment.Static
 	}
 
 	@RestoreSystemProperties
@@ -208,20 +190,17 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 		
 		and:
 		@Subject
-		RobotExecutionStrategyFactoryBean factoryBean = new RobotExecutionStrategyFactoryBean(
+		RobotExecutionStrategyResolver factoryBean = new RobotExecutionStrategyResolver(
 				cfg(PythonRuntimeEnvironment.Auto),
-				processService,
 				existingEnvironmentProvider,
 				systemPythonProvider,
-				connectivityProvider,
-				io,
-				pythonProvider)
+				connectivityProvider)
 
 		when:
-		RobotExecutionStrategy r = factoryBean.getObject()
+		PythonRuntimeEnvironment r = factoryBean.getObject().getType()
 		
 		then:
-		r instanceof StaticRobotExecutionStrategy
+		r == PythonRuntimeEnvironment.Static
 	}
 	
 	private PythonRuntimeProperties cfg(PythonRuntimeEnvironment type) {

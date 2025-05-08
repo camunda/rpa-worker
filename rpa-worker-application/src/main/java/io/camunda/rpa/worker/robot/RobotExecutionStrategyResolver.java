@@ -1,40 +1,36 @@
 package io.camunda.rpa.worker.robot;
 
-import io.camunda.rpa.worker.io.IO;
-import io.camunda.rpa.worker.pexec.ProcessService;
 import io.camunda.rpa.worker.python.ExistingEnvironmentProvider;
-import io.camunda.rpa.worker.python.PythonInterpreter;
 import io.camunda.rpa.worker.python.PythonRuntimeProperties;
 import io.camunda.rpa.worker.python.SystemPythonProvider;
 import io.camunda.rpa.worker.util.InternetConnectivityProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import static io.camunda.rpa.worker.python.PythonRuntimeProperties.PythonRuntimeEnvironment.Python;
+import static io.camunda.rpa.worker.python.PythonRuntimeProperties.PythonRuntimeEnvironment.Static;
+
 @Component
 @RequiredArgsConstructor
 @Slf4j
-class RobotExecutionStrategyFactoryBean implements FactoryBean<RobotExecutionStrategy> {
+class RobotExecutionStrategyResolver implements FactoryBean<ResolvedRobotExecutionStrategyType> {
 	
 	private final PythonRuntimeProperties pythonRuntimeProperties;
-	private final ProcessService processService;
 	private final ExistingEnvironmentProvider existingEnvironmentProvider;
 	private final SystemPythonProvider systemPythonProvider;
 	private final InternetConnectivityProvider internetConnectivityProvider;
-	private final IO io;
-	private final ObjectProvider<PythonInterpreter> pythonInterpreter;
 	
 	@Override
 	public Class<?> getObjectType() {
-		return RobotExecutionStrategy.class;
+		return ResolvedRobotExecutionStrategyType.class;
 	}
 
 	@Override
-	public RobotExecutionStrategy getObject() throws Exception {
+	public ResolvedRobotExecutionStrategyType getObject() throws Exception {
 		return (switch(pythonRuntimeProperties.type()) {
 			case Auto -> detectStrategy().block();
 			case Python -> pythonStrategy();
@@ -42,7 +38,7 @@ class RobotExecutionStrategyFactoryBean implements FactoryBean<RobotExecutionStr
 		});
 	}
 
-	private Mono<RobotExecutionStrategy> detectStrategy() {
+	private Mono<ResolvedRobotExecutionStrategyType> detectStrategy() {
 		return Mono.justOrEmpty(existingEnvironmentProvider.existingPythonEnvironment())
 				.doOnNext(_ -> log.atInfo()
 						.log("Found existing Python environment, will use Python execution strategy"))
@@ -70,11 +66,11 @@ class RobotExecutionStrategyFactoryBean implements FactoryBean<RobotExecutionStr
 								.log("Python strategy not supported (no supported Python or no internet connectivity), will use Static execution strategy"))));
 	}
 
-	private RobotExecutionStrategy pythonStrategy() {
-		return new PythonRobotExecutionStrategy(processService, pythonInterpreter);
+	private ResolvedRobotExecutionStrategyType pythonStrategy() {
+		return () -> Python;
 	}
 
-	private RobotExecutionStrategy staticStrategy() {
-		return new StaticRobotExecutionStrategy(processService, io);
+	private ResolvedRobotExecutionStrategyType staticStrategy() {
+		return () -> Static;
 	}
 }
