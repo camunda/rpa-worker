@@ -1,13 +1,11 @@
 package io.camunda.rpa.worker.robot
 
-import io.camunda.rpa.worker.io.IO
-import io.camunda.rpa.worker.pexec.ProcessService
+
 import io.camunda.rpa.worker.python.ExistingEnvironmentProvider
 import io.camunda.rpa.worker.python.PythonInterpreter
 import io.camunda.rpa.worker.python.PythonRuntimeProperties
 import io.camunda.rpa.worker.python.SystemPythonProvider
 import io.camunda.rpa.worker.util.InternetConnectivityProvider
-import org.springframework.beans.factory.ObjectProvider
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -15,47 +13,39 @@ import spock.util.environment.RestoreSystemProperties
 
 import java.nio.file.Paths
 
-class RobotExecutionStrategyFactoryBeanSpec extends Specification {
+class RobotExecutionStrategyResolverSpec extends Specification {
 
-	ProcessService processService
 	ExistingEnvironmentProvider existingEnvironmentProvider = Mock()
 	SystemPythonProvider systemPythonProvider = Mock()
 	InternetConnectivityProvider internetConnectivityProvider = Mock()
-	IO io = Stub() {
-		run(_) >> { Mono.empty() }
-	}
 	PythonInterpreter pythonInterpreter = new PythonInterpreter(Paths.get("/path/to/python"))
-	ObjectProvider<PythonInterpreter> pythonInterpreterProvider = Stub() {
-		getObject() >> pythonInterpreter
-	}
 
 	@Subject
-	Closure<RobotExecutionStrategyFactoryBean> factoryBeanFactory = { PythonRuntimeProperties.PythonRuntimeEnvironment env ->
+	Closure<RobotExecutionStrategyResolver> factoryBeanFactory = { PythonRuntimeProperties.PythonRuntimeEnvironment env ->
 		PythonRuntimeProperties runtimeProperties = PythonRuntimeProperties.builder().type(env).build()
-		new RobotExecutionStrategyFactoryBean(
+		new RobotExecutionStrategyResolver(
 				runtimeProperties,
-				processService,
 				existingEnvironmentProvider,
 				systemPythonProvider,
-				internetConnectivityProvider,
-				io, 
-				pythonInterpreterProvider)
+				internetConnectivityProvider)
 	}
 	
 	void "Returns correct strategy for static config - Python"() {
 		when:
-		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Python).getObject()
+		PythonRuntimeProperties.PythonRuntimeEnvironment r = factoryBeanFactory(
+				PythonRuntimeProperties.PythonRuntimeEnvironment.Python).getObject().getType()
 		
 		then:
-		r instanceof PythonRobotExecutionStrategy
+		r == PythonRuntimeProperties.PythonRuntimeEnvironment.Python
 	}
 
 	void "Returns correct strategy for static config - Static"() {
 		when:
-		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Static).getObject()
+		PythonRuntimeProperties.PythonRuntimeEnvironment r = factoryBeanFactory(
+				PythonRuntimeProperties.PythonRuntimeEnvironment.Static).getObject().getType()
 
 		then:
-		r instanceof StaticRobotExecutionStrategy
+		r == PythonRuntimeProperties.PythonRuntimeEnvironment.Static
 	}
 
 	@RestoreSystemProperties
@@ -64,7 +54,8 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		platformIsNotWindows()
 		
 		when:
-		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
+		PythonRuntimeProperties.PythonRuntimeEnvironment r = factoryBeanFactory(
+				PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject().getType()
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(pythonInterpreter.path())
@@ -74,7 +65,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		0 * internetConnectivityProvider._
 		
 		and:
-		r instanceof PythonRobotExecutionStrategy
+		r == PythonRuntimeProperties.PythonRuntimeEnvironment.Python
 	}
 
 	@RestoreSystemProperties
@@ -83,7 +74,8 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		platformIsNotWindows()
 		
 		when:
-		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
+		PythonRuntimeProperties.PythonRuntimeEnvironment r = factoryBeanFactory(
+				PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject().getType()
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
@@ -91,7 +83,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(true)
 
 		and:
-		r instanceof PythonRobotExecutionStrategy
+		r == PythonRuntimeProperties.PythonRuntimeEnvironment.Python
 	}
 
 	@RestoreSystemProperties
@@ -100,7 +92,8 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		platformIsWindows()
 		
 		when:
-		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
+		PythonRuntimeProperties.PythonRuntimeEnvironment r = factoryBeanFactory(
+				PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject().getType()
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
@@ -108,7 +101,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(true)
 
 		and:
-		r instanceof PythonRobotExecutionStrategy
+		r == PythonRuntimeProperties.PythonRuntimeEnvironment.Python
 	}
 
 	@RestoreSystemProperties
@@ -117,7 +110,8 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		platformIsNotWindows()
 		
 		when:
-		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
+		PythonRuntimeProperties.PythonRuntimeEnvironment r = factoryBeanFactory(
+				PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject().getType()
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
@@ -125,7 +119,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		0 * internetConnectivityProvider.hasConnectivity() 
 
 		and:
-		r instanceof StaticRobotExecutionStrategy
+		r == PythonRuntimeProperties.PythonRuntimeEnvironment.Static
 	}
 
 	@RestoreSystemProperties
@@ -134,7 +128,8 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		platformIsNotWindows()
 		
 		when:
-		RobotExecutionStrategy r = factoryBeanFactory(PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject()
+		PythonRuntimeProperties.PythonRuntimeEnvironment r = factoryBeanFactory(
+				PythonRuntimeProperties.PythonRuntimeEnvironment.Auto).getObject().getType()
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
@@ -142,7 +137,7 @@ class RobotExecutionStrategyFactoryBeanSpec extends Specification {
 		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(false)
 
 		and:
-		r instanceof StaticRobotExecutionStrategy
+		r == PythonRuntimeProperties.PythonRuntimeEnvironment.Static
 	}
 	
 	private static void platformIsNotWindows() {
