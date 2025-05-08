@@ -33,7 +33,7 @@ public class InternetConnectivityProvider {
 	public Mono<Boolean> hasConnectivity() {
 		return webClient
 				.get()
-				.uri(TEST_URL)
+				.uri(getTestUrl())
 				.retrieve()
 				.toBodilessEntity()
 				.map(re -> re.getStatusCode() == HttpStatus.OK)
@@ -42,5 +42,9 @@ public class InternetConnectivityProvider {
 				.doOnNext(c -> log.atInfo()
 						.kv("connected", c)
 						.log("Connectivity check"));
+	}
+	
+	protected String getTestUrl() {
+		return TEST_URL;
 	}
 }
