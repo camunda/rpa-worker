@@ -20,7 +20,7 @@ public class SystemPythonProvider {
 	
 	static final Set<Integer> WINDOWS_NO_PYTHON_EXIT_CODES = Set.of(49, 9009);
 
-	private static final Version MINIMUM_PYTHON_VERSION = Version.of(3, 8);
+	private static final Version MINIMUM_PYTHON_VERSION = Version.of(3, 10);
 	private static final Version MAXIMUM_PYTHON_VERSION = Version.of(3, 13);
 	private static final Pattern PYTHON_VERSION_PATTERN = Pattern.compile("Python (?<version>[0-9a-zA-Z-.+]+)");
 

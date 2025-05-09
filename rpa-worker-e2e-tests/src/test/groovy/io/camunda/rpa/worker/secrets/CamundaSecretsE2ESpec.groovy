@@ -5,9 +5,11 @@ import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
 import org.springframework.web.reactive.function.BodyInserters
+import spock.lang.Ignore
 
 import java.time.Duration
 
+@Ignore("No cluster available")
 class CamundaSecretsE2ESpec extends AbstractE2ESpec {
 	@Override
 	protected Map<String, String> getExtraEnvironment() {
