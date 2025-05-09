@@ -135,7 +135,7 @@ supported:
 
 * If there is an existing Python environment created by the RPA Worker then this will be used
 * If an internet connection is detected, **AND**:
-** There is a local Python distribution at a supported version (>=3.8,<3.12) then this will be used to create a new
+** There is a local Python distribution at a supported version (>=3.10,<3.12) then this will be used to create a new
 Virtual Environment, **OR**
 ** There is no local Python, but it can be provisioned automatically on the current platform (Windows), then Python 
 will be provisioned in this way and used to create a new Virtual Environment
