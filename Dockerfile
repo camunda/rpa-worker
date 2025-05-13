@@ -1,4 +1,4 @@
-FROM ghcr.io/camunda/rpa-worker-base-image:202503201135
+FROM ghcr.io/camunda/rpa-worker-base-image:202505131146
 
 COPY rpa-worker*.jar /home/application/
 
