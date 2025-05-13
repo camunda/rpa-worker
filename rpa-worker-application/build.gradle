@@ -9,7 +9,7 @@ plugins {
 	id 'idea'
 	alias(libs.plugins.spring.boot)
 	alias(libs.plugins.spring.dependencyManagement)
-	id 'org.graalvm.buildtools.native' version '0.10.4'
+	alias(libs.plugins.graal.buildTools)
 	id 'rpa-worker.functional-testing'
 	id 'rpa-worker.enable-preview'
 }

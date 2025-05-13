@@ -5,7 +5,7 @@ plugins {
 	alias(libs.plugins.spring.boot)
 	alias(libs.plugins.spring.dependencyManagement)
 	id 'rpa-worker.enable-preview'
-	id 'com.adarshr.test-logger' version '4.0.0'
+	alias(libs.plugins.testLogger)
 }
 
 java {

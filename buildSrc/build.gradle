@@ -11,9 +11,9 @@ dependencies {
 	implementation "io.vavr:vavr:0.10.4"
 	implementation "com.github.zafarkhaja:java-semver:0.10.2"
 
-	implementation 'org.codehaus.groovy:groovy:3.0.22'
-	implementation 'org.codehaus.groovy:groovy-nio:3.0.22'
+	implementation 'org.codehaus.groovy:groovy:3.0.24'
+	implementation 'org.codehaus.groovy:groovy-nio:3.0.24'
 
-	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.36'
-	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.36'
+	compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
+	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.38'
 }
