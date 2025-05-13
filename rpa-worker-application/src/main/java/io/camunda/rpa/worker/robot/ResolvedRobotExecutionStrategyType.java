@@ -3,6 +3,6 @@ package io.camunda.rpa.worker.robot;
 import io.camunda.rpa.worker.python.PythonRuntimeProperties;
 
 @FunctionalInterface
-interface ResolvedRobotExecutionStrategyType {
+public interface ResolvedRobotExecutionStrategyType {
 	PythonRuntimeProperties.PythonRuntimeEnvironment getType();
 }
