@@ -61,6 +61,15 @@ dependencies {
 	implementation libs.caffeine
 	
 	runtimeOnly libs.springJsonLog
+	
+	if(project.hasProperty("nativePlatform") && project.property("nativePlatform") == "darwin") {
+		runtimeOnly libs.netty.resolver.nativeMacOs
+		runtimeOnly(variantOf(libs.netty.resolver.nativeMacOs) {
+			classifier(project.property("nativeArch") == "amd64"
+							? "osx-x86_64"
+							: "osx-aarch_64")
+		})
+	}
 
 	developmentOnly libs.spring.boot.devtools
 	annotationProcessor libs.spring.boot.configurationProcessor
