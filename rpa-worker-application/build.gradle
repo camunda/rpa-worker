@@ -61,6 +61,15 @@ dependencies {
 	implementation libs.caffeine
 	
 	runtimeOnly libs.springJsonLog
+	
+	if(project.hasProperty("nativePlatform") && project.property("nativePlatform") == "darwin") {
+		runtimeOnly libs.netty.resolver.nativeMacOs
+		runtimeOnly(variantOf(libs.netty.resolver.nativeMacOs) {
+			classifier(project.property("nativeArch") == "amd64"
+							? "osx-x86_64"
+							: "osx-aarch_64")
+		})
+	}
 
 	developmentOnly libs.spring.boot.devtools
 	annotationProcessor libs.spring.boot.configurationProcessor
@@ -118,6 +127,7 @@ graalvmNative {
 			buildArgs.add("--initialize-at-build-time=org.slf4j.jul.JDK14LoggerAdapter")
 			buildArgs.add("--initialize-at-run-time=sun.net.dns.ResolverConfigurationImpl")
 			buildArgs.add("--enable-preview")
+			buildArgs.add("--enable-native-access=ALL-UNNAMED")
 		}
 	}
 }
