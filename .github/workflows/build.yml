@@ -24,15 +24,15 @@ jobs:
 
       - name: python39
         run: |
-          docker run --rm -it python:3.9 python --version
+          docker run --rm python:3.9 python --version
           
       - name: python312
         run: |
-          docker run --rm -it python:3.12 python --version
+          docker run --rm python:3.12 python --version
 
       - name: python313
         run: |
-          docker run --rm -it python:3.13 python --version
+          docker run --rm python:3.13 python --version
   
   build:
     runs-on: ubuntu-latest
