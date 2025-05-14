@@ -24,7 +24,7 @@
 
 ### Executable JAR
 
-For Java 23 or newer.
+For Java 24 or newer.
 
 | Asset          | SHA-256 Hash |
 |----------------|--------------|
