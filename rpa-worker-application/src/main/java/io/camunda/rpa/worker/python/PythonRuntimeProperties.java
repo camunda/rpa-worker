@@ -6,7 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Builder(toBuilder = true)
 @ConfigurationProperties("camunda.rpa.python-runtime")
 public record PythonRuntimeProperties(
-		PythonRuntimeEnvironment type) {
+		PythonRuntimeEnvironment type,
+		boolean exitAfterDetect) {
 	
 	public enum PythonRuntimeEnvironment {
 		Auto, Python, Static

@@ -32,7 +32,12 @@ class RobotExecutionStrategyResolver implements FactoryBean<ResolvedRobotExecuti
 	@Override
 	public ResolvedRobotExecutionStrategyType getObject() throws Exception {
 		return (switch(pythonRuntimeProperties.type()) {
-			case Auto -> detectStrategy().block();
+			case Auto -> {
+				ResolvedRobotExecutionStrategyType strategy = detectStrategy().block();
+				if(pythonRuntimeProperties.exitAfterDetect())
+					System.exit(0);
+				yield strategy;
+			}
 			case Python -> pythonStrategy();
 			case Static -> staticStrategy();
 		});
