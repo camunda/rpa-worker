@@ -10,6 +10,42 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  tmpPythonChecks:
+    runs-on: ubuntu-latest
+    env:
+      E2E: "1"
+      E2E_SMOKE_TEST_ONLY: "true"
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          
+      - name: python39
+        run: |
+          python --version
+          
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: python39
+        run: |
+          python --version
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: python39
+        run: |
+          python --version
+  
   build:
     runs-on: ubuntu-latest
     container: "ghcr.io/camunda/rpa-worker-base-image:202501291438"
