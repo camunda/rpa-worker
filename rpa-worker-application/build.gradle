@@ -127,6 +127,7 @@ graalvmNative {
 			buildArgs.add("--initialize-at-build-time=org.slf4j.jul.JDK14LoggerAdapter")
 			buildArgs.add("--initialize-at-run-time=sun.net.dns.ResolverConfigurationImpl")
 			buildArgs.add("--enable-preview")
+			buildArgs.add("--enable-native-access=ALL-UNNAMED")
 		}
 	}
 }

@@ -50633,6 +50633,9 @@
       "glob": "org/mockito/internal/creation/bytebuddy/inject/MockMethodDispatcher.raw"
     },
     {
+      "glob": "org/publicsuffix/list/effective_tld_names.dat"
+    },
+    {
       "glob": "org/slf4j/Logger.class"
     },
     {
@@ -52580,6 +52583,14 @@
     {
       "module": "java.base",
       "glob": "jdk/internal/icu/impl/data/icudt74b/uprops.icu"
+    },
+    {
+      "module": "java.base",
+      "glob": "jdk/internal/icu/impl/data/icudt76b/nfc.nrm"
+    },
+    {
+      "module": "java.base",
+      "glob": "jdk/internal/icu/impl/data/icudt76b/nfkc.nrm"
     },
     {
       "module": "java.base",
