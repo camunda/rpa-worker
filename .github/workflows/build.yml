@@ -22,29 +22,17 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.9'
+      - name: python39
+        run: |
+          docker run --rm -it python:3.9 python --version
           
-      - name: python39
+      - name: python312
         run: |
-          python --version
-          
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
+          docker run --rm -it python:3.12 python --version
 
-      - name: python39
+      - name: python313
         run: |
-          python --version
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-
-      - name: python39
-        run: |
-          python --version
+          docker run --rm -it python:3.13 python --version
   
   build:
     runs-on: ubuntu-latest
