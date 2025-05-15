@@ -37,10 +37,19 @@ repositories {
 	maven {
 		url 'https://gitlab.com/api/v4/projects/50731191/packages/maven'
 	}
+	maven {
+		url 'https://artifacts.camunda.com/artifactory/public'
+	}
 }
 
 dependencies {
 	implementation project(":rpa-worker-common")
+	runtimeOnly libs.rpa.workerPythonRequirements
+	
+	if(project.hasProperty("nativePlatform") && project.hasProperty("nativeArch"))
+		runtimeOnly(variantOf(libs.rpa.staticRuntime) {
+			classifier("${project.property("nativePlatform")}_${project.property("nativeArch")}")
+		})
 	
 	implementation libs.spring.boot.starter.webflux
 	implementation libs.spring.boot.starter.actuator
@@ -85,6 +94,9 @@ dependencies {
 	testRuntimeOnly libs.junit.platformLauncher
 	testRuntimeOnly libs.byteBuddy
 	testRuntimeOnly libs.objenesis
+	testRuntimeOnly(variantOf(libs.rpa.staticRuntime) {
+		classifier("${project.getProperties().getOrDefault("nativePlatform", "linux")}_${project.getProperties().getOrDefault("nativeArch", "amd64")}")
+	})
 
 	functionalTestImplementation libs.spring.boot.starter.test
 	functionalTestImplementation libs.spock.spring
@@ -101,6 +113,9 @@ tasks.withType(Test).configureEach {
 
 tasks.named("functionalTest", Test).configure { Test task ->
 	task.jvmArgs("-XX:+AllowRedefinitionToAddDeleteMethods")
+	
+	if(System.getProperty("os.name").contains("Linux"))
+		task.systemProperty("camunda.rpa.python.allow-unsupported-python", "true")
 }
 
 processAot {
@@ -203,4 +218,9 @@ tasks.register("zipNativeImage", Zip) {
 		rename { "application.properties" }
 	}
 
+}
+
+bootJar {
+	if(project.hasProperty("dockerJar"))
+		archiveBaseName = "${archiveBaseName.get()}-docker-${project.property("nativeArch")}"
 }

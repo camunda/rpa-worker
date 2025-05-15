@@ -1,12 +1,10 @@
 package io.camunda.rpa.worker.python;
 
-import com.github.zafarkhaja.semver.Version;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.FactoryBean;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.stereotype.Service;
@@ -15,67 +13,43 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.io.BufferedOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.DigestOutputStream;
 import java.security.MessageDigest;
 import java.util.HexFormat;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static io.camunda.rpa.worker.util.ArchiveUtils.extractArchive;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class PythonSetupService implements FactoryBean<PythonInterpreter> {
+public class PythonSetupService {
 	
-	static final Set<Integer> WINDOWS_NO_PYTHON_EXIT_CODES = Set.of(49, 9009);
-	
-	private static final Version MINIMUM_PYTHON_VERSION = Version.of(3, 8);
-	private static final Version MAXIMUM_PYTHON_VERSION = Version.of(3, 11);
-	private static final Pattern PYTHON_VERSION_PATTERN = Pattern.compile("Python (?<version>[0-9a-zA-Z-.+]+)");
-
 	static final PythonExecutionEnvironment pyExeEnv = PythonExecutionEnvironment.get();
 	
 	private final PythonProperties pythonProperties;
 	private final IO io;
 	private final ProcessService processService;
 	private final WebClient webClient;
+	private final ExistingEnvironmentProvider existingEnvironmentProvider;
+	private final SystemPythonProvider systemPythonProvider;
 
-	@Override
-	public Class<?> getObjectType() {
-		return PythonInterpreter.class;
-	}
-
-	@Override
-	public PythonInterpreter getObject() {
-		return Mono.justOrEmpty(existingPythonEnvironment())
+	Mono<PythonInterpreter> getPythonInterpreter() {
+		return Mono.justOrEmpty(existingEnvironmentProvider.existingPythonEnvironment())
 				.flatMap(p -> maybeReinstallBaseRequirements().thenReturn(p))
 				.flatMap(p -> maybeReinstallExtraRequirements().thenReturn(p))
 				.switchIfEmpty(Mono.defer(this::createPythonEnvironment))
 				.map(PythonInterpreter::new)
 				.doOnNext(pi -> log.atInfo()
 						.kv("path", pi.path().toAbsolutePath())
-						.log("Using Python interpreter"))
-				.block();
-	}
-
-	private Optional<Path> existingPythonEnvironment() {
-		if (io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")))
-			return Optional.empty();
-
-		return Optional.of(pythonProperties.path()
-				.resolve("venv/")
-				.resolve(pyExeEnv.binDir())
-				.resolve(pyExeEnv.pythonExe()));
+						.log("Using Python interpreter"));
 	}
 
 	private Mono<Path> createPythonEnvironment() {
-		return systemPython()
+		return systemPythonProvider.systemPython()
 				.switchIfEmpty(Mono.defer(this::installPython))
 				.flatMap(pathOrString -> processService.execute(pathOrString, c -> c
 								.arg("-m").arg("venv")
@@ -88,52 +62,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 				
 				.then(maybeReinstallBaseRequirements())
 				.then(maybeReinstallExtraRequirements())
-
-				.onErrorResume(PipFailureException.class, thrown -> processService.execute(pythonProperties.path()
-										.resolve("venv/")
-										.resolve(pyExeEnv.binDir())
-										.resolve(pyExeEnv.pythonExe()),
-								c -> c.arg("--version"))
-						.map(xr -> {
-							Matcher matcher = PYTHON_VERSION_PATTERN.matcher(xr.stdout());
-							matcher.find();
-							return Version.parse(matcher.group("version"));
-						})
-						.doOnNext(version -> log.atError()
-								.kv("pythonVersion", version)
-								.kv("pythonVersionSupported", 
-										! (version.isLowerThan(MINIMUM_PYTHON_VERSION) || version.isHigherThan(MAXIMUM_PYTHON_VERSION)))
-								.log("""
-						The Pip invocation has failed, and the Python requirements were not able to be installed into the environment.
-						Potential causes for a Pip failure include:
-						* Invalid extra-requirements being configured
-						* A dependency conflict between the core dependencies and dependencies specified in extra-requirements
-						* An unsupported Python version being used (< 3.8 or >= 3.13)
-						* Disk space or internet connectivity issues
-						
-						For more information on working around unsupported Python versions please see
-						https://github.com/camunda/rpa-worker/discussions/170
-						"""))
-						.then(Mono.error(thrown)))
-
 				.thenReturn(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
-	}
-
-	private Mono<Object> systemPython() {
-		return Mono.<Object>justOrEmpty(pythonProperties.interpreter())
-				.flux()
-				.switchIfEmpty(Flux.<Object>just("python3", "python"))
-				.flatMap(exeName -> processService.execute(exeName, c -> c.silent().arg("--version"))
-						.onErrorComplete(IOException.class)
-						.filter(xr -> ! WINDOWS_NO_PYTHON_EXIT_CODES.contains(xr.exitCode()))
-						.filter(xr -> {
-							Matcher matcher = PYTHON_VERSION_PATTERN.matcher(xr.stdout());
-							matcher.find();
-							Version version = Version.parse(matcher.group("version"));
-							return version.isHigherThan(MINIMUM_PYTHON_VERSION);
-						})
-						.map(_ -> exeName))
-				.next();
 	}
 
 	private Mono<Object> installPython() {
@@ -151,7 +80,7 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 
 				.doOnSubscribe(_ -> log.atInfo().log("Downloading Python"))
 
-				.then(io.run(() -> extractArchive(pythonArchive, pythonProperties.path()))
+				.then(io.run(() -> extractArchive(io, pythonArchive, pythonProperties.path()))
 						.doOnSubscribe(_ -> log.atInfo()
 								.kv("archive", pythonArchive.toString())
 								.kv("dest", pythonProperties.path())
@@ -161,18 +90,6 @@ public class PythonSetupService implements FactoryBean<PythonInterpreter> {
 						.findFirst()
 						.map(it -> it.resolve("python/").resolve(pyExeEnv.pythonExe()))
 						.orElseThrow()));
-	}
-	
-	private void extractArchive(Path archive, Path destination) {
-		io.doWithFileSystem(archive, zip -> {
-			Path root = zip.getPath("/");
-			io.walk(root)
-					.filter(io::isRegularFile)
-					.forEach(p -> {
-						io.createDirectories(destination.resolve(root.relativize(p).getParent().toString()));
-						io.copy(p, destination.resolve(root.relativize(p).toString()));
-					});
-		});
 	}
 
 	record PythonExecutionEnvironment(Path binDir, String exeSuffix) {

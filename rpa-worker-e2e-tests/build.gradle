@@ -1,3 +1,6 @@
+import java.nio.file.Files
+import java.nio.file.Paths
+
 plugins {
 	id 'java'
 	id 'groovy'
@@ -64,6 +67,11 @@ dependencies {
 
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
+
+	java.nio.file.Path workerPath = project.rootDir.toPath().resolve("workerpath.txt")
+	if (Files.exists(workerPath))
+		environment("CAMUNDA_RPA_E2E_PATHTOWORKER", Paths.get(workerPath.text.trim()).toAbsolutePath().toString())
+	
 
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v87-snapshot-dev-mine")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-dev-mine")

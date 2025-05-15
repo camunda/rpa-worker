@@ -46,9 +46,17 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 	}
 	ProcessService processService = Mock()
 	WebClient webClient = Mock()
+	ExistingEnvironmentProvider existingEnvironmentProvider = Mock()
+	SystemPythonProvider systemPythonProvider = Mock()
 	
 	@Subject
-	PythonSetupService service = new PythonSetupService(pythonProperties, io, processService, webClient)
+	PythonSetupService service = new PythonSetupService(
+			pythonProperties, 
+			io, 
+			processService, 
+			webClient, 
+			existingEnvironmentProvider, 
+			systemPythonProvider)
 
 	void setupSpec() {
 		CommandLine.metaClass.equals = { CommandLine other ->
@@ -60,37 +68,35 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 	}
 
 	void "Returns existing environment if available"() {
+		given:
+		Path pythonPath = pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
+		
 		when:
-		PythonInterpreter r = service.getObject()
+		PythonInterpreter r = block service.getPythonInterpreter()
 		
 		then:
-		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
+		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(pythonPath)
+		0 * systemPythonProvider.systemPython()
 		
 		and:
-		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
+		r.path() == pythonPath
 		
 		and:
 		1 * io.supply(_) >> Mono.empty()
 		0 * io._(*_)
 	}
 	
-	void "Creates new environment using system Python (exe name is python)"() {
+	void "Creates new environment using system Python"() {
 		given:
 		processService.execute("python3", _) >> Mono.error(new IOException())
 		
 		when:
-		PythonInterpreter r = service.getObject()
+		PythonInterpreter r = block service.getPythonInterpreter()
 
 		then:
-		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
-		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
-			fn.apply(Mock(ExecutionCustomizer) {
-				1 * silent() >> it
-				1 * arg("--version") >> it
-			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", "", Duration.ZERO))
-		}
-		
+		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		1 * systemPythonProvider.systemPython() >> Mono.just("python")
+
 		and:
 		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
@@ -102,53 +108,6 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
 		
-		and:
-		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
-		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
-		1 * io.newOutputStream(_) >> Stub(OutputStream)
-		1 * io.transferTo(_, _) >> 0L
-		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
-			fn.apply(Mock(ExecutionCustomizer) {
-				1 * arg("install") >> it
-				1 * arg("-r") >> it
-				1 * bindArg("requirementsTxt", Paths.get("/tmp/requirements.txt")) >> it
-				1 * inheritEnv() >> it
-			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
-		}
-
-		and:
-		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
-	}
-
-	void "Creates new environment using system Python (exe name is python3)"() {
-		given:
-		processService.execute("python", _) >> Mono.error(new IOException())
-		
-		when:
-		PythonInterpreter r = service.getObject()
-
-		then:
-		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
-		1 * processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
-			fn.apply(Mock(ExecutionCustomizer) {
-				1 * silent() >> it
-				1 * arg("--version") >> it
-			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", "", Duration.ZERO))
-		}
-
-		and:
-		1 * processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
-			fn.apply(Mock(ExecutionCustomizer) {
-				1 * arg("-m") >> it
-				1 * arg("venv") >> it
-				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
-				1 * inheritEnv() >> it
-			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
-		}
-
 		and:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
@@ -175,20 +134,16 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 				pythonProperties.toBuilder().interpreter(interpreter).build(), 
 				io, 
 				processService, 
-				webClient)
+				webClient, 
+				existingEnvironmentProvider, 
+				systemPythonProvider)
 
 		when:
-		PythonInterpreter r = serviceForCustomPythonInterp.getObject()
+		PythonInterpreter r = block serviceForCustomPythonInterp.getPythonInterpreter()
 
 		then:
-		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
-		1 * processService.execute(interpreter, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
-			fn.apply(Mock(ExecutionCustomizer) {
-				1 * silent() >> it
-				1 * arg("--version") >> it
-			})
-			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.12.8", "", Duration.ZERO))
-		}
+		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		1 * systemPythonProvider.systemPython() >> Mono.just(interpreter)
 
 		and:
 		1 * processService.execute(interpreter, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
@@ -220,7 +175,6 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		r.path() == pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pythonExe()))
 	}
 
-
 	@RestoreSystemProperties
 	void "Downloads Python if no system Python available"() {
 		given:
@@ -234,13 +188,11 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		PythonInterpreter r = service.getObject()
+		PythonInterpreter r = block service.getPythonInterpreter()
 
 		then: "Existing Python venv is checked (not there) and system Python is checked (not there)"
-		1 * io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
-		2 * processService.execute({ it == "python" || it == "python3" }, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
-			return Mono.error(new IOException("No Python here"))
-		}
+		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		1 * systemPythonProvider.systemPython() >> Mono.empty()
 		
 		and: "The standalone Python archive is downloaded from the configured URL"
 		1 * io.createTempFile(_, ".zip") >> pythonArchive
@@ -257,7 +209,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		1 * io.write({ it }, _) >> Flux.empty()
 		
 		and: "The downloaded Python archive is extracted"
-		1 * io.doWithFileSystem(_, _) >> { __, Consumer<FileSystem> fn -> fn.accept(pythonArchiveFs) }
+		1 * io.doWithFileSystem(_, _, _) >> { __, ___, Consumer<FileSystem> fn -> fn.accept(pythonArchiveFs) }
 		1 * io.walk(pythonArchiveRootDir) >> Stream.of(
 				Paths.get("/aDir/anotherDir/aFile"),
 				Paths.get("/aDir/differentDir/anotherFile"))
@@ -277,40 +229,10 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		processService.execute(_, _) >> Mono.empty()
 	}
 
-	@RestoreSystemProperties
-	void "Fake Windows Python is ignored"() {
-		given:
-		System.setProperty("os.name", "Windows")
-		
-		and: "The Python on the path is some fake Windows store launcher thing"
-		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
-		processService.execute("python", _) >> Mono.just(
-				new ProcessService.ExecutionResult(PythonSetupService.WINDOWS_NO_PYTHON_EXIT_CODES.first(), "", "", Duration.ZERO))
-		processService.execute(_, _) >> Mono.empty()
-
-		and:
-		Path pythonArchive = Paths.get("/tmp/python.zip")
-
-		when:
-		PythonInterpreter r = service.getObject()
-
-		then: "Fake Python is ignored and Python is downloaded as normal"
-		1 * io.createTempFile(_, ".zip") >> pythonArchive
-		1 * webClient.get() >> Mock(WebClient.RequestHeadersUriSpec) {
-			1 * uri(pythonProperties.downloadUrl()) >> Mock(WebClient.RequestHeadersSpec) {
-				1 * retrieve() >> Mock(WebClient.ResponseSpec) {
-					1 * bodyToFlux(DataBuffer.class) >> Flux.empty()
-				}
-			}
-		}
-		1 * io.newOutputStream(_) >> Stub(OutputStream)
-		1 * io.write(_, _) >> Flux.empty()
-		1 * io.list(_) >> Stream.of(Paths.get("aDir/"))
-	}
-
 	void "Installs user requirements into new environments when provided"() {
 		given:
-		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
+		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		systemPythonProvider.systemPython() >> Mono.just("python3")
 		processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Stub(ExecutionCustomizer) {
 				arg("--version") >> it
@@ -336,10 +258,12 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 						pythonProperties.toBuilder().extraRequirements(extraRequirements).build(), 
 						io, 
 						processService, 
-						webClient)
+						webClient, 
+						existingEnvironmentProvider, 
+						systemPythonProvider)
 
 		when:
-		serviceWithExtraRequirements.getObject()
+		block serviceWithExtraRequirements.getPythonInterpreter()
 
 		then:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
@@ -372,7 +296,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 	void "Installs user requirements into existing environments when they have changed"() {
 		given:
-		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
+		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(Paths.get("venv/"))
 
 		and:
 		Path extraRequirements = Stub()
@@ -384,10 +308,12 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 						pythonProperties.toBuilder().extraRequirements(extraRequirements).build(),
 						io,
 						processService,
-						webClient)
+						webClient, 
+						existingEnvironmentProvider, 
+						systemPythonProvider)
 
 		when:
-		serviceWithExtraRequirements.getObject()
+		block serviceWithExtraRequirements.getPythonInterpreter()
 
 		then:
 		1 * io.createTempFile("extra-requirements", ".txt") >> Paths.get("/tmp/extra-requirements.txt")
@@ -408,7 +334,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 	void "Skips installing user requirements into existing environments when they have not changed"() {
 		given:
-		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
+		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(Paths.get("venv/"))
 
 		and:
 		Path extraRequirements = Stub()
@@ -420,10 +346,12 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 						pythonProperties.toBuilder().extraRequirements(extraRequirements).build(),
 						io,
 						processService,
-						webClient)
+						webClient, 
+						existingEnvironmentProvider, 
+						systemPythonProvider)
 
 		when:
-		serviceWithExtraRequirements.getObject()
+		block serviceWithExtraRequirements.getPythonInterpreter()
 
 		then:
 		0 * io.createTempFile("python_requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
@@ -446,9 +374,8 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		and:
 		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
-		processService.execute(_, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
-			return Mono.error(new IOException("No Python here"))
-		}
+		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		systemPythonProvider.systemPython() >> Mono.empty()
 
 		and:
 		webClient.get() >> Mock(WebClient.RequestHeadersUriSpec) {
@@ -463,7 +390,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		io.write(_, _) >> { Flux<DataBuffer> buffers, OutputStream os -> DataBufferUtils.write(buffers, os) }
 
 		when:
-		service.getObject()
+		block service.getPythonInterpreter()
 
 		then:
 		thrown(IllegalStateException)
@@ -471,10 +398,10 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 	void "Re-installs base requirements into existing environments when they have changed"() {
 		given:
-		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
+		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(Paths.get("venv/"))
 
 		when:
-		service.getObject()
+		block service.getPythonInterpreter()
 
 		then:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
@@ -494,10 +421,10 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 	void "Skips installing base requirements into existing environments when they have not changed"() {
 		given:
-		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> false
+		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(Paths.get("venv/"))
 
 		when:
-		service.getObject()
+		block service.getPythonInterpreter()
 
 		then:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
