@@ -41,7 +41,6 @@ reactiveFeign = { module = "com.playtika.reactivefeign:feign-reactor-webclient",
 javaSemver = { module = "com.github.zafarkhaja:java-semver", version.ref = "javaSemver" }
 lombok = { module = "org.projectlombok:lombok" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
-springJsonLog = { module = "net.poundex.xmachinery:spring-jsonlog", version.ref = "xmachinery" }
 caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
 micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus" }
 micrometer-prometheus-simpleclient = { module = "io.micrometer:micrometer-registry-prometheus-simpleclient" }
