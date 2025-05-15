@@ -1,0 +1,1 @@
+org.springframework.boot.logging.LoggingSystemFactory=io.camunda.rpa.worker.logging.JsonLogbackLoggingSystem.Factory

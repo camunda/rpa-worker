@@ -69,8 +69,6 @@ dependencies {
 	implementation libs.slf4j.api
 	implementation libs.caffeine
 	
-	runtimeOnly libs.springJsonLog
-	
 	if(project.hasProperty("nativePlatform") && project.property("nativePlatform") == "darwin") {
 		runtimeOnly libs.netty.resolver.nativeMacOs
 		runtimeOnly(variantOf(libs.netty.resolver.nativeMacOs) {

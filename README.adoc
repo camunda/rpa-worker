@@ -297,6 +297,10 @@ for other supported properties_
 |server.address
 |Network address to which the server should bind
 |`localhost` for standalone, any for container
+
+|logging.file.name
+|Output file for log file (non-containerised)
+|`rpa-worker.jsonl.log`
 |===
 
 
