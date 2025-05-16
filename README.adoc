@@ -128,7 +128,7 @@ As the base dependencies are included in the Static Runtime, it does not require
 ==== Choosing a Runtime
 
 The choice of runtime can be configured via the `camunda.rpa.python-runtime.type` configuration property. 
-It supports three values: `auto` (the default), `static`, and `runtime`. 
+It supports three values: `auto` (the default), `static`, and `python`. 
 
 When the runtime is set to `auto`, the RPA Worker will run the following checks to see if the Python Runtime is 
 supported:
