@@ -181,7 +181,7 @@ public class RobotService {
 	
 	private static boolean checkWorkspacePath(Workspace workspace, Path path) {
 		Path target = workspace.path().resolve(path).normalize().toAbsolutePath();
-		if(target.startsWith(workspace.path())) return true;
+		if(target.startsWith(workspace.path().normalize().toAbsolutePath())) return true;
 		
 		log.atWarn()
 				.kv("workspace", workspace.path())
