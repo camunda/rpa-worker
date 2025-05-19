@@ -117,8 +117,8 @@ Check
 		        RobotScript.builder()
 				        .id("has_additional_files")
 				        .body(CHECK_ADDITIONAL_FILES_SCRIPT)
-				        .file(Paths.get("one.resource"), "one.resource contents")
-				        .file(Paths.get("two/three.resource"), "three.resource contents")
+				        .file(Paths.get("one.resource"), "one.resource contents".bytes)
+				        .file(Paths.get("two/three.resource"), "three.resource contents".bytes)
 				        .build(),
 		]
 	}
