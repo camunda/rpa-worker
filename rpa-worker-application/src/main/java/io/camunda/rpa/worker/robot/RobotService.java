@@ -154,13 +154,43 @@ public class RobotService {
 			Path artifactsDir = workspace.path().resolve("robot_artifacts");
 			io.createDirectories(artifactsDir);
 
-			scripts.forEach(s -> io.writeString(
-					workspace.path().resolve("%s.robot".formatted(s.executionKey())),
-					s.script().body()));
+			scripts.forEach(s -> writeResources(s, workspace));
 			io.write(varsFile, Try.of(() -> objectMapper.writeValueAsBytes(variables)).get());
 			
 			return new RobotEnvironment(workspace, varsFile, outputDir, artifactsDir);
 		});
+	}
+
+	private void writeResources(PreparedScript s, Workspace workspace) {
+		io.writeString(
+				workspace.path().resolve("%s.robot".formatted(s.executionKey())),
+				s.script().body());
+		
+		s.script().files().entrySet().stream()
+				.filter(kv -> checkWorkspacePath(workspace, kv.getKey()))
+				.forEach(kv -> {
+					Path target = workspace.path().resolve(kv.getKey());
+					if(io.exists(target)) log.atWarn()
+							.kv("path", target)
+							.kv("executionKey", s.executionKey())
+							.log("Resource file overwrites existing workspace file");
+					
+					io.createDirectories(target.getParent());
+					io.write(target, kv.getValue());
+				});
+	}
+	
+	private static boolean checkWorkspacePath(Workspace workspace, Path path) {
+		Path target = workspace.path().resolve(path).normalize().toAbsolutePath();
+		if(target.startsWith(workspace.path().normalize().toAbsolutePath())) return true;
+		
+		log.atWarn()
+				.kv("workspace", workspace.path())
+				.kv("path", path)
+				.kv("target", target)
+				.log("Skipping invalid workspace path");
+		
+		return false;
 	}
 
 	private Mono<Map<String, String>> getEnvironmentVariables(RobotEnvironment renv, PreparedScript script) {

@@ -9,7 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+import java.nio.file.Paths;
 import java.time.Duration;
+import java.util.Base64;
+import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -46,7 +49,16 @@ class ZeebeResourceScriptRepository implements ScriptRepository {
 						.kv("scriptId", id)
 						.setCause(thrown)
 						.log("Error response fetching script resource from Zeebe"))
-				.map(rpa -> new RobotScript(rpa.id(), rpa.script()))
+				.map(rpa -> {
+					RobotScript.RobotScriptBuilder b = RobotScript.builder()
+							.id(rpa.id())
+							.body(rpa.script());
+					if(rpa.files() != null) b = b.files(rpa.files().entrySet().stream()
+							.collect(Collectors.toMap(
+									kv -> Paths.get(kv.getKey()), 
+									kv -> Base64.getDecoder().decode(kv.getValue()))));
+					return b.build();
+				})
 				.cache();
 	}
 }
