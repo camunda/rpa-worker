@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @Builder(toBuilder = true)
-public record RobotScript(String id, String body, @Singular Map<Path, String> files) {
+public record RobotScript(String id, String body, @Singular Map<Path, byte[]> files) {
 
 	public RobotScript {
 		if(files == null) files = Collections.emptyMap();

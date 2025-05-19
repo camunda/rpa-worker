@@ -175,7 +175,7 @@ public class RobotService {
 							.log("Resource file overwrites existing workspace file");
 					
 					io.createDirectories(target.getParent());
-					io.writeString(target, kv.getValue());
+					io.write(target, kv.getValue());
 				});
 	}
 	

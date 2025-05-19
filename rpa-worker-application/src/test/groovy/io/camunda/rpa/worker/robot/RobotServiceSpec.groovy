@@ -408,10 +408,10 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		given:
 		RobotScript script = RobotScript.builder().id("some-script")
 				.body("some-script-body")
-				.file(Paths.get("one.resource"), "one.resource content")
-				.file(Paths.get("two/three.resource"), "three.resource content")
-				.file(Paths.get("/some/bad/path/four.resource"), "four.resource content")
-				.file(Paths.get("../../another/bad/path/five.resource"), "five.resource content")
+				.file(Paths.get("one.resource"), "one.resource content".bytes)
+				.file(Paths.get("two/three.resource"), "three.resource content".bytes)
+				.file(Paths.get("/some/bad/path/four.resource"), "four.resource content".bytes)
+				.file(Paths.get("../../another/bad/path/five.resource"), "five.resource content".bytes)
 				.build()
 		
 		ExecutionCustomizer executionCustomizer = Mock()
@@ -451,11 +451,11 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * io.write(workDir.resolve("variables.json"), objectMapper.writeValueAsBytes([rpaVar: 'rpa-var-value']), [])
 		
 		and:
-		1 * io.writeString(workDir.resolve("one.resource"), "one.resource content")
+		1 * io.write(workDir.resolve("one.resource"), "one.resource content".bytes)
 		
 		and:
 		1 * io.createDirectories(workDir.resolve("two/"))
-		1 * io.writeString(workDir.resolve("two/three.resource"), "three.resource content")
+		1 * io.write(workDir.resolve("two/three.resource"), "three.resource content".bytes)
 		0 * io.writeString({ it.toString().contains("four.resource") }, _)
 		0 * io.writeString({ it.toString().contains("five.resource") }, _)
 	}
