@@ -56,7 +56,7 @@ class ZeebeResourceScriptRepository implements ScriptRepository {
 					if(rpa.files() != null) b = b.files(rpa.files().entrySet().stream()
 							.collect(Collectors.toMap(
 									kv -> Paths.get(kv.getKey()), 
-									kv -> new String(Base64.getDecoder().decode(kv.getValue())))));
+									kv -> Base64.getDecoder().decode(kv.getValue()))));
 					return b.build();
 				})
 				.cache();

@@ -76,8 +76,8 @@ class ZeebeResourceScriptRepositorySpec extends Specification implements Publish
 		script.id() == "the-resource-key"
 		script.body() == "the-script-body"
 		script.files() == [
-				(Paths.get("one.resource"))    : "one.resource content",
-				(Paths.get("two/three.resource")): "three.resource content"
+				(Paths.get("one.resource"))    : "one.resource content".bytes,
+				(Paths.get("two/three.resource")): "three.resource content".bytes
 		]
 	}
 }
