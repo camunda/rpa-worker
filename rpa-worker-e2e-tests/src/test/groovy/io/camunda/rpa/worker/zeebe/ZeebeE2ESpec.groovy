@@ -391,5 +391,36 @@ Catch error
 			errorVariable == 'error-variable-value'
 		}
 	}
+
+	void "Runs deployed script with additional files"() {
+		given:
+		deployScript('has_additional_files', '''\
+*** Settings ***
+Library   OperatingSystem
+
+*** Tasks ***
+Check
+	${fileContents1}    Get File    one.resource
+	${fileContents2}    Get File    two/three.resource
+	
+	Should Be Equal    ${fileContents1}    one.resource contents
+	Should Be Equal    ${fileContents2}    three.resource contents
+''', [
+				'one.resource'      : 'one.resource contents',
+				'two/three.resource': 'three.resource contents',
+		])
+
+		and:
+		deploySimpleRobotProcess('has_additional_files_on_default', 'has_additional_files')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("has_additional_files_on_default")
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+	}
 }
 	
