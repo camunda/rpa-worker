@@ -422,5 +422,41 @@ Check
 			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
 		}
 	}
+	
+	void "Runs deployed script with additional files with existing workspace file"() {
+		given:
+		deployScript('extra_resources_with_before_before', '''\
+*** Settings ***
+Library    OperatingSystem
+
+*** Tasks ***
+Tasks
+    No Operation
+''', ['one.resource': 'original one.resource contents'])
+		
+		and:
+		deployScript('extra_resources_with_before_main', '''\
+*** Settings ***
+Library   OperatingSystem
+
+*** Tasks ***
+Check
+	${fileContents1}    Get File    one.resource
+	
+	Should Be Equal    ${fileContents1}    replacement one.resource contents
+''', ['one.resource'      : 'replacement one.resource contents'])
+
+		and:
+		deployProcess("extra_resources_with_before_on_default")
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("extra_resources_with_before_on_default")
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+	}
 }
 	

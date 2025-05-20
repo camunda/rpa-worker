@@ -172,6 +172,7 @@ public class RobotService {
 					Path target = workspace.path().resolve(kv.getKey());
 					if(io.exists(target)) log.atWarn()
 							.kv("path", target)
+							.kv("executionKey", s.executionKey())
 							.log("Resource file overwrites existing workspace file");
 					
 					io.createDirectories(target.getParent());
