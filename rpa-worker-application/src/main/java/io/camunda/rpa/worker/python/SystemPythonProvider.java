@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.python;
 
 import com.github.zafarkhaja.semver.Version;
+import io.camunda.rpa.worker.pexec.ExecutionCustomizer;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.function.UnaryOperator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,28 +31,34 @@ public class SystemPythonProvider {
 	
 	public Mono<Object> systemPython() {
 		return Mono.<Object>justOrEmpty(pythonProperties.interpreter())
-				.doOnNext(this::checkPythonInterpreter)
+				.flatMap(p -> checkPythonInterpreter(p, ExecutionCustomizer::required).map(_ -> p))
 				.flux()
 				.switchIfEmpty(Flux.<Object>just("python3", "python")
-						.flatMap(exeName -> checkPythonInterpreter(exeName)
+						.flatMap(exeName -> checkPythonInterpreter(exeName, ExecutionCustomizer::silent)
+								.onErrorComplete(IOException.class)
 								.map(_ -> exeName)))
 				.next();
 	}
 
-	private Mono<ProcessService.ExecutionResult> checkPythonInterpreter(Object exeName) {
-		return processService.execute(exeName, c -> c.silent().arg("--version"))
-				.onErrorComplete(IOException.class)
+	private Mono<ProcessService.ExecutionResult> checkPythonInterpreter(Object exeName, UnaryOperator<ExecutionCustomizer> customizer) {
+		return processService.execute(exeName, c -> customizer.apply(c).arg("--version"))
 				.filter(xr -> ! WINDOWS_NO_PYTHON_EXIT_CODES.contains(xr.exitCode()))
 				.filter(xr -> {
 					Matcher matcher = PYTHON_VERSION_PATTERN.matcher(xr.stdout());
 					boolean found = matcher.find();
 					if ( ! found) return false;
 					Version version = Version.parse(matcher.group("version"));
+					
 					boolean valid = version.isHigherThanOrEquivalentTo(MINIMUM_PYTHON_VERSION) && (version.isLowerThan(MAXIMUM_PYTHON_VERSION) || pythonProperties.allowUnsupportedPython());
 					if( ! valid) log.atWarn()
 							.kv("version", version)
 							.kv("interpreter", exeName)
 							.log("Python interpreter is not valid (>=%s,<%s)".formatted(MINIMUM_PYTHON_VERSION, MAXIMUM_PYTHON_VERSION));
+					else log.atInfo()
+							.kv("version", version)
+							.kv("interpreter", exeName)
+							.log("Python interpreter is valid");
+					
 					return valid;
 				});
 	}

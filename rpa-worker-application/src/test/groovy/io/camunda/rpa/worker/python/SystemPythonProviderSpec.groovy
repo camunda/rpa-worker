@@ -75,7 +75,8 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		then:
 		1 * processService.execute(pythonInterpreter, _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Mock(ExecutionCustomizer) {
-				1 * silent() >> it
+				0 * silent() >> it
+				1 * required() >> it
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))

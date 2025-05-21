@@ -279,6 +279,9 @@
       "type": "ch.qos.logback.classic.LoggerContext"
     },
     {
+      "type": "ch.qos.logback.classic.encoder.PatternLayoutEncoder"
+    },
+    {
       "type": "ch.qos.logback.classic.joran.SerializedModelConfigurator",
       "methods": [
         {
@@ -351,6 +354,9 @@
       ]
     },
     {
+      "type": "ch.qos.logback.classic.spi.ILoggingEvent"
+    },
+    {
       "type": "ch.qos.logback.classic.spi.LogbackServiceProvider"
     },
     {
@@ -361,6 +367,15 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "ch.qos.logback.core.Appender"
+    },
+    {
+      "type": "ch.qos.logback.core.Layout"
+    },
+    {
+      "type": "ch.qos.logback.core.OutputStreamAppender"
     },
     {
       "type": "co.elastic.clients.elasticsearch.ElasticsearchClient"
@@ -1036,6 +1051,9 @@
       ]
     },
     {
+      "type": "com.sun.jmx.interceptor.DefaultMBeanServerInterceptor"
+    },
+    {
       "type": "com.sun.jmx.mbeanserver.JmxMBeanServer",
       "allDeclaredFields": true
     },
@@ -1112,6 +1130,9 @@
     },
     {
       "type": "com.sun.management.internal.OperatingSystemImpl"
+    },
+    {
+      "type": "com.sun.management.internal.VirtualThreadSchedulerImpls$VirtualThreadSchedulerImpl"
     },
     {
       "type": "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl",
@@ -17573,6 +17594,9 @@
       "type": "io.camunda.rpa.worker.util.ApplicationRestarterCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.util.ArchiveUtils"
+    },
+    {
       "type": "io.camunda.rpa.worker.util.InternetConnectivityProvider",
       "allDeclaredFields": true,
       "methods": [
@@ -27438,6 +27462,9 @@
       "type": "io.grpc.internal.ContextRunnable"
     },
     {
+      "type": "io.grpc.internal.DelayedClientCall$1DrainListenerRunnable"
+    },
+    {
       "type": "io.grpc.internal.DelayedClientCall$DelayedListener"
     },
     {
@@ -27466,6 +27493,9 @@
     },
     {
       "type": "io.grpc.internal.PickFirstLoadBalancerProvider"
+    },
+    {
+      "type": "io.grpc.internal.ProxyDetectorImpl"
     },
     {
       "type": "io.grpc.internal.SerializingExecutor",
@@ -28004,6 +28034,9 @@
       ]
     },
     {
+      "type": "io.netty.channel.ChannelOption"
+    },
+    {
       "type": "io.netty.channel.ChannelOutboundBuffer",
       "fields": [
         {
@@ -28178,6 +28211,12 @@
     },
     {
       "type": "io.netty.handler.codec.http.HttpServerCodec"
+    },
+    {
+      "type": "io.netty.handler.proxy.HttpProxyHandler"
+    },
+    {
+      "type": "io.netty.handler.proxy.HttpProxyHandler$HttpClientCodecWrapper"
     },
     {
       "type": "io.netty.handler.ssl.SslHandler"
@@ -28548,6 +28587,9 @@
     },
     {
       "type": "io.vavr.CheckedFunction0"
+    },
+    {
+      "type": "io.vavr.CheckedRunnable"
     },
     {
       "type": "io.vavr.control.Try"
@@ -29081,6 +29123,9 @@
       "type": "java.lang.ClassLoaderCustomizer"
     },
     {
+      "type": "java.lang.ClassNotFoundException"
+    },
+    {
       "type": "java.lang.CloneNotSupportedException"
     },
     {
@@ -29148,6 +29193,12 @@
       ]
     },
     {
+      "type": "java.lang.FunctionalInterface"
+    },
+    {
+      "type": "java.lang.IllegalAccessException"
+    },
+    {
       "type": "java.lang.IllegalArgumentException",
       "allDeclaredFields": true
     },
@@ -29187,6 +29238,9 @@
     },
     {
       "type": "java.lang.IndexOutOfBoundsException"
+    },
+    {
+      "type": "java.lang.InstantiationException"
     },
     {
       "type": "java.lang.Integer",
@@ -29254,6 +29308,9 @@
     },
     {
       "type": "java.lang.NoSuchFieldError"
+    },
+    {
+      "type": "java.lang.NoSuchMethodException"
     },
     {
       "type": "java.lang.NullPointerException"
@@ -29379,6 +29436,9 @@
     },
     {
       "type": "java.lang.RecordCustomizer"
+    },
+    {
+      "type": "java.lang.ReflectiveOperationException"
     },
     {
       "type": "java.lang.Runnable",
@@ -30356,6 +30416,9 @@
       "type": "java.nio.charset.StandardCharsetsCustomizer"
     },
     {
+      "type": "java.nio.file.CopyMoveHelper"
+    },
+    {
       "type": "java.nio.file.CopyOption"
     },
     {
@@ -30628,6 +30691,12 @@
     },
     {
       "type": "java.nio.file.attribute.FileTimeCustomizer"
+    },
+    {
+      "type": "java.nio.file.attribute.PosixFileAttributeView"
+    },
+    {
+      "type": "java.nio.file.attribute.PosixFileAttributes"
     },
     {
       "type": "java.nio.file.attribute.UserPrincipal"
@@ -31539,6 +31608,12 @@
       "type": "java.util.Spliterator"
     },
     {
+      "type": "java.util.Spliterators"
+    },
+    {
+      "type": "java.util.Spliterators$IteratorSpliterator"
+    },
+    {
       "type": "java.util.TimeZone"
     },
     {
@@ -31627,6 +31702,9 @@
     {
       "type": "java.util.concurrent.ConcurrentMap",
       "allDeclaredFields": true
+    },
+    {
+      "type": "java.util.concurrent.ConcurrentSkipListSet"
     },
     {
       "type": "java.util.concurrent.CopyOnWriteArrayList",
@@ -31977,6 +32055,12 @@
       "type": "java.util.stream.DoubleStream"
     },
     {
+      "type": "java.util.stream.ForEachOps$ForEachOp"
+    },
+    {
+      "type": "java.util.stream.ForEachOps$ForEachOp$OfRef"
+    },
+    {
       "type": "java.util.stream.IntStream"
     },
     {
@@ -32001,6 +32085,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "java.util.stream.ReferencePipeline$2$1"
+    },
+    {
       "type": "java.util.stream.ReferencePipeline$2BeanInfo"
     },
     {
@@ -32009,6 +32096,9 @@
     {
       "type": "java.util.stream.ReferencePipeline$3",
       "allDeclaredFields": true
+    },
+    {
+      "type": "java.util.stream.ReferencePipeline$3$1"
     },
     {
       "type": "java.util.stream.ReferencePipeline$3BeanInfo"
@@ -32081,6 +32171,9 @@
     },
     {
       "type": "java.util.stream.StreamCustomizer"
+    },
+    {
+      "type": "java.util.stream.StreamSupport"
     },
     {
       "type": "javafx.beans.value.ObservableValue"
@@ -32231,6 +32324,9 @@
       ]
     },
     {
+      "type": "javax.management.remote.rmi.RMIConnectionImpl"
+    },
+    {
       "type": "javax.management.remote.rmi.RMIConnectionImpl_Skel"
     },
     {
@@ -32373,6 +32469,9 @@
     },
     {
       "type": "jdk.internal.reflect.DirectMethodHandleAccessor"
+    },
+    {
+      "type": "jdk.management.VirtualThreadSchedulerMXBean"
     },
     {
       "type": "jdk.management.jfr.ConfigurationInfo"
@@ -37258,6 +37357,9 @@
       "type": "org.slf4j.bridge.SLF4JBridgeHandler"
     },
     {
+      "type": "org.slf4j.event.KeyValuePair"
+    },
+    {
       "type": "org.slf4j.helpers.Log4jLoggerFactory"
     },
     {
@@ -39233,6 +39335,9 @@
       "type": "org.springframework.aot.generate.Generated"
     },
     {
+      "type": "org.springframework.aot.hint.RuntimeHints"
+    },
+    {
       "type": "org.springframework.aot.hint.RuntimeHintsRegistrar"
     },
     {
@@ -39384,6 +39489,9 @@
       "type": "org.springframework.beans.factory.config.ConfigurableListableBeanFactory"
     },
     {
+      "type": "org.springframework.beans.factory.config.DependencyDescriptor"
+    },
+    {
       "type": "org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessor"
     },
     {
@@ -39433,14 +39541,26 @@
       "type": "org.springframework.beans.factory.support.BeanNameGenerator"
     },
     {
+      "type": "org.springframework.beans.factory.support.ConstructorResolver"
+    },
+    {
       "type": "org.springframework.beans.factory.support.DefaultListableBeanFactory"
+    },
+    {
+      "type": "org.springframework.beans.factory.support.DefaultListableBeanFactory$DependencyObjectProvider"
     },
     {
       "type": "org.springframework.beans.factory.support.DefaultSingletonBeanRegistry"
     },
     {
+      "type": "org.springframework.beans.factory.support.FactoryBeanRegistrySupport"
+    },
+    {
       "type": "org.springframework.beans.factory.support.NullBean",
       "allDeclaredFields": true
+    },
+    {
+      "type": "org.springframework.beans.factory.support.SimpleInstantiationStrategy"
     },
     {
       "type": "org.springframework.boot.ApplicationArguments"
@@ -39763,6 +39883,12 @@
           "name": "cachesEndpoint",
           "parameterTypes": [
             "java.util.Map"
+          ]
+        },
+        {
+          "name": "cachesEndpoint",
+          "parameterTypes": [
+            "org.springframework.beans.factory.config.ConfigurableListableBeanFactory"
           ]
         }
       ]
@@ -40471,6 +40597,13 @@
         {
           "name": "<init>",
           "parameterTypes": []
+        },
+        {
+          "name": "logFileWebEndpoint",
+          "parameterTypes": [
+            "org.springframework.beans.factory.ObjectProvider",
+            "org.springframework.boot.actuate.autoconfigure.logging.LogFileWebEndpointProperties"
+          ]
         }
       ]
     },
@@ -41583,6 +41716,9 @@
       "type": "org.springframework.boot.actuate.endpoint.OperationResponseBody"
     },
     {
+      "type": "org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation"
+    },
+    {
       "type": "org.springframework.boot.actuate.endpoint.annotation.DeleteOperation"
     },
     {
@@ -41621,11 +41757,17 @@
       "allDeclaredFields": true
     },
     {
+      "type": "org.springframework.boot.actuate.endpoint.invoke.reflect.ReflectiveOperationInvoker"
+    },
+    {
       "type": "org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor",
       "allDeclaredFields": true
     },
     {
       "type": "org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper"
+    },
+    {
+      "type": "org.springframework.boot.actuate.endpoint.jmx.EndpointMBean"
     },
     {
       "type": "org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory"
@@ -41837,6 +41979,9 @@
       ]
     },
     {
+      "type": "org.springframework.boot.actuate.health.Health$Builder"
+    },
+    {
       "type": "org.springframework.boot.actuate.health.HealthComponent",
       "allDeclaredFields": true
     },
@@ -41930,7 +42075,8 @@
       "allDeclaredFields": true
     },
     {
-      "type": "org.springframework.boot.actuate.logging.LogFileWebEndpoint"
+      "type": "org.springframework.boot.actuate.logging.LogFileWebEndpoint",
+      "allDeclaredFields": true
     },
     {
       "type": "org.springframework.boot.actuate.logging.LoggersEndpoint",
@@ -44813,10 +44959,19 @@
       "type": "org.springframework.boot.logging.AbstractLoggingSystem"
     },
     {
+      "type": "org.springframework.boot.logging.LogFile"
+    },
+    {
       "type": "org.springframework.boot.logging.LogLevelEditor"
     },
     {
+      "type": "org.springframework.boot.logging.LoggingInitializationContext"
+    },
+    {
       "type": "org.springframework.boot.logging.LoggingSystem"
+    },
+    {
+      "type": "org.springframework.boot.logging.LoggingSystemFactory"
     },
     {
       "type": "org.springframework.boot.logging.java.JavaLoggingSystem$Factory",
@@ -45902,6 +46057,9 @@
       "type": "org.springframework.context.annotation.ConfigurationClassBeanDefinitionReader"
     },
     {
+      "type": "org.springframework.context.annotation.ConfigurationClassEnhancer$BeanMethodInterceptor"
+    },
+    {
       "type": "org.springframework.context.annotation.ConfigurationClassEnhancer$EnhancedConfiguration",
       "allDeclaredFields": true
     },
@@ -46323,6 +46481,9 @@
     },
     {
       "type": "org.springframework.core.io.buffer.DefaultDataBufferFactoryCustomizer"
+    },
+    {
+      "type": "org.springframework.core.io.support.PathMatchingResourcePatternResolver"
     },
     {
       "type": "org.springframework.core.io.support.ResourcePatternResolver",
@@ -47355,6 +47516,9 @@
     },
     {
       "type": "org.springframework.util.MultiValueMapCustomizer"
+    },
+    {
+      "type": "org.springframework.util.ReflectionUtils"
     },
     {
       "type": "org.springframework.util.StringUtils"
@@ -50317,6 +50481,9 @@
       "type": "sun.rmi.registry.RegistryImpl_Stub"
     },
     {
+      "type": "sun.rmi.server.UnicastServerRef"
+    },
+    {
       "type": "sun.rmi.transport.DGCImpl_Skel",
       "methods": [
         {
@@ -50335,6 +50502,15 @@
           ]
         }
       ]
+    },
+    {
+      "type": "sun.rmi.transport.Transport"
+    },
+    {
+      "type": "sun.rmi.transport.tcp.TCPTransport"
+    },
+    {
+      "type": "sun.rmi.transport.tcp.TCPTransport$ConnectionHandler"
     },
     {
       "type": "sun.security.pkcs12.PKCS12KeyStore",
@@ -50513,6 +50689,15 @@
     },
     {
       "type": "sun.security.rsa.RSASignature$SHA256withRSA",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "sun.security.rsa.RSASignature$SHA384withRSA",
       "methods": [
         {
           "name": "<init>",
@@ -51822,6 +52007,9 @@
   ],
   "resources": [
     {
+      "glob": "C:/Users/Administrator/worker/python"
+    },
+    {
       "glob": "META-INF/MANIFEST.MF"
     },
     {
@@ -52074,6 +52262,27 @@
       "glob": "SpockConfig.groovy"
     },
     {
+      "glob": "application-c8-v87-dev-mine.xml"
+    },
+    {
+      "glob": "application-c8-v87-dev-mine.yaml"
+    },
+    {
+      "glob": "application-c8-v87-dev-mine.yml"
+    },
+    {
+      "glob": "application-c8-v87-snapshot-dev-mine.properties"
+    },
+    {
+      "glob": "application-c8-v87-snapshot-dev-mine.xml"
+    },
+    {
+      "glob": "application-c8-v87-snapshot-dev-mine.yaml"
+    },
+    {
+      "glob": "application-c8-v87-snapshot-dev-mine.yml"
+    },
+    {
       "glob": "application-c8-v87-snapshot-local.xml"
     },
     {
@@ -52131,6 +52340,27 @@
       "glob": "application-my-c8-cluster.yml"
     },
     {
+      "glob": "application-v87-dev-mine.xml"
+    },
+    {
+      "glob": "application-v87-dev-mine.yaml"
+    },
+    {
+      "glob": "application-v87-dev-mine.yml"
+    },
+    {
+      "glob": "application-v87-snapshot-dev-mine.properties"
+    },
+    {
+      "glob": "application-v87-snapshot-dev-mine.xml"
+    },
+    {
+      "glob": "application-v87-snapshot-dev-mine.yaml"
+    },
+    {
+      "glob": "application-v87-snapshot-dev-mine.yml"
+    },
+    {
       "glob": "application.properties"
     },
     {
@@ -52171,6 +52401,30 @@
     },
     {
       "glob": "client-java.properties"
+    },
+    {
+      "glob": "config/application-c8-v87-dev-mine.properties"
+    },
+    {
+      "glob": "config/application-c8-v87-dev-mine.xml"
+    },
+    {
+      "glob": "config/application-c8-v87-dev-mine.yaml"
+    },
+    {
+      "glob": "config/application-c8-v87-dev-mine.yml"
+    },
+    {
+      "glob": "config/application-c8-v87-snapshot-dev-mine.properties"
+    },
+    {
+      "glob": "config/application-c8-v87-snapshot-dev-mine.xml"
+    },
+    {
+      "glob": "config/application-c8-v87-snapshot-dev-mine.yaml"
+    },
+    {
+      "glob": "config/application-c8-v87-snapshot-dev-mine.yml"
     },
     {
       "glob": "config/application-c8-v87-snapshot-local.properties"
@@ -52233,6 +52487,30 @@
       "glob": "config/application-my-c8-cluster.yml"
     },
     {
+      "glob": "config/application-v87-dev-mine.properties"
+    },
+    {
+      "glob": "config/application-v87-dev-mine.xml"
+    },
+    {
+      "glob": "config/application-v87-dev-mine.yaml"
+    },
+    {
+      "glob": "config/application-v87-dev-mine.yml"
+    },
+    {
+      "glob": "config/application-v87-snapshot-dev-mine.properties"
+    },
+    {
+      "glob": "config/application-v87-snapshot-dev-mine.xml"
+    },
+    {
+      "glob": "config/application-v87-snapshot-dev-mine.yaml"
+    },
+    {
+      "glob": "config/application-v87-snapshot-dev-mine.yml"
+    },
+    {
       "glob": "config/application.properties"
     },
     {
@@ -52293,6 +52571,30 @@
       "glob": "config/rpa-runtime.yml"
     },
     {
+      "glob": "config/rpa-worker-c8-v87-dev-mine.properties"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-dev-mine.xml"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-dev-mine.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-dev-mine.yml"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-snapshot-dev-mine.properties"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-snapshot-dev-mine.xml"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-snapshot-dev-mine.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-c8-v87-snapshot-dev-mine.yml"
+    },
+    {
       "glob": "config/rpa-worker-c8-v87-snapshot-local.properties"
     },
     {
@@ -52317,6 +52619,30 @@
       "glob": "config/rpa-worker-default.yml"
     },
     {
+      "glob": "config/rpa-worker-v87-dev-mine.properties"
+    },
+    {
+      "glob": "config/rpa-worker-v87-dev-mine.xml"
+    },
+    {
+      "glob": "config/rpa-worker-v87-dev-mine.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-v87-dev-mine.yml"
+    },
+    {
+      "glob": "config/rpa-worker-v87-snapshot-dev-mine.properties"
+    },
+    {
+      "glob": "config/rpa-worker-v87-snapshot-dev-mine.xml"
+    },
+    {
+      "glob": "config/rpa-worker-v87-snapshot-dev-mine.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-v87-snapshot-dev-mine.yml"
+    },
+    {
       "glob": "config/rpa-worker.properties"
     },
     {
@@ -52333,6 +52659,9 @@
     },
     {
       "glob": "home/pounder/workspace/camunda/rpa-runtime-java-poc/python/venv/"
+    },
+    {
+      "glob": "home/pounder/workspace/camunda/rpa-worker/python"
     },
     {
       "glob": "home/pounder/workspace/camunda/rpa-worker/python/"
@@ -55020,6 +55349,30 @@
       "glob": "rpa-runtime.yml"
     },
     {
+      "glob": "rpa-worker-c8-v87-dev-mine.properties"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-dev-mine.xml"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-dev-mine.yaml"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-dev-mine.yml"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-snapshot-dev-mine.properties"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-snapshot-dev-mine.xml"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-snapshot-dev-mine.yaml"
+    },
+    {
+      "glob": "rpa-worker-c8-v87-snapshot-dev-mine.yml"
+    },
+    {
       "glob": "rpa-worker-c8-v87-snapshot-local.properties"
     },
     {
@@ -55042,6 +55395,30 @@
     },
     {
       "glob": "rpa-worker-default.yml"
+    },
+    {
+      "glob": "rpa-worker-v87-dev-mine.properties"
+    },
+    {
+      "glob": "rpa-worker-v87-dev-mine.xml"
+    },
+    {
+      "glob": "rpa-worker-v87-dev-mine.yaml"
+    },
+    {
+      "glob": "rpa-worker-v87-dev-mine.yml"
+    },
+    {
+      "glob": "rpa-worker-v87-snapshot-dev-mine.properties"
+    },
+    {
+      "glob": "rpa-worker-v87-snapshot-dev-mine.xml"
+    },
+    {
+      "glob": "rpa-worker-v87-snapshot-dev-mine.yaml"
+    },
+    {
+      "glob": "rpa-worker-v87-snapshot-dev-mine.yml"
     },
     {
       "glob": "rpa-worker.properties"
@@ -56380,6 +56757,16 @@
             "boolean",
             "java.util.List"
           ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String",
+            "boolean",
+            "java.util.List"
+          ]
         }
       ]
     },
@@ -56636,6 +57023,15 @@
       ]
     },
     {
+      "type": "java.util.ArrayList",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "java.util.Arrays",
       "methods": [
         {
@@ -56776,6 +57172,39 @@
           "name": "fd"
         }
       ]
+    },
+    {
+      "type": "sun.security.mscapi.CKeyStore",
+      "methods": [
+        {
+          "name": "generateCertificate",
+          "parameterTypes": [
+            "byte[]",
+            "java.util.Collection"
+          ]
+        },
+        {
+          "name": "generateCertificateChain",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.util.Collection"
+          ]
+        },
+        {
+          "name": "generateKeyAndCertificateChain",
+          "parameterTypes": [
+            "boolean",
+            "java.lang.String",
+            "long",
+            "long",
+            "int",
+            "java.util.Collection"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "sun.security.mscapi.CKeyStore$ROOT"
     },
     {
       "type": "worker.org.gradle.process.internal.worker.GradleWorkerMain",
