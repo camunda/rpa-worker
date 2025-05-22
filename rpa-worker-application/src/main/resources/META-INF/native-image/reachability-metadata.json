@@ -1042,6 +1042,42 @@
       ]
     },
     {
+      "type": "com.sun.crypto.provider.HmacPKCS12PBECore$HmacPKCS12PBE_SHA256",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.PBEKeyFactory$PBEWithMD5AndDES",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.PBES2Core$HmacSHA256AndAES_256",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.PBES2Parameters$General",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "com.sun.crypto.provider.TlsMasterSecretGenerator",
       "methods": [
         {
@@ -27515,6 +27551,9 @@
       "type": "io.grpc.netty.ProtocolNegotiators$GrpcNegotiationHandler"
     },
     {
+      "type": "io.grpc.netty.ProtocolNegotiators$ProxyProtocolNegotiationHandler"
+    },
+    {
       "type": "io.grpc.netty.ProtocolNegotiators$WaitUntilActiveHandler"
     },
     {
@@ -39339,6 +39378,9 @@
     },
     {
       "type": "org.springframework.aot.hint.RuntimeHintsRegistrar"
+    },
+    {
+      "type": "org.springframework.aot.hint.TypeReference"
     },
     {
       "type": "org.springframework.aot.hint.annotation.Reflective"
