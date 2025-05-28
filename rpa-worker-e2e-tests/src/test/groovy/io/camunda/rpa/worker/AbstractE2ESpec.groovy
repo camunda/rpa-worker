@@ -162,12 +162,14 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.join()
 	}
 
-	DeploymentEvent deployScript(String name, @Language("Robot") String script) {
+	DeploymentEvent deployScript(String name, @Language("Robot") String script, Map<String, String> additionalFiles = [:]) {
 		return zeebeClient.newDeployResourceCommand()
 				.addResourceStringUtf8(JsonOutput.toJson([
 						id    : name,
 						name  : name,
-						script: script]), "${script}.rpa")
+						script: script, 
+						files: additionalFiles.collectEntries { [it.key, Base64.encoder.encodeToString(it.value.bytes)] }]), 
+						"${script}.rpa")
 				.send()
 				.join()
 	}
