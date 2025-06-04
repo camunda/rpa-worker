@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker
 
-
 import com.fasterxml.jackson.databind.ObjectMapper
 import feign.FeignException
 import groovy.json.JsonOutput
@@ -40,6 +39,7 @@ import spock.lang.Specification
 import java.time.Duration
 import java.util.concurrent.TimeUnit
 import java.util.stream.Collectors
+import java.util.zip.GZIPOutputStream
 
 @SpringBootTest
 @ActiveProfiles(resolver = ProfileResolver)
@@ -168,7 +168,16 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 						id    : name,
 						name  : name,
 						script: script, 
-						files: additionalFiles.collectEntries { [it.key, Base64.encoder.encodeToString(it.value.bytes)] }]), 
+						files: additionalFiles.collectEntries {
+							ByteArrayOutputStream bytesOuts = new ByteArrayOutputStream()
+							OutputStream gzOuts = new GZIPOutputStream(bytesOuts)
+							
+							gzOuts.write(it.value.bytes)
+							gzOuts.close()
+							String b64str = Base64.encoder.encodeToString((bytesOuts.toByteArray()))
+							
+							return [it.key, b64str] 
+						}]),
 						"${script}.rpa")
 				.send()
 				.join()
