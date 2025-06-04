@@ -2,16 +2,22 @@ package io.camunda.rpa.worker.zeebe;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
+import io.camunda.rpa.worker.util.ArchiveUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.Base64;
+import java.util.Collections;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
@@ -20,6 +26,7 @@ import java.util.stream.Collectors;
 class ZeebeResourceScriptRepository implements ScriptRepository {
 
 	private final ResourceClient resourceClient;
+	private final IO io;
 	
 	/**
 	 * The script cache. 
@@ -44,21 +51,26 @@ class ZeebeResourceScriptRepository implements ScriptRepository {
 	}
 
 	private Mono<RobotScript> doFindById(String id) {
+		Function<Map<String, String>, Mono<Map<Path, byte[]>>> filesSupplier = raw -> {
+			if (raw == null) return Mono.just(Collections.emptyMap());
+
+			return Flux.fromIterable(raw.entrySet())
+					.flatMap(kv ->
+							ArchiveUtils.inflateBase64(io, kv.getValue())
+									.map(bytes -> Map.entry(Paths.get(kv.getKey()), bytes)))
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		};
+
 		return resourceClient.getRpaResource(id)
 				.doOnError(thrown -> log.atDebug()
 						.kv("scriptId", id)
 						.setCause(thrown)
 						.log("Error response fetching script resource from Zeebe"))
-				.map(rpa -> {
-					RobotScript.RobotScriptBuilder b = RobotScript.builder()
-							.id(rpa.id())
-							.body(rpa.script());
-					if(rpa.files() != null) b = b.files(rpa.files().entrySet().stream()
-							.collect(Collectors.toMap(
-									kv -> Paths.get(kv.getKey()), 
-									kv -> Base64.getDecoder().decode(kv.getValue()))));
-					return b.build();
-				})
+				.flatMap(rpa -> Mono.just(RobotScript.builder()
+								.id(rpa.id())
+								.body(rpa.script()))
+						.zipWhen(_ -> filesSupplier.apply(rpa.files()), RobotScript.RobotScriptBuilder::files)
+						.map(RobotScript.RobotScriptBuilder::build))
 				.cache();
 	}
 }
