@@ -1,20 +1,25 @@
 package io.camunda.rpa.worker.zeebe
 
 import io.camunda.rpa.worker.PublisherUtils
+import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.script.RobotScript
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
 
 import java.nio.file.Paths
+import java.util.function.Supplier
 
 class ZeebeResourceScriptRepositorySpec extends Specification implements PublisherUtils {
 
 	ResourceClient resourceClient = Mock()
+	IO io = Stub() {
+		supply(_) >> { Supplier s -> Mono.just(s.get()) }
+	}
 	
 	@Subject
 	ZeebeResourceScriptRepository repository = 
-			new ZeebeResourceScriptRepository(resourceClient)
+			new ZeebeResourceScriptRepository(resourceClient, io)
 	
 	void "Fetches script resource from Zeebe"() {
 		given:
@@ -65,8 +70,8 @@ class ZeebeResourceScriptRepositorySpec extends Specification implements Publish
 				.executionPlatform("")
 				.executionPlatformVersion("")
 				.script("the-script-body")
-				.file('one.resource', 'b25lLnJlc291cmNlIGNvbnRlbnQ=')
-				.file('two/three.resource', 'dGhyZWUucmVzb3VyY2UgY29udGVudA==')
+				.file('one.resource', 'H4sIAAAAAAAAA8vPS9UrSi3OLy1KTlVIzs8rSc0rAQDo66f1FAAAAA==')
+				.file('two/three.resource', 'H4sIAAAAAAAAAyvJKEpN1StKLc4vLUpOVUjOzytJzSsBADv+Z18WAAAA')
 				.build())
 
 		when:
