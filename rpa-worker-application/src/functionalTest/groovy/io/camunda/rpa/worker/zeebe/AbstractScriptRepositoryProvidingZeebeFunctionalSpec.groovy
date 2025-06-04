@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono
 
 abstract class AbstractScriptRepositoryProvidingZeebeFunctionalSpec extends AbstractZeebeFunctionalSpec {
 
-	static Map<String, String> scriptContent
+	static Map<String, RobotScript> scriptContent
 
 	@SpringBean
 	ScriptRepository scriptRepository = new ScriptRepository() {
@@ -19,14 +19,16 @@ abstract class AbstractScriptRepositoryProvidingZeebeFunctionalSpec extends Abst
 		@Override
 		Mono<RobotScript> findById(String id) {
 			if (scriptContent.containsKey(id))
-				return Mono.just(new RobotScript(id, scriptContent[id]))
+				return Mono.just(scriptContent[id])
+			
 			return Mono.empty()
 		}
 	}
 
-	abstract Map<String, String> getScripts()
+	abstract List<RobotScript> getScripts()
 
 	void setupSpec() {
 		scriptContent = scripts
+				.collectEntries { [it.id(), it] }
 	}
 }

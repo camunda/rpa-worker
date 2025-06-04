@@ -52,7 +52,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Correctly configures and executes a Robot process"() {
 		given:
-		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
 		ExecutionCustomizer executionCustomizer = Mock()
 		io.notExists(_) >> true
 
@@ -68,11 +68,9 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 				script,
 				[],
 				[],
-				[rpaVar: 'rpa-var-value']
-				,
+				[rpaVar: 'rpa-var-value'],
 				null, 
-				[executionListener]
-				,
+				[executionListener],
 				[:], 
 				null)
 
@@ -133,7 +131,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Returns output variables"() {
 		given:
-		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -157,7 +155,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Returns correct ExecutionResult for Robot task failure"() {
 		given:
-		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -183,7 +181,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Throws correct exception for Robot failure"() {
 		given:
-		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -208,7 +206,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	
 	void "Throws correct exception for Robot execution failure"() {
 		given:
-		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -233,11 +231,11 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	
 	void "Runs before and after scripts and aggregates results"() {
 		given:
-		RobotScript before1 = new RobotScript("some-script", "some-script-body")
-		RobotScript before2 = new RobotScript("some-script", "some-script-body")
-		RobotScript script = new RobotScript("some-script", "some-script-body")
-		RobotScript after1 = new RobotScript("some-script", "some-script-body")
-		RobotScript after2 = new RobotScript("some-script", "some-script-body")
+		RobotScript before1 = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript before2 = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript after1 = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript after2 = RobotScript.builder().id("some-script").body("some-script-body").build()
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -304,11 +302,11 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Stops execution and returns correct aggregate results for pre/post script failure"() {
 		given:
-		RobotScript before1 = new RobotScript("some-script", "some-script-body")
-		RobotScript before2 = new RobotScript("some-script", "some-script-body")
-		RobotScript script = new RobotScript("some-script", "some-script-body")
-		RobotScript after1 = new RobotScript("some-script", "some-script-body")
-		RobotScript after2 = new RobotScript("some-script", "some-script-body")
+		RobotScript before1 = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript before2 = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript after1 = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript after2 = RobotScript.builder().id("some-script").body("some-script-body").build()
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -341,11 +339,11 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Stops execution and returns correct aggregate results for pre/post script error"() {
 		given:
-		RobotScript before1 = new RobotScript("some-script", "some-script-body")
-		RobotScript before2 = new RobotScript("some-script", "some-script-body")
-		RobotScript script = new RobotScript("some-script", "some-script-body")
-		RobotScript after1 = new RobotScript("some-script", "some-script-body")
-		RobotScript after2 = new RobotScript("some-script", "some-script-body")
+		RobotScript before1 = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript before2 = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript after1 = RobotScript.builder().id("some-script").body("some-script-body").build()
+		RobotScript after2 = RobotScript.builder().id("some-script").body("some-script-body").build()
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -381,7 +379,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 
 	void "Configures timeout when set"() {
 		given:
-		RobotScript script = new RobotScript("some-script", "some-script-body")
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
 
 		and:
 		Path workDir = Paths.get("/path/to/workDir/")
@@ -405,4 +403,61 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.timeout(Duration.ofMinutes(3)) >> executionCustomizer
 		1 * executionListener.beforeScriptExecution(workspace, Duration.ofMinutes(3))
 	}
+
+	void "Provides additional files from the RpaResource to the Workspace"() {
+		given:
+		RobotScript script = RobotScript.builder().id("some-script")
+				.body("some-script-body")
+				.file(Paths.get("one.resource"), "one.resource content".bytes)
+				.file(Paths.get("two/three.resource"), "three.resource content".bytes)
+				.file(Paths.get("/some/bad/path/four.resource"), "four.resource content".bytes)
+				.file(Paths.get("../../another/bad/path/five.resource"), "five.resource content".bytes)
+				.build()
+		
+		ExecutionCustomizer executionCustomizer = Mock()
+		io.notExists(_) >> true
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		Workspace workspace = new Workspace("workspace12456", workDir)
+
+		and:
+		envVarContributors.stream() >> { Stream.empty() }
+		
+		and:
+		executionCustomizer._(*_) >> executionCustomizer
+		workspaceVariablesManager.getVariables(workspace.id()) >> [:]
+		robotExecutionStrategy.executeRobot(_) >> { UnaryOperator<ExecutionCustomizer> customizer ->
+			customizer.apply(executionCustomizer)
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+
+		when:
+		ExecutionResults r = block service.execute(
+				script,
+				[],
+				[],
+				[rpaVar: 'rpa-var-value'],
+				null,
+				[executionListener],
+				[:],
+				null)
+
+		then:
+		1 * workspaceService.createWorkspace(null, [:]) >> workspace
+		1 * io.createDirectories(workDir.resolve("output"))
+		1 * io.createDirectories(workDir.resolve("robot_artifacts"))
+		1 * io.writeString(workDir.resolve("main.robot"), "some-script-body", _)
+		1 * io.write(workDir.resolve("variables.json"), objectMapper.writeValueAsBytes([rpaVar: 'rpa-var-value']), [])
+		
+		and:
+		1 * io.write(workDir.resolve("one.resource"), "one.resource content".bytes)
+		
+		and:
+		1 * io.createDirectories(workDir.resolve("two/"))
+		1 * io.write(workDir.resolve("two/three.resource"), "three.resource content".bytes)
+		0 * io.writeString({ it.toString().contains("four.resource") }, _)
+		0 * io.writeString({ it.toString().contains("five.resource") }, _)
+	}
+
 }

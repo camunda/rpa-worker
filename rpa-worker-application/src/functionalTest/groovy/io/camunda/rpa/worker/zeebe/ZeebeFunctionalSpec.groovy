@@ -3,6 +3,7 @@ package io.camunda.rpa.worker.zeebe
 import groovy.json.JsonOutput
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.files.api.StoreFilesRequest
+import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.util.IterableMultiPart
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
@@ -25,6 +26,7 @@ import reactor.core.publisher.Mono
 import spock.lang.Tag
 
 import java.nio.file.Files
+import java.nio.file.Paths
 import java.time.Duration
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -81,24 +83,43 @@ Do Nothing
 	No Operation
 '''
 	
+	static final String CHECK_ADDITIONAL_FILES_SCRIPT = '''\
+*** Settings ***
+Library    OperatingSystem
+
+*** Tasks ***
+Check
+	${fileContents1}    Get File    one.resource
+	${fileContents2}    Get File    two/three.resource
+	
+	Should Be Equal    ${fileContents1}    one.resource contents
+	Should Be Equal    ${fileContents2}    three.resource contents
+'''
+	
 	@Autowired
 	Environment environment
 
 	CountDownLatch handlerDidFinish = new CountDownLatch(1)
 
 	@Override
-	Map<String, String> getScripts() {
+	List<RobotScript> getScripts() {
 		return [
-		        "existing_1": SAMPLE_ROBOT_SCRIPT,
-				"erroring_1": ERRORING_ROBOT_SCRIPT,
-				"companion_1": COMPANION_ROBOT_SCRIPT_TEMPLATE("pre0"),
-		        "companion_2": COMPANION_ROBOT_SCRIPT_TEMPLATE("pre1"),
-		        "companion_3": COMPANION_ROBOT_SCRIPT_TEMPLATE("post0"),
-		        "companion_4": COMPANION_ROBOT_SCRIPT_TEMPLATE("post1"),
-				"slow_15s": SLOW_ROBOT_SCRIPT_TEMPLATE(15),
-		        "slow_8s": SLOW_ROBOT_SCRIPT_TEMPLATE(8),
-				"env_check": ENV_CHECK_ROBOT_SCRIPT,
-				"do_nothing": DO_NOTHING_SCRIPT
+		        RobotScript.builder().id("existing_1").body(SAMPLE_ROBOT_SCRIPT).build(),
+		        RobotScript.builder().id("erroring_1").body(ERRORING_ROBOT_SCRIPT).build(),
+		        RobotScript.builder().id("companion_1").body(COMPANION_ROBOT_SCRIPT_TEMPLATE("pre0")).build(),
+		        RobotScript.builder().id("companion_2").body(COMPANION_ROBOT_SCRIPT_TEMPLATE("pre1")).build(),
+		        RobotScript.builder().id("companion_3").body(COMPANION_ROBOT_SCRIPT_TEMPLATE("post0")).build(),
+		        RobotScript.builder().id("companion_4").body(COMPANION_ROBOT_SCRIPT_TEMPLATE("post1")).build(),
+		        RobotScript.builder().id("slow_15s").body(SLOW_ROBOT_SCRIPT_TEMPLATE(15)).build(),
+		        RobotScript.builder().id("slow_8s").body(SLOW_ROBOT_SCRIPT_TEMPLATE(8)).build(),
+		        RobotScript.builder().id("env_check").body(ENV_CHECK_ROBOT_SCRIPT).build(),
+		        RobotScript.builder().id("do_nothing").body(DO_NOTHING_SCRIPT).build(),
+		        RobotScript.builder()
+				        .id("has_additional_files")
+				        .body(CHECK_ADDITIONAL_FILES_SCRIPT)
+				        .file(Paths.get("one.resource"), "one.resource contents".bytes)
+				        .file(Paths.get("two/three.resource"), "three.resource contents".bytes)
+				        .build(),
 		]
 	}
 
@@ -315,9 +336,6 @@ Do Nothing
 		}
 		
 		and:
-
-
-		and:
 		zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Stub(CompleteJobCommandStep1) {
 			send() >> {
 				handlersDidFinish.countDown()
@@ -428,6 +446,37 @@ Assert input variable
 		}
 	}
 	
+	void "Makes additional files available in the Workspace"() {
+		given:
+		withNoSecrets()
+
+		when:
+		zeebeJobService.handleJob(anRpaJob([:], "has_additional_files")).subscribe()
+		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
+
+		then:
+		1 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+			1 * updateTimeout(environment.getRequiredProperty("camunda.rpa.robot.default-timeout", Duration)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
+				1 * send()
+			}
+		}
+
+		and:
+		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			1 * send() >> {
+				handlerDidFinish.countDown()
+				return null
+			}
+		}
+
+		and:
+		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+			1 * variables([:]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+			}
+		}
+	}
+
 	static class ZeebeScriptSourceFunctionalSpec extends AbstractZeebeFunctionalSpec  {
 		
 		CountDownLatch handlerDidFinish = new CountDownLatch(1)
