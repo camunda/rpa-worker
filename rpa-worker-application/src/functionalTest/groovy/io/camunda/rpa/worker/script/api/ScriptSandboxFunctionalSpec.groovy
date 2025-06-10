@@ -7,6 +7,7 @@ import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.secrets.SecretsService
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
+import io.camunda.rpa.worker.zeebe.RpaResource
 import org.spockframework.spring.SpringBean
 import org.spockframework.spring.SpringSpy
 import org.springframework.http.HttpHeaders
@@ -37,7 +38,7 @@ class ScriptSandboxFunctionalSpec extends AbstractFunctionalSpec implements Publ
 		when:
 		ResponseEntity<ValidationFailureDto> resp = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder().build()))
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder().build()))
 				.exchangeToMono(toResponseEntity(ValidationFailureDto))
 
 		then:
@@ -52,7 +53,7 @@ class ScriptSandboxFunctionalSpec extends AbstractFunctionalSpec implements Publ
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Settings ***
 Library    Camunda
@@ -80,7 +81,7 @@ Set an output variable
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Tasks ***
 Assert input variable
@@ -101,7 +102,7 @@ Assert input variable
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Nothing ***
 Nothing
@@ -136,7 +137,7 @@ Nothing
 		2.times {
 			post()
 					.uri("/script/evaluate")
-					.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+					.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 							.script(script)
 							.build()))
 					.retrieve()
@@ -174,7 +175,7 @@ Nothing
 		when:
 		post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script(script)
 						.workspaceAffinityKey("one")
 						.build()))
@@ -184,7 +185,7 @@ Nothing
 		2.times {
 			post()
 					.uri("/script/evaluate")
-					.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+					.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 							.script(script)
 							.workspaceAffinityKey("two")
 							.build()))
@@ -211,7 +212,7 @@ Nothing
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Settings ***
 Library    OperatingSystem
@@ -266,7 +267,7 @@ Assert input variable
 		when:
 		EvaluateScriptResponse response = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Settings ***
 Library    OperatingSystem
@@ -292,7 +293,7 @@ Assert input variable
 		when:
 		EvaluateScriptResponse response = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Settings ***
 Library    OperatingSystem
@@ -322,7 +323,7 @@ Assert input variable
 			when:
 			EvaluateScriptResponse r = post()
 					.uri("/script/evaluate")
-					.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+					.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 							.script('''\
 *** Tasks ***
 Tasks
@@ -343,7 +344,7 @@ Tasks
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Tasks ***
 One
@@ -368,7 +369,7 @@ Two
 			when:
 			EvaluateScriptResponse r = post()
 					.uri("/script/evaluate")
-					.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+					.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 							.script('''\
 *** Tasks ***
 One
@@ -386,5 +387,34 @@ Two
 			r.log().contains('one != two')
 			r.log().contains('three != four')
 		}
+	}
+
+	void "Evaluates RPA Resource, returns correct result object (Proc OK, Robot OK, Tasks OK)"() {
+		when:
+		EvaluateScriptResponse r = post()
+				.uri("/script/evaluate")
+				.header(HttpHeaders.CONTENT_TYPE, "application/vnd.camunda.rpa+json")
+				.body(BodyInserters.fromValue(EvaluateRichScriptRequest.builder()
+						.rpa(RpaResource.builder().script('''\
+*** Settings ***
+Library    Camunda
+
+*** Tasks ***
+Assert input variable
+    Should Be Equal    ${expectedInputVariable}    expected-input-variable-value
+
+Set an output variable
+    Set Output Variable     anOutputVariable      output-variable-value
+''').build())
+						.variables([expectedInputVariable: 'expected-input-variable-value'])
+						.build()))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+				.block(Duration.ofMinutes(1))
+
+		then:
+		r.result() == ExecutionResults.Result.PASS
+		r.log().contains("[STDOUT] Assert input variable")
+		r.variables() == [anOutputVariable: 'output-variable-value']
 	}
 }

@@ -4,6 +4,7 @@ import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.robot.ExecutionResults;
 import io.camunda.rpa.worker.robot.RobotService;
 import io.camunda.rpa.worker.script.RobotScript;
+import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.rpa.worker.workspace.WorkspaceFile;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
@@ -39,20 +40,32 @@ class ScriptSandboxController {
 	private final IO io;
 	private final ScriptSandboxProperties sandboxProperties;
 
-	@PostMapping
-	public Mono<ResponseEntity<EvaluateScriptResponse>> evaluateScript(@RequestBody @Valid EvaluateScriptRequest request) {
+	@PostMapping(consumes = "application/json")
+	public Mono<ResponseEntity<EvaluateScriptResponse>> evaluateRawScript(@RequestBody @Valid EvaluateRawScriptRequest request) {
+		return evaluateScript(RobotScript.builder()
+				.id("_eval_")
+				.body(request.script())
+				.build(), request);
+	}
 
+	@PostMapping(consumes = "application/vnd.camunda.rpa+json")
+	public Mono<ResponseEntity<EvaluateScriptResponse>> evaluateRichScript(@RequestBody @Valid EvaluateRichScriptRequest request) {
+		return ScriptRepository.resourceToScript(io, request.rpa())
+				.map(script -> script.toBuilder().id("_eval_").build())
+				.flatMap(script -> evaluateScript(script, request));
+	}
+	
+	private Mono<ResponseEntity<EvaluateScriptResponse>> evaluateScript(RobotScript script, EvaluateScriptRequest request) {
 		if ( ! sandboxProperties.enabled())
 			return Mono.just(ResponseEntity.notFound().build());
 
-		return doEvaluateScript(request)
+		return doEvaluateScript(script, request)
 				.map(ResponseEntity::ok);
 	}
-
-	private Mono<EvaluateScriptResponse> doEvaluateScript(EvaluateScriptRequest request) {
+	
+	private Mono<EvaluateScriptResponse> doEvaluateScript(RobotScript robotScript, EvaluateScriptRequest request) {
 		log.atInfo().log("Received script for sandbox evaluation");
-
-		RobotScript robotScript = RobotScript.builder().id("_eval_").body(request.script()).build();
+		
 		return robotService.execute(robotScript, request.variables(), null, Collections.singletonList(workspaceCleanupService::preserveLast), request.workspaceAffinityKey())
 
 				.doOnSuccess(xr -> log.atInfo().kv("result", xr.result()).log("Returning sandbox execution results"))
