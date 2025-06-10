@@ -5,7 +5,7 @@ import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.robot.ExecutionResults
-import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
+import io.camunda.rpa.worker.script.api.EvaluateRawScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
 import io.camunda.rpa.worker.secrets.SecretsService
 import io.camunda.rpa.worker.util.IterableMultiPart
@@ -81,7 +81,7 @@ Do Nothing
 		when:
 		EvaluateScriptResponse response = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
+				.body(BodyInserters.fromValue(new EvaluateRawScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
 		.block()
@@ -129,7 +129,7 @@ Do Nothing
 		when:
 		EvaluateScriptResponse response = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateScriptRequest(DO_NOTHING_SCRIPT, [:], null)))
+				.body(BodyInserters.fromValue(new EvaluateRawScriptRequest(DO_NOTHING_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
 
@@ -192,7 +192,7 @@ Do Nothing
 		when:
 		EvaluateScriptResponse response = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
+				.body(BodyInserters.fromValue(new EvaluateRawScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
 
@@ -244,7 +244,7 @@ Test
 		when:
 		EvaluateScriptResponse response = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateScriptRequest(UPLOAD_FILES_WITH_UNNORMALISED_PATHS_SCRIPT, [:], null)))
+				.body(BodyInserters.fromValue(new EvaluateRawScriptRequest(UPLOAD_FILES_WITH_UNNORMALISED_PATHS_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
 
@@ -302,7 +302,7 @@ Main
 		when:
 		EvaluateScriptResponse response = block post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateScriptRequest(UPLOAD_FILES_WITH_ABSOLUTE_PATHS_SCRIPT, [:], null)))
+				.body(BodyInserters.fromValue(new EvaluateRawScriptRequest(UPLOAD_FILES_WITH_ABSOLUTE_PATHS_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
 
