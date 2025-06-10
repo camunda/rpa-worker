@@ -2,7 +2,7 @@ package io.camunda.rpa.worker.secrets
 
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.robot.ExecutionResults
-import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
+import io.camunda.rpa.worker.script.api.EvaluateRawScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
 import org.springframework.web.reactive.function.BodyInserters
 import spock.lang.Ignore
@@ -35,7 +35,7 @@ class CamundaSecretsE2ESpec extends AbstractE2ESpec {
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Settings ***
 Library    Camunda
