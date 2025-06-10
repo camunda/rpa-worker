@@ -1,7 +1,7 @@
 package io.camunda.rpa.worker.robot
 
 import io.camunda.rpa.worker.AbstractE2ESpec
-import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
+import io.camunda.rpa.worker.script.api.EvaluateRawScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
 import org.springframework.web.reactive.function.BodyInserters
 import spock.lang.Ignore
@@ -39,7 +39,7 @@ abstract class SmokeTestsE2ESpec extends AbstractE2ESpec {
 
 	private static evaluateScriptRequest(String scriptName) {
 		String script = SmokeTestsE2ESpec.classLoader.getResource(scriptName + ".robot").text
-		return EvaluateScriptRequest.builder()
+		return EvaluateRawScriptRequest.builder()
 				.script(script)
 				.build()
 	}

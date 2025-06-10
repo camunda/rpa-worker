@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.zeebe;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.time.Duration;
 class ZeebeResourceScriptRepository implements ScriptRepository {
 
 	private final ResourceClient resourceClient;
+	private final IO io;
 	
 	/**
 	 * The script cache. 
@@ -40,7 +42,7 @@ class ZeebeResourceScriptRepository implements ScriptRepository {
 
 	private Mono<RobotScript> doFindById(String id) {
 		return resourceClient.getRpaResource(id)
-				.map(rpa -> new RobotScript(rpa.id(), rpa.script()))
+				.flatMap(rpa -> ScriptRepository.resourceToScript(io, rpa))
 				.cache();
 	}
 }

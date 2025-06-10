@@ -4,7 +4,7 @@ import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.robot.ExecutionResults
-import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
+import io.camunda.rpa.worker.script.api.EvaluateRawScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
 import io.camunda.rpa.worker.secrets.SecretsService
 import org.spockframework.spring.SpringBean
@@ -28,7 +28,7 @@ class ZeebeStubFunctionalSpec extends AbstractFunctionalSpec implements Publishe
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Settings ***
 Library    Camunda
@@ -78,7 +78,7 @@ STUB: DocumentClient→uploadDocument
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Settings ***
 Library    Camunda
@@ -118,7 +118,7 @@ STUB: DocumentClient→getDocument
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script('''\
 *** Settings ***
 Library    Camunda
