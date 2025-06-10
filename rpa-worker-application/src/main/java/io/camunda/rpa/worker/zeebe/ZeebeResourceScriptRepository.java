@@ -5,19 +5,11 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
-import io.camunda.rpa.worker.util.ArchiveUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
-import java.util.Collections;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Repository
 @RequiredArgsConstructor
@@ -49,22 +41,8 @@ class ZeebeResourceScriptRepository implements ScriptRepository {
 	}
 
 	private Mono<RobotScript> doFindById(String id) {
-		Function<Map<String, String>, Mono<Map<Path, byte[]>>> filesSupplier = raw -> {
-			if (raw == null) return Mono.just(Collections.emptyMap());
-
-			return Flux.fromIterable(raw.entrySet())
-					.flatMap(kv ->
-							ArchiveUtils.inflateBase64(io, kv.getValue())
-									.map(bytes -> Map.entry(Paths.get(kv.getKey()), bytes)))
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-		};
-
 		return resourceClient.getRpaResource(id)
-				.flatMap(rpa -> Mono.just(RobotScript.builder()
-								.id(rpa.id())
-								.body(rpa.script()))
-						.zipWhen(_ -> filesSupplier.apply(rpa.files()), RobotScript.RobotScriptBuilder::files)
-						.map(RobotScript.RobotScriptBuilder::build))
+				.flatMap(rpa -> ScriptRepository.resourceToScript(io, rpa))
 				.cache();
 	}
 }
