@@ -458,5 +458,22 @@ Check
 			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
 		}
 	}
+
+	void "Runs deployed script with additional files - large RPA resource"() {
+		given:
+		deployResource("large_rpa_resource")
+
+		and:
+		deploySimpleRobotProcess('large_rpa_resource_on_default', 'large_rpa_resource')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("large_rpa_resource_on_default")
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+	}
 }
 	
