@@ -183,6 +183,15 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				.join()
 	}
 
+	DeploymentEvent deployResource(String resource) {
+		return getClass().getResource("/${resource}.rpa").withInputStream { ins ->
+			return zeebeClient.newDeployResourceCommand()
+					.addResourceStream(ins, resource + ".rpa")
+					.send()
+					.join()
+		}
+	}
+
 	DeploymentEvent deployProcess(String process) {
 		return zeebeClient.newDeployResourceCommand()
 				.addResourceFromClasspath("${process}.bpmn")
