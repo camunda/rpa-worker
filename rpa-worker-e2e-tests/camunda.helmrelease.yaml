@@ -19,12 +19,12 @@ spec:
         host: "camunda.local"
         className: "traefik"
       image:
-        tag: "8.7.0-SNAPSHOT"
+        tag: "8.7.0"
     
     identity:
       contextPath: "/identity"
       image:
-        tag: "8.7.0-alpha4"
+        tag: "8.7.0"
       env:
       - name: KEYCLOAK_CLIENTS_2_ID
         value: e2e
@@ -68,7 +68,7 @@ spec:
       replicationFactor: 1
       pvcSize: 10Gi
       image:
-        tag: "8.7.0-SNAPSHOT"
+        tag: "8.7.0"
       resources:
         requests:
           cpu: 1m
@@ -86,7 +86,7 @@ spec:
         host: "zeebe.camunda.local"
         className: "traefik"
       image:
-        tag: "8.7.0-SNAPSHOT"
+        tag: "8.7.0"
       resources:
         requests:
           cpu: 1m
@@ -115,7 +115,7 @@ spec:
       migration:
         enabled: false
       image:
-        tag: "8.7.0-SNAPSHOT"
+        tag: "8.7.0"
       requests:
         cpu: 1m
         memory: 1m
