@@ -25,7 +25,10 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/EvaluateScriptRequest'
+              $ref: '#/components/schemas/EvaluateRawScriptRequest'
+          'application/vnd.camunda.rpa+json':
+            schema:
+              $ref: '#/components/schemas/EvaluateRichScriptRequest'
       responses:
         200:
           description: Script was executed successfully
@@ -269,7 +272,7 @@ components:
         rejectedValue: 
           type: any
       
-    EvaluateScriptRequest:
+    EvaluateRawScriptRequest:
       type: object
       properties: 
         script:
@@ -284,6 +287,42 @@ components:
           description: |
             An arbitrary string used to group executions together so as to influence the preserve-last behaviour for
             Workspace cleanup
+            
+            
+    EvaluateRichScriptRequest:
+      type: object
+      properties:
+        rpa:
+          description: The RPA Resource to be executed
+          $ref: '#/components/schemas/RpaResource'
+        variables:
+          type: object
+          description: Input variables for the execution
+          additionalProperties: { }
+        workspaceAffinityKey:
+          type: string
+          description: |
+            An arbitrary string used to group executions together so as to influence the preserve-last behaviour for
+            Workspace cleanup
+    
+    RpaResource:
+      type: object
+      properties: 
+        id:
+          type: string
+        name:
+          type: string
+        executionPlatform:
+          type: string
+        executionPlatformVersion:
+          type: string
+        script:
+          type: string
+          description: The contents of the main Robot script file
+        files:
+          type: object
+          description: Map of path to base64-encoded, gzipped, additional files
+          additionalProperties: {}
     
     EvaluateScriptResponse:
       type: object

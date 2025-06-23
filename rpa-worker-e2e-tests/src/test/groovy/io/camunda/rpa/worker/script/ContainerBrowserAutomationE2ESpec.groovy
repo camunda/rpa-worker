@@ -2,7 +2,7 @@ package io.camunda.rpa.worker.script
 
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.robot.ExecutionResults
-import io.camunda.rpa.worker.script.api.EvaluateScriptRequest
+import io.camunda.rpa.worker.script.api.EvaluateRawScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
 import org.springframework.web.reactive.function.BodyInserters
 import org.springframework.web.reactive.function.client.WebClient
@@ -37,7 +37,7 @@ class ContainerBrowserAutomationE2ESpec extends AbstractE2ESpec {
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script(scriptBody)
 						.build()))
 				.retrieve()
@@ -55,7 +55,7 @@ class ContainerBrowserAutomationE2ESpec extends AbstractE2ESpec {
 		when:
 		EvaluateScriptResponse r = post()
 				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(EvaluateScriptRequest.builder()
+				.body(BodyInserters.fromValue(EvaluateRawScriptRequest.builder()
 						.script(scriptBody)
 						.build()))
 				.retrieve()

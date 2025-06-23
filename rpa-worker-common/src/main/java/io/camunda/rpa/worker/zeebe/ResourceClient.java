@@ -2,10 +2,11 @@ package io.camunda.rpa.worker.zeebe;
 
 import feign.Param;
 import feign.RequestLine;
-import reactor.core.publisher.Mono;
+import org.springframework.core.io.buffer.DataBuffer;
+import reactor.core.publisher.Flux;
 
 interface ResourceClient {
 	@RequestLine("GET /resources/{resourceKey}/content")
-	Mono<RpaResource> getRpaResource(
+	Flux<DataBuffer> getRpaResource(
 			@Param("resourceKey") String resourceKey);
 }
