@@ -10,9 +10,11 @@ class ZeebeAuthenticationServiceSpec extends Specification implements PublisherU
 	static String audience = "SOME_AUDIENCE"
 
 	AuthClient authClient = Mock()
+	C8RunAuthClient c8RunAuthClient = Mock()
+	ZeebeProperties zeebeProperties = ZeebeProperties.builder().authMethod(ZeebeProperties.AuthMethod.TOKEN).build()
 
 	@Subject
-	ZeebeAuthenticationService service = new ZeebeAuthenticationService(authClient)
+	ZeebeAuthenticationService service = new ZeebeAuthenticationService(authClient, c8RunAuthClient, zeebeProperties)
 
 	void "Uses cached authentication token"() {
 		when:

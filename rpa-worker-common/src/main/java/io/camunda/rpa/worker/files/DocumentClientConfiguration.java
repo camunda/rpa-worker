@@ -10,29 +10,31 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthProperties;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
+import io.camunda.rpa.worker.zeebe.ZeebeProperties;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactivefeign.webclient.WebReactiveFeign;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Configuration
 @RequiredArgsConstructor
+@Slf4j
 class DocumentClientConfiguration {
 
 	private final CamundaClientProperties camundaClientProperties;
 	private final ZeebeAuthProperties zeebeAuthProperties;
 	private final ObjectProvider<ZeebeAuthenticationService> zeebeAuthenticationService;
+	private final ZeebeProperties zeebeProperties;
 
 	@Bean
 	public DocumentClient documentClient(WebClient.Builder webClientBuilder) {
@@ -40,13 +42,11 @@ class DocumentClientConfiguration {
 				zeebeAuthProperties.clientId(), 
 				zeebeAuthProperties.clientSecret(), 
 				camundaClientProperties.getZeebe().getAudience());
-
+		
+		
 		DocumentClient client = WebReactiveFeign
 				.<DocumentClient>builder(webClientBuilder)
-				.addRequestInterceptor(reactiveHttpRequest -> authenticator
-						.doOnNext(token -> reactiveHttpRequest
-								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
-						.thenReturn(reactiveHttpRequest))
+				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
 				.target(DocumentClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
 		
 		return new RetryingDocumentClientWrapper(client);

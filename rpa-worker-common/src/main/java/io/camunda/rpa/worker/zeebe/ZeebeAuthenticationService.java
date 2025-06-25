@@ -1,33 +1,53 @@
 package io.camunda.rpa.worker.zeebe;
 
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
+import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Mono;
 
+import java.net.HttpCookie;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
 public class ZeebeAuthenticationService {
 	
 	private final AuthClient authClient;
+	private final C8RunAuthClient c8RunAuthClient;
+	private final ZeebeProperties zeebeProperties;
+	
+	private final Duration cookieRefreshTime;
 	
 	private final Map<Authentication, Mono<String>> tokens = new ConcurrentHashMap<>();
 
 	private record TokenWithAbsoluteExpiry(String token, Instant expiry) { }
 	private record Authentication(String client, String clientSecret, String audience) {}
 
+	@Autowired
+	public ZeebeAuthenticationService(AuthClient authClient, C8RunAuthClient c8RunAuthClient, ZeebeProperties zeebeProperties) {
+		this(authClient, c8RunAuthClient, zeebeProperties, Duration.ofSeconds(90));
+	}
+
 	public Mono<String> getAuthToken(String client, String clientSecret, String audience) {
 		Authentication authentication = new Authentication(client, clientSecret, audience);
-		return tokens.computeIfAbsent(authentication, this::createAuthenticator);
+		return tokens.computeIfAbsent(authentication, zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.TOKEN 
+				? this::createAuthenticator 
+				: this::createCookieAuthenticator);
 	}
 
 	private Mono<String> createAuthenticator(Authentication authentication) {
-		return Mono.defer(() -> authClient.authenticate(new AuthClient.AuthenticationRequest(
+		return doCreateAuthenticator(() -> authClient.authenticate(new AuthClient.AuthenticationRequest(
 								authentication.client(),
 								authentication.clientSecret(),
 								authentication.audience(),
@@ -35,12 +55,31 @@ public class ZeebeAuthenticationService {
 
 						.doOnSubscribe(_ -> log.atInfo()
 								.kv("audience", authentication.audience())
-								.log("Refreshing auth token")))
+								.log("Refreshing auth token")),
 
-				.map(resp -> new TokenWithAbsoluteExpiry(
+				resp -> new TokenWithAbsoluteExpiry(
 						resp.accessToken(),
-						Instant.now().minusSeconds(60).plusSeconds(resp.expiresIn())))
+						Instant.now().minusSeconds(60).plusSeconds(resp.expiresIn())));
+	}
 
+	private Mono<String> createCookieAuthenticator(Authentication authentication) {
+		return doCreateAuthenticator(() -> c8RunAuthClient.login(authentication.client(), authentication.clientSecret())
+
+						.doOnSubscribe(_ -> log.atInfo()
+								.kv("username", authentication.client())
+								.log("Refreshing auth cookie")),
+
+				r -> new TokenWithAbsoluteExpiry(HttpHeaders.readOnlyHttpHeaders(MultiValueMap.fromMultiValue(r.headers()))
+						.get(HttpHeaders.SET_COOKIE).stream()
+						.flatMap(header -> HttpCookie.parse(header).stream())
+						.collect(Collectors.toMap(HttpCookie::getName, HttpCookie::getValue))
+						.get("OPERATE-SESSION"),
+						Instant.now().plus(cookieRefreshTime)));
+	}
+	
+	private <R> Mono<String> doCreateAuthenticator(Supplier<Mono<R>> fetcher, Function<R, TokenWithAbsoluteExpiry> handler) {
+		return Mono.defer(fetcher)
+				.map(handler)
 				.cacheInvalidateIf(token -> token.expiry().isBefore(Instant.now()))
 				.map(TokenWithAbsoluteExpiry::token);
 	}

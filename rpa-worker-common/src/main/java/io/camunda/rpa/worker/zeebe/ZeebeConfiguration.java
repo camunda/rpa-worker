@@ -21,13 +21,11 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactivefeign.webclient.WebReactiveFeign;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,7 +47,15 @@ class ZeebeConfiguration {
 		return auth -> target.authenticate(
 				objectMapper.convertValue(auth, new TypeReference<>() {}));
 	}
-	
+
+
+	@Bean
+	public C8RunAuthClient c8RunAuthClient(WebClient.Builder webClientBuilder) {
+		return WebReactiveFeign
+				.<C8RunAuthClient>builder(webClientBuilder)
+				.target(C8RunAuthClient.class, camundaClientProperties.getZeebe().getBaseUrl().toString());
+	}
+
 	@Bean
 	public ResourceClient resourceClient(WebClient.Builder webClientBuilder) {
 		Mono<String> authenticator = zeebeAuthenticationService.getObject().getAuthToken(
@@ -59,10 +65,7 @@ class ZeebeConfiguration {
 		
 		return WebReactiveFeign
 				.<ResourceClient>builder(webClientBuilder)
-				.addRequestInterceptor(reactiveHttpRequest -> authenticator
-						.doOnNext(token -> reactiveHttpRequest
-								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
-						.thenReturn(reactiveHttpRequest))
+				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
 				.target(ResourceClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
 	}
 
@@ -117,6 +120,6 @@ class ZeebeConfiguration {
 		
 		boolean clientModeConfigured = Optional.ofNullable(camundaClientProperties.getMode()).isPresent();
 		
-		return () -> zeebeEnabled && clientModeConfigured;
+		return () -> (zeebeEnabled && clientModeConfigured) || zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.COOKIE;
 	}
 }
