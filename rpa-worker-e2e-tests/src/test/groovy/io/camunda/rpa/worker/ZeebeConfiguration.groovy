@@ -40,9 +40,11 @@ class ZeebeConfiguration {
 				?: "e2e-client-secret"
 
 		configProperties['json.logging.enabled'] = 'false'
-		configProperties["camunda.client.mode"] = "selfmanaged"
-		configProperties["camunda.client.auth.client-id"] = "zeebe"
-		configProperties["camunda.client.auth.client-secret"] = clientSecret
+		if(overrides['camunda.rpa.zeebe.auth-method'] != "cookie") {
+			configProperties["camunda.client.mode"] = "selfmanaged"
+			configProperties["camunda.client.auth.client-id"] = "zeebe"
+			configProperties["camunda.client.auth.client-secret"] = clientSecret
+		}
 		configProperties["camunda.client.auth.operate-secret"] = operateSecret
 		configProperties["camunda.client.zeebe.rest-address"] = "http://zeebe.${camundaHost}"
 		configProperties["camunda.client.zeebe.grpc-address"] = "http://zeebe.${camundaHost}"

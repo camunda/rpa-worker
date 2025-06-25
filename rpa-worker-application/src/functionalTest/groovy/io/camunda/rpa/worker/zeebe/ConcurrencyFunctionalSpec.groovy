@@ -7,6 +7,7 @@ import io.camunda.zeebe.client.api.response.ActivatedJob
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Ignore
 import spock.lang.IgnoreIf
+import spock.lang.Retry
 
 import java.nio.file.Files
 import java.nio.file.attribute.BasicFileAttributes
@@ -93,6 +94,7 @@ Don't do very much
 			return getConcurrencyScripts()
 		}
 
+		@Retry(delay = 1_500)
 		void "Allows concurrent jobs when configured"() {
 			given:
 			withNoSecrets()

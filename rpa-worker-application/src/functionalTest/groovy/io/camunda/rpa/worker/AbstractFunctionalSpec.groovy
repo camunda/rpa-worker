@@ -22,6 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
+import spock.lang.Shared
 import spock.lang.Specification
 
 import java.util.function.Function
@@ -58,16 +59,19 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 		return $$webClient
 	}
 
-	MockWebServer zeebeAuth = new MockWebServer().tap {
-		start(ZEEBE_MOCK_AUTH_PORT)
+	@Shared
+	MockWebServer zeebeAuth = new MockWebServer()
+	@Shared
+	MockWebServer zeebeSecrets = new MockWebServer()
+	@Shared
+	MockWebServer zeebeApi = new MockWebServer()
+
+	void setupSpec() {
+		zeebeAuth.start(ZEEBE_MOCK_AUTH_PORT)
+		zeebeSecrets.start(ZEEBE_MOCK_SECRETS_PORT)
+		zeebeApi.start(ZEEBE_MOCK_API_PORT)
 	}
-	MockWebServer zeebeSecrets = new MockWebServer().tap {
-		start(ZEEBE_MOCK_SECRETS_PORT)
-	}
-	MockWebServer zeebeApi = new MockWebServer().tap {
-		start(ZEEBE_MOCK_API_PORT)
-	}
-	
+
 	void bypassZeebeAuth() {
 		zeebeAuth.setDispatcher(new Dispatcher() {
 			@Override
@@ -125,7 +129,7 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 		})
 	}
 
-	void cleanup() {
+	void cleanupSpec() {
 		zeebeAuth.close()
 		zeebeSecrets.close()
 		zeebeApi.close()
