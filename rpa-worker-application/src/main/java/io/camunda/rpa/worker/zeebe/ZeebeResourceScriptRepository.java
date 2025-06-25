@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -12,6 +13,7 @@ import java.time.Duration;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 class ZeebeResourceScriptRepository implements ScriptRepository {
 
 	private final ResourceClient resourceClient;
@@ -40,6 +42,10 @@ class ZeebeResourceScriptRepository implements ScriptRepository {
 
 	private Mono<RobotScript> doFindById(String id) {
 		return resourceClient.getRpaResource(id)
+				.doOnError(thrown -> log.atDebug()
+						.kv("scriptId", id)
+						.setCause(thrown)
+						.log("Error response fetching script resource from Zeebe"))
 				.map(rpa -> new RobotScript(rpa.id(), rpa.script()))
 				.cache();
 	}

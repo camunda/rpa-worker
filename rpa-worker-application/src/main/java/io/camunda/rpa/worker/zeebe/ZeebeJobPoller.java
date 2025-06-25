@@ -80,7 +80,7 @@ class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 										.log("Error polling Zeebe for jobs"))
 								.onErrorReturn(Collections::emptyList)
 
-								.doOnSubscribe(_ -> log.atDebug()
+								.doOnSubscribe(_ -> log.atTrace()
 										.kv("jobType", jobType)
 										.log("Polling for job"))
 
