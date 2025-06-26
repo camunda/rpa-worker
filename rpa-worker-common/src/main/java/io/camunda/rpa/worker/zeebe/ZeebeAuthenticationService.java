@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.zeebe;
 
+import io.camunda.rpa.worker.util.HttpHeaderUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +42,12 @@ public class ZeebeAuthenticationService {
 
 	public Mono<String> getAuthToken(String client, String clientSecret, String audience) {
 		Authentication authentication = new Authentication(client, clientSecret, audience);
-		return tokens.computeIfAbsent(authentication, zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.TOKEN 
-				? this::createAuthenticator 
-				: this::createCookieAuthenticator);
+		return tokens.computeIfAbsent(authentication, a -> switch(zeebeProperties.authMethod()) {
+			case TOKEN -> createAuthenticator(a);
+			case COOKIE -> createCookieAuthenticator(a);
+			case BASIC -> Mono.just(HttpHeaderUtils.basicAuth(a.client(), a.clientSecret()));
+			case NONE -> Mono.empty();
+		});
 	}
 
 	private Mono<String> createAuthenticator(Authentication authentication) {
