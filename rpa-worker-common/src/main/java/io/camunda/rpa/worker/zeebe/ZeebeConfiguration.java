@@ -120,6 +120,7 @@ class ZeebeConfiguration {
 		
 		boolean clientModeConfigured = Optional.ofNullable(camundaClientProperties.getMode()).isPresent();
 		
-		return () -> (zeebeEnabled && clientModeConfigured) || zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.COOKIE;
+		return () -> (zeebeEnabled && clientModeConfigured) ||
+				(zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.COOKIE || zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.NONE);
 	}
 }
