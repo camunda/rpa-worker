@@ -33,6 +33,10 @@ public record ZeebeProperties(
 						.doOnNext(token -> req
 								.headers().put(HttpHeaders.COOKIE, Collections.singletonList("OPERATE-SESSION=%s".formatted(token))))
 						.thenReturn(req)),
+
+		BASIC((auth, req) -> auth.doOnNext(h -> req
+						.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList(h)))
+				.thenReturn(req)),
 		
 		NONE((_, req) -> Mono.just(req));
 		

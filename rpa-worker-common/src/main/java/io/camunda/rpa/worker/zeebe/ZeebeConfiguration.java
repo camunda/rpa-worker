@@ -12,8 +12,12 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.camunda.rpa.worker.util.HttpHeaderUtils;
 import io.camunda.zeebe.spring.client.actuator.ZeebeClientHealthIndicator;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
+import io.grpc.ClientInterceptor;
+import io.grpc.Metadata;
+import io.grpc.stub.MetadataUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -21,6 +25,7 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactivefeign.webclient.WebReactiveFeign;
 import reactor.core.publisher.Mono;
@@ -117,10 +122,18 @@ class ZeebeConfiguration {
 	public ZeebeClientStatus zeebeClientStatus() {
 		boolean zeebeEnabled = Optional.ofNullable(camundaClientProperties.getZeebe().getEnabled())
 				.orElse(false);
-		
+
 		boolean clientModeConfigured = Optional.ofNullable(camundaClientProperties.getMode()).isPresent();
-		
-		return () -> (zeebeEnabled && clientModeConfigured) ||
-				(zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.COOKIE || zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.NONE);
+
+		return () -> (zeebeEnabled && clientModeConfigured) || zeebeProperties.authMethod() != ZeebeProperties.AuthMethod.TOKEN;
+	}
+	
+	@Bean
+	public ClientInterceptor grpcAuthenticatingClientInterceptor(ZeebeProperties zeebeProperties) {
+		Metadata m = new Metadata();
+		if(zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.BASIC)
+			m.put(Metadata.Key.of(HttpHeaders.AUTHORIZATION, Metadata.ASCII_STRING_MARSHALLER), 
+					HttpHeaderUtils.basicAuth(zeebeAuthProperties.clientId(), zeebeAuthProperties.clientSecret()));
+		return MetadataUtils.newAttachHeadersInterceptor(m);
 	}
 }
