@@ -32,7 +32,9 @@ public record ZeebeProperties(
 		COOKIE((auth, req) -> auth
 						.doOnNext(token -> req
 								.headers().put(HttpHeaders.COOKIE, Collections.singletonList("OPERATE-SESSION=%s".formatted(token))))
-						.thenReturn(req));
+						.thenReturn(req)),
+		
+		NONE((_, req) -> Mono.just(req));
 		
 		private final BiFunction<Mono<String>, ReactiveHttpRequest, Mono<ReactiveHttpRequest>> interceptor;
 
