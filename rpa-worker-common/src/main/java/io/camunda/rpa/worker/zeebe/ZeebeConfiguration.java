@@ -12,8 +12,12 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.camunda.rpa.worker.util.HttpHeaderUtils;
 import io.camunda.zeebe.spring.client.actuator.ZeebeClientHealthIndicator;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
+import io.grpc.ClientInterceptor;
+import io.grpc.Metadata;
+import io.grpc.stub.MetadataUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -27,7 +31,6 @@ import reactivefeign.webclient.WebReactiveFeign;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 
@@ -49,7 +52,15 @@ class ZeebeConfiguration {
 		return auth -> target.authenticate(
 				objectMapper.convertValue(auth, new TypeReference<>() {}));
 	}
-	
+
+
+	@Bean
+	public C8RunAuthClient c8RunAuthClient(WebClient.Builder webClientBuilder) {
+		return WebReactiveFeign
+				.<C8RunAuthClient>builder(webClientBuilder)
+				.target(C8RunAuthClient.class, camundaClientProperties.getZeebe().getBaseUrl().toString());
+	}
+
 	@Bean
 	public ResourceClient resourceClient(WebClient.Builder webClientBuilder) {
 		Mono<String> authenticator = zeebeAuthenticationService.getObject().getAuthToken(
@@ -59,10 +70,7 @@ class ZeebeConfiguration {
 		
 		return WebReactiveFeign
 				.<ResourceClient>builder(webClientBuilder)
-				.addRequestInterceptor(reactiveHttpRequest -> authenticator
-						.doOnNext(token -> reactiveHttpRequest
-								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
-						.thenReturn(reactiveHttpRequest))
+				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
 				.target(ResourceClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
 	}
 
@@ -114,9 +122,18 @@ class ZeebeConfiguration {
 	public ZeebeClientStatus zeebeClientStatus() {
 		boolean zeebeEnabled = Optional.ofNullable(camundaClientProperties.getZeebe().getEnabled())
 				.orElse(false);
-		
+
 		boolean clientModeConfigured = Optional.ofNullable(camundaClientProperties.getMode()).isPresent();
-		
-		return () -> zeebeEnabled && clientModeConfigured;
+
+		return () -> (zeebeEnabled && clientModeConfigured) || zeebeProperties.authMethod() != ZeebeProperties.AuthMethod.TOKEN;
+	}
+	
+	@Bean
+	public ClientInterceptor grpcAuthenticatingClientInterceptor(ZeebeProperties zeebeProperties) {
+		Metadata m = new Metadata();
+		if(zeebeProperties.authMethod() == ZeebeProperties.AuthMethod.BASIC)
+			m.put(Metadata.Key.of(HttpHeaders.AUTHORIZATION, Metadata.ASCII_STRING_MARSHALLER), 
+					HttpHeaderUtils.basicAuth(zeebeAuthProperties.clientId(), zeebeAuthProperties.clientSecret()));
+		return MetadataUtils.newAttachHeadersInterceptor(m);
 	}
 }

@@ -2,15 +2,14 @@ package io.camunda.rpa.worker.operate;
 
 import io.camunda.rpa.worker.E2EProperties;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
+import io.camunda.rpa.worker.zeebe.ZeebeProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpHeaders;
 import reactivefeign.webclient.WebReactiveFeign;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @Configuration
@@ -20,6 +19,7 @@ class OperateConfiguration {
 
 	private final E2EProperties e2eProperties;
 	private final ZeebeAuthenticationService zeebeAuthenticationService;
+	private final ZeebeProperties zeebeProperties;
 	
 	@Bean
 	public OperateClient operateClient() {
@@ -34,11 +34,7 @@ class OperateConfiguration {
 				
 		return WebReactiveFeign
 				.<OperateClient>builder()
-				.addRequestInterceptor(reactiveHttpRequest -> authenticator
-						.doOnNext(token -> reactiveHttpRequest
-								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
-
-						.thenReturn(reactiveHttpRequest))
+				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
 				.target(OperateClient.class, operateUrl);
 	}
 }

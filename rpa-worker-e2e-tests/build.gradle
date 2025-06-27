@@ -81,4 +81,6 @@ tasks.withType(Test).configureEach {
 
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-local")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-newchart-local")
+	
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8run")
 }
