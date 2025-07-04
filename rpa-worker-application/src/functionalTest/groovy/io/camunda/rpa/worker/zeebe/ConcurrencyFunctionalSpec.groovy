@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.zeebe
 
 import io.camunda.rpa.worker.AbstractFunctionalSpec
+import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
 import io.camunda.zeebe.client.api.response.ActivatedJob
@@ -45,10 +46,10 @@ Don't do very much
 	Sleep    6
 '''
 	
-	static Map<String, String> getConcurrencyScripts() {
+	static List<RobotScript> getConcurrencyScripts() {
 		return [
-				delayed_file_0: DELAYED_FILE_SCRIPT_TEMPLATE(0),
-				delayed_file_1: DELAYED_FILE_SCRIPT_TEMPLATE(1)
+				RobotScript.builder().id("delayed_file_0").body(DELAYED_FILE_SCRIPT_TEMPLATE(0)).build(),
+				RobotScript.builder().id("delayed_file_1").body(DELAYED_FILE_SCRIPT_TEMPLATE(1)).build(),
 		]
 	}
 
@@ -56,11 +57,10 @@ Don't do very much
 	static class JobLimitFunctionalSpec extends AbstractScriptRepositoryProvidingZeebeFunctionalSpec {
 
 		@Override
-		Map<String, String> getScripts() {
+		List<RobotScript> getScripts() {
 			return [
-					long_script: LONG_RUNNING_SCRIPT_THAT_DOESNT_TIMEOUT,
-					*: getConcurrencyScripts()
-			]
+					RobotScript.builder().id("long_script").body(LONG_RUNNING_SCRIPT_THAT_DOESNT_TIMEOUT).build(), 
+					*getConcurrencyScripts()]
 		}
 
 		void "Queue has no timeout"() {
@@ -90,7 +90,7 @@ Don't do very much
 	static class ConcurrentJobFunctionalSpec extends AbstractScriptRepositoryProvidingZeebeFunctionalSpec {
 
 		@Override
-		Map<String, String> getScripts() {
+		List<RobotScript> getScripts() {
 			return getConcurrencyScripts()
 		}
 
@@ -136,8 +136,8 @@ Don't do very much
 	static class ScaleFunctionalSpec extends AbstractScriptRepositoryProvidingZeebeFunctionalSpec {
 
 		@Override
-		Map<String, String> getScripts() {
-			return [simple_output: SIMPLE_OUTPUT_VARIABLE_SCRIPT]
+		List<RobotScript> getScripts() {
+			return [RobotScript.builder().id("simple_output").body(SIMPLE_OUTPUT_VARIABLE_SCRIPT).build()]
 		}
 
 		@Ignore

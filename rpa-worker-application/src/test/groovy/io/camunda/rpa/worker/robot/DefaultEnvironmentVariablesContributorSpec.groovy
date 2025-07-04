@@ -16,7 +16,7 @@ class DefaultEnvironmentVariablesContributorSpec extends Specification implement
 	void "Returns correct environment variables for workspace and script"() {
 		given:
 		Workspace workspace = new Workspace("workspace123456", Paths.get("/path/to/workspaces/workspace123456/"))
-		PreparedScript script = new PreparedScript("main", new RobotScript("some-script", "script-body"))
+		PreparedScript script = new PreparedScript("main", RobotScript.builder().id("some-script").body("script-body").build())
 
 		when:
 		Map<String, String> vars = block contributor.getEnvironmentVariables(workspace, script)

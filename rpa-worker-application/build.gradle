@@ -88,6 +88,7 @@ dependencies {
 	testImplementation libs.spock.core
 	testImplementation libs.groovy.json
 	testImplementation libs.groovy.nio
+	testImplementation libs.jetbrains.annotations
 
 	testRuntimeOnly libs.junit.platformLauncher
 	testRuntimeOnly libs.byteBuddy

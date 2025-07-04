@@ -10,6 +10,7 @@ import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
+import io.camunda.rpa.worker.zeebe.RpaResource
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono
@@ -31,7 +32,7 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		supply(_) >> { Supplier fn -> Mono.fromSupplier(fn) }
 	}
 
-	void "Executes script from passed-in body and returns result"() {
+	void "Executes raw script from passed-in body and returns result"() {
 		given:
 		@Subject
 		ScriptSandboxController controller = new ScriptSandboxController(
@@ -58,11 +59,11 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		}
 
 		when:
-		EvaluateScriptResponse response = block controller.evaluateScript(new EvaluateScriptRequest(scriptBody, inputVariables, null))
+		EvaluateScriptResponse response = block controller.evaluateRawScript(new EvaluateRawScriptRequest(scriptBody, inputVariables, null))
 				.map { it.body }
 		
 		then:
-		1 * robotService.execute(new RobotScript("_eval_", scriptBody), inputVariables, null, _, null) >> { _, __, ___, List<RobotExecutionListener> executionListeners, ____ ->
+		1 * robotService.execute(RobotScript.builder().id("_eval_").body(scriptBody).build(), inputVariables, null, _, null) >> { _, __, ___, List<RobotExecutionListener> executionListeners, ____ ->
 			executionListeners*.afterRobotExecution(workspace)
 
 			return Mono.just(
@@ -84,6 +85,62 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 		1 * workspaceCleanupService.preserveLast(workspace)
 	}
 
+	void "Executes script from passed-in RPA Resource and returns result"() {
+		given:
+		@Subject
+		ScriptSandboxController controller = new ScriptSandboxController(
+				robotService,
+				workspaceCleanupService,
+				workspaceService,
+				io,
+				new ScriptSandboxProperties(true))
+
+		and:
+		String scriptBody = "the-script-body"
+		Map<String, Object> inputVariables = [foo: 'bar']
+		Map<String, Object> outputVariables = [baz: 'bat']
+		Path workspaceDir = Paths.get("/path/to/workspace123/")
+		Workspace workspace = new Workspace("workspace123", workspaceDir)
+
+		and:
+		Path workspaceFile1 = workspaceDir.resolve("output/file1.txt")
+		Path workspaceFile2 = workspaceDir.resolve("output/file2.xlsx")
+		workspaceService.getWorkspaceFiles("workspace123") >> {
+			Stream.of(
+					new WorkspaceFile(workspace, "text/plain", 123, workspaceFile1),
+					new WorkspaceFile(workspace, "application/octet-stream", 456, workspaceFile2))
+		}
+
+		when:
+		EvaluateScriptResponse response = block controller.evaluateRichScript(new EvaluateRichScriptRequest(
+				RpaResource.builder().script(scriptBody).build(), 
+				inputVariables, 
+				null))
+				.map { it.body }
+
+		then:
+		1 * robotService.execute(RobotScript.builder().id("_eval_").body(scriptBody).build(), inputVariables, null, _, null) >> { _, __, ___, List<RobotExecutionListener> executionListeners, ____ ->
+			executionListeners*.afterRobotExecution(workspace)
+
+			return Mono.just(
+					new ExecutionResults(
+							[main: new ExecutionResults.ExecutionResult("main", ExecutionResults.Result.PASS, "the-output", outputVariables, Duration.ZERO)], null,
+							outputVariables,
+							workspaceDir, Duration.ZERO))
+		}
+
+		and:
+		response.result() == ExecutionResults.Result.PASS
+		response.variables() == outputVariables
+		response.workspace() == [
+				"/output/file1.txt" : "/workspace/workspace123/output/file1.txt".toURI(),
+				"/output/file2.xlsx": "/workspace/workspace123/output/file2.xlsx?attachment".toURI(),
+		]
+
+		and:
+		1 * workspaceCleanupService.preserveLast(workspace)
+	}
+
 	void "Returns not found and does not run scripts when Sandbox is disabled"() {
 		given:
 		@Subject
@@ -95,7 +152,7 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 				new ScriptSandboxProperties(false))
 		
 		when:
-		ResponseEntity<EvaluateScriptResponse> response = block controller.evaluateScript(new EvaluateScriptRequest("", [:], null))
+		ResponseEntity<EvaluateScriptResponse> response = block controller.evaluateRawScript(new EvaluateRawScriptRequest("", [:], null))
 		
 		then:
 		0 * robotService._

@@ -1,7 +1,9 @@
 package io.camunda.rpa.worker.zeebe;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
+import java.nio.file.Path;
 import java.time.Duration;
 
 @Repository
@@ -17,6 +20,8 @@ import java.time.Duration;
 class ZeebeResourceScriptRepository implements ScriptRepository {
 
 	private final ResourceClient resourceClient;
+	private final IO io;
+	private final ObjectMapper objectMapper;
 	
 	/**
 	 * The script cache. 
@@ -41,12 +46,18 @@ class ZeebeResourceScriptRepository implements ScriptRepository {
 	}
 
 	private Mono<RobotScript> doFindById(String id) {
-		return resourceClient.getRpaResource(id)
-				.doOnError(thrown -> log.atDebug()
-						.kv("scriptId", id)
-						.setCause(thrown)
-						.log("Error response fetching script resource from Zeebe"))
-				.map(rpa -> new RobotScript(rpa.id(), rpa.script()))
-				.cache();
+		return io.supply(() -> {
+					Path dest = io.createTempFile(id, ".rpa");
+					return resourceClient.getRpaResource(id)
+							.doOnError(thrown -> log.atDebug()
+									.kv("scriptId", id)
+									.setCause(thrown)
+									.log("Error response fetching script resource from Zeebe"))
+							.transform(data -> io.write(data, dest))
+							.then(Mono.fromSupplier(() -> io.withReader(dest, r -> objectMapper.readValue(r, RpaResource.class))))
+							.flatMap(rpa -> ScriptRepository.resourceToScript(io, rpa))
+							.cache();
+				})
+				.flatMap(s -> s);
 	}
 }
