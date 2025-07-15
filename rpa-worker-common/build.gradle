@@ -39,6 +39,10 @@ dependencies {
 	implementation libs.camundaStarter
 	implementation libs.jetbrains.annotations
 
+	// TODO: Forced update to transitive dependency - remove when no longer required
+	implementation libs.commons.lang
+
+
 	compileOnly libs.lombok
 	annotationProcessor libs.lombok
 	

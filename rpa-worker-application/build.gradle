@@ -69,6 +69,9 @@ dependencies {
 	implementation libs.slf4j.api
 	implementation libs.caffeine
 	
+	// TODO: Forced update to transitive dependency - remove when no longer required
+	implementation libs.commons.lang
+
 	if(project.hasProperty("nativePlatform") && project.property("nativePlatform") == "darwin") {
 		runtimeOnly libs.netty.resolver.nativeMacOs
 		runtimeOnly(variantOf(libs.netty.resolver.nativeMacOs) {

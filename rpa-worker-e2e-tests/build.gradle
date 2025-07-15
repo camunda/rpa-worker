@@ -44,7 +44,10 @@ dependencies {
 	implementation libs.reactiveFeign
 	implementation libs.javaSemver
 	implementation libs.slf4j.api
-	
+
+	// TODO: Forced update to transitive dependency - remove when no longer required
+	implementation libs.commons.lang
+
 	developmentOnly libs.spring.boot.devtools
 	annotationProcessor libs.spring.boot.configurationProcessor
 	
