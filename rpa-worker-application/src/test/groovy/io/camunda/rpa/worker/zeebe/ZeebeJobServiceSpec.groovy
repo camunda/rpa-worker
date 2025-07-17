@@ -32,7 +32,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	ZeebeClient zeebeClient = Mock()
 
 	RobotService robotService = Mock()
-	RobotScript script = new RobotScript("this_script", null)
+	RobotScript script = RobotScript.builder().id("this_script").body(null).build()
 	ScriptRepository scriptRepository = Stub() {
 		findById("this_script_latest") >> Mono.just(script)
 		getById("this_script_latest") >> Mono.just(script)
@@ -180,7 +180,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	
 	void "Errors when can't find script in headers"() {
 		given:
-		RobotScript script = new RobotScript("this_script", null)
+		RobotScript script = RobotScript.builder().id("this_script").build()
 		scriptRepository.findById("this_script_latest") >> Mono.just(script)
 
 		and:
@@ -219,8 +219,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		])
 
 		and:
-		RobotScript expectedBefore = new RobotScript("before_1", null)
-		RobotScript expectedAfter = new RobotScript("after_1", null)
+		RobotScript expectedBefore = RobotScript.builder().id("before_1").build()
+		RobotScript expectedAfter = RobotScript.builder().id("after_1").build()
 		scriptRepository.getById("before_1_latest") >> Mono.just(expectedBefore)
 		scriptRepository.getById("after_1_latest") >> Mono.just(expectedAfter)
 		

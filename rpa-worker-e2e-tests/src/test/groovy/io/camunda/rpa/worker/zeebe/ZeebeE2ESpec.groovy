@@ -391,5 +391,89 @@ Catch error
 			errorVariable == 'error-variable-value'
 		}
 	}
+
+	void "Runs deployed script with additional files"() {
+		given:
+		deployScript('has_additional_files', '''\
+*** Settings ***
+Library   OperatingSystem
+
+*** Tasks ***
+Check
+	${fileContents1}    Get File    one.resource
+	${fileContents2}    Get File    two/three.resource
+	
+	Should Be Equal    ${fileContents1}    one.resource contents
+	Should Be Equal    ${fileContents2}    three.resource contents
+''', [
+				'one.resource'      : 'one.resource contents',
+				'two/three.resource': 'three.resource contents',
+		])
+
+		and:
+		deploySimpleRobotProcess('has_additional_files_on_default', 'has_additional_files')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("has_additional_files_on_default")
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+	}
+	
+	void "Runs deployed script with additional files with existing workspace file"() {
+		given:
+		deployScript('extra_resources_with_before_before', '''\
+*** Settings ***
+Library    OperatingSystem
+
+*** Tasks ***
+Tasks
+    No Operation
+''', ['one.resource': 'original one.resource contents'])
+		
+		and:
+		deployScript('extra_resources_with_before_main', '''\
+*** Settings ***
+Library   OperatingSystem
+
+*** Tasks ***
+Check
+	${fileContents1}    Get File    one.resource
+	
+	Should Be Equal    ${fileContents1}    replacement one.resource contents
+''', ['one.resource'      : 'replacement one.resource contents'])
+
+		and:
+		deployProcess("extra_resources_with_before_on_default")
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("extra_resources_with_before_on_default")
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+	}
+
+	void "Runs deployed script with additional files - large RPA resource"() {
+		given:
+		deployResource("large_rpa_resource")
+
+		and:
+		deploySimpleRobotProcess('large_rpa_resource_on_default', 'large_rpa_resource')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance("large_rpa_resource_on_default")
+
+		then:
+		spec.waitForProcessInstance(pinstance.processInstanceKey) {
+			expectNoIncident(it.key())
+			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
+		}
+	}
 }
 	
