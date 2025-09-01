@@ -1,5 +1,10 @@
+import groovy.transform.stc.ClosureParams
+import groovy.transform.stc.SimpleType
+
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.time.Duration
+import java.time.Instant
 
 plugins {
 	id 'java'
@@ -86,4 +91,102 @@ tasks.withType(Test).configureEach {
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-newchart-local")
 	
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8run")
+}
+
+
+tasks.register("updateHosts") {
+	doLast {
+		String hosts = ["camunda.local", "zeebe.camunda.local", "rpa-worker.local"].collect {
+			"127.0.0.1 \t ${it}"
+		}.join("\n")
+		"sudo tee -a /etc/hosts".execute().tap {
+			wrapProcess(it) {
+				outputStream.withWriter { w ->
+					w.write("\n" + hosts)
+				}
+			}
+		}
+	}
+}
+
+tasks.register("installK3s") {
+	dependsOn updateHosts
+	
+	doLast {
+		java.nio.file.Path k3sScript = Files.createTempFile("install-k3s", ".sh")
+		k3sScript.text = "https://get.k3s.io".toURL().text
+		
+		ProcessBuilder pb = new ProcessBuilder("sudo", "-E", "sh", k3sScript.toAbsolutePath().toString())
+		pb.environment()['K3S_KUBECONFIG_MODE'] = "644"
+		wrapProcess(pb.start())
+		sleep(10_000)
+		
+		waitForWithTimeout(
+				"k3s kubectl wait --for=condition=Ready node -l node.kubernetes.io/instance-type",
+				Duration.ofMinutes(2),
+				"Cluster did not become ready")
+	}
+}
+
+tasks.register("installCamunda") {
+	dependsOn installK3s
+	
+	doLast {
+		wrapProcess("k3s kubectl create ns camunda".execute())
+		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml".execute())
+		
+		waitForWithTimeout(
+				"k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform",
+				Duration.ofMinutes(10),
+				"Application stack did not become ready") {
+			
+			wrapProcess("k3s kubectl get pods -n camunda".execute())
+		}
+	}
+}
+
+tasks.register("deployWorkerContainer") {
+	dependsOn installCamunda
+	
+	doLast {
+		java.nio.file.Path workerSpec = Paths.get("rpa-worker-e2e-tests/rpa-worker.deployment.yaml")
+		String orig = workerSpec.text
+		workerSpec.text = orig.replaceAll("999_DIGEST_999", System.getenv("WORKER_IMAGE_DIGEST"))
+		wrapProcess("k3s kubectl create ns rpa-worker".execute())
+		wrapProcess("k3s kubectl apply -n rpa-worker -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml".execute())
+		
+		waitForWithTimeout(
+				"k3s kubectl wait -n rpa-worker --for=condition=Ready pod -l app=rpa-worker",
+				Duration.ofMinutes(10),
+				"RPA Worker did not become ready") {
+
+			wrapProcess("k3s kubectl get pods -n rpa-worker".execute())
+		}
+	}
+}
+
+tasks.withType(Test).configureEach {
+	it.dependsOn deployWorkerContainer
+}
+
+static void wrapProcess(Process p, @ClosureParams(value = SimpleType, options = ["java.lang.Process"]) Closure withProcessFn = {}) {
+	p.consumeProcessOutput(System.out, System.err)
+	withProcessFn(p)
+	int exit = p.waitFor()
+	assert exit == 0
+}
+
+static void waitForWithTimeout(String waitForCmd, Duration timeout, String failMsg, Closure eachLoop = {}) {
+	Instant endTime = Instant.now() + timeout
+	int waitExit = -1
+	while (Instant.now() < endTime) {
+		waitExit = waitForCmd.execute().with {
+			consumeProcessOutput(System.out, System.err)
+			return waitFor()
+		}
+		if (waitExit == 0) break
+		eachLoop()
+	}
+	if (waitExit != 0)
+		throw new GradleException(failMsg)
 }

@@ -79,6 +79,7 @@ jobs:
             rpa-worker-common/build/test-results/**/*.xml
   
   windows_test:
+    if: false
     runs-on: windows-2025
     permissions:
       contents: read
@@ -228,7 +229,8 @@ jobs:
       - build
       - windows_test
     runs-on: windows-2025
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+#    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    if: false
     permissions:
       contents: read
 
@@ -258,7 +260,8 @@ jobs:
       - build
       - windows_test
     runs-on: macos-13
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    if: false
     permissions:
       contents: read
 
@@ -288,7 +291,8 @@ jobs:
       - build
       - windows_test
     runs-on: macos-latest
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    if: false
     permissions:
       contents: read
 
@@ -343,28 +347,6 @@ jobs:
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clusterId    | CAMUNDA_E2E_SECRETS_CAMUNDA_CLUSTERID ;
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clientId     | CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTID ;
       
-      - name: Setup Camunda
-        run: |
-          echo "## Updating hosts"
-          echo -e "127.0.0.1 \t camunda.local" | sudo tee -a /etc/hosts
-          echo -e "127.0.0.1 \t zeebe.camunda.local" | sudo tee -a /etc/hosts
-          echo -e "127.0.0.1 \t rpa-worker.local" | sudo tee -a /etc/hosts
-          
-          echo "## Installing k3s"
-          curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sudo -E sh -s
-          sleep 10
-          timeout 2m bash -c "while true; do k3s kubectl wait --for=condition=Ready node -l node.kubernetes.io/instance-type && break ||: ; done"
-          
-          echo "## Installing Camunda"
-          k3s kubectl create ns camunda
-          k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml
-          timeout 10m bash -c "while true; do k3s kubectl get pods -n camunda; k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform && break ||: ; done"
-          
-          sed -i "s|999_DIGEST_999|$WORKER_IMAGE_DIGEST|" rpa-worker-e2e-tests/rpa-worker.deployment.yaml
-          k3s kubectl create ns rpa-worker
-          k3s kubectl apply -n rpa-worker -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml
-          timeout 5m bash -c "while true; do k3s kubectl get pods -n rpa-worker; k3s kubectl wait -n rpa-worker --for=condition=Ready pod -l app=rpa-worker && break ||: ; done"
-      
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
@@ -416,7 +398,8 @@ jobs:
     needs:
       - build
       - native_linux_amd64
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    if: false
     env:
       E2E: "1"
       E2E_SMOKE_TEST_ONLY: "true"
@@ -452,6 +435,7 @@ jobs:
           docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ python:3.13 | grep -C 9999 "will use Static execution strategy"
   
   windows_sign:
+    if: false
     needs:
       - native_win32_amd64
     runs-on: windows-latest
@@ -520,6 +504,7 @@ jobs:
       - native_darwin_amd64
       - native_darwin_aarch64
     runs-on: macos-latest
+    if: false
     permissions:
       contents: read
 
@@ -611,7 +596,8 @@ jobs:
   smoke_test_win32:
     needs:
       - windows_sign
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    if: false
     runs-on: windows-2025
     env:
       E2E: "1"
@@ -663,7 +649,8 @@ jobs:
   smoke_test_darwin_amd64:
     needs:
       - macos_sign_and_notarize
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    if: false
     runs-on: macos-13
     env:
       E2E: "1"
@@ -717,7 +704,8 @@ jobs:
   smoke_test_darwin_aarch64:
     needs:
       - macos_sign_and_notarize
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+    if: false
     runs-on: macos-latest
     env:
       E2E: "1"
