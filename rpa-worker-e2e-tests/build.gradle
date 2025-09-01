@@ -165,8 +165,21 @@ tasks.register("deployWorkerContainer") {
 	}
 }
 
+tasks.register("configureClientSecret") {
+	dependsOn installCamunda
+	
+	doLast {
+		String b64Secret = wrapProcessForResult("k3s kubectl get secret -n c8-v87-snapshot c8-v87-snapshot-zeebe-identity-secret  -o jsonpath={.data.zeebe-secret}".execute())
+		String secret = new String(b64Secret.decodeBase64())
+		tasks.withType(Test).configureEach {
+			it.environment("CAMUNDA_CLIENT_AUTH_CLIENTSECRET", secret)
+		}
+	}
+}
+
 tasks.withType(Test).configureEach {
 	it.dependsOn deployWorkerContainer
+	it.dependsOn configureClientSecret
 }
 
 static void wrapProcess(Process p, @ClosureParams(value = SimpleType, options = ["java.lang.Process"]) Closure withProcessFn = {}) {
@@ -174,6 +187,14 @@ static void wrapProcess(Process p, @ClosureParams(value = SimpleType, options = 
 	withProcessFn(p)
 	int exit = p.waitFor()
 	assert exit == 0
+}
+
+static String wrapProcessForResult(Process p, @ClosureParams(value = SimpleType, options = ["java.lang.Process"]) Closure withProcessFn = {}) {
+	p.consumeProcessErrorStream(System.err)
+	withProcessFn(p)
+	int exit = p.waitFor()
+	assert exit == 0
+	return p.text
 }
 
 static void waitForWithTimeout(String waitForCmd, Duration timeout, String failMsg, Closure eachLoop = {}) {

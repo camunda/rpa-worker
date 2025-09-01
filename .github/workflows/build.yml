@@ -357,7 +357,6 @@ jobs:
       
       - name: Build
         run: |
-          export CAMUNDA_CLIENT_AUTH_CLIENTSECRET=$(k3s kubectl get secret -n camunda camunda-zeebe-identity-secret -o jsonpath='{.data.zeebe-secret}' | base64 -d | xargs)
           unzip rpa-worker_*_linux_amd64.zip
           rm rpa-worker_*_linux_amd64.zip
           export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_linux_amd64)
