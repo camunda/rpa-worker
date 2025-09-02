@@ -89,12 +89,15 @@ tasks.withType(Test).configureEach {
 
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-local")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-newchart-local")
-	
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-newchart2e2e-local")
+
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8run")
 }
 
 
 tasks.register("updateHosts") {
+	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
+	
 	doLast {
 		String hosts = ["camunda.local", "zeebe.camunda.local", "rpa-worker.local"].collect {
 			"127.0.0.1 \t ${it}"
@@ -111,7 +114,8 @@ tasks.register("updateHosts") {
 
 tasks.register("installK3s") {
 	dependsOn updateHosts
-	
+	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
+
 	doLast {
 		java.nio.file.Path k3sScript = Files.createTempFile("install-k3s", ".sh")
 		k3sScript.text = "https://get.k3s.io".toURL().text
@@ -130,11 +134,28 @@ tasks.register("installK3s") {
 
 tasks.register("installCamunda") {
 	dependsOn installK3s
-	
+	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
+
 	doLast {
 		wrapProcess("k3s kubectl create ns camunda".execute())
-		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml".execute())
+
+		if(System.getenv("CAMUNDA_VERSION") == "v88")
+			["v88_bootstrap_credentials", "v88_gw_ingress", "v88_gw_svc"].each {
+				wrapProcess("k3s kubectl apply -n camunda -f rpa-worker-e2e-tests/${it}.yaml".execute())
+			}
+
+		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
 		
+		String hostIp = wrapProcessForResult("ip -brief a show dev cni0".execute()).with {
+			return it.split("\\s+")[2].split("/")[0]
+		}
+		if (System.getenv("CAMUNDA_VERSION") == "v88")
+			waitForWithTimeout([
+					"k3s", "kubectl", "patch", "-n", "camunda", "sts/camunda-zeebe", "--patch",
+					/{"spec":{"template":{"spec":{"hostAliases":[{"ip":"${hostIp}", "hostnames":["camunda.local"]}]}}}}/.toString()],
+					Duration.ofMinutes(1),
+					"Zeebe STS did not appear")
+
 		waitForWithTimeout(
 				"k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform",
 				Duration.ofMinutes(10),
@@ -145,9 +166,18 @@ tasks.register("installCamunda") {
 	}
 }
 
-tasks.register("deployWorkerContainer") {
+tasks.register("patchCamunda") {
+	onlyIf { System.getenv("CAMUNDA_VERSION") == "v88" }
 	dependsOn installCamunda
 	
+	doLast {
+	}
+}
+
+tasks.register("deployWorkerContainer") {
+	dependsOn installCamunda
+	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
+
 	doLast {
 		java.nio.file.Path workerSpec = Paths.get("rpa-worker-e2e-tests/rpa-worker.deployment.yaml")
 		String orig = workerSpec.text
@@ -167,6 +197,7 @@ tasks.register("deployWorkerContainer") {
 
 tasks.register("configureClientSecret") {
 	dependsOn installCamunda
+	onlyIf { System.getenv("CAMUNDA_VERSION") == "v87" }
 	
 	doLast {
 		String b64Secret = wrapProcessForResult("k3s kubectl get secret -n camunda camunda-zeebe-identity-secret -o jsonpath={.data.zeebe-secret}".execute())
@@ -178,8 +209,10 @@ tasks.register("configureClientSecret") {
 }
 
 tasks.withType(Test).configureEach {
-	it.dependsOn deployWorkerContainer
-	it.dependsOn configureClientSecret
+	if(System.getenv("CI") && ! System.getenv("E2E_SMOKE_TEST_ONLY")) {
+		it.dependsOn deployWorkerContainer
+		it.dependsOn configureClientSecret
+	}
 }
 
 static void wrapProcess(Process p, @ClosureParams(value = SimpleType, options = ["java.lang.Process"]) Closure withProcessFn = {}) {
@@ -197,11 +230,11 @@ static String wrapProcessForResult(Process p, @ClosureParams(value = SimpleType,
 	return p.text
 }
 
-static void waitForWithTimeout(String waitForCmd, Duration timeout, String failMsg, Closure eachLoop = {}) {
+static void waitForWithTimeout(def waitForCmd, Duration timeout, String failMsg, Closure eachLoop = {}) {
 	Instant endTime = Instant.now() + timeout
 	int waitExit = -1
 	while (Instant.now() < endTime) {
-		waitExit = waitForCmd.execute().with {
+		waitExit = (waitForCmd instanceof String ? waitForCmd.execute() : new ProcessBuilder((List<String>) waitForCmd).start()).with {
 			consumeProcessOutput(System.out, System.err)
 			return waitFor()
 		}

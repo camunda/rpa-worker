@@ -79,7 +79,6 @@ jobs:
             rpa-worker-common/build/test-results/**/*.xml
   
   windows_test:
-    if: false
     runs-on: windows-2025
     permissions:
       contents: read
@@ -229,8 +228,7 @@ jobs:
       - build
       - windows_test
     runs-on: windows-2025
-#    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    if: false
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
       contents: read
 
@@ -260,8 +258,7 @@ jobs:
       - build
       - windows_test
     runs-on: macos-13
-    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    if: false
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
       contents: read
 
@@ -291,8 +288,7 @@ jobs:
       - build
       - windows_test
     runs-on: macos-latest
-    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    if: false
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
       contents: read
 
@@ -324,9 +320,13 @@ jobs:
       - images
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        camunda_version: ["v87", "v88"]
     env: 
       E2E: "1"
       WORKER_IMAGE_DIGEST: ${{ needs.images.outputs.workerImageDigest }}
+      CAMUNDA_VERSION: ${{ matrix.camunda_version }}
     
     steps:
       - uses: actions/checkout@v4
@@ -372,7 +372,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pod-logs
+          name: pod-logs-${{ matrix.camunda_version }}
           path: logs.zip
           retention-days: 1
 
@@ -380,7 +380,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: e2e-test-reports
+          name: e2e-test-reports-${{ matrix.camunda_version }}
           path: rpa-worker-e2e-tests/build/reports/tests/test/
           retention-days: 1
           
@@ -388,7 +388,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          check_name: 'E2E Test Results'
+          check_name: "E2E Test Results (${{ matrix.camunda_version }})"
           files: |
             rpa-worker-e2e-tests/build/test-results/**/*.xml
             
@@ -397,8 +397,7 @@ jobs:
     needs:
       - build
       - native_linux_amd64
-    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    if: false
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     env:
       E2E: "1"
       E2E_SMOKE_TEST_ONLY: "true"
@@ -434,7 +433,6 @@ jobs:
           docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ python:3.13 | grep -C 9999 "will use Static execution strategy"
   
   windows_sign:
-    if: false
     needs:
       - native_win32_amd64
     runs-on: windows-latest
@@ -503,7 +501,6 @@ jobs:
       - native_darwin_amd64
       - native_darwin_aarch64
     runs-on: macos-latest
-    if: false
     permissions:
       contents: read
 
@@ -595,8 +592,7 @@ jobs:
   smoke_test_win32:
     needs:
       - windows_sign
-    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    if: false
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: windows-2025
     env:
       E2E: "1"
@@ -648,8 +644,7 @@ jobs:
   smoke_test_darwin_amd64:
     needs:
       - macos_sign_and_notarize
-    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    if: false
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: macos-13
     env:
       E2E: "1"
@@ -703,8 +698,7 @@ jobs:
   smoke_test_darwin_aarch64:
     needs:
       - macos_sign_and_notarize
-    #if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    if: false
+    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: macos-latest
     env:
       E2E: "1"

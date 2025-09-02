@@ -1,10 +1,12 @@
 package io.camunda.rpa.worker.operate;
 
+import feign.FeignException;
 import feign.Param;
 import feign.RequestLine;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface OperateClient {
 	
@@ -12,7 +14,9 @@ public interface OperateClient {
 	Mono<GetProcessInstanceResponse> getProcessInstance(@Param("key") long key);
 	
 	record GetProcessInstanceResponse (
-			long key,
+			Long key,
+			Long id,
+			Long processInstanceKey,
 			int processVersion,
 			String processVersionTag,
 			String bpmnProcessId,
@@ -22,13 +26,29 @@ public interface OperateClient {
 			boolean incident,
 			long processDefinitionKey) {
 		
+		public Long key() {
+			return Optional.ofNullable(key)
+					.or(() -> Optional.ofNullable(id))
+					.or(() -> Optional.ofNullable(processInstanceKey))
+					.orElseThrow();
+		}
+		
 		public enum State {
 			ACTIVE, COMPLETED, CANCELED
 		}
 	}
+	
+	default Mono<GetIncidentsResponse> getIncidents(GetIncidentsRequest request) {
+		return getIncidents87(request)
+				.onErrorComplete(FeignException.NotFound.class)
+				.switchIfEmpty(getIncidents88(request.filter.processInstanceKey(), request));
+	}
 
 	@RequestLine("POST /incidents/search")
-	Mono<GetIncidentsResponse> getIncidents(GetIncidentsRequest request);
+	Mono<GetIncidentsResponse> getIncidents87(GetIncidentsRequest request);
+
+	@RequestLine("POST /process-instances/{key}/incidents/search")
+	Mono<GetIncidentsResponse> getIncidents88(@Param("key") long key, GetIncidentsRequest request);
 
 	record GetIncidentsRequest(Filter filter) {
 		public record Filter(long processInstanceKey) {}
@@ -39,9 +59,23 @@ public interface OperateClient {
 				long processDefinitionKey, 
 				long processInstanceKey, 
 				Type type, 
+				Type errorType,
 				String message, 
+				String errorMessage,
 				State state, 
 				long jobKey) {
+			
+			public Type type() {
+				return Optional.ofNullable(type)
+						.or(() -> Optional.ofNullable(errorType))
+						.orElse(null);
+			}
+			
+			public String message() {
+				return Optional.ofNullable(message)
+						.or(() -> Optional.ofNullable(errorMessage))
+						.orElse(null);
+			}
 
 			public enum Type {
 				UNSPECIFIED, UNKNOWN, IO_MAPPING_ERROR, JOB_NO_RETRIES, EXECUTION_LISTENER_NO_RETRIES, CONDITION_ERROR, EXTRACT_VALUE_ERROR, CALLED_ELEMENT_ERROR, UNHANDLED_ERROR_EVENT, MESSAGE_SIZE_EXCEEDED, CALLED_DECISION_ERROR, DECISION_EVALUATION_ERROR, FORM_NOT_FOUND

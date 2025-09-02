@@ -16,6 +16,12 @@ class ZeebeConfiguration {
 		
 		Map<String, String> overrides = [:]
 		
+		if (System.getenv("CAMUNDA_VERSION") == "v88")
+			new Properties().tap { p ->
+				p.load(getClass().getClassLoader().getResourceAsStream("application-v88e2e.properties"))
+				overrides.putAll(p)
+			}
+
 		if (System.properties['camunda.rpa.e2e.worker.override']) 
 			new Properties().tap { p ->
 				p.load(getClass().getClassLoader().getResourceAsStream("application-${System.properties['camunda.rpa.e2e.worker.override']}.properties"))
@@ -26,6 +32,11 @@ class ZeebeConfiguration {
 				?: System.getenv("CAMUNDA_RPA_E2E_CAMUNDAHOST")
 				?: "camunda.local"
 
+		String clientId = overrides['camunda.rpa.e2e.client-id']
+				?: System.getenv("CAMUNDA_RPA_E2E_CLIENTID")
+				?: System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTID")
+				?: "zeebe"
+		
 		String clientSecret = overrides['camunda.rpa.e2e.client-secret']
 				?: System.getenv("CAMUNDA_RPA_E2E_CLIENTSECRET")
 				?: System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET")
@@ -42,7 +53,7 @@ class ZeebeConfiguration {
 		configProperties['json.logging.enabled'] = 'false'
 		if(overrides['camunda.rpa.zeebe.auth-method'] != "cookie") {
 			configProperties["camunda.client.mode"] = "selfmanaged"
-			configProperties["camunda.client.auth.client-id"] = "zeebe"
+			configProperties["camunda.client.auth.client-id"] = clientId
 			configProperties["camunda.client.auth.client-secret"] = clientSecret
 		}
 		configProperties["camunda.client.auth.operate-secret"] = operateSecret
