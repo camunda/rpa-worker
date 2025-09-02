@@ -134,7 +134,7 @@ tasks.register("installCamunda") {
 	
 	doLast {
 		wrapProcess("k3s kubectl create ns camunda".execute())
-		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_v87.helmrelease.yaml".execute())
+		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
 		
 		waitForWithTimeout(
 				"k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform",
