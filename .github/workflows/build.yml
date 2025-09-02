@@ -376,7 +376,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pod-logs
+          name: pod-logs-${{ matrix.camunda_version }}
           path: logs.zip
           retention-days: 1
 
@@ -384,7 +384,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: e2e-test-reports
+          name: e2e-test-reports-${{ matrix.camunda_version }}
           path: rpa-worker-e2e-tests/build/reports/tests/test/
           retention-days: 1
           
@@ -392,7 +392,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          check_name: 'E2E Test Results'
+          check_name: "E2E Test Results (${{ matrix.camunda_version }})"
           files: |
             rpa-worker-e2e-tests/build/test-results/**/*.xml
             

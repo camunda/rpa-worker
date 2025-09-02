@@ -131,16 +131,22 @@ tasks.register("installK3s") {
 
 tasks.register("installCamunda") {
 	dependsOn installK3s
-	
+
 	doLast {
 		wrapProcess("k3s kubectl create ns camunda".execute())
 
-		if(System.getenv("CAMUNDA_VERSION") == "v88") ["v88_bootstrap_credentials", "v88_gw_ingress", "v88_gw_svc"].each {
-			wrapProcess("k3s kubectl apply -n camunda -f rpa-worker-e2e-tests/${it}.yaml".execute())
-		}
+		if(System.getenv("CAMUNDA_VERSION") == "v88")
+			["v88_bootstrap_credentials", "v88_gw_ingress", "v88_gw_svc"].each {
+				wrapProcess("k3s kubectl apply -n camunda -f rpa-worker-e2e-tests/${it}.yaml".execute())
+			}
 
 		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
-		
+
+		if (System.getenv("CAMUNDA_VERSION") == "v88")
+			wrapProcess("""\
+k3s kubectl patch -n camunda sts/camunda-zeebe --patch='{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.42.1.1", "hostnames":["camunda.local"]}]}}}}'
+""".execute())
+
 		waitForWithTimeout(
 				"k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform",
 				Duration.ofMinutes(10),
@@ -156,9 +162,6 @@ tasks.register("patchCamunda") {
 	dependsOn installCamunda
 	
 	doLast {
-		wrapProcess("""\
-k3s kubectl patch -n camunda sts/camunda-zeebe --patch='{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.42.1.1", "hostnames":["camunda.local"]}]}}}}'
-""".execute())
 	}
 }
 
@@ -198,7 +201,6 @@ tasks.withType(Test).configureEach {
 	if(System.getenv("CI")) {
 		it.dependsOn deployWorkerContainer
 		it.dependsOn configureClientSecret
-		it.dependsOn patchCamunda
 	}
 }
 
