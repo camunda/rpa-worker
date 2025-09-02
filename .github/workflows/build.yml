@@ -324,6 +324,9 @@ jobs:
       - images
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        CAMUNDA_VERSION: ["v87", "v88"]
     env: 
       E2E: "1"
       WORKER_IMAGE_DIGEST: ${{ needs.images.outputs.workerImageDigest }}

@@ -89,7 +89,8 @@ tasks.withType(Test).configureEach {
 
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-local")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-newchart-local")
-	
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-newchart2e2e-local")
+
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8run")
 }
 
@@ -133,7 +134,7 @@ tasks.register("installCamunda") {
 	
 	doLast {
 		wrapProcess("k3s kubectl create ns camunda".execute())
-		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml".execute())
+		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_v87.helmrelease.yaml".execute())
 		
 		waitForWithTimeout(
 				"k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform",
@@ -141,6 +142,28 @@ tasks.register("installCamunda") {
 				"Application stack did not become ready") {
 			
 			wrapProcess("k3s kubectl get pods -n camunda".execute())
+		}
+	}
+}
+
+tasks.register("patchCamunda") {
+	onlyIf { System.getenv("CAMUNDA_VERSION") == "v88" }
+	dependsOn installCamunda
+	
+	doLast {
+		wrapProcess("""\
+k3s kubectl patch -n camunda sts/camunda-zeebe --patch='{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.42.1.1", "hostnames":["camunda.local"]}]}}}}'
+""".execute())
+	}
+}
+
+tasks.register("applyAdditionalResources") {
+	onlyIf { System.getenv("CAMUNDA_VERSION") == "v88" }
+	dependsOn installCamunda
+
+	doLast {
+		["v88_bootstrap_credentials", "v88_gw_ingress", "v88_gw_svc"].each {
+			wrapProcess("k3s kubectl apply -n camunda -f ${it}.yaml".execute())
 		}
 	}
 }
@@ -178,8 +201,12 @@ tasks.register("configureClientSecret") {
 }
 
 tasks.withType(Test).configureEach {
-	it.dependsOn deployWorkerContainer
-	it.dependsOn configureClientSecret
+	if(System.getenv("CI")) {
+		it.dependsOn deployWorkerContainer
+		it.dependsOn configureClientSecret
+		it.dependsOn patchCamunda
+		it.dependsOn applyAdditionalResources
+	}
 }
 
 static void wrapProcess(Process p, @ClosureParams(value = SimpleType, options = ["java.lang.Process"]) Closure withProcessFn = {}) {
