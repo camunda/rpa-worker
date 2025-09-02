@@ -225,7 +225,7 @@ static void waitForWithTimeout(def waitForCmd, Duration timeout, String failMsg,
 	Instant endTime = Instant.now() + timeout
 	int waitExit = -1
 	while (Instant.now() < endTime) {
-		waitExit = new ProcessBuilder(waitForCmd).start().with {
+		waitExit = (waitForCmd instanceof String ? waitForCmd.execute() : new ProcessBuilder((List<String>) waitForCmd).start()).with {
 			consumeProcessOutput(System.out, System.err)
 			return waitFor()
 		}
