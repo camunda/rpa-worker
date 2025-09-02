@@ -2,12 +2,12 @@ apiVersion: helm.cattle.io/v1
 kind: HelmChart
 metadata:
   name: camunda
-  namespace: camunda88ch
+  namespace: camunda
 spec:
   repo: https://helm.camunda.io
   chart: camunda-platform
   version: 13.0.0-alpha6
-  targetNamespace: camunda88ch
+  targetNamespace: camunda
   valuesContent: |-
     global:
     
