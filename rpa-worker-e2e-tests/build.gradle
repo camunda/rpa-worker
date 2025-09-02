@@ -143,9 +143,8 @@ tasks.register("installCamunda") {
 		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
 
 		if (System.getenv("CAMUNDA_VERSION") == "v88")
-			wrapProcess("""\
-k3s kubectl patch -n camunda sts/camunda-zeebe --patch='{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.42.1.1", "hostnames":["camunda.local"]}]}}}}'
-""".execute())
+			wrapProcess(["k3s", "kubectl", "patch", "-n", "camunda", "sts/camunda-zeebe", '''\
+--patch='{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.42.1.1", "hostnames":["camunda.local"]}]}}}}'''].execute())
 
 		waitForWithTimeout(
 				"k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform",
