@@ -148,6 +148,8 @@ tasks.register("installCamunda") {
 					'{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.42.1.1", "hostnames":["camunda.local"]}]}}}}'],
 					Duration.ofMinutes(1),
 					"Zeebe STS did not appear")
+		
+		wrapProcess("ip a".execute())
 
 		waitForWithTimeout(
 				"k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform",
