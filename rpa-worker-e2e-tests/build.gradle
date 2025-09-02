@@ -136,7 +136,7 @@ tasks.register("installCamunda") {
 		wrapProcess("k3s kubectl create ns camunda".execute())
 
 		if(System.getenv("CAMUNDA_VERSION") == "v88") ["v88_bootstrap_credentials", "v88_gw_ingress", "v88_gw_svc"].each {
-			wrapProcess("k3s kubectl apply -n camunda -f ${it}.yaml".execute())
+			wrapProcess("k3s kubectl apply -n camunda -f rpa-worker-e2e-tests/${it}.yaml".execute())
 		}
 
 		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
