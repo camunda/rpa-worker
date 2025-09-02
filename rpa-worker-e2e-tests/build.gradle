@@ -143,10 +143,11 @@ tasks.register("installCamunda") {
 		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
 
 		if (System.getenv("CAMUNDA_VERSION") == "v88")
-			wrapProcess([
+			waitForWithTimeout([
 					"k3s", "kubectl", "patch", "-n", "camunda", "sts/camunda-zeebe", "--patch",
-					'{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.42.1.1", "hostnames":["camunda.local"]}]}}}}'
-			].execute())
+					'{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.42.1.1", "hostnames":["camunda.local"]}]}}}}'],
+					Duration.ofMinutes(1),
+					"Zeebe STS did not appear")
 
 		waitForWithTimeout(
 				"k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform",
@@ -220,11 +221,11 @@ static String wrapProcessForResult(Process p, @ClosureParams(value = SimpleType,
 	return p.text
 }
 
-static void waitForWithTimeout(String waitForCmd, Duration timeout, String failMsg, Closure eachLoop = {}) {
+static void waitForWithTimeout(def waitForCmd, Duration timeout, String failMsg, Closure eachLoop = {}) {
 	Instant endTime = Instant.now() + timeout
 	int waitExit = -1
 	while (Instant.now() < endTime) {
-		waitExit = waitForCmd.execute().with {
+		waitExit = new ProcessBuilder(waitForCmd).start().with {
 			consumeProcessOutput(System.out, System.err)
 			return waitFor()
 		}
