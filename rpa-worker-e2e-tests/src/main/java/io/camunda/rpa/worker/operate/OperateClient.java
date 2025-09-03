@@ -59,9 +59,23 @@ public interface OperateClient {
 				long processDefinitionKey, 
 				long processInstanceKey, 
 				Type type, 
+				Type errorType,
 				String message, 
+				String errorMessage,
 				State state, 
 				long jobKey) {
+			
+			public Type type() {
+				return Optional.ofNullable(type)
+						.or(() -> Optional.ofNullable(errorType))
+						.orElse(null);
+			}
+			
+			public String message() {
+				return Optional.ofNullable(message)
+						.or(() -> Optional.ofNullable(errorMessage))
+						.orElse(null);
+			}
 
 			public enum Type {
 				UNSPECIFIED, UNKNOWN, IO_MAPPING_ERROR, JOB_NO_RETRIES, EXECUTION_LISTENER_NO_RETRIES, CONDITION_ERROR, EXTRACT_VALUE_ERROR, CALLED_ELEMENT_ERROR, UNHANDLED_ERROR_EVENT, MESSAGE_SIZE_EXCEEDED, CALLED_DECISION_ERROR, DECISION_EVALUATION_ERROR, FORM_NOT_FOUND
