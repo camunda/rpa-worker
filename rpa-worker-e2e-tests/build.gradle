@@ -141,11 +141,14 @@ tasks.register("installCamunda") {
 			}
 
 		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
-
+		
+		String hostIp = wrapProcessForResult("ip -brief a show dev cni0".execute()).with {
+			return it.split("\\s+")[2].split("/")[0]
+		}
 		if (System.getenv("CAMUNDA_VERSION") == "v88")
 			waitForWithTimeout([
 					"k3s", "kubectl", "patch", "-n", "camunda", "sts/camunda-zeebe", "--patch",
-					'{"spec":{"template":{"spec":{"hostAliases":[{"ip":"10.42.1.1", "hostnames":["camunda.local"]}]}}}}'],
+					/{"spec":{"template":{"spec":{"hostAliases":[{"ip":"${hostIp}", "hostnames":["camunda.local"]}]}}}}/],
 					Duration.ofMinutes(1),
 					"Zeebe STS did not appear")
 
