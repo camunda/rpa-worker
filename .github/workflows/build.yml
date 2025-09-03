@@ -320,9 +320,13 @@ jobs:
       - images
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        camunda_version: ["v87", "v88"]
     env: 
       E2E: "1"
       WORKER_IMAGE_DIGEST: ${{ needs.images.outputs.workerImageDigest }}
+      CAMUNDA_VERSION: ${{ matrix.camunda_version }}
     
     steps:
       - uses: actions/checkout@v4
@@ -343,28 +347,6 @@ jobs:
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clusterId    | CAMUNDA_E2E_SECRETS_CAMUNDA_CLUSTERID ;
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clientId     | CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTID ;
       
-      - name: Setup Camunda
-        run: |
-          echo "## Updating hosts"
-          echo -e "127.0.0.1 \t camunda.local" | sudo tee -a /etc/hosts
-          echo -e "127.0.0.1 \t zeebe.camunda.local" | sudo tee -a /etc/hosts
-          echo -e "127.0.0.1 \t rpa-worker.local" | sudo tee -a /etc/hosts
-          
-          echo "## Installing k3s"
-          curl -sfL https://get.k3s.io | K3S_KUBECONFIG_MODE="644" sudo -E sh -s
-          sleep 10
-          timeout 2m bash -c "while true; do k3s kubectl wait --for=condition=Ready node -l node.kubernetes.io/instance-type && break ||: ; done"
-          
-          echo "## Installing Camunda"
-          k3s kubectl create ns camunda
-          k3s kubectl apply -f rpa-worker-e2e-tests/camunda.helmrelease.yaml
-          timeout 10m bash -c "while true; do k3s kubectl get pods -n camunda; k3s kubectl wait -n camunda --for=condition=Ready pod -l app=camunda-platform && break ||: ; done"
-          
-          sed -i "s|999_DIGEST_999|$WORKER_IMAGE_DIGEST|" rpa-worker-e2e-tests/rpa-worker.deployment.yaml
-          k3s kubectl create ns rpa-worker
-          k3s kubectl apply -n rpa-worker -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml
-          timeout 5m bash -c "while true; do k3s kubectl get pods -n rpa-worker; k3s kubectl wait -n rpa-worker --for=condition=Ready pod -l app=rpa-worker && break ||: ; done"
-      
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
 
@@ -375,7 +357,6 @@ jobs:
       
       - name: Build
         run: |
-          export CAMUNDA_CLIENT_AUTH_CLIENTSECRET=$(k3s kubectl get secret -n camunda camunda-zeebe-identity-secret -o jsonpath='{.data.zeebe-secret}' | base64 -d | xargs)
           unzip rpa-worker_*_linux_amd64.zip
           rm rpa-worker_*_linux_amd64.zip
           export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_linux_amd64)
@@ -391,7 +372,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pod-logs
+          name: pod-logs-${{ matrix.camunda_version }}
           path: logs.zip
           retention-days: 1
 
@@ -399,7 +380,7 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: e2e-test-reports
+          name: e2e-test-reports-${{ matrix.camunda_version }}
           path: rpa-worker-e2e-tests/build/reports/tests/test/
           retention-days: 1
           
@@ -407,7 +388,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         if: always()
         with:
-          check_name: 'E2E Test Results'
+          check_name: "E2E Test Results (${{ matrix.camunda_version }})"
           files: |
             rpa-worker-e2e-tests/build/test-results/**/*.xml
             

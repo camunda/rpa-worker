@@ -9,6 +9,7 @@ import java.nio.file.Path;
 public record E2EProperties(
 		Path pathToWorker,
 		String camundaHost,
+		String clientId,
 		String clientSecret,
 		boolean noStartWorker,
 		URI operateUrl,
