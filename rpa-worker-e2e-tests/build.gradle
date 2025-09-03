@@ -192,6 +192,7 @@ tasks.register("deployWorkerContainer") {
 
 tasks.register("configureClientSecret") {
 	dependsOn installCamunda
+	onlyIf { System.getenv("CAMUNDA_VERSION") == "v87" }
 	
 	doLast {
 		String b64Secret = wrapProcessForResult("k3s kubectl get secret -n camunda camunda-zeebe-identity-secret -o jsonpath={.data.zeebe-secret}".execute())
