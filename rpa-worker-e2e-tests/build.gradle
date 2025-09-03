@@ -148,7 +148,7 @@ tasks.register("installCamunda") {
 		if (System.getenv("CAMUNDA_VERSION") == "v88")
 			waitForWithTimeout([
 					"k3s", "kubectl", "patch", "-n", "camunda", "sts/camunda-zeebe", "--patch",
-					/{"spec":{"template":{"spec":{"hostAliases":[{"ip":"${hostIp}", "hostnames":["camunda.local"]}]}}}}/],
+					/{"spec":{"template":{"spec":{"hostAliases":[{"ip":"${hostIp}", "hostnames":["camunda.local"]}]}}}}/.toString()],
 					Duration.ofMinutes(1),
 					"Zeebe STS did not appear")
 
