@@ -342,8 +342,8 @@ $ docker run --rm -it \
     -e CAMUNDA_CLIENT_MODE=saas \
     -e CAMUNDA_CLIENT_AUTH_CLIENTID=abc123 \
     -e CAMUNDA_CLIENT_AUTH_CLIENTSECRET=def234 \
-    -e CAMUNDA_CLICNE_CLUSTERID=ghi345 \
-    -e CAMUNDA_CLIENT_REGION=lpp-1 \
+    -e CAMUNDA_CLIENT_CLOUD_CLUSTERID=ghi345 \
+    -e CAMUNDA_CLIENT_CLOUD_REGION=lpp-1 \
     ghcr.io/camunda/rpa-worker:<version>
 ----
 
