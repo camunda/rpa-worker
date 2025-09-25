@@ -249,7 +249,7 @@ jobs:
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew -Djava.io.tmpdir=D:/Temp/ -PnativePlatform=win32 -PnativeArch=amd64 --stacktrace nativeCompile zipNativeImage
+          ./gradlew --% -Djava.io.tmpdir=D:/Temp/ -PnativePlatform=win32 -PnativeArch=amd64 --stacktrace nativeCompile zipNativeImage
 
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4
