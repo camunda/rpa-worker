@@ -9,6 +9,7 @@ import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import reactor.core.Disposable;
@@ -24,6 +25,7 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 @RequiredArgsConstructor
+@ConditionalOnBean(ZeebeClient.class) // TODO: Cx!
 class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 
 	static final Duration JOB_POLL_TIME = Duration.ofMillis(200);
