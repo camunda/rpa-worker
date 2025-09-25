@@ -6,9 +6,9 @@ import com.github.benmanes.caffeine.cache.LoadingCache;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
+import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
 
@@ -18,7 +18,7 @@ import java.time.Duration;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-@ConditionalOnBean(ResourceClient.class)
+@ConditionalOnCamundaClientEnabled
 class ZeebeResourceScriptRepository implements ScriptRepository {
 
 	private final ResourceClient resourceClient;

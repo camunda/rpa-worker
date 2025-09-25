@@ -12,10 +12,10 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,7 +27,7 @@ import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
-@ConditionalOnBean(CamundaClientProperties.class)
+@ConditionalOnCamundaClientEnabled
 class ZeebeClientsConfiguration {
 
 	private final ZeebeProperties zeebeProperties;
