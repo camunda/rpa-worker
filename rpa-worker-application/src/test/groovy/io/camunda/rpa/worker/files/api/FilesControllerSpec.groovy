@@ -10,6 +10,7 @@ import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.http.HttpEntity
 import org.springframework.http.ResponseEntity
@@ -40,10 +41,13 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 	}
 
 	DocumentClient documentClient = Stub()
+	ObjectProvider<DocumentClient> documentClientProvider = Stub() {
+		getObject() >> documentClient
+	}
 	StubbedResponseGenerator stubbedResponseGenerator = Stub()
 
 	@Subject
-	FilesController controller = new FilesController(workspaceService, io, documentClient, stubbedResponseGenerator)
+	FilesController controller = new FilesController(workspaceService, io, documentClientProvider, stubbedResponseGenerator)
 	
 	void "Uploads files from workspace to Zeebe"() {
 		given:

@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker;
 
+import io.camunda.zeebe.spring.client.configuration.ZeebeClientProdAutoConfiguration;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.SpringApplication;
@@ -10,12 +11,14 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
+@Import(ZeebeClientProdAutoConfiguration.class) // TODO: Cx!
 public class RpaWorkerApplication {
 	
 	public static final int EXIT_NO_ZEEBE_CONNECTION = 199;

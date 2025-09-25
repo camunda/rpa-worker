@@ -1,28 +1,29 @@
 [versions]
-springDoc = "2.8.6"
-camundaStarter = "8.7.0"
+springDoc = "2.8.13"
+#camundaStarter = "8.7.0"
+camundaStarter = "8.7.13"
 vavr = "0.10.5"
-commons-exec = "1.4.0"
+commons-exec = "1.5.0"
 commons-lang = "3.18.0"
 reactiveFeign = "4.2.1"
 javaSemver = "0.10.2"
 slf4j = "2.1.0-alpha1"
 xmachinery = "0.4.0-dev.21"
-caffeine = "3.2.0"
+caffeine = "3.2.2"
 jbAnnotations = "26.0.2"
 rpaRuntime = "0.2.2"
 
 spock = "2.4-M6-groovy-4.0"
-byteBuddy = "1.17.5"
+byteBuddy = "1.17.7"
 objenesis = "3.4"
-groovy = "4.0.26"
-blockhound = "1.0.11.RELEASE"
+groovy = "4.0.28"
+blockhound = "1.0.14.RELEASE"
 mockwebserver = "4.12.0"
 
 [plugins]
-spring-boot = { id = "org.springframework.boot", version = "3.5.3" }
+spring-boot = { id = "org.springframework.boot", version = "3.5.5" }
 spring-dependencyManagement = {id = "io.spring.dependency-management", version = "1.1.7" }
-graal-buildTools = { id = "org.graalvm.buildtools.native", version = "0.10.6" }
+graal-buildTools = { id = "org.graalvm.buildtools.native", version = "0.11.0" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 
 [libraries]

@@ -11,6 +11,7 @@ import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
@@ -43,7 +44,7 @@ class FilesController {
 
 	private final WorkspaceService workspaceService;
 	private final IO io;
-	private final DocumentClient documentClient;
+	private final ObjectProvider<DocumentClient> documentClient;
 	private final StubbedResponseGenerator stubbedResponseGenerator;
 
 	@PostMapping("/store/{workspaceId}")
@@ -71,7 +72,7 @@ class FilesController {
 												Map.Entry::getValue)))
 								.switchIfEmpty(Flux.fromStream(files.entrySet().stream())
 
-										.flatMap(kv -> documentClient.uploadDocument(
+										.flatMap(kv -> documentClient.getObject().uploadDocument(
 												toZeebeStoreDocumentRequest(kv.getKey(), kv.getValue()), null))
 										.collect(Collectors.toMap(
 												(ZeebeDocumentDescriptor zdd) -> zdd.metadata().fileName(),
@@ -144,7 +145,7 @@ class FilesController {
 						.doOnNext(kv -> io.createDirectories(ws.path().resolve(kv.getKey()).getParent()))
 
 						.flatMap(kv -> io.write(
-										documentClient.getDocument(kv.getValue().documentId(), kv.getValue().storeId(), kv.getValue().contentHash()),
+										documentClient.getObject().getDocument(kv.getValue().documentId(), kv.getValue().storeId(), kv.getValue().contentHash()),
 										ws.path().resolve(kv.getKey()))
 
 								.then(Mono.just(Map.entry(kv.getKey(),
