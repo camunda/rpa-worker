@@ -21,8 +21,7 @@ import java.util.stream.Stream;
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-// TODO: Cx!
-class DocumentClientConfiguration2 {
+class DocumentClientJacksonConfiguration {
 
 	@Bean
 	public Module documentModule() {

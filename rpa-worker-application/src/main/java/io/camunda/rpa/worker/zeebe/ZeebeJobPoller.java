@@ -3,13 +3,13 @@ package io.camunda.rpa.worker.zeebe;
 import io.camunda.rpa.worker.util.LoopingListIterator;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
+import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 import reactor.core.Disposable;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@ConditionalOnBean(ZeebeClient.class) // TODO: Cx!
+@ConditionalOnCamundaClientEnabled
 class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 
 	static final Duration JOB_POLL_TIME = Duration.ofMillis(200);

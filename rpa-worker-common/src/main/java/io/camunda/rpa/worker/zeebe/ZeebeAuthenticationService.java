@@ -1,12 +1,11 @@
 package io.camunda.rpa.worker.zeebe;
 
 import io.camunda.rpa.worker.util.HttpHeaderUtils;
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
+import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 @Slf4j
-@ConditionalOnBean(CamundaClientProperties.class) // TODO: Cx!
+@ConditionalOnCamundaClientEnabled
 public class ZeebeAuthenticationService {
 	
 	private final AuthClient authClient;
