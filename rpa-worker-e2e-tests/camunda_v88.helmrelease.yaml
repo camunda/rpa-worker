@@ -57,6 +57,7 @@ spec:
               name: "bootstrap-credentials"
     
       security:
+        allowInsecureImages: true
         authentication:
           method: oidc
           unprotectedApi: true
@@ -80,6 +81,8 @@ spec:
       enabled: true
       usePasswordFiles: false
       postgresql:
+        image:
+          repository: bitnamilegacy/postgresql
         auth:
           existingSecret: "bootstrap-credentials"
           secretKeys:
@@ -97,12 +100,24 @@ spec:
       enabled: false
       contextPath: "/connectors"
       
+    identityPostgresql:
+      image:
+        repository: bitnamilegacy/postgresql
+    
     elasticsearch:
+      image:
+        repository: bitnamilegacy/elasticsearch
       master:
         replicaCount: 1
       resources:
         requests:
           cpu: 1m
+      volumePermissions:
+        repository: bitnamilegacy/os-shell
+      copyTlsCerts:
+        repository: bitnamilegacy/os-shell
+      sysctlImage:
+        repository: bitnamilegacy/os-shell
     
     core:
       clusterSize: "1"
@@ -152,6 +167,8 @@ spec:
           value: "venom-client-mapping"
         - name: CAMUNDA_SECURITY_INITIALIZATION_DEFAULTROLES_ADMIN_MAPPINGS_2
           value: "connectors-client-mapping"
+        - name: CAMUNDA_DATA_SECONDARYSTORAGE_ELASTICSEARCH_URL
+          value: "http://camunda-elasticsearch:9200"
     #        - name: CAMUNDA_SECURITY_INITIALIZATION_MAPPINGRULES_0_MAPPINGRULEID
     #          value: "demo-user-mapping"
     #        - name: CAMUNDA_SECURITY_INITIALIZATION_MAPPINGRULES_0_CLAIMNAME

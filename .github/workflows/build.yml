@@ -240,11 +240,16 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        
+      - name: Set TEMP to D:/Temp
+        run: |
+          mkdir "D:\\Temp"
+          echo "TEMP=D:\\Temp" >> $env:GITHUB_ENV
 
       - name: Build
         run: |
           ./gradlew setVersion
-          ./gradlew -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile zipNativeImage
+          ./gradlew --% -Djava.io.tmpdir=D:/Temp/ -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile zipNativeImage
 
       - name: Upload Native Binary
         uses: actions/upload-artifact@v4

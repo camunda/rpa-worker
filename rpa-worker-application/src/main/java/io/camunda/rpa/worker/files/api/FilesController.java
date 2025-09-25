@@ -110,6 +110,9 @@ class FilesController {
 
 		builder.part("metadata", metadata)
 				.contentType(MediaType.APPLICATION_JSON);
+		
+		builder.part("metadata88", metadata.for88())
+				.contentType(MediaType.APPLICATION_JSON);
 
 		builder.asyncPart("file",
 						DataBufferUtils.read(file.path(), DefaultDataBufferFactory.sharedInstance, 8192),

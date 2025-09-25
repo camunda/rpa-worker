@@ -14,8 +14,10 @@ import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import okhttp3.MediaType
 import okhttp3.MultipartReader
 import okhttp3.ResponseBody
+import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.RecordedRequest
+import org.jetbrains.annotations.NotNull
 import org.spockframework.spring.SpringBean
 import org.spockframework.spring.SpringSpy
 import org.springframework.core.ParameterizedTypeReference
@@ -32,9 +34,10 @@ import spock.util.concurrent.PollingConditions
 import java.nio.file.Files
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 
 class FilesFunctionalSpec extends AbstractFunctionalSpec {
-	
+
 	private static final String WRITE_SOME_FILES_SCRIPT = '''\
 *** Settings ***
 Library    OperatingSystem
@@ -49,23 +52,23 @@ Write Some Files
     
     Upload Documents    outputs/*.yes
 '''
-	
+
 	private static final String DO_NOTHING_SCRIPT = '''\
 *** Tasks ***
 Do Nothing
 	No Operation
 '''
-	
+
 	@SpringSpy
 	WorkspaceCleanupService workspaceCleanupService
-	
+
 	@SpringBean
 	SecretsService secretsService = Stub() {
 		getSecrets() >> Mono.just(Collections.emptyMap())
 	}
-	
+
 	private List<ZeebeDocumentDescriptor.Metadata> uploadRequests = new CopyOnWriteArrayList<>()
-	
+
 	void "Request to store files triggers upload of workspace files to Zeebe"() {
 		given:
 		bypassZeebeAuth()
@@ -74,7 +77,7 @@ Do Nothing
 			theWorkspace = w
 			return Mono.empty()
 		}
-		
+
 		and:
 		zeebeApi.dispatcher = this.&copyInputToOutput
 
@@ -84,11 +87,11 @@ Do Nothing
 				.body(BodyInserters.fromValue(new EvaluateRawScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
 				.retrieve()
 				.bodyToMono(EvaluateScriptResponse)
-		.block()
-		
+				.block()
+
 		then:
 		response.result() == ExecutionResults.Result.PASS
-		
+
 		and:
 		2.times {
 			with(zeebeApi.takeRequest(5, TimeUnit.SECONDS)) { req ->
@@ -96,7 +99,7 @@ Do Nothing
 				req.method == HttpMethod.POST.toString()
 			}
 		}
-		
+
 		and:
 		new PollingConditions().eventually {
 			uploadRequests.size() == 2
@@ -310,6 +313,47 @@ Main
 		response.result() == ExecutionResults.Result.PASS
 	}
 
+	void "Request to store files triggers upload of workspace files to Zeebe (8.8)"() {
+		given:
+		bypassZeebeAuth()
+		Workspace theWorkspace
+		workspaceCleanupService.preserveLast(_) >> { Workspace w ->
+			theWorkspace = w
+			return Mono.empty()
+		}
+
+		and:
+		zeebeApi.dispatcher = new OneAndThenDispatcher({ RecordedRequest req ->
+			return new MockResponse().tap {
+				setResponseCode(400)
+			}
+		}, this.&copyInputToOutput)
+
+		when:
+		EvaluateScriptResponse response = post()
+				.uri("/script/evaluate")
+				.body(BodyInserters.fromValue(new EvaluateRawScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
+				.retrieve()
+				.bodyToMono(EvaluateScriptResponse)
+				.block()
+
+		then:
+		response.result() == ExecutionResults.Result.PASS
+
+		and:
+		2.times {
+			with(zeebeApi.takeRequest(5, TimeUnit.SECONDS)) { req ->
+				URI.create(req.path).path == "/v2/documents"
+				req.method == HttpMethod.POST.toString()
+			}
+		}
+
+		and:
+		new PollingConditions().eventually {
+			uploadRequests.size() == 2
+			uploadRequests*.fileName().containsAll("one.yes", "two.yes")
+		}
+	}
 
 	private List<ZeebeDocumentDescriptor> fileOrFiles(def variable) {
 		List<Map<String, Object>> filesRaw = variable instanceof List<Map<String, Object>> ? variable : [ variable ]
@@ -342,6 +386,27 @@ Main
 							size       : metadata.size()
 					]
 			]))
+		}
+	}
+
+	private static class OneAndThenDispatcher extends Dispatcher {
+
+		private final Dispatcher first
+		private final Dispatcher andThen
+		private final AtomicBoolean doneFirst = new AtomicBoolean(false)
+
+		OneAndThenDispatcher(Dispatcher first, Dispatcher andThen) {
+			this.first = first
+			this.andThen = andThen
+		}
+
+		@Override
+		MockResponse dispatch(@NotNull RecordedRequest recordedRequest) throws InterruptedException {
+			if(doneFirst.get())
+				return andThen.dispatch(recordedRequest)
+
+			doneFirst.set(true)
+			return first.dispatch(recordedRequest)
 		}
 	}
 }

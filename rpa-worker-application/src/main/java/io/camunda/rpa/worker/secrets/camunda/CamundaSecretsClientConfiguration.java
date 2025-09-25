@@ -2,9 +2,9 @@ package io.camunda.rpa.worker.secrets.camunda;
 
 import io.camunda.rpa.worker.zeebe.ZeebeAuthProperties;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
+import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -17,7 +17,7 @@ import java.util.Optional;
 
 @Configuration
 @RequiredArgsConstructor
-@ConditionalOnBean(ZeebeAuthenticationService.class) // TODO: Cx!
+@ConditionalOnCamundaClientEnabled
 class CamundaSecretsClientConfiguration {
 
 	private final CamundaSecretsClientProperties clientProperties;

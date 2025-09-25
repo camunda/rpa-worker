@@ -20,5 +20,27 @@ public record ZeebeDocumentDescriptor(
 			@Positive Long size,
 			String processDefinitionId,
 			@Positive Long processInstanceKey, 
-			Map<String, String> customProperties) { }
+			Map<String, String> customProperties) {
+
+		public Metadata88 for88() {
+			return new Metadata88(
+					contentType(), 
+					fileName(), 
+					expiresAt(), 
+					size(), 
+					processDefinitionId(), 
+					String.valueOf(processInstanceKey()), 
+					customProperties());
+		}
+	}
+
+	record Metadata88(
+			String contentType,
+			String fileName,
+			@Future Instant expiresAt,
+			@Positive Long size,
+			String processDefinitionId,
+			String processInstanceKey,
+			Map<String, String> customProperties) {
+	}
 }
