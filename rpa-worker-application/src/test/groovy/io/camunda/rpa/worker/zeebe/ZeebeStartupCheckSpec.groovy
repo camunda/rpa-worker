@@ -8,6 +8,7 @@ import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl
 import io.camunda.zeebe.spring.client.properties.CamundaClientProperties
 import io.camunda.zeebe.spring.client.properties.common.AuthProperties
 import io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties
+import org.springframework.beans.factory.ObjectProvider
 import spock.lang.Specification
 import spock.lang.Subject
 import spock.lang.Tag
@@ -17,6 +18,10 @@ import java.time.Duration
 class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 	
 	ZeebeClient zeebeClient = Mock()
+	ObjectProvider<ZeebeClient> zeebeClientProvider = Stub() {
+		getObject() >> zeebeClient
+	}
+
 	CamundaClientProperties camundaClientProperties = Stub(CamundaClientProperties) {
 		getMode() >> CamundaClientProperties.ClientMode.saas
 		getAuth() >> Stub(AuthProperties) {
@@ -31,11 +36,14 @@ class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 			getEnabled() >> true
 		}
 	}
-	
+	ObjectProvider<CamundaClientProperties> clientPropertiesProvider = Stub() {
+		getObject() >> camundaClientProperties
+	}
+
 	ZeebeClientStatus zeebeClientStatus = Stub()
 	
 	@Subject
-	ZeebeStartupCheck check = new ZeebeStartupCheck(zeebeClient, camundaClientProperties, zeebeClientStatus)
+	ZeebeStartupCheck check = new ZeebeStartupCheck(zeebeClientProvider, clientPropertiesProvider, zeebeClientStatus)
 	
 	void "Returns ready event on successful check"() {
 		given:
