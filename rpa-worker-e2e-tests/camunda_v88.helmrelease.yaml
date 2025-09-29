@@ -81,6 +81,8 @@ spec:
       enabled: true
       usePasswordFiles: false
       postgresql:
+        image:
+          repository: bitnamilegacy/postgresql
         auth:
           existingSecret: "bootstrap-credentials"
           secretKeys:
@@ -98,9 +100,10 @@ spec:
       enabled: false
       contextPath: "/connectors"
       
-    postgresql:
+    identityPostgresql:
       image:
         repository: bitnamilegacy/postgresql
+    
     elasticsearch:
       image:
         repository: bitnamilegacy/elasticsearch
@@ -109,6 +112,12 @@ spec:
       resources:
         requests:
           cpu: 1m
+      volumePermissions:
+        repository: bitnamilegacy/os-shell
+      copyTlsCerts:
+        repository: bitnamilegacy/os-shell
+      sysctlImage:
+        repository: bitnamilegacy/os-shell
     
     core:
       clusterSize: "1"
