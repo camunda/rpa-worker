@@ -57,6 +57,7 @@ spec:
               name: "bootstrap-credentials"
     
       security:
+        allowInsecureImages: true
         authentication:
           method: oidc
           unprotectedApi: true
