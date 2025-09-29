@@ -41,18 +41,30 @@ public interface OperateClient {
 	default Mono<GetIncidentsResponse> getIncidents(GetIncidentsRequest request) {
 		return getIncidents87(request)
 				.onErrorComplete(FeignException.NotFound.class)
-				.switchIfEmpty(getIncidents88(request.filter.processInstanceKey(), request));
+				.onErrorComplete(FeignException.BadRequest.class)
+				.switchIfEmpty(getIncidents88saas(new GetIncidentsRequestBad(new GetIncidentsRequestBad.Filter(String.valueOf(request.filter().processInstanceKey()))))
+						.onErrorComplete(FeignException.BadRequest.class)
+						.switchIfEmpty(getIncidents88sm(request.filter.processInstanceKey(), request)));
 	}
 
 	@RequestLine("POST /incidents/search")
 	Mono<GetIncidentsResponse> getIncidents87(GetIncidentsRequest request);
 
 	@RequestLine("POST /process-instances/{key}/incidents/search")
-	Mono<GetIncidentsResponse> getIncidents88(@Param("key") long key, GetIncidentsRequest request);
+	Mono<GetIncidentsResponse> getIncidents88sm(@Param("key") long key, GetIncidentsRequest request);
+	
+	@RequestLine("POST /incidents/search")
+	Mono<GetIncidentsResponse> getIncidents88saas(GetIncidentsRequestBad request);
 
 	record GetIncidentsRequest(Filter filter) {
 		public record Filter(long processInstanceKey) {}
 	}
+
+	record GetIncidentsRequestBad(Filter filter) {
+		public record Filter(String processInstanceKey) {
+		}
+	}
+
 	record GetIncidentsResponse(List<Item> items) {
 		public record Item(
 				long key, 
