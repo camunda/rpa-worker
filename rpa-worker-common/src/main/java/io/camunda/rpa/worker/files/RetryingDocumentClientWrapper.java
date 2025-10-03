@@ -30,8 +30,8 @@ public class RetryingDocumentClientWrapper implements DocumentClient {
 	}
 
 	@Override
-	public Mono<ZeebeDocumentDescriptor> uploadDocument(MultiValueMap<String, HttpEntity<?>> data, Map<String, String> query) {
-		return delegate.uploadDocument(data, query)
+	public Mono<ZeebeDocumentDescriptor> doUploadDocument(MultiValueMap<String, HttpEntity<?>> data, Map<String, String> query) {
+		return delegate.doUploadDocument(data, query)
 				.retryWhen(retrySpec);
 	}
 }

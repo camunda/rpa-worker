@@ -42,25 +42,25 @@ public interface OperateClient {
 		return getIncidents87(request)
 				.onErrorComplete(FeignException.NotFound.class)
 				.onErrorComplete(FeignException.BadRequest.class)
-				.switchIfEmpty(getIncidents88saas(new GetIncidentsRequestBad(new GetIncidentsRequestBad.Filter(String.valueOf(request.filter().processInstanceKey()))))
+				.switchIfEmpty(getIncidents88b(new GetIncidentsRequest88b(new GetIncidentsRequest88b.Filter(String.valueOf(request.filter().processInstanceKey()))))
 						.onErrorComplete(FeignException.BadRequest.class)
-						.switchIfEmpty(getIncidents88sm(request.filter.processInstanceKey(), request)));
+						.switchIfEmpty(getIncidents88a(request.filter.processInstanceKey(), request)));
 	}
 
 	@RequestLine("POST /incidents/search")
 	Mono<GetIncidentsResponse> getIncidents87(GetIncidentsRequest request);
 
 	@RequestLine("POST /process-instances/{key}/incidents/search")
-	Mono<GetIncidentsResponse> getIncidents88sm(@Param("key") long key, GetIncidentsRequest request);
+	Mono<GetIncidentsResponse> getIncidents88a(@Param("key") long key, GetIncidentsRequest request);
 	
 	@RequestLine("POST /incidents/search")
-	Mono<GetIncidentsResponse> getIncidents88saas(GetIncidentsRequestBad request);
+	Mono<GetIncidentsResponse> getIncidents88b(GetIncidentsRequest88b request);
 
 	record GetIncidentsRequest(Filter filter) {
 		public record Filter(long processInstanceKey) {}
 	}
 
-	record GetIncidentsRequestBad(Filter filter) {
+	record GetIncidentsRequest88b(Filter filter) {
 		public record Filter(String processInstanceKey) {
 		}
 	}
