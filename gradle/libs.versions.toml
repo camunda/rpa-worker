@@ -4,7 +4,7 @@ springDoc = "2.8.13"
 camundaStarter = "8.7.13"
 vavr = "0.10.5"
 commons-exec = "1.5.0"
-commons-lang = "3.18.0"
+commons-lang = "3.19.0" ## TODO: Can be removed now???
 reactiveFeign = "4.2.1"
 javaSemver = "0.10.2"
 slf4j = "2.1.0-alpha1"
@@ -21,9 +21,9 @@ blockhound = "1.0.14.RELEASE"
 mockwebserver = "4.12.0"
 
 [plugins]
-spring-boot = { id = "org.springframework.boot", version = "3.5.5" }
+spring-boot = { id = "org.springframework.boot", version = "3.5.6" }
 spring-dependencyManagement = {id = "io.spring.dependency-management", version = "1.1.7" }
-graal-buildTools = { id = "org.graalvm.buildtools.native", version = "0.11.0" }
+graal-buildTools = { id = "org.graalvm.buildtools.native", version = "0.11.1" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 
 [libraries]
