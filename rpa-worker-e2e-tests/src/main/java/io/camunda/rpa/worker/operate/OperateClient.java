@@ -99,11 +99,26 @@ public interface OperateClient {
 		}
 	}
 	
+	default Mono<GetVariablesResponse> getVariables(GetVariablesRequest request) {
+		return doGetVariables(request)
+				.onErrorComplete(FeignException.BadRequest.class)
+				.switchIfEmpty(doGetVariables88(
+						new GetVariablesRequest88(
+								new GetVariablesRequest88.Filter(String.valueOf(request.filter.processInstanceKey())))));
+	}
+
 	@RequestLine("POST /variables/search")
-	Mono<GetVariablesResponse> getVariables(GetVariablesRequest request);
+	Mono<GetVariablesResponse> doGetVariables(GetVariablesRequest request);
+
+	@RequestLine("POST /variables/search")
+	Mono<GetVariablesResponse> doGetVariables88(GetVariablesRequest88 request);
 
 	record GetVariablesRequest(Filter filter) {
 		public record Filter(long processInstanceKey) { }
+	}
+
+	record GetVariablesRequest88(Filter filter) {
+		public record Filter(String processInstanceKey) { }
 	}
 
 	record GetVariablesResponse(List<Item> items) {
