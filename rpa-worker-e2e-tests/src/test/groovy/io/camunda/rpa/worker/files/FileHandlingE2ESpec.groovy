@@ -304,6 +304,16 @@ Test
 				Collections.emptyMap()))
 				.contentType(MediaType.APPLICATION_JSON)
 
+		builder.part("metadata88", new ZeebeDocumentDescriptor.Metadata88(
+				"text/plain",
+				filename,
+				null,
+				content.length(),
+				null,
+				null,
+				Collections.emptyMap()))
+				.contentType(MediaType.APPLICATION_JSON)
+
 		builder.part("file", content, MediaType.TEXT_PLAIN)
 
 		return builder.build()
