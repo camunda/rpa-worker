@@ -12,13 +12,12 @@ plugins {
 	id 'idea'
 	alias(libs.plugins.spring.boot)
 	alias(libs.plugins.spring.dependencyManagement)
-	id 'rpa-worker.enable-preview'
 	alias(libs.plugins.testLogger)
 }
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(24)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 

@@ -11,14 +11,13 @@ plugins {
 	alias(libs.plugins.spring.dependencyManagement)
 	alias(libs.plugins.graal.buildTools)
 	id 'rpa-worker.functional-testing'
-	id 'rpa-worker.enable-preview'
 }
 
 apply plugin: ReleaseNotesPlugin
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(24)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 
@@ -137,13 +136,12 @@ graalvmNative {
 				imageName = "${imageName.get()}_${project.properties.nativeArch}"
 			
 			javaLauncher = javaToolchains.launcherFor {
-				languageVersion = JavaLanguageVersion.of(24)
+				languageVersion = JavaLanguageVersion.of(25)
 				vendor = JvmVendorSpec.GRAAL_VM
 			}
 			quickBuild = false
 			buildArgs.add("--initialize-at-build-time=org.slf4j.jul.JDK14LoggerAdapter")
 			buildArgs.add("--initialize-at-run-time=sun.net.dns.ResolverConfigurationImpl")
-			buildArgs.add("--enable-preview")
 			buildArgs.add("--enable-native-access=ALL-UNNAMED")
 		}
 	}
@@ -164,7 +162,7 @@ tasks.register("fixProvisionedToolchainIfNecessary") {
 	onlyIf { ! System.properties['os.name'].contains("Windows") }
 
 	JavaLauncher javaLauncher = javaToolchains.launcherFor {
-		languageVersion = JavaLanguageVersion.of(24)
+		languageVersion = JavaLanguageVersion.of(25)
 		vendor = JvmVendorSpec.GRAAL_VM
 	}.get()
 	
