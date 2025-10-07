@@ -326,6 +326,7 @@ jobs:
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         camunda_version: ["v87", "v88"]
     env: 
