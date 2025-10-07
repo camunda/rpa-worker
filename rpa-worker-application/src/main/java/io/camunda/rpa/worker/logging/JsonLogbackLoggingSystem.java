@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Spliterators;
 import java.util.stream.Collectors;
@@ -109,7 +110,8 @@ public class JsonLogbackLoggingSystem extends LogbackLoggingSystem {
 					Optional.ofNullable(event.getKeyValuePairs())
 							.orElseGet(Collections::emptyList)
 							.stream()
-							.collect(Collectors.toMap(kv -> kv.key, kv -> kv.value.toString())),
+							.filter(kv -> kv.key != null)
+							.collect(Collectors.toMap(kv -> kv.key, kv -> Objects.toString(kv.value))),
 					
 					Optional.ofNullable(event.getMarkerList())
 							.stream()

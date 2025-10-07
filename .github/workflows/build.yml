@@ -26,7 +26,7 @@ jobs:
           fetch-tags: true
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
         with:
           add-job-summary: 'on-failure'
 
@@ -92,7 +92,7 @@ jobs:
           fetch-tags: true
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
         with: 
           add-job-summary: 'never'
 
@@ -209,7 +209,7 @@ jobs:
           fetch-tags: true
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
 
       - name: Build
         run: |
@@ -239,7 +239,7 @@ jobs:
           fetch-tags: true
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
         
       - name: Set TEMP to D:/Temp
         run: |
@@ -274,7 +274,7 @@ jobs:
           fetch-tags: true
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
 
       - name: Build
         run: |
@@ -304,7 +304,7 @@ jobs:
           fetch-tags: true
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
 
       - name: Build
         run: |
@@ -326,6 +326,7 @@ jobs:
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         camunda_version: ["v87", "v88"]
     env: 
@@ -353,7 +354,7 @@ jobs:
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clientId     | CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTID ;
       
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
 
       - name: Download Artefacts
         uses: actions/download-artifact@v4
@@ -610,7 +611,7 @@ jobs:
           fetch-tags: true
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
 
       - name: Download Artefacts
         uses: actions/download-artifact@v4
@@ -662,7 +663,7 @@ jobs:
           fetch-tags: true
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
 
       - name: Download Artefacts
         uses: actions/download-artifact@v4
@@ -716,7 +717,7 @@ jobs:
           fetch-tags: true
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
 
       - name: Download Artefacts
         uses: actions/download-artifact@v4
@@ -771,7 +772,7 @@ jobs:
           fetch-tags: true
           
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@af1da67850ed9a4cedd57bfd976089dd991e2582 # v4.0.0
+        uses: gradle/actions/setup-gradle@v5.0.0
       
       - name: Download Release Artefacts
         uses: actions/download-artifact@v4
