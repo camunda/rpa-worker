@@ -1,4 +1,4 @@
 /gradlew text eol=lf
 *.bat text eol=crlf
-*.jar binary -diff
 * text eol=lf
+*.jar binary -diff
