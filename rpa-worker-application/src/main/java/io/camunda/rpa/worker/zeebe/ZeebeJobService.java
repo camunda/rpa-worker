@@ -13,6 +13,7 @@ import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ZeebeJobService  {
+@ConditionalOnCamundaClientEnabled
+public class ZeebeJobService {
 
 	public static final String ZEEBE_JOB_WORKSPACE_PROPERTY = "ZEEBE_JOB";
 

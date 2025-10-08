@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.files;
 
+import feign.FeignException;
 import feign.Headers;
 import feign.Param;
 import feign.QueryMap;
@@ -20,9 +21,19 @@ public interface DocumentClient {
 			@Param("storeId") String storeId, 
 			@Param("contentHash") String contentHash);
 
+	default Mono<ZeebeDocumentDescriptor> uploadDocument(
+			MultiValueMap<String, HttpEntity<?>> data, 
+			@QueryMap Map<String, String> query) {
+		HttpEntity<?> metadata88 = data.remove("metadata88").getFirst();
+		return doUploadDocument(data, query)
+				.onErrorComplete(FeignException.BadRequest.class)
+				.switchIfEmpty(Mono.defer(() -> {
+					data.set("metadata", metadata88);
+					return doUploadDocument(data, query);
+				}));
+	}
+
 	@RequestLine("POST /documents")
 	@Headers("Content-type: multipart/form-data")
-	Mono<ZeebeDocumentDescriptor> uploadDocument(
-			MultiValueMap<String, HttpEntity<?>> data, 
-			@QueryMap Map<String, String> query);
+	Mono<ZeebeDocumentDescriptor> doUploadDocument(MultiValueMap<String, HttpEntity<?>> data, @QueryMap Map<String, String> query);
 }

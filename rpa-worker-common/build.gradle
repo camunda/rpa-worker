@@ -3,12 +3,11 @@ plugins {
 	id 'groovy'
 	alias(libs.plugins.spring.boot)
 	alias(libs.plugins.spring.dependencyManagement)
-	id 'rpa-worker.enable-preview'
 }
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(24)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 

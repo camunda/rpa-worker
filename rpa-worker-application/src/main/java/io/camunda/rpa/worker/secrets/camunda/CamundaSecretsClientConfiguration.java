@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.secrets.camunda;
 
 import io.camunda.rpa.worker.zeebe.ZeebeAuthProperties;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
+import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @Configuration
 @RequiredArgsConstructor
+@ConditionalOnCamundaClientEnabled
 class CamundaSecretsClientConfiguration {
 
 	private final CamundaSecretsClientProperties clientProperties;
@@ -39,5 +41,4 @@ class CamundaSecretsClientConfiguration {
 						.map(Object::toString)
 						.orElse("http://no-secrets/"));
 	}
-	
 }

@@ -5,6 +5,7 @@ import io.camunda.rpa.worker.api.StubbedResponseGenerator
 import io.camunda.rpa.worker.zeebe.ZeebeJobService
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
+import org.springframework.beans.factory.ObjectProvider
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono
 import spock.lang.Specification
@@ -14,10 +15,16 @@ class ZeebeJobControllerSpec extends Specification implements PublisherUtils {
 	
 	ZeebeClient zeebeClient = Mock()
 	ZeebeJobService zeebeJobService = Mock()
+	ObjectProvider<ZeebeClient> zeebeClientsProvider = Stub() {
+		getObject() >> zeebeClient
+	}
+	ObjectProvider<ZeebeJobService> zeebeJobServiceProvider = Stub() {
+		getObject() >> zeebeJobService
+	}
 	StubbedResponseGenerator stubbedResponseGenerator = Stub()
 
 	@Subject
-	ZeebeJobController controller = new ZeebeJobController(zeebeClient, zeebeJobService, stubbedResponseGenerator)
+	ZeebeJobController controller = new ZeebeJobController(zeebeClientsProvider, zeebeJobServiceProvider, stubbedResponseGenerator)
 	
 	void "Sends basic throw error command to Zeebe"() {
 		given:

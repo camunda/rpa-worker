@@ -32,9 +32,9 @@ class OperateConfiguration {
 				.map(Object::toString)
 				.orElse("http://%s/operate/v1".formatted(e2eProperties.camundaHost()));
 				
-		return WebReactiveFeign
+		return new RetryingOperateClientWrapper(WebReactiveFeign
 				.<OperateClient>builder()
 				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
-				.target(OperateClient.class, operateUrl);
+				.target(OperateClient.class, operateUrl));
 	}
 }

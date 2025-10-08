@@ -7,6 +7,7 @@ import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +23,8 @@ import reactor.core.publisher.Mono;
 @Slf4j
 class ZeebeJobController {
 	
-	private final ZeebeClient zeebeClient;
-	private final ZeebeJobService zeebeJobService;
+	private final ObjectProvider<ZeebeClient> zeebeClient;
+	private final ObjectProvider<ZeebeJobService> zeebeJobService;
 	private final StubbedResponseGenerator stubbedResponseGenerator;
 	
 	@PostMapping("{jobKey}/throw")
@@ -37,6 +38,7 @@ class ZeebeJobController {
 
 	private Mono<ResponseEntity<?>> doThrowError(long jobKey, JobThrowErrorRequest request) {
 		ThrowErrorCommandStep1.ThrowErrorCommandStep2 builder = zeebeClient
+				.getObject()
 				.newThrowErrorCommand(jobKey)
 				.errorCode(request.errorCode());
 
@@ -47,7 +49,7 @@ class ZeebeJobController {
 			builder.variables(request.variables());
 
 		builder.send();
-		zeebeJobService.pushDetached(jobKey);
+		zeebeJobService.getObject().pushDetached(jobKey);
 		return Mono.just(ResponseEntity.accepted().build());
 	}
 

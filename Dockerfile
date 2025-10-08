@@ -1,4 +1,4 @@
-FROM ghcr.io/camunda/rpa-worker-base-image:202505131146
+FROM ghcr.io/camunda/rpa-worker-base-image:202510061519
 
 ARG TARGETARCH
 

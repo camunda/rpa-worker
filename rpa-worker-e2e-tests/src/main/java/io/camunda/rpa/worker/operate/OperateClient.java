@@ -41,18 +41,30 @@ public interface OperateClient {
 	default Mono<GetIncidentsResponse> getIncidents(GetIncidentsRequest request) {
 		return getIncidents87(request)
 				.onErrorComplete(FeignException.NotFound.class)
-				.switchIfEmpty(getIncidents88(request.filter.processInstanceKey(), request));
+				.onErrorComplete(FeignException.BadRequest.class)
+				.switchIfEmpty(getIncidents88b(new GetIncidentsRequest88b(new GetIncidentsRequest88b.Filter(String.valueOf(request.filter().processInstanceKey()))))
+						.onErrorComplete(FeignException.BadRequest.class)
+						.switchIfEmpty(getIncidents88a(request.filter.processInstanceKey(), request)));
 	}
 
 	@RequestLine("POST /incidents/search")
 	Mono<GetIncidentsResponse> getIncidents87(GetIncidentsRequest request);
 
 	@RequestLine("POST /process-instances/{key}/incidents/search")
-	Mono<GetIncidentsResponse> getIncidents88(@Param("key") long key, GetIncidentsRequest request);
+	Mono<GetIncidentsResponse> getIncidents88a(@Param("key") long key, GetIncidentsRequest request);
+	
+	@RequestLine("POST /incidents/search")
+	Mono<GetIncidentsResponse> getIncidents88b(GetIncidentsRequest88b request);
 
 	record GetIncidentsRequest(Filter filter) {
 		public record Filter(long processInstanceKey) {}
 	}
+
+	record GetIncidentsRequest88b(Filter filter) {
+		public record Filter(String processInstanceKey) {
+		}
+	}
+
 	record GetIncidentsResponse(List<Item> items) {
 		public record Item(
 				long key, 
@@ -87,11 +99,26 @@ public interface OperateClient {
 		}
 	}
 	
+	default Mono<GetVariablesResponse> getVariables(GetVariablesRequest request) {
+		return doGetVariables(request)
+				.onErrorComplete(FeignException.BadRequest.class)
+				.switchIfEmpty(doGetVariables88(
+						new GetVariablesRequest88(
+								new GetVariablesRequest88.Filter(String.valueOf(request.filter.processInstanceKey())))));
+	}
+
 	@RequestLine("POST /variables/search")
-	Mono<GetVariablesResponse> getVariables(GetVariablesRequest request);
+	Mono<GetVariablesResponse> doGetVariables(GetVariablesRequest request);
+
+	@RequestLine("POST /variables/search")
+	Mono<GetVariablesResponse> doGetVariables88(GetVariablesRequest88 request);
 
 	record GetVariablesRequest(Filter filter) {
 		public record Filter(long processInstanceKey) { }
+	}
+
+	record GetVariablesRequest88(Filter filter) {
+		public record Filter(String processInstanceKey) { }
 	}
 
 	record GetVariablesResponse(List<Item> items) {
