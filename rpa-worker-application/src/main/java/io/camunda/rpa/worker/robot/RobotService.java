@@ -59,9 +59,10 @@ public class RobotService {
 			Map<String, Object> variables,
 			Duration timeout,
 			List<RobotExecutionListener> executionListeners, 
+			List<ExecutionResultsProcessor> resultsProcessors,
 			String workspaceAffinityKey) {
 		
-		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, timeout, executionListeners, Collections.emptyMap(), workspaceAffinityKey);
+		return execute(script, Collections.emptyList(), Collections.emptyList(), variables, timeout, executionListeners, resultsProcessors, Collections.emptyMap(), workspaceAffinityKey);
 	}
 	
 	public Mono<ExecutionResults> execute(
@@ -71,6 +72,7 @@ public class RobotService {
 			Map<String, Object> variables,
 			Duration timeout,
 			List<RobotExecutionListener> executionListeners,
+			List<ExecutionResultsProcessor> resultsProcessors,
 			Map<String, Object> workspaceProperties, 
 			String workspaceAffinityKey) {
 
@@ -92,7 +94,7 @@ public class RobotService {
 
 		
 		List<RobotExecutionListener> allListeners = Stream.concat(Stream.of(workspaceVariablesManager), executionListeners.stream()).toList();
-		return doExecute(scripts, variables, timeout != null ? timeout : robotProperties.defaultTimeout(), allListeners, workspaceProperties, workspaceAffinityKey);
+		return doExecute(scripts, variables, timeout != null ? timeout : robotProperties.defaultTimeout(), allListeners, resultsProcessors, workspaceProperties, workspaceAffinityKey);
 	}
 	
 	private Mono<ExecutionResults> doExecute(
@@ -100,6 +102,7 @@ public class RobotService {
 			Map<String, Object> variables,
 			Duration timeout,
 			List<RobotExecutionListener> executionListeners,
+			List<ExecutionResultsProcessor> resultsProcessors,
 			Map<String, Object> workspaceProperties, 
 			String workspaceAffinityKey) {
 
@@ -122,9 +125,6 @@ public class RobotService {
 										kv -> kv,
 										MoreCollectors.MergeStrategy.noDuplicatesExpected()))
 
-								.doFinally(_ -> executionListeners.forEach(
-										l -> l.afterRobotExecution(renv.workspace())))
-
 								.map(resultsMap -> new ExecutionResults(
 										resultsMap,
 										getWorstCase(resultsMap.values()),
@@ -134,10 +134,18 @@ public class RobotService {
 														Map.Entry::getKey,
 														Map.Entry::getValue,
 														MoreCollectors.MergeStrategy.rightPrecedence())),
-										renv.workspace().path(), 
+										renv.workspace(), 
 										resultsMap.values().stream()
 												.map(ExecutionResults.ExecutionResult::duration)
-												.reduce(Duration.ZERO, Duration::plus))));
+												.reduce(Duration.ZERO, Duration::plus)))
+
+								.flatMap(xr -> Flux.fromIterable(resultsProcessors)
+										.reduce(Mono.just(xr), (chain, proc) ->
+												chain.flatMap(proc::withExecutionResults))
+										.flatMap(it -> it))
+
+								.doFinally(_ -> executionListeners.forEach(
+										l -> l.afterRobotExecution(renv.workspace()))));
 	}
 
 	private Mono<RobotEnvironment> newRobotEnvironment(
