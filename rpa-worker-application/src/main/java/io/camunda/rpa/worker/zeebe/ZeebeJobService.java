@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.zeebe;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.rpa.worker.files.FilesService;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.robot.ExecutionResults;
 import io.camunda.rpa.worker.robot.RobotExecutionListener;
@@ -10,6 +11,7 @@ import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
+import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
@@ -51,6 +53,8 @@ public class ZeebeJobService {
 	private final ObjectMapper objectMapper;
 	private final WorkspaceCleanupService workspaceCleanupService;
 	private final ZeebeMetricsService zeebeMetricsService;
+	private final WorkspaceService workspaceService;
+	private final FilesService filesService;
 	
 	private final Set<Long> detachedJobs = new ConcurrentSkipListSet<>();
 
@@ -72,6 +76,8 @@ public class ZeebeJobService {
 								"Failed to find exactly 1 LinkedResource providing the main script", thrown))
 				.flatMap(scriptRepository::getById);
 		Flux<RobotScript> after = getScriptKeys(job, AFTER_SCRIPT_LINK_NAME).concatMap(scriptRepository::getById);
+		
+		Map<String, Object> inputVariables = getVariables(job);
 
 		return Flux.zip(before.collectList(), main, after.collectList())
 				.flatMap(scriptSet ->
@@ -80,14 +86,14 @@ public class ZeebeJobService {
 										scriptSet.getT2(),
 										scriptSet.getT1(),
 										scriptSet.getT3(),
-										getVariables(job),
+										inputVariables,
 										Optional.ofNullable(job.getCustomHeaders().get(TIMEOUT_HEADER_NAME))
 												.map(Duration::parse)
 												.orElse(null),
 										Collections.singletonList(executionListenerFor(job)),
+										Collections.singletonList(new TaskTestingZeebeResultsProcessor(workspaceService, filesService, inputVariables, job)),
 										Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job), 
 										null)
-
 
 								.flatMap(xr -> Mono.fromCompletionStage(zeebeClient
 												.newSetVariablesCommand(job.getProcessInstanceKey())

@@ -1,15 +1,18 @@
 package io.camunda.rpa.worker.robot;
 
-import java.nio.file.Path;
+import io.camunda.rpa.worker.workspace.Workspace;
+import lombok.Builder;
+
 import java.time.Duration;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Builder(toBuilder = true)
 public record ExecutionResults(
 		Map<String, ExecutionResult> results,
 		Result result,
 		Map<String, Object> outputVariables,
-		Path workspace, 
+		Workspace workspace,
 		Duration duration) { 
 	
 	public enum Result {

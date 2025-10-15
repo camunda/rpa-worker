@@ -2,24 +2,16 @@ package io.camunda.rpa.worker.files.api;
 
 import feign.FeignException;
 import io.camunda.rpa.worker.api.StubbedResponseGenerator;
-import io.camunda.rpa.worker.files.DocumentClient;
+import io.camunda.rpa.worker.files.FilesService;
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.workspace.Workspace;
-import io.camunda.rpa.worker.workspace.WorkspaceFile;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
+import io.camunda.rpa.worker.zeebe.ZeebeJobInfo;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.core.io.buffer.DataBuffer;
-import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.core.io.buffer.DefaultDataBufferFactory;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.MultipartBodyBuilder;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +22,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URI;
 import java.nio.file.PathMatcher;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -44,8 +35,8 @@ class FilesController {
 
 	private final WorkspaceService workspaceService;
 	private final IO io;
-	private final ObjectProvider<DocumentClient> documentClient;
 	private final StubbedResponseGenerator stubbedResponseGenerator;
+	private final FilesService filesService;
 
 	@PostMapping("/store/{workspaceId}")
 	public Mono<ResponseEntity<?>> storeFiles(
@@ -63,7 +54,7 @@ class FilesController {
 
 						.collect(Collectors.toMap(
 								it -> it,
-								it -> toMetadata(it, getZeebeJobInfoForWorkspace(w))))
+								it -> FilesService.toMetadata(it, getZeebeJobInfoForWorkspace(w))))
 
 						.flatMap(files -> stubbedResponseGenerator
 								.stubbedResponse("DocumentClient", "uploadDocument", files.entrySet().stream()
@@ -71,9 +62,10 @@ class FilesController {
 												kv -> w.path().relativize(kv.getKey().path()),
 												Map.Entry::getValue)))
 								.switchIfEmpty(Flux.fromStream(files.entrySet().stream())
-
-										.flatMap(kv -> documentClient.getObject().uploadDocument(
-												toZeebeStoreDocumentRequest(kv.getKey(), kv.getValue()), null))
+										
+										.flatMap(kv -> 
+												filesService.uploadDocument(kv.getKey(), kv.getValue()))
+										
 										.collect(Collectors.toMap(
 												(ZeebeDocumentDescriptor zdd) -> zdd.metadata().fileName(),
 												((ZeebeDocumentDescriptor zdd) -> zdd)))
@@ -81,7 +73,6 @@ class FilesController {
 										.map(ResponseEntity::ok))))));
 	}
 
-	private record ZeebeJobInfo(String procesDefinitionId, Long processInstanceKey) {}
 	private ZeebeJobInfo getZeebeJobInfoForWorkspace(Workspace workspace) {
 		return Optional.of(workspace)
 				.map(w -> w.<ActivatedJob>getProperty("ZEEBE_JOB"))
@@ -89,38 +80,6 @@ class FilesController {
 						j.getBpmnProcessId(),
 						j.getProcessInstanceKey()))
 				.orElse(new ZeebeJobInfo(null, null));
-	}
-
-	private static ZeebeDocumentDescriptor.Metadata toMetadata(WorkspaceFile file, ZeebeJobInfo zeebeJobInfo) {
-		return new ZeebeDocumentDescriptor.Metadata(
-				file.contentType(),
-				fixSlashes(file.path().getFileName()),
-				null,
-				file.size(),
-				zeebeJobInfo.procesDefinitionId(),
-				zeebeJobInfo.processInstanceKey(),
-				Collections.emptyMap());
-	}
-
-	private static MultiValueMap<String, HttpEntity<?>> toZeebeStoreDocumentRequest(
-			WorkspaceFile file, 
-			ZeebeDocumentDescriptor.Metadata metadata) {
-		
-		MultipartBodyBuilder builder = new MultipartBodyBuilder();
-
-		builder.part("metadata", metadata)
-				.contentType(MediaType.APPLICATION_JSON);
-		
-		builder.part("metadata88", metadata.for88())
-				.contentType(MediaType.APPLICATION_JSON);
-
-		builder.asyncPart("file",
-						DataBufferUtils.read(file.path(), DefaultDataBufferFactory.sharedInstance, 8192),
-						DataBuffer.class)
-				.contentType(MediaType.parseMediaType(file.contentType()))
-				.filename(fixSlashes(file.workspace().path().relativize(file.path())));
-
-		return builder.build();
 	}
 
 	record RetrieveFileResult(String result, String details) {}
@@ -148,7 +107,7 @@ class FilesController {
 						.doOnNext(kv -> io.createDirectories(ws.path().resolve(kv.getKey()).getParent()))
 
 						.flatMap(kv -> io.write(
-										documentClient.getObject().getDocument(kv.getValue().documentId(), kv.getValue().storeId(), kv.getValue().contentHash()),
+										filesService.getDocument(kv.getValue().documentId(), kv.getValue().storeId(), kv.getValue().contentHash()),
 										ws.path().resolve(kv.getKey()))
 
 								.then(Mono.just(Map.entry(kv.getKey(),
