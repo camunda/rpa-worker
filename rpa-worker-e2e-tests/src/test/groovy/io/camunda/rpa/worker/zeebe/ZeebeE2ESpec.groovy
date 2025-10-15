@@ -1,7 +1,9 @@
 package io.camunda.rpa.worker.zeebe
 
+
 import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.AbstractE2ESpec
+import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
 
@@ -474,6 +476,39 @@ Check
 			expectNoIncident(it.key())
 			state() == OperateClient.GetProcessInstanceResponse.State.COMPLETED
 		}
+	}
+	
+	void "Task Testing automatically uploads log file"() {
+		given:
+		deployScript('task_failure', '''\
+*** Tasks ***
+Tasks
+    Log    from-the-log-file
+    Should Be Equal    one    two
+''')
+		and:
+		deploySimpleRobotProcess('task_failure_on_default', 'task_failure')
+
+		when:
+		ProcessInstanceEvent pinstance = createInstance(['camunda::isTesting': true], "task_failure_on_default")
+		
+		then:
+		spec.expectIncidents(pinstance.processInstanceKey) { incidents ->
+			incidents.size() == 1
+		}
+
+		when:
+		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(
+				spec.expectVariables(pinstance.processInstanceKey) {
+					it.get("camunda::log")
+				}.get("camunda::log"),
+				ZeebeDocumentDescriptor.class)
+
+		String contents = download(documentClient.getDocument(
+				uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())).text
+
+		then:
+		contents.contains("from-the-log-file")
 	}
 }
 	
