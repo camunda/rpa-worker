@@ -7,6 +7,7 @@ import io.camunda.rpa.worker.api.StubbedResponseGenerator
 import io.camunda.rpa.worker.files.FilesService
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.io.IO
+import io.camunda.rpa.worker.util.PathUtils
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
@@ -71,7 +72,7 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 					"document-id",
 					new ZeebeDocumentDescriptor.Metadata(
 							"content-type",
-							workspace.path().relativize(wf.path()).toString(),
+							PathUtils.fixSlashes(workspace.path().relativize(wf.path())),
 							null, 
 							123, 
 							null, 
