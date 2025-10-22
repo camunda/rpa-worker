@@ -6,6 +6,7 @@ metadata:
 spec:
   repo: https://helm.camunda.io
   chart: camunda-platform
+  version: 12.6.1
   targetNamespace: camunda
   valuesContent: |-
     global:
