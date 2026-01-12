@@ -262,7 +262,7 @@ jobs:
     needs:
       - build
       - windows_test
-    runs-on: macos-13
+    runs-on: macos-15-intel
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
       contents: read
@@ -651,7 +651,7 @@ jobs:
     needs:
       - macos_sign_and_notarize
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    runs-on: macos-13
+    runs-on: macos-15-intel
     env:
       E2E: "1"
       E2E_SMOKE_TEST_ONLY: "true"

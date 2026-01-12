@@ -348,6 +348,27 @@ $ docker run --rm -it \
 ----
 
 
+=== Internal / Advanced Configuration by Environment Variable
+
+All of the RPA Worker's environment variables will also be made available to 
+Python/Robot execution. In addition to any user-specific environment variables,
+there are two internal variables that may be set:
+
+|===
+|*Variable*|*Description*|*Default Value*
+
+|`RPA_BASE_URL`
+|The URL for the RPA Worker, which the Python/Robot execution will use to 
+communicate back to the RPA Worker
+|`http://127.0.0.1:36227`
+
+|`SSL_NO_VERIFY`
+|Whether the *Python/Robot* execution will ignore HTTPS certificate errors
+when communicating back to the RPA Worker (flag variable)
+|_Unset_
+|===
+
+
 == License
 
 These source files are made available under the Camunda License Version 1.0.

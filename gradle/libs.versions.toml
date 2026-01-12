@@ -10,7 +10,7 @@ slf4j = "2.1.0-alpha1"
 xmachinery = "0.4.0-dev.21"
 caffeine = "3.2.2"
 jbAnnotations = "26.0.2"
-rpaRuntime = "0.2.2"
+rpaRuntime = "0.2.3"
 
 spock = "2.4-M6-groovy-4.0"
 byteBuddy = "1.17.7"

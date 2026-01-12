@@ -24,6 +24,7 @@ public class InternetConnectivityProvider {
 		HttpClient client = HttpClient.create()
 				.responseTimeout(Duration.ofMillis(1_500))
 				.proxyWithSystemProperties()
+				.followRedirect(true)
 				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1_500);
 		
 		this.webClient = webClientBuilder
