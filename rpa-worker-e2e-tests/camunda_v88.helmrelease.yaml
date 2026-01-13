@@ -75,7 +75,7 @@ spec:
       firstUser:
         existingSecret: "bootstrap-credentials"
       image:
-        tag: "SNAPSHOT"
+        tag: "8.8.0"
     
     identityKeycloak:
       enabled: true

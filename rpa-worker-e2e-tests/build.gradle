@@ -170,18 +170,6 @@ tasks.register("installCamunda") {
 	}
 }
 
-tasks.register("podSpecs") {
-	dependsOn installCamunda
-	
-	doLast {
-//		String podSpecs = wrapProcessForResult("k3s kubectl get pods -n camunda -o json".execute())
-//		Paths.get("pods.json").text = podSpecs
-		waitForWithTimeout("k3s kubectl get pods -n camunda -o json", Duration.ofSeconds(30), "Failed to query pods")
-	}
-}
-
-installCamunda.finalizedBy(podSpecs)
-
 tasks.register("patchCamunda") {
 	onlyIf { System.getenv("CAMUNDA_VERSION") == "v88" }
 	dependsOn installCamunda
@@ -228,6 +216,8 @@ tasks.withType(Test).configureEach {
 	if(System.getenv("CI") && ! System.getenv("E2E_SMOKE_TEST_ONLY")) {
 		it.dependsOn deployWorkerContainer
 		it.dependsOn configureClientSecret
+		failFast = true
+		ignoreFailures = false
 	}
 }
 
