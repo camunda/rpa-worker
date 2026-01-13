@@ -16,7 +16,7 @@ spec:
         # Image.repository defines the repository from which to fetch the docker images
         repository: "gcr.io/zeebe-io"
         # Image.tag defines the tag / version which should be used in the chart
-        tag: SNAPSHOT
+        tag: "8.8.0" 
         # Image.pullPolicy defines the image pull policy which should be used https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
         pullPolicy: Always
     
@@ -124,7 +124,7 @@ spec:
       replicationFactor: "1"
       contextPath: "/core"
       image:
-        tag: SNAPSHOT
+        tag: 8.8.0
       #resources:
        # limits:
         #  memory: 8Gi

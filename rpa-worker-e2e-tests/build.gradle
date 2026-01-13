@@ -148,6 +148,8 @@ tasks.register("installCamunda") {
 
 		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
 		
+		wrapProcess("ip a".execute())
+		
 		String hostIp = wrapProcessForResult("ip -brief a show dev cni0".execute()).with {
 			return it.split("\\s+")[2].split("/")[0]
 		}
@@ -167,6 +169,13 @@ tasks.register("installCamunda") {
 		}
 	}
 }
+
+tasks.register("podSpecs") {
+	String podSpecs = wrapProcessForResult("k3s kubectl get pods -n camunda -o json".execute())
+	Paths.get("pods.json").text = podSpecs
+}
+
+installCamunda.finalizedBy(podSpecs)
 
 tasks.register("patchCamunda") {
 	onlyIf { System.getenv("CAMUNDA_VERSION") == "v88" }

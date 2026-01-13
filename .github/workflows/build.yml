@@ -372,7 +372,7 @@ jobs:
       - name: Pod Logs
         if: always()
         run: |
-          sudo zip -r logs.zip /var/log/pods/
+          sudo zip -r logs.zip pods.json /var/log/pods/
           
       - name: Upload Pod Logs
         if: always()

@@ -7,13 +7,15 @@ import java.time.Duration
 
 trait PublisherUtils {
 
-	private final static Duration TIMEOUT = Duration.ofSeconds(3)
-
 	public <T> T block(Mono<T> mono) {
-		return mono.block(TIMEOUT)
+		return mono.block(subscribeTimeout)
 	}
 	
 	public <T> List<T> block(Flux<T> flux) {
-		return flux.collectList().block(TIMEOUT)
+		return flux.collectList().block(subscribeTimeout)
+	}
+	
+	public Duration getSubscribeTimeout() {
+		return Duration.ofSeconds(3)
 	}
 }
