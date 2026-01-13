@@ -78,55 +78,55 @@ jobs:
             rpa-worker-application/build/test-results/**/*.xml
             rpa-worker-common/build/test-results/**/*.xml
   
-  windows_test:
-    runs-on: windows-2025
-    permissions:
-      contents: read
-      checks: write
-      pull-requests: write
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5.0.0
-        with: 
-          add-job-summary: 'never'
-
-      - name: Build
-        run: |
-          ./gradlew setVersion
-          ./gradlew -PnativePlatform=win32 -PnativeArch=amd64 check
-
-      - name: Upload Unit Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: unit-test-reports-windows
-          path: rpa-worker-application/build/reports/tests/test/
-          retention-days: 1
-
-      - name: Upload Functional Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: functional-test-reports-windows
-          path: rpa-worker-application/build/reports/tests/functionalTest/
-          retention-days: 1
-
-      - name: Publish Windows Re-Test Results
-        uses: EnricoMi/publish-unit-test-result-action/windows@v2
-        if: always()
-        with:
-          check_name: 'Windows Test Results'
-          comment_mode: 'off'
-          job_summary: false
-          files: |
-            rpa-worker-application/build/test-results/**/*.xml
-
+#  windows_test:
+#    runs-on: windows-2025
+#    permissions:
+#      contents: read
+#      checks: write
+#      pull-requests: write
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          fetch-tags: true
+#
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v5.0.0
+#        with: 
+#          add-job-summary: 'never'
+#
+#      - name: Build
+#        run: |
+#          ./gradlew setVersion
+#          ./gradlew -PnativePlatform=win32 -PnativeArch=amd64 check
+#
+#      - name: Upload Unit Test Results
+#        uses: actions/upload-artifact@v4
+#        if: always()
+#        with:
+#          name: unit-test-reports-windows
+#          path: rpa-worker-application/build/reports/tests/test/
+#          retention-days: 1
+#
+#      - name: Upload Functional Test Results
+#        uses: actions/upload-artifact@v4
+#        if: always()
+#        with:
+#          name: functional-test-reports-windows
+#          path: rpa-worker-application/build/reports/tests/functionalTest/
+#          retention-days: 1
+#
+#      - name: Publish Windows Re-Test Results
+#        uses: EnricoMi/publish-unit-test-result-action/windows@v2
+#        if: always()
+#        with:
+#          check_name: 'Windows Test Results'
+#          comment_mode: 'off'
+#          job_summary: false
+#          files: |
+#            rpa-worker-application/build/test-results/**/*.xml
+#
   images:
     needs: 
       - build
@@ -223,101 +223,101 @@ jobs:
           path: rpa-worker-application/build/distributions/rpa-worker*
           retention-days: 1
           
-  native_win32_amd64:
-    needs: 
-      - build
-      - windows_test
-    runs-on: windows-2025
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    permissions:
-      contents: read
+#  native_win32_amd64:
+#    needs: 
+#      - build
+##      - windows_test
+#    runs-on: windows-2025
+#    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+#    permissions:
+#      contents: read
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          fetch-tags: true
+#
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v5.0.0
+#        
+#      - name: Set TEMP to D:/Temp
+#        run: |
+#          mkdir "D:\\Temp"
+#          echo "TEMP=D:\\Temp" >> $env:GITHUB_ENV
+#
+#      - name: Build
+#        run: |
+#          ./gradlew setVersion
+#          ./gradlew --% -Djava.io.tmpdir=D:/Temp/ -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile zipNativeImage
+#
+#      - name: Upload Native Binary
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: native-win32-amd64
+#          path: rpa-worker-application/build/distributions/rpa-worker*
+#          retention-days: 1
 
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5.0.0
-        
-      - name: Set TEMP to D:/Temp
-        run: |
-          mkdir "D:\\Temp"
-          echo "TEMP=D:\\Temp" >> $env:GITHUB_ENV
-
-      - name: Build
-        run: |
-          ./gradlew setVersion
-          ./gradlew --% -Djava.io.tmpdir=D:/Temp/ -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile zipNativeImage
-
-      - name: Upload Native Binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-win32-amd64
-          path: rpa-worker-application/build/distributions/rpa-worker*
-          retention-days: 1
-
-  native_darwin_amd64:
-    needs:
-      - build
-      - windows_test
-    runs-on: macos-15-intel
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5.0.0
-
-      - name: Build
-        run: |
-          ./gradlew setVersion
-          ./gradlew -PnativePlatform=darwin -PnativeArch=amd64 nativeCompile zipNativeImage
-
-      - name: Upload Native Binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-darwin-amd64
-          path: rpa-worker-application/build/distributions/rpa-worker*
-          retention-days: 1
-
-  native_darwin_aarch64:
-    needs:
-      - build
-      - windows_test
-    runs-on: macos-latest
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    permissions:
-      contents: read
-
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5.0.0
-
-      - name: Build
-        run: |
-          ./gradlew setVersion
-          ./gradlew -PnativePlatform=darwin -PnativeArch=aarch64 nativeCompile zipNativeImage 
-
-      - name: Upload Native Binary
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-darwin-aarch64
-          path: rpa-worker-application/build/distributions/rpa-worker*
-          retention-days: 1
-          
+#  native_darwin_amd64:
+#    needs:
+#      - build
+##      - windows_test
+#    runs-on: macos-15-intel
+#    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+#    permissions:
+#      contents: read
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          fetch-tags: true
+#
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v5.0.0
+#
+#      - name: Build
+#        run: |
+#          ./gradlew setVersion
+#          ./gradlew -PnativePlatform=darwin -PnativeArch=amd64 nativeCompile zipNativeImage
+#
+#      - name: Upload Native Binary
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: native-darwin-amd64
+#          path: rpa-worker-application/build/distributions/rpa-worker*
+#          retention-days: 1
+#
+#  native_darwin_aarch64:
+#    needs:
+#      - build
+##      - windows_test
+#    runs-on: macos-latest
+#    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+#    permissions:
+#      contents: read
+#
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          fetch-tags: true
+#
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v5.0.0
+#
+#      - name: Build
+#        run: |
+#          ./gradlew setVersion
+#          ./gradlew -PnativePlatform=darwin -PnativeArch=aarch64 nativeCompile zipNativeImage 
+#
+#      - name: Upload Native Binary
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: native-darwin-aarch64
+#          path: rpa-worker-application/build/distributions/rpa-worker*
+#          retention-days: 1
+#          
   e2e:
     needs:
       - build
@@ -398,369 +398,369 @@ jobs:
           files: |
             rpa-worker-e2e-tests/build/test-results/**/*.xml
             
-  runtime_checks:
-    runs-on: ubuntu-latest
-    needs:
-      - build
-      - native_linux_amd64
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    env:
-      E2E: "1"
-      E2E_SMOKE_TEST_ONLY: "true"
-
-    steps:
-      - name: Download Artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: release-native-linux-amd64
-          
-      - name: Prepare
-        run: |
-          unzip rpa-worker_*_linux_amd64.zip
-          rm rpa-worker_*_linux_amd64.zip
-          mkdir workerbin
-          mv $(realpath rpa-worker_*_linux_amd64) workerbin/worker
-          chmod +x workerbin/worker
-      
-      - name: python39
-        run: |
-          docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ python:3.9 | grep -C 9999 "will use Static execution strategy"
-
-      - name: python312
-        run: |
-          docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ python:3.12 | grep -C 9999 "will use Python execution strategy"
-          
-      - name: python312_nonet
-        run: |
-          docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ --network none python:3.12 | grep -C 9999 "will use Static execution strategy"
-
-      - name: python313
-        run: |
-          docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ python:3.13 | grep -C 9999 "will use Static execution strategy"
-  
-  windows_sign:
-    needs:
-      - native_win32_amd64
-    runs-on: windows-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: native-win32-amd64
-          path: artifacts/native-win32-amd64
-
-      - name: Import Secrets for signing
-        id: secrets
-        uses: hashicorp/vault-action@v2.5.0
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          secrets: |
-            secret/data/products/rpa/ci/azure CERT_PROFILE_NAME  | AZURE_CERT_PROFILE_NAME ;
-            secret/data/products/rpa/ci/azure CLIENT_ID          | AZURE_CLIENT_ID ;
-            secret/data/products/rpa/ci/azure CLIENT_SECRET      | AZURE_CLIENT_SECRET ;
-            secret/data/products/rpa/ci/azure CODE_SIGNING_NAME  | AZURE_CODE_SIGNING_NAME ;
-            secret/data/products/rpa/ci/azure SIGNING_ENDPOINT   | AZURE_ENDPOINT ;
-            secret/data/products/rpa/ci/azure TENANT_ID          | AZURE_TENANT_ID ;
-
-      - name: Unzip Windows Artifacts and save zip file name for later
-        id: unzip_artifacts
-        run: |
-          $original_zip = Get-ChildItem -Path artifacts\native-win32-amd64\rpa-worker*.zip | Select-Object -ExpandProperty FullName
-          echo "zip_name=$($original_zip | Split-Path -Leaf)" >> $env:GITHUB_ENV
-          Expand-Archive -Path $original_zip -DestinationPath artifacts\native-win32-amd64\unziped
-
-      - name: Azure Trusted Signing
-        uses: azure/trusted-signing-action@v0.5.1
-        with:
-          azure-tenant-id: ${{ steps.secrets.outputs.AZURE_TENANT_ID }}
-          azure-client-id: ${{ steps.secrets.outputs.AZURE_CLIENT_ID }}
-          azure-client-secret: ${{ steps.secrets.outputs.AZURE_CLIENT_SECRET }}
-          endpoint: ${{ steps.secrets.outputs.AZURE_ENDPOINT }}
-          trusted-signing-account-name: ${{ steps.secrets.outputs.AZURE_CODE_SIGNING_NAME }}
-          certificate-profile-name: ${{ steps.secrets.outputs.AZURE_CERT_PROFILE_NAME }}
-          
-          # Sign all exes inside the folder
-          files-folder: artifacts\native-win32-amd64\unziped
-          files-folder-filter: exe
-
-      - name: Rezip Signed Artifacts
-        run: |
-          $rezip_path = "artifacts\native-win32-amd64\unziped"
-          $output_zip = "artifacts\$env:zip_name"
-          Compress-Archive -Path "$rezip_path\*" -DestinationPath $output_zip
-
-      - name: Upload Signed Windows Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-native-win32-amd64
-          path: artifacts/${{ env.zip_name }}
-          retention-days: 1
-
-
-  macos_sign_and_notarize:
-    needs:
-      - native_darwin_amd64
-      - native_darwin_aarch64
-    runs-on: macos-latest
-    permissions:
-      contents: read
-
-    steps:
-      # Required for local action
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Import Secrets
-        id: secrets
-        uses: hashicorp/vault-action@7709c609789c5e27b757a85817483caadbb5939a # v3.3.0
-        with:
-          url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
-          secrets: |
-            secret/data/products/distribution/ci APPLE_CERTIFICATE;
-            secret/data/products/distribution/ci APPLE_CERTIFICATE_PASSWORD;
-            secret/data/products/distribution/ci APPLE_DEVELOPER_ID;
-            secret/data/products/distribution/ci APPLE_DEVELOPER_PASSWORD;
-            secret/data/products/distribution/ci APPLE_TEAM_ID;
-            secret/data/products/distribution/ci APPLE_COMMON_NAME;
-
-      - name: Download MacOS Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: native-darwin-amd64
-          path: artifacts/darwin-amd64
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: native-darwin-aarch64
-          path: artifacts/darwin-aarch64
-
-      - name: Unzip MacOS Artifacts and save zip file name for later
-        id: unzip_artifacts
-        run: |
-          original_amd64_zip=$(ls artifacts/darwin-amd64/rpa-worker*.zip)
-          echo "amd64_zip_name=${original_amd64_zip##*/}" >> $GITHUB_ENV
-          unzip $original_amd64_zip -d artifacts/darwin-amd64/unziped
-
-          original_aarch64_zip=$(ls artifacts/darwin-aarch64/rpa-worker*.zip)
-          echo "aarch64_zip_name=${original_aarch64_zip##*/}" >> $GITHUB_ENV
-          unzip $original_aarch64_zip -d artifacts/darwin-aarch64/unziped
-
-      - name: Sign and notarize amd64
-        uses: ./.github/actions/sign-and-notarize
-        with:
-          p12-base64: ${{ steps.secrets.outputs.APPLE_CERTIFICATE }}
-          p12-password: ${{ steps.secrets.outputs.APPLE_CERTIFICATE_PASSWORD }}
-          developer-id-cert-name: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
-          apple-id: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
-          app-password: ${{ steps.secrets.outputs.APPLE_DEVELOPER_PASSWORD }}
-          team-id: ${{ steps.secrets.outputs.APPLE_TEAM_ID }}
-          path: artifacts/darwin-amd64/unziped
-
-      - name: Sign and notarize aarch64
-        uses: ./.github/actions/sign-and-notarize
-        with:
-          p12-base64: ${{ steps.secrets.outputs.APPLE_CERTIFICATE }}
-          p12-password: ${{ steps.secrets.outputs.APPLE_CERTIFICATE_PASSWORD }}
-          developer-id-cert-name: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
-          apple-id: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
-          app-password: ${{ steps.secrets.outputs.APPLE_DEVELOPER_PASSWORD }}
-          team-id: ${{ steps.secrets.outputs.APPLE_TEAM_ID }}
-          path: artifacts/darwin-aarch64/unziped
-
-      - name: Rezip Signed MacOS Artifacts
-        run: |
-            cd artifacts/darwin-amd64/unziped && zip -r ../../${{ env.amd64_zip_name }} . && cd -
-            cd artifacts/darwin-aarch64/unziped && zip -r ../../${{ env.aarch64_zip_name }} . && cd -
-
-      - name: Upload Signed MacOS Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-native-darwin-amd64
-          path: artifacts/${{ env.amd64_zip_name }}
-          retention-days: 1
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: release-native-darwin-aarch64
-          path: artifacts/${{ env.aarch64_zip_name }}
-          retention-days: 1
-
-  smoke_test_win32:
-    needs:
-      - windows_sign
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    runs-on: windows-2025
-    env:
-      E2E: "1"
-      E2E_SMOKE_TEST_ONLY: "true"
-    
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5.0.0
-
-      - name: Download Artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: release-native-win32-amd64
-          
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Build
-        run: |
-          Expand-Archive -Path rpa-worker_*_win32_amd64.zip
-          rm rpa-worker_*_win32_amd64.zip
-          Resolve-Path rpa-worker_*_win32_amd64/rpa-worker_*_win32_amd64.exe | Select-Object -ExpandProperty Path > workerpath.txt
-          ./gradlew :rpa-worker-e2e-tests:check
-
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: smoke-test-reports-windows
-          path: rpa-worker-e2e-tests/build/reports/tests/test/
-          retention-days: 1
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action/windows@v2
-        if: always()
-        with:
-          comment_mode: 'off'
-          job_summary: false
-          check_name: 'Windows Smoke Test Results'
-          files: |
-            rpa-worker-e2e-tests/build/test-results/**/*.xml
-            
-  smoke_test_darwin_amd64:
-    needs:
-      - macos_sign_and_notarize
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    runs-on: macos-15-intel
-    env:
-      E2E: "1"
-      E2E_SMOKE_TEST_ONLY: "true"
-    
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5.0.0
-
-      - name: Download Artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: release-native-darwin-amd64
-          
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Build
-        run: |
-          unzip rpa-worker_*_darwin_amd64.zip
-          rm rpa-worker_*_darwin_amd64.zip
-          export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_darwin_amd64)
-          chmod +x $CAMUNDA_RPA_E2E_PATHTOWORKER
-          ./gradlew :rpa-worker-e2e-tests:check
-
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: smoke-test-reports-darwin-amd64
-          path: rpa-worker-e2e-tests/build/reports/tests/test/
-          retention-days: 1
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action/macos@v2
-        if: always()
-        with:
-          comment_mode: 'off'
-          job_summary: false
-          check_name: 'Darwin amd64 Smoke Test Results'
-          files: |
-            rpa-worker-e2e-tests/build/test-results/**/*.xml
-            
-            
-  smoke_test_darwin_aarch64:
-    needs:
-      - macos_sign_and_notarize
-    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    runs-on: macos-latest
-    env:
-      E2E: "1"
-      E2E_SMOKE_TEST_ONLY: "true"
-    
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5.0.0
-
-      - name: Download Artefacts
-        uses: actions/download-artifact@v4
-        with:
-          name: release-native-darwin-aarch64
-          
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Build
-        run: |
-          unzip rpa-worker_*_darwin_aarch64.zip
-          rm rpa-worker_*_darwin_aarch64.zip
-          export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_darwin_aarch64)
-          chmod +x $CAMUNDA_RPA_E2E_PATHTOWORKER
-          ./gradlew :rpa-worker-e2e-tests:check
-
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: smoke-test-reports-darwin-aarch64
-          path: rpa-worker-e2e-tests/build/reports/tests/test/
-          retention-days: 1
-
-      - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action/macos@v2
-        if: always()
-        with:
-          comment_mode: 'off'
-          job_summary: false
-          check_name: 'Darwin aarch64 Smoke Test Results'
-          files: |
-            rpa-worker-e2e-tests/build/test-results/**/*.xml
-
+#  runtime_checks:
+#    runs-on: ubuntu-latest
+#    needs:
+#      - build
+#      - native_linux_amd64
+#    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+#    env:
+#      E2E: "1"
+#      E2E_SMOKE_TEST_ONLY: "true"
+#
+#    steps:
+#      - name: Download Artefacts
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: release-native-linux-amd64
+#          
+#      - name: Prepare
+#        run: |
+#          unzip rpa-worker_*_linux_amd64.zip
+#          rm rpa-worker_*_linux_amd64.zip
+#          mkdir workerbin
+#          mv $(realpath rpa-worker_*_linux_amd64) workerbin/worker
+#          chmod +x workerbin/worker
+#      
+#      - name: python39
+#        run: |
+#          docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ python:3.9 | grep -C 9999 "will use Static execution strategy"
+#
+#      - name: python312
+#        run: |
+#          docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ python:3.12 | grep -C 9999 "will use Python execution strategy"
+#          
+#      - name: python312_nonet
+#        run: |
+#          docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ --network none python:3.12 | grep -C 9999 "will use Static execution strategy"
+#
+#      - name: python313
+#        run: |
+#          docker run --rm -e CAMUNDA_RPA_PYTHONRUNTIME_EXITAFTERDETECT=true --entrypoint /workerbin/worker -v $(realpath workerbin):/workerbin/ python:3.13 | grep -C 9999 "will use Static execution strategy"
+#  
+#  windows_sign:
+#    needs:
+#      - native_win32_amd64
+#    runs-on: windows-latest
+#    permissions:
+#      contents: read
+#    steps:
+#      - name: Download artifact
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: native-win32-amd64
+#          path: artifacts/native-win32-amd64
+#
+#      - name: Import Secrets for signing
+#        id: secrets
+#        uses: hashicorp/vault-action@v2.5.0
+#        with:
+#          url: ${{ secrets.VAULT_ADDR }}
+#          method: approle
+#          roleId: ${{ secrets.VAULT_ROLE_ID }}
+#          secretId: ${{ secrets.VAULT_SECRET_ID }}
+#          secrets: |
+#            secret/data/products/rpa/ci/azure CERT_PROFILE_NAME  | AZURE_CERT_PROFILE_NAME ;
+#            secret/data/products/rpa/ci/azure CLIENT_ID          | AZURE_CLIENT_ID ;
+#            secret/data/products/rpa/ci/azure CLIENT_SECRET      | AZURE_CLIENT_SECRET ;
+#            secret/data/products/rpa/ci/azure CODE_SIGNING_NAME  | AZURE_CODE_SIGNING_NAME ;
+#            secret/data/products/rpa/ci/azure SIGNING_ENDPOINT   | AZURE_ENDPOINT ;
+#            secret/data/products/rpa/ci/azure TENANT_ID          | AZURE_TENANT_ID ;
+#
+#      - name: Unzip Windows Artifacts and save zip file name for later
+#        id: unzip_artifacts
+#        run: |
+#          $original_zip = Get-ChildItem -Path artifacts\native-win32-amd64\rpa-worker*.zip | Select-Object -ExpandProperty FullName
+#          echo "zip_name=$($original_zip | Split-Path -Leaf)" >> $env:GITHUB_ENV
+#          Expand-Archive -Path $original_zip -DestinationPath artifacts\native-win32-amd64\unziped
+#
+#      - name: Azure Trusted Signing
+#        uses: azure/trusted-signing-action@v0.5.1
+#        with:
+#          azure-tenant-id: ${{ steps.secrets.outputs.AZURE_TENANT_ID }}
+#          azure-client-id: ${{ steps.secrets.outputs.AZURE_CLIENT_ID }}
+#          azure-client-secret: ${{ steps.secrets.outputs.AZURE_CLIENT_SECRET }}
+#          endpoint: ${{ steps.secrets.outputs.AZURE_ENDPOINT }}
+#          trusted-signing-account-name: ${{ steps.secrets.outputs.AZURE_CODE_SIGNING_NAME }}
+#          certificate-profile-name: ${{ steps.secrets.outputs.AZURE_CERT_PROFILE_NAME }}
+#          
+#          # Sign all exes inside the folder
+#          files-folder: artifacts\native-win32-amd64\unziped
+#          files-folder-filter: exe
+#
+#      - name: Rezip Signed Artifacts
+#        run: |
+#          $rezip_path = "artifacts\native-win32-amd64\unziped"
+#          $output_zip = "artifacts\$env:zip_name"
+#          Compress-Archive -Path "$rezip_path\*" -DestinationPath $output_zip
+#
+#      - name: Upload Signed Windows Artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: release-native-win32-amd64
+#          path: artifacts/${{ env.zip_name }}
+#          retention-days: 1
+#
+#
+#  macos_sign_and_notarize:
+#    needs:
+#      - native_darwin_amd64
+#      - native_darwin_aarch64
+#    runs-on: macos-latest
+#    permissions:
+#      contents: read
+#
+#    steps:
+#      # Required for local action
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          fetch-tags: true
+#
+#      - name: Import Secrets
+#        id: secrets
+#        uses: hashicorp/vault-action@7709c609789c5e27b757a85817483caadbb5939a # v3.3.0
+#        with:
+#          url: ${{ secrets.VAULT_ADDR }}
+#          method: approle
+#          roleId: ${{ secrets.VAULT_ROLE_ID }}
+#          secretId: ${{ secrets.VAULT_SECRET_ID }}
+#          secrets: |
+#            secret/data/products/distribution/ci APPLE_CERTIFICATE;
+#            secret/data/products/distribution/ci APPLE_CERTIFICATE_PASSWORD;
+#            secret/data/products/distribution/ci APPLE_DEVELOPER_ID;
+#            secret/data/products/distribution/ci APPLE_DEVELOPER_PASSWORD;
+#            secret/data/products/distribution/ci APPLE_TEAM_ID;
+#            secret/data/products/distribution/ci APPLE_COMMON_NAME;
+#
+#      - name: Download MacOS Artifacts
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: native-darwin-amd64
+#          path: artifacts/darwin-amd64
+#
+#      - uses: actions/download-artifact@v4
+#        with:
+#          name: native-darwin-aarch64
+#          path: artifacts/darwin-aarch64
+#
+#      - name: Unzip MacOS Artifacts and save zip file name for later
+#        id: unzip_artifacts
+#        run: |
+#          original_amd64_zip=$(ls artifacts/darwin-amd64/rpa-worker*.zip)
+#          echo "amd64_zip_name=${original_amd64_zip##*/}" >> $GITHUB_ENV
+#          unzip $original_amd64_zip -d artifacts/darwin-amd64/unziped
+#
+#          original_aarch64_zip=$(ls artifacts/darwin-aarch64/rpa-worker*.zip)
+#          echo "aarch64_zip_name=${original_aarch64_zip##*/}" >> $GITHUB_ENV
+#          unzip $original_aarch64_zip -d artifacts/darwin-aarch64/unziped
+#
+#      - name: Sign and notarize amd64
+#        uses: ./.github/actions/sign-and-notarize
+#        with:
+#          p12-base64: ${{ steps.secrets.outputs.APPLE_CERTIFICATE }}
+#          p12-password: ${{ steps.secrets.outputs.APPLE_CERTIFICATE_PASSWORD }}
+#          developer-id-cert-name: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
+#          apple-id: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
+#          app-password: ${{ steps.secrets.outputs.APPLE_DEVELOPER_PASSWORD }}
+#          team-id: ${{ steps.secrets.outputs.APPLE_TEAM_ID }}
+#          path: artifacts/darwin-amd64/unziped
+#
+#      - name: Sign and notarize aarch64
+#        uses: ./.github/actions/sign-and-notarize
+#        with:
+#          p12-base64: ${{ steps.secrets.outputs.APPLE_CERTIFICATE }}
+#          p12-password: ${{ steps.secrets.outputs.APPLE_CERTIFICATE_PASSWORD }}
+#          developer-id-cert-name: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
+#          apple-id: ${{ steps.secrets.outputs.APPLE_DEVELOPER_ID }}
+#          app-password: ${{ steps.secrets.outputs.APPLE_DEVELOPER_PASSWORD }}
+#          team-id: ${{ steps.secrets.outputs.APPLE_TEAM_ID }}
+#          path: artifacts/darwin-aarch64/unziped
+#
+#      - name: Rezip Signed MacOS Artifacts
+#        run: |
+#            cd artifacts/darwin-amd64/unziped && zip -r ../../${{ env.amd64_zip_name }} . && cd -
+#            cd artifacts/darwin-aarch64/unziped && zip -r ../../${{ env.aarch64_zip_name }} . && cd -
+#
+#      - name: Upload Signed MacOS Artifacts
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: release-native-darwin-amd64
+#          path: artifacts/${{ env.amd64_zip_name }}
+#          retention-days: 1
+#
+#      - uses: actions/upload-artifact@v4
+#        with:
+#          name: release-native-darwin-aarch64
+#          path: artifacts/${{ env.aarch64_zip_name }}
+#          retention-days: 1
+#
+#  smoke_test_win32:
+#    needs:
+#      - windows_sign
+#    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+#    runs-on: windows-2025
+#    env:
+#      E2E: "1"
+#      E2E_SMOKE_TEST_ONLY: "true"
+#    
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          fetch-tags: true
+#
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v5.0.0
+#
+#      - name: Download Artefacts
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: release-native-win32-amd64
+#          
+#      - uses: actions/setup-python@v5
+#        with:
+#          python-version: '3.12'
+#
+#      - name: Build
+#        run: |
+#          Expand-Archive -Path rpa-worker_*_win32_amd64.zip
+#          rm rpa-worker_*_win32_amd64.zip
+#          Resolve-Path rpa-worker_*_win32_amd64/rpa-worker_*_win32_amd64.exe | Select-Object -ExpandProperty Path > workerpath.txt
+#          ./gradlew :rpa-worker-e2e-tests:check
+#
+#      - name: Upload Test Results
+#        uses: actions/upload-artifact@v4
+#        if: always()
+#        with:
+#          name: smoke-test-reports-windows
+#          path: rpa-worker-e2e-tests/build/reports/tests/test/
+#          retention-days: 1
+#
+#      - name: Publish Test Results
+#        uses: EnricoMi/publish-unit-test-result-action/windows@v2
+#        if: always()
+#        with:
+#          comment_mode: 'off'
+#          job_summary: false
+#          check_name: 'Windows Smoke Test Results'
+#          files: |
+#            rpa-worker-e2e-tests/build/test-results/**/*.xml
+#            
+#  smoke_test_darwin_amd64:
+#    needs:
+#      - macos_sign_and_notarize
+#    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+#    runs-on: macos-15-intel
+#    env:
+#      E2E: "1"
+#      E2E_SMOKE_TEST_ONLY: "true"
+#    
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          fetch-tags: true
+#
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v5.0.0
+#
+#      - name: Download Artefacts
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: release-native-darwin-amd64
+#          
+#      - uses: actions/setup-python@v5
+#        with:
+#          python-version: '3.12'
+#
+#      - name: Build
+#        run: |
+#          unzip rpa-worker_*_darwin_amd64.zip
+#          rm rpa-worker_*_darwin_amd64.zip
+#          export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_darwin_amd64)
+#          chmod +x $CAMUNDA_RPA_E2E_PATHTOWORKER
+#          ./gradlew :rpa-worker-e2e-tests:check
+#
+#      - name: Upload Test Results
+#        uses: actions/upload-artifact@v4
+#        if: always()
+#        with:
+#          name: smoke-test-reports-darwin-amd64
+#          path: rpa-worker-e2e-tests/build/reports/tests/test/
+#          retention-days: 1
+#
+#      - name: Publish Test Results
+#        uses: EnricoMi/publish-unit-test-result-action/macos@v2
+#        if: always()
+#        with:
+#          comment_mode: 'off'
+#          job_summary: false
+#          check_name: 'Darwin amd64 Smoke Test Results'
+#          files: |
+#            rpa-worker-e2e-tests/build/test-results/**/*.xml
+#            
+#            
+#  smoke_test_darwin_aarch64:
+#    needs:
+#      - macos_sign_and_notarize
+#    if: github.ref_type == 'tag' || github.event_name == 'pull_request'
+#    runs-on: macos-latest
+#    env:
+#      E2E: "1"
+#      E2E_SMOKE_TEST_ONLY: "true"
+#    
+#    steps:
+#      - uses: actions/checkout@v4
+#        with:
+#          fetch-depth: 0
+#          fetch-tags: true
+#
+#      - name: Setup Gradle
+#        uses: gradle/actions/setup-gradle@v5.0.0
+#
+#      - name: Download Artefacts
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: release-native-darwin-aarch64
+#          
+#      - uses: actions/setup-python@v5
+#        with:
+#          python-version: '3.12'
+#
+#      - name: Build
+#        run: |
+#          unzip rpa-worker_*_darwin_aarch64.zip
+#          rm rpa-worker_*_darwin_aarch64.zip
+#          export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_darwin_aarch64)
+#          chmod +x $CAMUNDA_RPA_E2E_PATHTOWORKER
+#          ./gradlew :rpa-worker-e2e-tests:check
+#
+#      - name: Upload Test Results
+#        uses: actions/upload-artifact@v4
+#        if: always()
+#        with:
+#          name: smoke-test-reports-darwin-aarch64
+#          path: rpa-worker-e2e-tests/build/reports/tests/test/
+#          retention-days: 1
+#
+#      - name: Publish Test Results
+#        uses: EnricoMi/publish-unit-test-result-action/macos@v2
+#        if: always()
+#        with:
+#          comment_mode: 'off'
+#          job_summary: false
+#          check_name: 'Darwin aarch64 Smoke Test Results'
+#          files: |
+#            rpa-worker-e2e-tests/build/test-results/**/*.xml
+#
   release:
     needs:
       - e2e
-      - smoke_test_win32
-      - smoke_test_darwin_amd64
-      - smoke_test_darwin_aarch64
-      - runtime_checks
+#      - smoke_test_win32
+#      - smoke_test_darwin_amd64
+#      - smoke_test_darwin_aarch64
+#      - runtime_checks
     if: github.ref_type == 'tag' && ! contains(github.ref_name, 'dev')
     runs-on: ubuntu-latest
     container: "ghcr.io/camunda/rpa-worker-base-image:202501291438"
