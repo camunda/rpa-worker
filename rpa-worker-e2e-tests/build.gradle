@@ -72,6 +72,11 @@ dependencies {
 	testRuntimeOnly libs.objenesis
 }
 
+void dumpInfo() {
+	wrapProcess("free -g".execute())
+	wrapProcess("df -h".execute())
+}
+
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
 
@@ -119,6 +124,9 @@ tasks.register("installK3s") {
 	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
 
 	doLast {
+		
+		dumpInfo()
+		
 		java.nio.file.Path k3sScript = Files.createTempFile("install-k3s", ".sh")
 		k3sScript.text = "https://get.k3s.io".toURL().text
 		
@@ -139,6 +147,9 @@ tasks.register("installCamunda") {
 	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
 
 	doLast {
+		
+		dumpInfo()
+		
 		wrapProcess("k3s kubectl create ns camunda".execute())
 
 		if(System.getenv("CAMUNDA_VERSION") == "v88")
@@ -183,6 +194,9 @@ tasks.register("deployWorkerContainer") {
 	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
 
 	doLast {
+		
+		dumpInfo()
+		
 		java.nio.file.Path workerSpec = Paths.get("rpa-worker-e2e-tests/rpa-worker.deployment.yaml")
 		String orig = workerSpec.text
 		workerSpec.text = orig.replaceAll("999_DIGEST_999", System.getenv("WORKER_IMAGE_DIGEST"))
