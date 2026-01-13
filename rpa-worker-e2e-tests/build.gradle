@@ -174,8 +174,9 @@ tasks.register("podSpecs") {
 	dependsOn installCamunda
 	
 	doLast {
-		String podSpecs = wrapProcessForResult("k3s kubectl get pods -n camunda -o json".execute())
-		Paths.get("pods.json").text = podSpecs
+//		String podSpecs = wrapProcessForResult("k3s kubectl get pods -n camunda -o json".execute())
+//		Paths.get("pods.json").text = podSpecs
+		waitForWithTimeout("k3s kubectl get pods -=n camunda -o json", Duration.ofSeconds(30), "Failed to query pods")
 	}
 }
 
