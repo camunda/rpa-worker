@@ -67,7 +67,7 @@ spec:
       clusterSize: 1
       partitionCount: 1
       replicationFactor: 1
-      pvcSize: 10Gi
+      pvcSize: 1Gi
       image:
         tag: "8.7.0"
       resources:
@@ -105,7 +105,7 @@ spec:
         replicaCount: 1
         # Request smaller persistent volumes.
         persistence:
-          size: 15Gi
+          size: 1Gi
         resources:
           requests:
             cpu: 1m
