@@ -105,6 +105,8 @@ spec:
         repository: bitnamilegacy/postgresql
     
     elasticsearch:
+      extraConfig:
+        "cluster.routing.allocation.disk.threshold_enabled": false
       image:
         repository: bitnamilegacy/elasticsearch
       master:
