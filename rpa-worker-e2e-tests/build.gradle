@@ -171,8 +171,12 @@ tasks.register("installCamunda") {
 }
 
 tasks.register("podSpecs") {
-	String podSpecs = wrapProcessForResult("k3s kubectl get pods -n camunda -o json".execute())
-	Paths.get("pods.json").text = podSpecs
+	dependsOn installCamunda
+	
+	doLast {
+		String podSpecs = wrapProcessForResult("k3s kubectl get pods -n camunda -o json".execute())
+		Paths.get("pods.json").text = podSpecs
+	}
 }
 
 installCamunda.finalizedBy(podSpecs)
