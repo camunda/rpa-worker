@@ -262,7 +262,7 @@ jobs:
     needs:
       - build
       - windows_test
-    runs-on: macos-13
+    runs-on: macos-15-intel
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
       contents: read
@@ -360,6 +360,38 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-native-linux-amd64
+          
+      - name: Clean-up Node
+        run: |
+          # Remove .NET SDKs
+          sudo rm -rf /usr/share/dotnet
+
+          # Remove Swift toolchain
+          sudo rm -rf /usr/share/swift
+
+          # Remove Haskell (GHC)
+          sudo rm -rf /usr/local/.ghcup
+
+          # Remove Julia
+          sudo rm -rf /usr/local/julia*
+
+          # Remove Android SDKs
+          sudo rm -rf /usr/local/lib/android
+
+          # Remove Microsoft/Edge and Google Chrome builds
+          sudo rm -rf /opt/microsoft /opt/google
+
+          # Remove Azure CLI
+          sudo rm -rf /opt/az
+
+          # Remove PowerShell
+          sudo rm -rf /usr/local/share/powershell
+
+          # Remove CodeQL and other toolcaches
+          sudo rm -rf /opt/hostedtoolcache
+
+          docker system prune -af || true
+          docker builder prune -af || true
       
       - name: Build
         run: |
@@ -651,7 +683,7 @@ jobs:
     needs:
       - macos_sign_and_notarize
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    runs-on: macos-13
+    runs-on: macos-15-intel
     env:
       E2E: "1"
       E2E_SMOKE_TEST_ONLY: "true"

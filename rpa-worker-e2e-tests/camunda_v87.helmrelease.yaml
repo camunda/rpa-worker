@@ -6,6 +6,7 @@ metadata:
 spec:
   repo: https://helm.camunda.io
   chart: camunda-platform
+  version: 12.6.1
   targetNamespace: camunda
   valuesContent: |-
     global:
@@ -66,7 +67,7 @@ spec:
       clusterSize: 1
       partitionCount: 1
       replicationFactor: 1
-      pvcSize: 10Gi
+      pvcSize: 1Gi
       image:
         tag: "8.7.0"
       resources:
@@ -100,11 +101,13 @@ spec:
         mode: disabled
         
     elasticsearch:
+      extraConfig:
+        "cluster.routing.allocation.disk.threshold_enabled": false
       master:
         replicaCount: 1
         # Request smaller persistent volumes.
         persistence:
-          size: 15Gi
+          size: 1Gi
         resources:
           requests:
             cpu: 1m
