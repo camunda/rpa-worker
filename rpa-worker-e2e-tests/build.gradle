@@ -216,6 +216,8 @@ tasks.register("deployWorkerContainer") {
 
 			wrapProcess("k3s kubectl get pods -n rpa-worker".execute())
 		}
+		sleep(30_000)
+		wrapProcess("k3s kubectl get pods -n rpa-worker".execute())
 	}
 }
 
