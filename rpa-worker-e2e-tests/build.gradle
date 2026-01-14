@@ -243,6 +243,13 @@ tasks.withType(Test).configureEach {
 	}
 }
 
+tasks.register("postTest") {
+	doLast {
+		wrapProcess("k3s kubectl get pods -n rpa-worker".execute())
+		wrapProcess("k3s kubectl get events -n rpa-worker".execute())
+	}
+}
+
 static void wrapProcess(Process p, @ClosureParams(value = SimpleType, options = ["java.lang.Process"]) Closure withProcessFn = {}) {
 	p.consumeProcessOutput(System.out, System.err)
 	withProcessFn(p)
