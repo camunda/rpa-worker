@@ -14,6 +14,7 @@ import org.springframework.test.context.TestPropertySource
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.time.Duration
 
 @TestPropertySource(properties = "camunda.rpa.python.path=python_ftest/")
 class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
@@ -253,5 +254,10 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 			and:
 			1 * processService.execute({ it.toString().contains("pip") }, _)
 		}
+	}
+
+	@Override
+	Duration getSubscribeTimeout() {
+		return Duration.ofSeconds(30)
 	}
 }

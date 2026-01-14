@@ -81,6 +81,7 @@ tasks.withType(Test).configureEach {
 	
 
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v87-snapshot-dev-mine")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v87-e2elab-local")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-dev-mine")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-dev-mine-NEW")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-dev-mine-NEW-3")
