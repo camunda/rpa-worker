@@ -86,6 +86,7 @@ tasks.withType(Test).configureEach {
 	
 
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v87-snapshot-dev-mine")
+//	systemProperty("camunda.rpa.e2e.worker.override", "c8-v87-e2elab-local")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-dev-mine")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-dev-mine-NEW")
 //	systemProperty("camunda.rpa.e2e.worker.override", "c8-v88-snapshot-dev-mine-NEW-3")
@@ -132,6 +133,7 @@ tasks.register("installK3s") {
 		
 		ProcessBuilder pb = new ProcessBuilder("sudo", "-E", "sh", k3sScript.toAbsolutePath().toString())
 		pb.environment()['K3S_KUBECONFIG_MODE'] = "644"
+		pb.environment()['INSTALL_K3S_VERSION'] = "v1.34.1+k3s1"
 		wrapProcess(pb.start())
 		sleep(10_000)
 		
@@ -178,6 +180,10 @@ tasks.register("installCamunda") {
 			
 			wrapProcess("k3s kubectl get pods -n camunda".execute())
 		}
+
+		sleep(30_000)
+		wrapProcess("k3s kubectl get pods -n camunda".execute())
+		wrapProcess("k3s kubectl get events -n camunda".execute())
 	}
 }
 
