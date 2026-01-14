@@ -66,7 +66,7 @@ class ScriptSandboxController {
 	private Mono<EvaluateScriptResponse> doEvaluateScript(RobotScript robotScript, EvaluateScriptRequest request) {
 		log.atInfo().log("Received script for sandbox evaluation");
 		
-		return robotService.execute(robotScript, request.variables(), null, Collections.singletonList(workspaceCleanupService::preserveLast), request.workspaceAffinityKey())
+		return robotService.execute(robotScript, request.variables(), null, Collections.singletonList(workspaceCleanupService::preserveLast), Collections.emptyList(), request.workspaceAffinityKey())
 
 				.doOnSuccess(xr -> log.atInfo().kv("result", xr.result()).log("Returning sandbox execution results"))
 
@@ -79,12 +79,12 @@ class ScriptSandboxController {
 	}
 	
 	private Mono<Map<String, URI>> getWorkspaceFileListWithProxyUrls(ExecutionResults xr) {
-		return io.supply(() -> workspaceService.getWorkspaceFiles(xr.workspace().getFileName().toString()))
+		return io.supply(() -> workspaceService.getWorkspaceFiles(xr.workspace().path().getFileName().toString()))
 				.map(wsFiles -> wsFiles.collect(Collectors.toMap(
-						p -> "/" + fixSlashes(xr.workspace().relativize(p.path())),
+						p -> "/" + fixSlashes(xr.workspace().path().relativize(p.path())),
 						p -> attachIfNecessary(p, URI.create("/")
-								.resolve("/workspace/%s/".formatted(xr.workspace().getFileName().toString()))
-								.resolve(fixSlashes(xr.workspace().relativize(p.path())))))));
+								.resolve("/workspace/%s/".formatted(xr.workspace().path().getFileName().toString()))
+								.resolve(fixSlashes(xr.workspace().path().relativize(p.path())))))));
 	}
 
 	private static final Set<MediaType> BROWSER_FRIENDLY_MEDIA_TYPES = Set.of(

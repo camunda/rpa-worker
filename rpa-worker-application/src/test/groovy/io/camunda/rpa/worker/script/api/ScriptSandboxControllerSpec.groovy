@@ -63,14 +63,14 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 				.map { it.body }
 		
 		then:
-		1 * robotService.execute(RobotScript.builder().id("_eval_").body(scriptBody).build(), inputVariables, null, _, null) >> { _, __, ___, List<RobotExecutionListener> executionListeners, ____ ->
+		1 * robotService.execute(RobotScript.builder().id("_eval_").body(scriptBody).build(), inputVariables, null, _, _, null) >> { _, __, ___, List<RobotExecutionListener> executionListeners, ____, _____ ->
 			executionListeners*.afterRobotExecution(workspace)
 
 			return Mono.just(
 					new ExecutionResults(
 							[main: new ExecutionResults.ExecutionResult("main", ExecutionResults.Result.PASS, "the-output", outputVariables, Duration.ZERO)], null,
 							outputVariables,
-							workspaceDir, Duration.ZERO))
+							workspace, Duration.ZERO))
 		}
 		
 		and:
@@ -119,14 +119,14 @@ class ScriptSandboxControllerSpec extends Specification implements PublisherUtil
 				.map { it.body }
 
 		then:
-		1 * robotService.execute(RobotScript.builder().id("_eval_").body(scriptBody).build(), inputVariables, null, _, null) >> { _, __, ___, List<RobotExecutionListener> executionListeners, ____ ->
+		1 * robotService.execute(RobotScript.builder().id("_eval_").body(scriptBody).build(), inputVariables, null, _, _, null) >> { _, __, ___, List<RobotExecutionListener> executionListeners, ____, _____ ->
 			executionListeners*.afterRobotExecution(workspace)
 
 			return Mono.just(
 					new ExecutionResults(
 							[main: new ExecutionResults.ExecutionResult("main", ExecutionResults.Result.PASS, "the-output", outputVariables, Duration.ZERO)], null,
 							outputVariables,
-							workspaceDir, Duration.ZERO))
+							workspace, Duration.ZERO))
 		}
 
 		and:

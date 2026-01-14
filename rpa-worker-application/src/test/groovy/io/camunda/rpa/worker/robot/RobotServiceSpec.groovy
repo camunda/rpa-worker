@@ -71,6 +71,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 				[rpaVar: 'rpa-var-value'],
 				null, 
 				[executionListener],
+				[],
 				[:], 
 				null)
 
@@ -144,7 +145,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [:], null, [], null)
+		ExecutionResults result = block service.execute(script, [:], null, [], [], null)
 
 		then:
 		1 * workspaceVariablesManager.getVariables(workspace.id()) >> [foo: 'bar']
@@ -170,7 +171,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [:], null, [executionListener], null)
+		ExecutionResults result = block service.execute(script, [:], null, [executionListener], [], null)
 
 		then:
 		result.results().values().first().result() == ExecutionResults.Result.FAIL
@@ -195,7 +196,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [:], null, [executionListener], null)
+		ExecutionResults result = block service.execute(script, [:], null, [executionListener], [], null)
 
 		then:
 		result.results().values().first().result() == ExecutionResults.Result.ERROR
@@ -220,7 +221,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		block service.execute(script, [:], null, [executionListener], null)
+		block service.execute(script, [:], null, [executionListener], [], null)
 
 		then:
 		thrown(RobotErrorException)
@@ -252,7 +253,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], null, [executionListener], [:], null)
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], null, [executionListener], [], [:], null)
 		
 		then:
 		1 * executionCustomizer.bindArg("script", { it.toString().contains("pre_0") }) >> executionCustomizer
@@ -317,7 +318,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], null, [executionListener], [:], null)
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], null, [executionListener], [], [:], null)
 
 		then:
 		1 * robotExecutionStrategy.executeRobot(_) >> { UnaryOperator<ExecutionCustomizer> customizer ->
@@ -351,7 +352,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		workspaceService.createWorkspace(null, [:]) >> workspace
 
 		when:
-		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], null, [], [:], null)
+		ExecutionResults result = block service.execute(script, [before1, before2], [after1, after2], [:], null, [], [], [:], null)
 
 		then:
 		3 * robotExecutionStrategy.executeRobot(_) >> { _ ->
@@ -397,7 +398,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		}
 
 		when:
-		block service.execute(script, [:], Duration.ofMinutes(3), [executionListener], null)
+		block service.execute(script, [:], Duration.ofMinutes(3), [executionListener], [], null)
 
 		then:
 		1 * executionCustomizer.timeout(Duration.ofMinutes(3)) >> executionCustomizer
@@ -440,6 +441,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 				[rpaVar: 'rpa-var-value'],
 				null,
 				[executionListener],
+				[],
 				[:],
 				null)
 
@@ -460,4 +462,45 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		0 * io.writeString({ it.toString().contains("five.resource") }, _)
 	}
 
+	void "Enhances ExecutionResults from result processors when present"() {
+		given:
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
+
+		and:
+		Path workDir = Paths.get("/path/to/workDir/")
+		Workspace workspace = new Workspace("workspace123456", workDir)
+		workspaceService.createWorkspace(null, [:]) >> workspace
+
+		and:
+		robotExecutionStrategy.executeRobot(_) >> { _ ->
+			return Mono.just(new ProcessService.ExecutionResult(RobotService.ROBOT_EXIT_SUCCESS, "stdout-content", "stderr-content", Duration.ZERO))
+		}
+
+		and:
+		ExecutionResultsProcessor p1 = Stub() {
+			withExecutionResults(_) >> { ExecutionResults xr ->
+				return Mono.just(xr.toBuilder().outputVariables([varFromProcessor1: true, *: xr.outputVariables()]).build())
+			}
+		}
+		ExecutionResultsProcessor p2 = Stub() {
+			withExecutionResults(_) >> { ExecutionResults xr ->
+				return Mono.just(xr.toBuilder().outputVariables([varFromProcessor2: true, *: xr.outputVariables()]).build())
+			}
+		}
+		
+		and:
+		Map<String, Object> expectedMergedVars = [
+				varFromProcessor1: true, 
+				varFromProcessor2: true, 
+				foo: 'bar']
+
+		when:
+		ExecutionResults result = block service.execute(script, [:], null, [], [p1, p2], null)
+
+		then:
+		1 * workspaceVariablesManager.getVariables(workspace.id()) >> [foo: 'bar']
+
+		and:
+		result.outputVariables() == expectedMergedVars
+	}
 }
