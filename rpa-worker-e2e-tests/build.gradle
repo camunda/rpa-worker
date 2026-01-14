@@ -79,6 +79,7 @@ void dumpInfo() {
 
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
+	finalizedBy postTest
 
 	java.nio.file.Path workerPath = project.rootDir.toPath().resolve("workerpath.txt")
 	if (Files.exists(workerPath))
