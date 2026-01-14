@@ -134,7 +134,7 @@ tasks.register("installK3s") {
 		
 		ProcessBuilder pb = new ProcessBuilder("sudo", "-E", "sh", k3sScript.toAbsolutePath().toString())
 		pb.environment()['K3S_KUBECONFIG_MODE'] = "644"
-		pb.environment()['INSTALL_K3S_VERSION'] = "v1.34.1+k3s1"
+//		pb.environment()['INSTALL_K3S_VERSION'] = "v1.34.1+k3s1"
 		wrapProcess(pb.start())
 		sleep(10_000)
 		
