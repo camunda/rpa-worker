@@ -12,7 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactivefeign.webclient.WebReactiveFeign;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
 
 @Configuration
@@ -35,12 +36,15 @@ class DocumentClientConfiguration {
 				zeebeAuthProperties.clientId(), 
 				zeebeAuthProperties.clientSecret(), 
 				camundaClientProperties.getAuth().getAudience());
-		
-		DocumentClient client = WebReactiveFeign
-				.<DocumentClient>builder(webClientBuilder)
-				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
-				.target(DocumentClient.class, camundaClientProperties.getRestAddress() + "/v2/");
-		
+
+		DocumentClient client = HttpServiceProxyFactory
+				.builderFor(WebClientAdapter.create(WebClient.builder()
+						.baseUrl(camundaClientProperties.getRestAddress() + "/v2/")
+						.filter(zeebeProperties.authMethod().interceptor(authenticator))
+						.build()))
+				.build()
+				.createClient(DocumentClient.class);
+
 		return new RetryingDocumentClientWrapper(client);
 	}
 }

@@ -7,8 +7,6 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.core.LayoutBase;
 import ch.qos.logback.core.OutputStreamAppender;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -21,6 +19,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
 import org.springframework.util.ClassUtils;
+import tools.jackson.databind.ObjectMapper;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -98,30 +97,26 @@ public class JsonLogbackLoggingSystem extends LogbackLoggingSystem {
 	}
 
 	private String render(ILoggingEvent event) {
-        try {
-			return objectMapper.writeValueAsString(new LoggingEvent(
-					event.getInstant().toString(),
-					event.getLevel().toString(),
-					event.getFormattedMessage(),
-					event.getLoggerName(),
-					event.getThreadName(),
-					thrownFor(event),
-					
-					Optional.ofNullable(event.getKeyValuePairs())
-							.orElseGet(Collections::emptyList)
-							.stream()
-							.filter(kv -> kv.key != null)
-							.collect(Collectors.toMap(kv -> kv.key, kv -> Objects.toString(kv.value))),
-					
-					Optional.ofNullable(event.getMarkerList())
-							.stream()
-							.flatMap(Collection::stream)
-							.map(Marker::getName)
-							.toList())) + "\n";
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-    }
+		return objectMapper.writeValueAsString(new LoggingEvent(
+				event.getInstant().toString(),
+				event.getLevel().toString(),
+				event.getFormattedMessage(),
+				event.getLoggerName(),
+				event.getThreadName(),
+				thrownFor(event),
+				
+				Optional.ofNullable(event.getKeyValuePairs())
+						.orElseGet(Collections::emptyList)
+						.stream()
+						.filter(kv -> kv.key != null)
+						.collect(Collectors.toMap(kv -> kv.key, kv -> Objects.toString(kv.value))),
+				
+				Optional.ofNullable(event.getMarkerList())
+						.stream()
+						.flatMap(Collection::stream)
+						.map(Marker::getName)
+						.toList())) + "\n";
+	}
 
 	private LoggingEvent.Thrown thrownFor(ILoggingEvent loggingEvent) {
 		IThrowableProxy throwableProxy = loggingEvent.getThrowableProxy();

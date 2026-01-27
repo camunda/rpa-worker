@@ -45,7 +45,6 @@ dependencies {
 	implementation libs.camundaStarter
 	implementation libs.vavr
 	implementation libs.jackson.dataFormatYaml
-	implementation libs.reactiveFeign
 	implementation libs.javaSemver
 	implementation libs.slf4j.api
 

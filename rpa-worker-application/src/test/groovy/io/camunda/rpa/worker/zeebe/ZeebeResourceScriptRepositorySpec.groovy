@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.zeebe
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.script.RobotScript
@@ -12,6 +11,7 @@ import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
+import tools.jackson.databind.ObjectMapper
 
 import java.nio.file.Paths
 import java.util.function.Supplier

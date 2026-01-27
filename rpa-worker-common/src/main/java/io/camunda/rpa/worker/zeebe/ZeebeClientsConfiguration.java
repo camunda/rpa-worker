@@ -1,17 +1,5 @@
 package io.camunda.rpa.worker.zeebe;
 
-import com.fasterxml.jackson.core.JacksonException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.Version;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.client.spring.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +7,20 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactivefeign.webclient.WebReactiveFeign;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.Version;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.JacksonModule;
+import tools.jackson.databind.ObjectMapper;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.ValueSerializer;
+import tools.jackson.databind.module.SimpleModule;
 
-import java.io.IOException;
 import java.util.Map;
 
 @Configuration
@@ -37,19 +35,25 @@ class ZeebeClientsConfiguration {
 	
 	@Bean
 	public AuthClient authClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
-		AuthClient.InternalClient target = WebReactiveFeign
-				.<AuthClient.InternalClient>builder(webClientBuilder)
-				.target(AuthClient.InternalClient.class, zeebeProperties.authEndpoint().toString());
-		
-		return auth -> target.authenticate(
+		AuthClient.InternalClient client = HttpServiceProxyFactory
+				.builderFor(WebClientAdapter.create(WebClient.builder()
+						.baseUrl(camundaClientProperties.getAuth().getTokenUrl().toString())
+						.build()))
+				.build()
+				.createClient(AuthClient.InternalClient.class);
+
+		return auth -> client.authenticate(
 				objectMapper.convertValue(auth, new TypeReference<>() {}));
 	}
 
 	@Bean
 	public C8RunAuthClient c8RunAuthClient(WebClient.Builder webClientBuilder) {
-		return WebReactiveFeign
-				.<C8RunAuthClient>builder(webClientBuilder)
-				.target(C8RunAuthClient.class, camundaClientProperties.getRestAddress().toString());
+		return HttpServiceProxyFactory
+				.builderFor(WebClientAdapter.create(WebClient.builder()
+						.baseUrl(camundaClientProperties.getRestAddress().toString())
+						.build()))
+				.build()
+				.createClient(C8RunAuthClient.class);
 	}
 
 	@Bean
@@ -58,32 +62,34 @@ class ZeebeClientsConfiguration {
 				zeebeAuthProperties.clientId(),
 				zeebeAuthProperties.clientSecret(),
 				camundaClientProperties.getAuth().getAudience());
-		
-		return WebReactiveFeign
-				.<ResourceClient>builder(webClientBuilder)
-				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
-				.target(ResourceClient.class, camundaClientProperties.getRestAddress() + "/v2/");
+
+		return HttpServiceProxyFactory
+				.builderFor(WebClientAdapter.create(WebClient.builder()
+						.baseUrl(camundaClientProperties.getRestAddress() + "/v2/")
+						.filter(zeebeProperties.authMethod().interceptor(authenticator))
+						.build()))
+				.build()
+				.createClient(ResourceClient.class);
 	}
 
 	@Bean
-	public Module authModule() {
+	public JacksonModule authModule() {
 		return new SimpleModule("zeebe-auth", Version.unknownVersion()) {{
-			addSerializer(AuthClient.AuthenticationRequest.class, new JsonSerializer<>() {
+			addSerializer(AuthClient.AuthenticationRequest.class, new ValueSerializer<>() {
 				@Override
-				public void serialize(AuthClient.AuthenticationRequest value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
-					gen.writeObject(Map.of("client_id", value.clientId(),
+				public void serialize(AuthClient.AuthenticationRequest value, JsonGenerator gen, SerializationContext ctxt) throws JacksonException {
+					gen.writePOJO(Map.of("client_id", value.clientId(),
 							"client_secret", value.clientSecret(),
 							"audience", value.audience(),
 							"grant_type", value.grantType()));
 				}
 			});
 
-			addDeserializer(AuthClient.AuthenticationResponse.class, new JsonDeserializer<>() {
+			addDeserializer(AuthClient.AuthenticationResponse.class, new ValueDeserializer<>() {
 				@Override
-				public AuthClient.AuthenticationResponse deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
-					ObjectMapper codec = (ObjectMapper) p.getCodec();
-					Map<String, String> map = codec.readValue(p, new TypeReference<>() {
-					});
+				public AuthClient.AuthenticationResponse deserialize(tools.jackson.core.JsonParser p, tools.jackson.databind.DeserializationContext ctxt) throws JacksonException {
+					ObjectMapper codec = (ObjectMapper) p.objectReadContext();
+					Map<String, String> map = codec.readValue(p, new TypeReference<>() {});
 					return new AuthClient.AuthenticationResponse(
 							map.get("access_token"),
 							Integer.parseInt(map.get("expires_in")));

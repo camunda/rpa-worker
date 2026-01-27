@@ -1,17 +1,20 @@
 package io.camunda.rpa.worker.operate;
 
-import feign.FeignException;
-import feign.Param;
-import feign.RequestLine;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.Optional;
 
+@HttpExchange
 public interface OperateClient {
 	
-	@RequestLine("GET /process-instances/{key}")
-	Mono<GetProcessInstanceResponse> getProcessInstance(@Param("key") long key);
+	@GetExchange("/process-instances/{key}")
+	Mono<GetProcessInstanceResponse> getProcessInstance(@PathVariable long key);
 	
 	record GetProcessInstanceResponse (
 			Long key,
@@ -40,20 +43,20 @@ public interface OperateClient {
 	
 	default Mono<GetIncidentsResponse> getIncidents(GetIncidentsRequest request) {
 		return getIncidents87(request)
-				.onErrorComplete(FeignException.NotFound.class)
-				.onErrorComplete(FeignException.BadRequest.class)
+				.onErrorComplete(WebClientResponseException.NotFound.class)
+				.onErrorComplete(WebClientResponseException.BadRequest.class)
 				.switchIfEmpty(getIncidents88b(new GetIncidentsRequest88b(new GetIncidentsRequest88b.Filter(String.valueOf(request.filter().processInstanceKey()))))
-						.onErrorComplete(FeignException.BadRequest.class)
+						.onErrorComplete(WebClientResponseException.BadRequest.class)
 						.switchIfEmpty(getIncidents88a(request.filter.processInstanceKey(), request)));
 	}
 
-	@RequestLine("POST /incidents/search")
+	@PostExchange("/incidents/search")
 	Mono<GetIncidentsResponse> getIncidents87(GetIncidentsRequest request);
 
-	@RequestLine("POST /process-instances/{key}/incidents/search")
-	Mono<GetIncidentsResponse> getIncidents88a(@Param("key") long key, GetIncidentsRequest request);
+	@PostExchange("/process-instances/{key}/incidents/search")
+	Mono<GetIncidentsResponse> getIncidents88a(@PathVariable long key, GetIncidentsRequest request);
 	
-	@RequestLine("POST /incidents/search")
+	@PostExchange("/incidents/search")
 	Mono<GetIncidentsResponse> getIncidents88b(GetIncidentsRequest88b request);
 
 	record GetIncidentsRequest(Filter filter) {
@@ -101,16 +104,16 @@ public interface OperateClient {
 	
 	default Mono<GetVariablesResponse> getVariables(GetVariablesRequest request) {
 		return doGetVariables(request)
-				.onErrorComplete(FeignException.BadRequest.class)
+				.onErrorComplete(WebClientResponseException.BadRequest.class)
 				.switchIfEmpty(doGetVariables88(
 						new GetVariablesRequest88(
 								new GetVariablesRequest88.Filter(String.valueOf(request.filter.processInstanceKey())))));
 	}
 
-	@RequestLine("POST /variables/search")
+	@PostExchange("/variables/search")
 	Mono<GetVariablesResponse> doGetVariables(GetVariablesRequest request);
 
-	@RequestLine("POST /variables/search")
+	@PostExchange("/variables/search")
 	Mono<GetVariablesResponse> doGetVariables88(GetVariablesRequest88 request);
 
 	record GetVariablesRequest(Filter filter) {

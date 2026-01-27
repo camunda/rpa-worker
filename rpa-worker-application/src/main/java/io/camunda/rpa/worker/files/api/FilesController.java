@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.files.api;
 
-import feign.FeignException;
 import io.camunda.rpa.worker.api.StubbedResponseGenerator;
 import io.camunda.rpa.worker.files.DocumentClient;
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -153,7 +153,7 @@ class FilesController {
 
 								.then(Mono.just(Map.entry(kv.getKey(),
 										new RetrieveFileResult("OK", null))))
-								.onErrorResume(FeignException.NotFound.class, _ -> Mono.just(Map.entry(kv.getKey(),
+								.onErrorResume(WebClientResponseException.NotFound.class, _ -> Mono.just(Map.entry(kv.getKey(),
 										new RetrieveFileResult("NOT_FOUND", null))))
 								.onErrorResume(IllegalArgumentException.class, _ -> Mono.just(Map.entry(kv.getKey(),
 										new RetrieveFileResult("BAD_REQUEST", null))))

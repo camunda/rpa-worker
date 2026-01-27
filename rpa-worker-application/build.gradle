@@ -53,6 +53,7 @@ dependencies {
 	implementation libs.spring.boot.starter.webflux
 	implementation libs.spring.boot.starter.actuator
 	implementation libs.spring.boot.starter.validation
+	implementation libs.spring.boot.starter.webclient
 	implementation libs.springDocStarter
 	
 	implementation libs.prometheus.simpleclient.pushgateway
@@ -63,7 +64,6 @@ dependencies {
 	implementation libs.vavr
 	implementation libs.commons.exec
 	implementation libs.jackson.dataFormatYaml
-	implementation libs.reactiveFeign
 	implementation libs.javaSemver
 	implementation libs.slf4j.api
 	implementation libs.caffeine

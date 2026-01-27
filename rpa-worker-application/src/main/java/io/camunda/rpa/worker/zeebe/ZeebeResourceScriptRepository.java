@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.zeebe;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
@@ -11,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.ObjectMapper;
 
 import java.nio.file.Path;
 import java.time.Duration;

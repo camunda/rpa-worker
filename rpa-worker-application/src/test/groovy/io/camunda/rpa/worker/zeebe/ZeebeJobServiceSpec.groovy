@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.zeebe
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonOutput
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException
@@ -23,6 +22,7 @@ import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
+import tools.jackson.databind.ObjectMapper
 
 import java.nio.file.Path
 import java.time.Duration

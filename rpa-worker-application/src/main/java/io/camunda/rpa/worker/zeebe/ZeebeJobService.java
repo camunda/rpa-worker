@@ -1,7 +1,5 @@
 package io.camunda.rpa.worker.zeebe;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.robot.ExecutionResults;
@@ -20,6 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
 import java.util.Collection;

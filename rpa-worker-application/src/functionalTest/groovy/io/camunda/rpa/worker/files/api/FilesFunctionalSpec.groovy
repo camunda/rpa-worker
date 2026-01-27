@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.files.api
 
-import com.fasterxml.jackson.core.type.TypeReference
 import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
@@ -30,6 +29,7 @@ import org.springframework.web.util.UriComponentsBuilder
 import reactor.core.publisher.Mono
 import spock.lang.Issue
 import spock.util.concurrent.PollingConditions
+import tools.jackson.core.type.TypeReference
 
 import java.nio.file.Files
 import java.util.concurrent.CopyOnWriteArrayList

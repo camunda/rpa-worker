@@ -4,7 +4,7 @@ camundaStarter = "8.9.0-alpha4-rc1"
 vavr = "0.10.5"
 commons-exec = "1.6.0"
 commons-lang = "3.20.0" 
-reactiveFeign = "4.2.1" ## TODO
+#reactiveFeign = "4.2.1" ## TODO
 javaSemver = "0.10.2"
 slf4j = "2.1.0-alpha1"
 xmachinery = "0.4.0-dev.21"
@@ -29,6 +29,7 @@ testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-webclient = { module = "org.springframework.boot:spring-boot-starter-webclient" }
 
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
 spring-boot-configurationProcessor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
@@ -39,7 +40,8 @@ vavr = { module = "io.vavr:vavr", version.ref = "vavr" }
 commons-exec = { module = "org.apache.commons:commons-exec", version.ref = "commons-exec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 jackson-dataFormatYaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml" }
-reactiveFeign = { module = "com.playtika.reactivefeign:feign-reactor-webclient", version.ref = "reactiveFeign" }
+## TODO
+#reactiveFeign = { module = "com.playtika.reactivefeign:feign-reactor-webclient", version.ref = "reactiveFeign" }
 javaSemver = { module = "com.github.zafarkhaja:java-semver", version.ref = "javaSemver" }
 lombok = { module = "org.projectlombok:lombok" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }

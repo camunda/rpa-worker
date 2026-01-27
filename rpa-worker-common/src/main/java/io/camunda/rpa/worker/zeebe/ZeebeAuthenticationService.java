@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.util.MultiValueMap;
 import reactor.core.publisher.Mono;
 
 import java.net.HttpCookie;
@@ -75,7 +74,7 @@ public class ZeebeAuthenticationService {
 								.kv("username", authentication.client())
 								.log("Refreshing auth cookie")),
 
-				r -> new TokenWithAbsoluteExpiry(HttpHeaders.readOnlyHttpHeaders(MultiValueMap.fromMultiValue(r.headers()))
+				r -> new TokenWithAbsoluteExpiry(HttpHeaders.readOnlyHttpHeaders(r.getHeaders())
 						.get(HttpHeaders.SET_COOKIE).stream()
 						.flatMap(header -> HttpCookie.parse(header).stream())
 						.collect(Collectors.toMap(HttpCookie::getName, HttpCookie::getValue))

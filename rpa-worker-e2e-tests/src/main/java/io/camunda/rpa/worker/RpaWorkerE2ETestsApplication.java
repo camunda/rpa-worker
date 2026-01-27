@@ -6,7 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactivefeign.webclient.WebReactiveFeign;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.netty.http.client.HttpClient;
 
 @SpringBootApplication
@@ -26,9 +27,11 @@ public class RpaWorkerE2ETestsApplication {
 
 	@Bean
 	public RpaWorkerClient rpaWorkerClient(WebClient.Builder webClientBuilder) {
-		return WebReactiveFeign
-				.<RpaWorkerClient>builder(webClientBuilder)
-				.target(RpaWorkerClient.class, "http://localhost:36227/");
+		return HttpServiceProxyFactory
+				.builderFor(WebClientAdapter.create(WebClient.builder()
+						.baseUrl("http://localhost:36227/")
+						.build()))
+				.build()
+				.createClient(RpaWorkerClient.class);
 	}
-	
 }

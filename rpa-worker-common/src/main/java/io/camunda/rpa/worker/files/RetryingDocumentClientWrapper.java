@@ -1,11 +1,11 @@
 package io.camunda.rpa.worker.files;
 
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
@@ -19,7 +19,7 @@ public class RetryingDocumentClientWrapper implements DocumentClient {
 	
 	private static final Retry retrySpec = Retry
 			.backoff(3, Duration.ofSeconds(1))
-			.filter(thrown -> ! (thrown instanceof FeignException.FeignClientException));
+			.filter(thrown -> ! (thrown instanceof WebClientRequestException));
 	
 	private final DocumentClient delegate;
 	

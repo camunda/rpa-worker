@@ -1,39 +1,40 @@
 package io.camunda.rpa.worker.files;
 
-import feign.FeignException;
-import feign.Headers;
-import feign.Param;
-import feign.QueryMap;
-import feign.RequestLine;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpEntity;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
+import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+@HttpExchange
 public interface DocumentClient {
 	
-	@RequestLine("GET /documents/{documentId}?storeId={storeId}&contentHash={contentHash}")
+	@GetExchange("/documents/{documentId}?storeId={storeId}&contentHash={contentHash}")
 	Flux<DataBuffer> getDocument(
-			@Param("documentId") String documentId, 
-			@Param("storeId") String storeId, 
-			@Param("contentHash") String contentHash);
+			@PathVariable String documentId,
+			@PathVariable String storeId,
+			@PathVariable String contentHash);
 
 	default Mono<ZeebeDocumentDescriptor> uploadDocument(
 			MultiValueMap<String, HttpEntity<?>> data, 
-			@QueryMap Map<String, String> query) {
+			@RequestParam Map<String, String> query) {
 		HttpEntity<?> metadata88 = data.remove("metadata88").getFirst();
 		return doUploadDocument(data, query)
-				.onErrorComplete(FeignException.BadRequest.class)
+				.onErrorComplete(HttpClientErrorException.BadRequest.class)
 				.switchIfEmpty(Mono.defer(() -> {
 					data.set("metadata", metadata88);
 					return doUploadDocument(data, query);
 				}));
 	}
 
-	@RequestLine("POST /documents")
-	@Headers("Content-type: multipart/form-data")
-	Mono<ZeebeDocumentDescriptor> doUploadDocument(MultiValueMap<String, HttpEntity<?>> data, @QueryMap Map<String, String> query);
+	@PostExchange(value = "/documents", headers = "Content-type: multipart/form-data")
+	Mono<ZeebeDocumentDescriptor> doUploadDocument(MultiValueMap<String, HttpEntity<?>> data, @RequestParam Map<String, String> query);
 }
