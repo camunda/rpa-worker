@@ -1,11 +1,11 @@
 package io.camunda.rpa.worker.zeebe;
 
+import io.camunda.client.spring.properties.CamundaClientAuthProperties;
+import io.camunda.client.spring.properties.CamundaClientProperties;
 import io.camunda.rpa.worker.RpaWorkerApplication;
 import io.camunda.rpa.worker.check.StartupCheck;
 import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
-import io.camunda.zeebe.spring.client.properties.common.AuthProperties;
-import io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties;
+import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectProvider;
@@ -41,11 +41,11 @@ class ZeebeStartupCheck implements StartupCheck<ZeebeReadyEvent> {
 				
 				.doOnSubscribe(_ -> log.atInfo()
 						.kv("client-mode", camundaClientProperties.getObject().getMode())
-						.kv("client-id", Optional.ofNullable(camundaClientProperties.getObject().getAuth()).map(AuthProperties::getClientId).orElse(null))
-						.kv("cluster-id", camundaClientProperties.getObject().getClusterId())
-						.kv("region", camundaClientProperties.getObject().getRegion())
-						.kv("zeebe-grpc-address", Optional.ofNullable(camundaClientProperties.getObject().getZeebe()).map(ZeebeClientProperties::getGrpcAddress).orElse(null))
-						.kv("zeebe-rest-address", Optional.ofNullable(camundaClientProperties.getObject().getZeebe()).map(ZeebeClientProperties::getRestAddress).orElse(null))
+						.kv("client-id", Optional.ofNullable(camundaClientProperties.getObject().getAuth()).map(CamundaClientAuthProperties::getClientId).orElse(null))
+						.kv("cluster-id", camundaClientProperties.getObject().getCloud().getClusterId())
+						.kv("region", camundaClientProperties.getObject().getCloud().getRegion())
+						.kv("zeebe-grpc-address", Try.of(camundaClientProperties::getObject).map(CamundaClientProperties::getGrpcAddress).getOrNull())
+						.kv("zeebe-rest-address", Try.of(camundaClientProperties::getObject).map(CamundaClientProperties::getRestAddress).getOrNull())
 						.log("Checking Zeebe connection"))
 
 				.doOnError(thrown -> log.atError()

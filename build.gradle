@@ -5,3 +5,7 @@ apply plugin: AutoVersionPlugin
 allprojects {
 	group "io.camunda.rpa"
 }
+
+subprojects {
+    task allDeps(type: DependencyReportTask) {}
+}

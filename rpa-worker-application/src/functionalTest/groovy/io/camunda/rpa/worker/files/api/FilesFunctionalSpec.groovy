@@ -356,7 +356,7 @@ Main
 	}
 
 	private List<ZeebeDocumentDescriptor> fileOrFiles(def variable) {
-		List<Map<String, Object>> filesRaw = variable instanceof List<Map<String, Object>> ? variable : [ variable ]
+		List<Map<String, Object>> filesRaw = variable instanceof List<?> ? variable : [ variable ]
 		return objectMapper.convertValue(filesRaw, new TypeReference<List<ZeebeDocumentDescriptor>>() {})
 	}
 	

@@ -12,8 +12,8 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
+import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
+import io.camunda.client.spring.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +49,7 @@ class ZeebeClientsConfiguration {
 	public C8RunAuthClient c8RunAuthClient(WebClient.Builder webClientBuilder) {
 		return WebReactiveFeign
 				.<C8RunAuthClient>builder(webClientBuilder)
-				.target(C8RunAuthClient.class, camundaClientProperties.getZeebe().getBaseUrl().toString());
+				.target(C8RunAuthClient.class, camundaClientProperties.getRestAddress().toString());
 	}
 
 	@Bean
@@ -57,12 +57,12 @@ class ZeebeClientsConfiguration {
 		Mono<String> authenticator = zeebeAuthenticationService.getObject().getAuthToken(
 				zeebeAuthProperties.clientId(),
 				zeebeAuthProperties.clientSecret(),
-				camundaClientProperties.getZeebe().getAudience());
+				camundaClientProperties.getAuth().getAudience());
 		
 		return WebReactiveFeign
 				.<ResourceClient>builder(webClientBuilder)
 				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
-				.target(ResourceClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
+				.target(ResourceClient.class, camundaClientProperties.getRestAddress() + "/v2/");
 	}
 
 	@Bean
