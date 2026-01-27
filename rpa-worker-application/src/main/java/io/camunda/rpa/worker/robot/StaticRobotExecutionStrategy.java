@@ -3,6 +3,9 @@ package io.camunda.rpa.worker.robot;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer;
 import io.camunda.rpa.worker.pexec.ProcessService;
+import io.vavr.control.Try;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import reactor.core.publisher.Flux;
@@ -13,7 +16,8 @@ import java.util.function.UnaryOperator;
 
 import static io.camunda.rpa.worker.util.ArchiveUtils.extractArchive;
 
-class StaticRobotExecutionStrategy implements RobotExecutionStrategy {
+@Slf4j
+class StaticRobotExecutionStrategy implements RobotExecutionStrategy, DisposableBean {
 	
 	private static final String robotExeName = System.getProperty("os.name").contains("Windows")
 			? "robot.exe"
@@ -21,9 +25,11 @@ class StaticRobotExecutionStrategy implements RobotExecutionStrategy {
 
 	private final ProcessService processService;
 	private final Path runtimeDir;
+	private final IO io;
 
 	public StaticRobotExecutionStrategy(ProcessService processService, IO io) {
 		this.processService = processService;
+		this.io = io;
 
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		Resource staticRuntimeZipResource = resolver.getResource("runtime.zip");
@@ -51,5 +57,15 @@ class StaticRobotExecutionStrategy implements RobotExecutionStrategy {
 	@Override
 	public boolean shouldCheck() {
 		return false;
+	}
+	
+	@Override
+	public void destroy() throws Exception {
+		Try.run(() -> io.deleteDirectoryRecursively(runtimeDir))
+				.onFailure(thrown -> log
+						.atError()
+						.setCause(thrown)
+						.kv("dir", runtimeDir)
+						.log("Failed to clean-up Static Runtime directory"));
 	}
 }

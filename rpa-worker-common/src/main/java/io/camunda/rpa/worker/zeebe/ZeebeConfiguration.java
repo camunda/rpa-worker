@@ -1,9 +1,8 @@
 package io.camunda.rpa.worker.zeebe;
 
+import io.camunda.client.spring.actuator.CamundaClientHealthIndicator;
+import io.camunda.client.spring.properties.CamundaClientProperties;
 import io.camunda.rpa.worker.util.HttpHeaderUtils;
-import io.camunda.zeebe.spring.client.actuator.ZeebeClientHealthIndicator;
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
-import io.camunda.zeebe.spring.client.properties.common.ApiProperties;
 import io.grpc.ClientInterceptor;
 import io.grpc.Metadata;
 import io.grpc.stub.MetadataUtils;
@@ -11,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.health.contributor.Health;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -30,8 +29,8 @@ class ZeebeConfiguration {
 			@Override
 			public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 				if ( ! zeebeClientStatus.isZeebeClientEnabled()
-						&& bean instanceof ZeebeClientHealthIndicator)
-					return new ZeebeClientHealthIndicator(null) {
+						&& bean instanceof CamundaClientHealthIndicator)
+					return new CamundaClientHealthIndicator(null) {
 						@Override
 						protected void doHealthCheck(Health.Builder builder) {}
 					};
@@ -44,8 +43,7 @@ class ZeebeConfiguration {
 	@Bean
 	public ZeebeClientStatus zeebeClientStatus() {
 		boolean zeebeEnabled = camundaClientProperties.stream().findFirst()
-				.map(CamundaClientProperties::getZeebe)
-				.map(ApiProperties::getEnabled)
+				.map(CamundaClientProperties::getEnabled)
 				.orElse(false);
 
 		boolean clientModeConfigured = camundaClientProperties.stream().findFirst()

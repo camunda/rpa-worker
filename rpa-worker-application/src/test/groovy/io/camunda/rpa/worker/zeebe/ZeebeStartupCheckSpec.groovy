@@ -1,13 +1,13 @@
 package io.camunda.rpa.worker.zeebe
 
+import io.camunda.client.spring.properties.CamundaClientAuthProperties
+import io.camunda.client.spring.properties.CamundaClientCloudProperties
+import io.camunda.client.spring.properties.CamundaClientProperties
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.zeebe.client.ZeebeClient
 import io.camunda.zeebe.client.api.command.TopologyRequestStep1
 import io.camunda.zeebe.client.api.response.Topology
 import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties
-import io.camunda.zeebe.spring.client.properties.common.AuthProperties
-import io.camunda.zeebe.spring.client.properties.common.ZeebeClientProperties
 import org.springframework.beans.factory.ObjectProvider
 import spock.lang.Specification
 import spock.lang.Subject
@@ -24,18 +24,19 @@ class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 
 	CamundaClientProperties camundaClientProperties = Stub(CamundaClientProperties) {
 		getMode() >> CamundaClientProperties.ClientMode.saas
-		getAuth() >> Stub(AuthProperties) {
+		getAuth() >> Stub(CamundaClientAuthProperties) {
 			getClientId() >> "the-client-id"
 		}
-		getClusterId() >> "the-cluster-id"
-		getRegion() >> "the-region"
-		getZeebe() >> Stub(ZeebeClientProperties) {
-			getGrpcAddress() >> "https://the-grpc-address".toURI()
-			getRestAddress() >> "https://the-rest-address".toURI()
-			isPreferRestOverGrpc() >> false
-			getEnabled() >> true
+		getCloud() >> Stub(CamundaClientCloudProperties) {
+			getClusterId() >> "the-cluster-id"
+			getRegion() >> "the-region"
 		}
+		getGrpcAddress() >> "https://the-grpc-address".toURI()
+		getRestAddress() >> "https://the-rest-address".toURI()
+		getPreferRestOverGrpc() >> false
+		getEnabled() >> true
 	}
+	
 	ObjectProvider<CamundaClientProperties> clientPropertiesProvider = Stub() {
 		getObject() >> camundaClientProperties
 	}

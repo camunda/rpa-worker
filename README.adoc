@@ -23,6 +23,7 @@ https://docs.camunda.io/docs/apis-tools/spring-zeebe-sdk/getting-started/#config
 
 .Example Camunda local dev configuration
 ----
+camunda.client.enabled=true
 camunda.client.mode=selfmanaged
 camunda.client.zeebe.grpc-address=http://zeebe.camunda.local
 camunda.client.zeebe.rest-address=http://zeebe.camunda.local
@@ -30,6 +31,7 @@ camunda.client.zeebe.rest-address=http://zeebe.camunda.local
 
 .Example Camunda SaaS configuration
 ----
+camunda.client.enabled=true
 camunda.client.mode=saas
 camunda.client.auth.client-id=<client id>
 camunda.client.auth.client-secret=<client secret>
@@ -41,12 +43,14 @@ camunda.rpa.secrets.backend=camunda
 
 .Example custom/dev SaaS configuration
 ----
+camunda.client.enabled=true
 camunda.client.mode=selfmanaged
 
 camunda.client.cloud.cluster-id=<cluster id>
 camunda.client.cloud.region=<region>
 
 camunda.client.auth.issuer=https://login.cloud.dev.ultrawombat.com/oauth/token
+camunda.client.auth.method=oidc
 camunda.client.auth.client-id=<client id>
 camunda.client.auth.client-secret=<client secret>
 
@@ -339,6 +343,7 @@ Launching a dev container with Zeebe connection details, mapping the Worker's li
 ----
 $ docker run --rm -it \
     -p 36227:36227 \
+    -e CAMUNDA_CLIENT_ENABLED=true \
     -e CAMUNDA_CLIENT_MODE=saas \
     -e CAMUNDA_CLIENT_AUTH_CLIENTID=abc123 \
     -e CAMUNDA_CLIENT_AUTH_CLIENTSECRET=def234 \

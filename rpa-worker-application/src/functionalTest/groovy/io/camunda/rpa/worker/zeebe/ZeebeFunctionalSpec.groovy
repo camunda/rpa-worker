@@ -164,7 +164,7 @@ Check
 
 		then:
 		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
-			1 * variables([:]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+			1 * variables(emptyVariables()) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
 				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 			}
 		}
@@ -191,7 +191,7 @@ Check
 
 		then:
 		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
-			1 * variables([:]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+			1 * variables(emptyVariables()) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
 				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 			}
 		}
@@ -471,7 +471,7 @@ Assert input variable
 
 		and:
 		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
-			1 * variables([:]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+			1 * variables(emptyVariables()) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
 				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
 			}
 		}
@@ -523,5 +523,9 @@ Assert input variable
 				}
 			}
 		}
+	}
+	
+	private static Map<String, Object> emptyVariables() {
+		return [_v89Workaround: "true"]
 	}
 }

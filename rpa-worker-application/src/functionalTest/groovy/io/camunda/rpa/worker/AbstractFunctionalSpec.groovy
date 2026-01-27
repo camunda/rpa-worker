@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import groovy.json.JsonOutput
 import groovy.transform.Memoized
 import io.camunda.rpa.worker.io.DefaultIO
@@ -24,6 +23,7 @@ import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import spock.lang.Shared
 import spock.lang.Specification
+import tools.jackson.databind.ObjectMapper
 
 import java.util.function.Function
 

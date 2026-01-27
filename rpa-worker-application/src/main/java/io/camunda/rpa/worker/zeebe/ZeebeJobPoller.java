@@ -1,9 +1,9 @@
 package io.camunda.rpa.worker.zeebe;
 
+import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.rpa.worker.util.LoopingListIterator;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
-import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.PreDestroy;
@@ -19,6 +19,8 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -41,6 +43,7 @@ class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 	private final Iterable<String> tagGenerator;
 	
 	private Disposable poller;
+	private AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
 	@Autowired
 	public ZeebeJobPoller(ZeebeProperties zeebeProperties, ZeebeClient zeebeClient, ZeebeJobService zeebeJobService) {
@@ -87,14 +90,20 @@ class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 										.log("Polling for job"))
 
 								.flatMapIterable(ActivateJobsResponse::getJobs)
-								.flatMap(zeebeJobService::handleJob).onErrorComplete(),
+								.flatMap(zeebeJobService::handleJob)
+								.onErrorComplete(),
 
 						zeebeProperties.maxConcurrentJobs())
+				.contextWrite(ctx -> ctx.put("reactor.onErrorDropped.local", 
+						(Consumer<Throwable>)(thrown -> {
+							if( ! shuttingDown.get()) log.atError().setCause(thrown).log("onErrorDropped");
+						})))
 				.subscribe();
 	}
 	
 	@PreDestroy
 	void shutdown() {
+		shuttingDown.set(true);
 		if(poller != null) poller.dispose();
 	}
 }

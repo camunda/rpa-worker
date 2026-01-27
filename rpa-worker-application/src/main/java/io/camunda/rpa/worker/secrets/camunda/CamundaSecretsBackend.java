@@ -1,7 +1,7 @@
 package io.camunda.rpa.worker.secrets.camunda;
 
+import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.rpa.worker.secrets.SecretsBackend;
-import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;

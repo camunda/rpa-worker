@@ -1,8 +1,8 @@
 package io.camunda.rpa.worker.operate;
 
-import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.reactive.function.client.WebClientException;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 
@@ -14,7 +14,7 @@ public class RetryingOperateClientWrapper implements OperateClient {
 	
 	private static final Retry retrySpec = Retry
 			.backoff(3, Duration.ofSeconds(1))
-			.filter(thrown -> ! (thrown instanceof FeignException.FeignClientException));
+			.filter(thrown -> ! (thrown instanceof WebClientException));
 	
 	private final OperateClient delegate;
 

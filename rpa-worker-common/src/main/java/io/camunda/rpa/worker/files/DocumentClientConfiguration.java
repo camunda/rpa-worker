@@ -1,24 +1,25 @@
 package io.camunda.rpa.worker.files;
 
+import io.camunda.client.spring.configuration.CamundaClientAllAutoConfiguration;
+import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
+import io.camunda.client.spring.properties.CamundaClientProperties;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthProperties;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
 import io.camunda.rpa.worker.zeebe.ZeebeProperties;
-import io.camunda.zeebe.spring.client.configuration.ZeebeClientAllAutoConfiguration;
-import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
-import io.camunda.zeebe.spring.client.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactivefeign.webclient.WebReactiveFeign;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
 
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
-@Import(ZeebeClientAllAutoConfiguration.class) // TODO / FIXME
+@Import(CamundaClientAllAutoConfiguration.class) // TODO / FIXME
 @ConditionalOnCamundaClientEnabled
 class DocumentClientConfiguration {
 
@@ -34,13 +35,16 @@ class DocumentClientConfiguration {
 		Mono<String> authenticator = zeebeAuthenticationService.getAuthToken(
 				zeebeAuthProperties.clientId(), 
 				zeebeAuthProperties.clientSecret(), 
-				camundaClientProperties.getZeebe().getAudience());
-		
-		DocumentClient client = WebReactiveFeign
-				.<DocumentClient>builder(webClientBuilder)
-				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
-				.target(DocumentClient.class, camundaClientProperties.getZeebe().getBaseUrl() + "/v2/");
-		
+				camundaClientProperties.getAuth().getAudience());
+
+		DocumentClient client = HttpServiceProxyFactory
+				.builderFor(WebClientAdapter.create(webClientBuilder
+						.baseUrl(camundaClientProperties.getRestAddress() + "/v2/")
+						.filter(zeebeProperties.authMethod().interceptor(authenticator))
+						.build()))
+				.build()
+				.createClient(DocumentClient.class);
+
 		return new RetryingDocumentClientWrapper(client);
 	}
 }

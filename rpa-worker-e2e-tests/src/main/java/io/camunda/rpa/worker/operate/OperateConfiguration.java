@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import reactivefeign.webclient.WebReactiveFeign;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
 
 import java.util.Optional;
@@ -31,10 +33,13 @@ class OperateConfiguration {
 		String operateUrl = Optional.ofNullable(e2eProperties.operateUrl())
 				.map(Object::toString)
 				.orElse("http://%s/operate/v1".formatted(e2eProperties.camundaHost()));
-				
-		return new RetryingOperateClientWrapper(WebReactiveFeign
-				.<OperateClient>builder()
-				.addRequestInterceptor(zeebeProperties.authMethod().interceptor(authenticator))
-				.target(OperateClient.class, operateUrl));
+		
+		return new RetryingOperateClientWrapper(HttpServiceProxyFactory
+				.builderFor(WebClientAdapter.create(WebClient.builder()
+						.baseUrl(operateUrl)
+						.filter(zeebeProperties.authMethod().interceptor(authenticator))
+						.build()))
+				.build()
+				.createClient(OperateClient.class));
 	}
 }
