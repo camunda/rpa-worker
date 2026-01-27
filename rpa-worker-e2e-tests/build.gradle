@@ -41,6 +41,7 @@ repositories {
 dependencies {
 	implementation project(":rpa-worker-common")
 	implementation libs.spring.boot.starter.webflux
+	implementation libs.spring.boot.starter.webclient
 
 	implementation libs.camundaStarter
 	implementation libs.vavr
