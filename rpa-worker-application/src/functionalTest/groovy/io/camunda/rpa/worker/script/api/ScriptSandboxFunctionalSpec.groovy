@@ -366,6 +366,9 @@ Two
 	@TestPropertySource(properties = "camunda.rpa.robot.fail-fast=false")
 	static class NoFailFastFunctionalSpec extends AbstractFunctionalSpec {
 		void "Robot script execution does not fail fast"() {
+			given:
+			withNoSecrets()
+			
 			when:
 			EvaluateScriptResponse r = post()
 					.uri("/script/evaluate")

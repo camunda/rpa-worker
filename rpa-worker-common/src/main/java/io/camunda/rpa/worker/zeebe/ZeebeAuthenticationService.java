@@ -76,7 +76,8 @@ public class ZeebeAuthenticationService {
 
 				r -> new TokenWithAbsoluteExpiry(HttpHeaders.readOnlyHttpHeaders(r.getHeaders())
 						.get(HttpHeaders.SET_COOKIE).stream()
-						.flatMap(header -> HttpCookie.parse(header).stream())
+						.flatMap(header -> 
+								HttpCookie.parse(header).stream())
 						.collect(Collectors.toMap(HttpCookie::getName, HttpCookie::getValue))
 						.get("OPERATE-SESSION"),
 						Instant.now().plus(cookieRefreshTime)));

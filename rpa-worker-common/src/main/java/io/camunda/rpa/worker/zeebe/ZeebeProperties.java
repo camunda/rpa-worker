@@ -31,7 +31,7 @@ public record ZeebeProperties(
 		
 		COOKIE((auth, req, chain) -> auth
 				.flatMap(token -> sendWithHeader(
-						req, chain, HttpHeaders.AUTHORIZATION, "OPERATE-SESSION=%s".formatted(token)))),
+						req, chain, HttpHeaders.COOKIE, "OPERATE-SESSION=%s".formatted(token)))),
 
 		BASIC((auth, req, chain) -> auth
 				.flatMap(h -> sendWithHeader(req, chain, HttpHeaders.AUTHORIZATION, h))),

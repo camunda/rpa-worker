@@ -28,7 +28,7 @@ class ZeebeAuthenticationServiceC8RunSpec extends Specification implements Publi
 
 			then:
 			1 * c8RunAuthClient.login("username", "password") >> Mono.just(Stub(ResponseEntity) {
-				getHeaders() >> new HttpHeaders(MultiValueMap.fromSingleValue([(HttpHeaders.SET_COOKIE): ["OPERATE-SESSION=the-access-token; Path=/; HttpOnly; SameSite=Lax"]]))
+				getHeaders() >> new HttpHeaders(MultiValueMap.fromSingleValue([(HttpHeaders.SET_COOKIE): "OPERATE-SESSION=the-access-token; Path=/; HttpOnly; SameSite=Lax"]))
 			})
 
 			and:
@@ -50,7 +50,7 @@ class ZeebeAuthenticationServiceC8RunSpec extends Specification implements Publi
 
 			then:
 			1 * c8RunAuthClient.login("username", "password") >> Mono.just(Stub(ResponseEntity) {
-				getHeaders() >> new HttpHeaders(MultiValueMap.fromSingleValue([(HttpHeaders.SET_COOKIE): ["OPERATE-SESSION=first-access-token; Path=/; HttpOnly; SameSite=Lax"]]))
+				getHeaders() >> new HttpHeaders(MultiValueMap.fromSingleValue([(HttpHeaders.SET_COOKIE): "OPERATE-SESSION=first-access-token; Path=/; HttpOnly; SameSite=Lax"]))
 			})
 
 			and:
@@ -61,8 +61,8 @@ class ZeebeAuthenticationServiceC8RunSpec extends Specification implements Publi
 					.then(service.getAuthToken("username", "password", null))
 
 			then:
-			1 * c8RunAuthClient.login("username", "password") >> Mono.just(Stub(ReactiveHttpResponse) {
-				headers() >> [(HttpHeaders.SET_COOKIE): ["OPERATE-SESSION=second-access-token; Path=/; HttpOnly; SameSite=Lax"]]
+			1 * c8RunAuthClient.login("username", "password") >> Mono.just(Stub(ResponseEntity) {
+				getHeaders() >> [(HttpHeaders.SET_COOKIE): "OPERATE-SESSION=second-access-token; Path=/; HttpOnly; SameSite=Lax"]
 			})
 
 			and:
