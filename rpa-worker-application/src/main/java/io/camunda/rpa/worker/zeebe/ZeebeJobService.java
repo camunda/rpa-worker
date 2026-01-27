@@ -1,7 +1,6 @@
 package io.camunda.rpa.worker.zeebe;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.rpa.worker.files.FilesService;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.robot.ExecutionResults;
@@ -15,13 +14,14 @@ import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
-import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
 import java.util.Collection;
@@ -97,7 +97,7 @@ public class ZeebeJobService {
 
 								.flatMap(xr -> Mono.fromCompletionStage(zeebeClient
 												.newSetVariablesCommand(job.getProcessInstanceKey())
-												.variables(xr.outputVariables())
+												.variables(outputVariables89Compat(xr.outputVariables()))
 												.send())
 										.thenReturn(xr))
 								
@@ -215,5 +215,12 @@ public class ZeebeJobService {
 	
 	public void pushDetached(long jobKey) {
 		detachedJobs.add(jobKey);
+	}
+	
+	private static Map<String, Object> outputVariables89Compat(Map<String, Object> vars) {
+		if(vars.isEmpty())
+			return Map.of("_v89Workaround", "true");
+		
+		return vars;
 	}
 }

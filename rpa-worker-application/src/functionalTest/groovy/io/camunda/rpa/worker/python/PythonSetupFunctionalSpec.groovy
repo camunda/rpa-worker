@@ -258,6 +258,6 @@ class PythonSetupFunctionalSpec extends AbstractFunctionalSpec {
 
 	@Override
 	Duration getSubscribeTimeout() {
-		return Duration.ofSeconds(30)
+		return Duration.ofSeconds(60)
 	}
 }

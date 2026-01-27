@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.robot
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
@@ -14,6 +13,7 @@ import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import spock.lang.Specification
 import spock.lang.Subject
+import tools.jackson.databind.ObjectMapper
 
 import java.nio.file.Path
 import java.nio.file.Paths

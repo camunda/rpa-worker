@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.robot;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
+import tools.jackson.databind.ObjectMapper;
 
 import java.nio.file.Path;
 import java.time.Duration;

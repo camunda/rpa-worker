@@ -1,13 +1,22 @@
 package io.camunda.rpa.worker;
 
+import io.camunda.client.spring.annotation.customizer.JobWorkerValueCustomizerCompat;
 import io.grpc.ProxyDetector;
+import io.netty.handler.codec.http2.Http2SecurityUtil;
 import io.netty.handler.proxy.HttpProxyHandler;
 import io.netty.handler.proxy.ProxyConnectException;
 import io.netty.handler.proxy.ProxyConnectionEvent;
 import io.netty.handler.proxy.ProxyHandler;
 import io.netty.handler.proxy.Socks4ProxyHandler;
 import io.netty.handler.proxy.Socks5ProxyHandler;
+import io.netty.handler.ssl.ApplicationProtocolConfig;
+import io.netty.handler.ssl.ApplicationProtocolNames;
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
+import io.netty.handler.ssl.SslHandshakeCompletionEvent;
+import io.netty.handler.ssl.SslProvider;
+import io.netty.handler.ssl.SupportedCipherSuiteFilter;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -15,16 +24,30 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import reactor.netty.http.server.ProxyProtocolSupportType;
+import reactor.netty.tcp.AbstractProtocolSslContextSpec;
 import reactor.netty.transport.ProxyProvider;
 
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SNIServerName;
 import javax.net.ssl.SSLEngine;
+import javax.net.ssl.SSLEngineResult;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLParameters;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.net.Proxy;
 import java.net.ProxySelector;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.PrivateKey;
+import java.security.Provider;
 import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.stream.Stream;
 
 
@@ -61,42 +84,54 @@ class NativeHints implements RuntimeHintsRegistrar {
 						TypeReference.of(SSLEngine.class),
 						TypeReference.of(SSLParameters.class),
 						TypeReference.of(SslHandler.class),
-						TypeReference.of(javax.net.ssl.SSLEngine.class),
-						TypeReference.of(javax.net.ssl.SSLEngineResult.class),
-						TypeReference.of(javax.net.ssl.SSLEngineResult.HandshakeStatus.class),
-						TypeReference.of(javax.net.ssl.SSLEngineResult.Status.class),
-						TypeReference.of(javax.net.ssl.SSLException.class),
-						TypeReference.of(javax.net.ssl.SSLHandshakeException.class),
-						TypeReference.of(javax.net.ssl.SSLSession.class),
+						TypeReference.of(SSLEngine.class),
+						TypeReference.of(SSLEngineResult.class),
+						TypeReference.of(SSLEngineResult.HandshakeStatus.class),
+						TypeReference.of(SSLEngineResult.Status.class),
+						TypeReference.of(SSLException.class),
+						TypeReference.of(SSLHandshakeException.class),
+						TypeReference.of(SSLSession.class),
 						TypeReference.of(CertificateException.class),
 						TypeReference.of("io.netty.handler.ssl.SslUtils"),
-						TypeReference.of(java.security.KeyManagementException.class),
-						TypeReference.of(java.security.NoSuchAlgorithmException.class),
-						TypeReference.of(java.security.NoSuchProviderException.class),
-						TypeReference.of(java.security.Provider.class),
+						TypeReference.of(KeyManagementException.class),
+						TypeReference.of(NoSuchAlgorithmException.class),
+						TypeReference.of(NoSuchProviderException.class),
+						TypeReference.of(Provider.class),
 						TypeReference.of(TrustManager.class),
-						TypeReference.of(javax.net.ssl.SNIServerName.class),
-						TypeReference.of(javax.net.ssl.SSLEngine.class),
-						TypeReference.of(javax.net.ssl.SSLException.class),
+						TypeReference.of(SNIServerName.class),
+						TypeReference.of(SSLEngine.class),
+						TypeReference.of(SSLException.class),
 
-						TypeReference.of(io.netty.handler.ssl.SslContext.class),
-						TypeReference.of(io.netty.handler.ssl.SslContextBuilder.class),
-						TypeReference.of(io.netty.handler.ssl.SslHandler.class),
-						TypeReference.of(io.netty.handler.ssl.SslHandshakeCompletionEvent.class),
+						TypeReference.of(SslContext.class),
+						TypeReference.of(SslContextBuilder.class),
+						TypeReference.of(SslHandler.class),
+						TypeReference.of(SslHandshakeCompletionEvent.class),
 
-						TypeReference.of(io.netty.handler.codec.http2.Http2SecurityUtil.class),
-						TypeReference.of(io.netty.handler.ssl.ApplicationProtocolConfig.class),
-						TypeReference.of(io.netty.handler.ssl.ApplicationProtocolNames.class),
-						TypeReference.of(io.netty.handler.ssl.SslContext.class),
-						TypeReference.of(io.netty.handler.ssl.SslContextBuilder.class),
-						TypeReference.of(io.netty.handler.ssl.SslProvider.class),
-						TypeReference.of(io.netty.handler.ssl.SupportedCipherSuiteFilter.class),
-						TypeReference.of(reactor.netty.tcp.AbstractProtocolSslContextSpec.class),
+						TypeReference.of(Http2SecurityUtil.class),
+						TypeReference.of(ApplicationProtocolConfig.class),
+						TypeReference.of(ApplicationProtocolNames.class),
+						TypeReference.of(SslContext.class),
+						TypeReference.of(SslContextBuilder.class),
+						TypeReference.of(SslProvider.class),
+						TypeReference.of(SupportedCipherSuiteFilter.class),
+						TypeReference.of(AbstractProtocolSslContextSpec.class),
 
-						TypeReference.of(javax.net.ssl.KeyManager.class),
-						TypeReference.of(javax.net.ssl.KeyManagerFactory.class),
-						TypeReference.of(java.security.PrivateKey.class),
-						TypeReference.of(java.security.cert.X509Certificate.class))
+						TypeReference.of(KeyManager.class),
+						TypeReference.of(KeyManagerFactory.class),
+						TypeReference.of(PrivateKey.class),
+						TypeReference.of(X509Certificate.class),
+
+						TypeReference.of(JobWorkerValueCustomizerCompat.class),
+						TypeReference.of(io.camunda.client.impl.response.ActivatedJobImpl.class),
+						TypeReference.of(io.camunda.zeebe.client.impl.response.ActivatedJobImpl.class),
+						TypeReference.of(io.camunda.client.api.ProblemDetail.class),
+						TypeReference.of(io.camunda.client.protocol.rest.ProblemDetail.class),
+						TypeReference.of(io.camunda.zeebe.client.protocol.rest.ProblemDetail.class),
+						TypeReference.of(io.camunda.client.protocol.rest.JobErrorRequest.class),
+						TypeReference.of(io.camunda.zeebe.client.protocol.rest.JobErrorRequest.class),
+						TypeReference.of(io.camunda.client.protocol.rest.TopologyResponse.class),
+						TypeReference.of(io.camunda.zeebe.client.protocol.rest.TopologyResponse.class),
+						TypeReference.of(io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyResponse.class))
 
 				.forEach(klass -> hints.reflection().registerType(klass, MemberCategory.values()));
 	}

@@ -53,6 +53,7 @@ dependencies {
 	implementation libs.spring.boot.starter.webflux
 	implementation libs.spring.boot.starter.actuator
 	implementation libs.spring.boot.starter.validation
+	implementation libs.spring.boot.starter.webclient
 	implementation libs.springDocStarter
 	
 	implementation libs.prometheus.simpleclient.pushgateway
@@ -63,7 +64,6 @@ dependencies {
 	implementation libs.vavr
 	implementation libs.commons.exec
 	implementation libs.jackson.dataFormatYaml
-	implementation libs.reactiveFeign
 	implementation libs.javaSemver
 	implementation libs.slf4j.api
 	implementation libs.caffeine
@@ -110,6 +110,11 @@ tasks.withType(Test).configureEach {
 	useJUnitPlatform()
 //	testLogging.showStandardStreams = true
 //	jvmArgs("-agentlib:native-image-agent=config-merge-dir=${project.rootDir}/rpa-worker-application/src/main/resources/META-INF/native-image/")
+	
+	/* https://github.com/netty/netty/issues/16071 */
+	if(System.getProperty("os.name").contains("Windows"))
+		jvmArgs("--enable-native-access=ALL-UNNAMED")
+	
 }
 
 tasks.named("functionalTest", Test).configure { Test task ->
@@ -120,7 +125,7 @@ tasks.named("functionalTest", Test).configure { Test task ->
 }
 
 processAot {
-	jvmArgs("-Dmanagement.prometheus.metrics.export.pushgateway.enabled=true")
+	jvmArgs("-Dmanagement.prometheus.metrics.export.pushgateway.enabled=true", "-Dcamunda.client.enabled=true", "-Dcamunda.client.mode=selfmanaged")
 }
 
 processTestAot.enabled = false
@@ -153,7 +158,7 @@ tasks.getByName("bootRun").tap { Task it ->
 
 tasks.getByName("processAot").tap { Task it ->
 	it.onlyIf {
-		gradle.getStartParameter().getTaskNames().contains("nativeCompile")
+		gradle.getStartParameter().getTaskNames().any { it.contains("nativeCompile") }
 	}
 }
 
@@ -212,12 +217,22 @@ tasks.register("zipNativeImage", Zip) {
 	
 	from(nativeCompile.outputs.files.singleFile) {
 		exclude("*.so", "*.dll", "*.dynlib", "*.args")
+		filePermissions {
+			user {
+				execute = true
+			}
+			group {
+				execute = true
+			}
+			other {
+				execute = true
+			}
+		}
 	}
 
 	from(project.layout.files("src/main/resources/META-INF/application.sample.properties")) {
 		rename { "application.properties" }
 	}
-
 }
 
 bootJar {

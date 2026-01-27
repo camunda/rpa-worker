@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.secrets;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.robot.EnvironmentVariablesContributor;
 import io.camunda.rpa.worker.robot.PreparedScript;
 import io.camunda.rpa.worker.workspace.Workspace;
@@ -8,6 +7,7 @@ import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Collections;
 import java.util.Map;
