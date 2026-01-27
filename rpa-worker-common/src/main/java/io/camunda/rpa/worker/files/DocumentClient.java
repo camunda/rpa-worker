@@ -4,8 +4,9 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpEntity;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
@@ -28,7 +29,7 @@ public interface DocumentClient {
 			@RequestParam Map<String, String> query) {
 		HttpEntity<?> metadata88 = data.remove("metadata88").getFirst();
 		return doUploadDocument(data, query)
-				.onErrorComplete(HttpClientErrorException.BadRequest.class)
+				.onErrorComplete(WebClientResponseException.BadRequest.class)
 				.switchIfEmpty(Mono.defer(() -> {
 					data.set("metadata", metadata88);
 					return doUploadDocument(data, query);
@@ -36,5 +37,5 @@ public interface DocumentClient {
 	}
 
 	@PostExchange(value = "/documents", headers = "Content-type: multipart/form-data")
-	Mono<ZeebeDocumentDescriptor> doUploadDocument(MultiValueMap<String, HttpEntity<?>> data, @RequestParam Map<String, String> query);
+	Mono<ZeebeDocumentDescriptor> doUploadDocument(@RequestBody MultiValueMap<String, HttpEntity<?>> data, @RequestParam Map<String, String> query);
 }

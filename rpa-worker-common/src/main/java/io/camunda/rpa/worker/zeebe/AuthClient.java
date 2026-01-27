@@ -1,10 +1,10 @@
 package io.camunda.rpa.worker.zeebe;
 
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.service.annotation.HttpExchange;
 import org.springframework.web.service.annotation.PostExchange;
 import reactor.core.publisher.Mono;
-
-import java.util.Map;
 
 @HttpExchange
 public interface AuthClient {
@@ -15,7 +15,7 @@ public interface AuthClient {
 	record AuthenticationResponse(String accessToken, int expiresIn) { }
 	
 	interface InternalClient {
-		@PostExchange(value = "/token", headers = "Content-Type: application/x-www-form-urlencoded")
-		Mono<AuthenticationResponse> authenticate(Map<String, Object> body);
+		@PostExchange(value = "/token", contentType = "application/x-www-form-urlencoded")
+		Mono<AuthenticationResponse> authenticate(@RequestBody MultiValueMap<String, Object> body);
 	}
 }

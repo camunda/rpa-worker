@@ -38,7 +38,7 @@ class DocumentClientConfiguration {
 				camundaClientProperties.getAuth().getAudience());
 
 		DocumentClient client = HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(WebClient.builder()
+				.builderFor(WebClientAdapter.create(webClientBuilder
 						.baseUrl(camundaClientProperties.getRestAddress() + "/v2/")
 						.filter(zeebeProperties.authMethod().interceptor(authenticator))
 						.build()))

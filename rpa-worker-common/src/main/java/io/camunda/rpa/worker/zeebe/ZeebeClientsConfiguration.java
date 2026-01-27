@@ -6,12 +6,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.ObjectReadContext;
 import tools.jackson.core.Version;
 import tools.jackson.core.type.TypeReference;
 import tools.jackson.databind.JacksonModule;
@@ -36,14 +38,14 @@ class ZeebeClientsConfiguration {
 	@Bean
 	public AuthClient authClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
 		AuthClient.InternalClient client = HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(WebClient.builder()
-						.baseUrl(camundaClientProperties.getAuth().getTokenUrl().toString())
+				.builderFor(WebClientAdapter.create(webClientBuilder
+						.baseUrl(zeebeProperties.authEndpoint().toString())
 						.build()))
 				.build()
 				.createClient(AuthClient.InternalClient.class);
 
 		return auth -> client.authenticate(
-				objectMapper.convertValue(auth, new TypeReference<>() {}));
+				MultiValueMap.fromSingleValue(objectMapper.convertValue(auth, new TypeReference<Map<String, Object>>() {})));
 	}
 
 	@Bean
@@ -88,7 +90,7 @@ class ZeebeClientsConfiguration {
 			addDeserializer(AuthClient.AuthenticationResponse.class, new ValueDeserializer<>() {
 				@Override
 				public AuthClient.AuthenticationResponse deserialize(tools.jackson.core.JsonParser p, tools.jackson.databind.DeserializationContext ctxt) throws JacksonException {
-					ObjectMapper codec = (ObjectMapper) p.objectReadContext();
+					ObjectReadContext codec = p.objectReadContext();
 					Map<String, String> map = codec.readValue(p, new TypeReference<>() {});
 					return new AuthClient.AuthenticationResponse(
 							map.get("access_token"),
