@@ -110,6 +110,11 @@ tasks.withType(Test).configureEach {
 	useJUnitPlatform()
 //	testLogging.showStandardStreams = true
 //	jvmArgs("-agentlib:native-image-agent=config-merge-dir=${project.rootDir}/rpa-worker-application/src/main/resources/META-INF/native-image/")
+	
+	/* https://github.com/netty/netty/issues/16071 */
+	if(System.getProperty("os.name").contains("Windows"))
+		jvmArgs("--enable-native-access=ALL-UNNAMED")
+	
 }
 
 tasks.named("functionalTest", Test).configure { Test task ->
