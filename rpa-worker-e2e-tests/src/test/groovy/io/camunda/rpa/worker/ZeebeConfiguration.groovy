@@ -62,7 +62,7 @@ class ZeebeConfiguration {
 		configProperties["camunda.client.identity.base-url"] = "http://${camundaHost}/auth/"
 		configProperties["camunda.client.auth.issuer"] = "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect/token"
 		configProperties["camunda.rpa.zeebe.auth-endpoint"] = "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect"
-		configProperties["camunda.client.zeebe.base-url"] = 'http://localhost:8080/zeebe'
+		configProperties["camunda.client.zeebe.base-url"] = 'http://localhost:8080/zeebe/'
 		configProperties["camunda.client.zeebe.audience"] = "zeebe.${camundaHost}"
 		configProperties["camunda.rpa.e2e.camunda-host"] = camundaHost
 		configProperties["camunda.rpa.e2e.operate-client"] = operateClient
