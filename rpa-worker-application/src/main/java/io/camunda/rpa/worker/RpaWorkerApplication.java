@@ -1,21 +1,26 @@
 package io.camunda.rpa.worker;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus.PrometheusProperties;
 import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.env.Environment;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
+@Slf4j
 public class RpaWorkerApplication {
 	
 	public static final int EXIT_NO_ZEEBE_CONNECTION = 199;
@@ -55,6 +60,19 @@ public class RpaWorkerApplication {
 					mgr.shutdown();
 
 				return bean;
+			}
+		};
+	}
+
+	@SuppressWarnings({"Convert2Lambda", "Convert2Diamond"})
+	@Bean
+	public ApplicationListener<ApplicationReadyEvent> authDebug(Environment environment) {
+		return new ApplicationListener<ApplicationReadyEvent>() {
+			@Override
+			public void onApplicationEvent(ApplicationReadyEvent event) {
+				log.atInfo()
+						.addArgument(environment.getProperty("camunda.client.auth.issuer-url"))
+						.log("Auth: {}");
 			}
 		};
 	}
