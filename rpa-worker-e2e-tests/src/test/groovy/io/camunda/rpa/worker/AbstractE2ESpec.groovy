@@ -264,7 +264,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				})
 	}
 
-	private class SpecificationHelper {
+	class SpecificationHelper {
 
 		@ConditionBlock
 		GetProcessInstanceResponse waitForProcessInstance(

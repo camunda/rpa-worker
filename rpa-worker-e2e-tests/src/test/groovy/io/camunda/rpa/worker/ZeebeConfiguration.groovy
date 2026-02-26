@@ -70,6 +70,9 @@ class ZeebeConfiguration {
 		configProperties["logging.level.io.camunda.zeebe.client.impl.ZeebeCallCredentials"] = "OFF"
 		configProperties['camunda.rpa.python-runtime.type'] = "python"
 		
+		configProperties["camunda.client.rest-address"] = overrides['camunda.client.zeebe.base-url'] ?: "http://zeebe.${camundaHost}/zeebe/"
+		configProperties["camunda.client.grpc-address"] = "http://zeebe.${camundaHost}"
+		
 		configProperties.putAll(overrides)
 	}
 

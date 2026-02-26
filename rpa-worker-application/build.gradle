@@ -158,7 +158,7 @@ tasks.getByName("bootRun").tap { Task it ->
 
 tasks.getByName("processAot").tap { Task it ->
 	it.onlyIf {
-		gradle.getStartParameter().getTaskNames().contains("nativeCompile")
+		gradle.getStartParameter().getTaskNames().any { it.contains("nativeCompile") }
 	}
 }
 
