@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.operate;
 
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.service.annotation.GetExchange;
 import org.springframework.web.service.annotation.HttpExchange;
@@ -51,13 +52,13 @@ public interface OperateClient {
 	}
 
 	@PostExchange("/incidents/search")
-	Mono<GetIncidentsResponse> getIncidents87(GetIncidentsRequest request);
+	Mono<GetIncidentsResponse> getIncidents87(@RequestBody GetIncidentsRequest request);
 
 	@PostExchange("/process-instances/{key}/incidents/search")
-	Mono<GetIncidentsResponse> getIncidents88a(@PathVariable long key, GetIncidentsRequest request);
+	Mono<GetIncidentsResponse> getIncidents88a(@PathVariable long key, @RequestBody GetIncidentsRequest request);
 	
 	@PostExchange("/incidents/search")
-	Mono<GetIncidentsResponse> getIncidents88b(GetIncidentsRequest88b request);
+	Mono<GetIncidentsResponse> getIncidents88b(@RequestBody GetIncidentsRequest88b request);
 
 	record GetIncidentsRequest(Filter filter) {
 		public record Filter(long processInstanceKey) {}
@@ -111,10 +112,10 @@ public interface OperateClient {
 	}
 
 	@PostExchange("/variables/search")
-	Mono<GetVariablesResponse> doGetVariables(GetVariablesRequest request);
+	Mono<GetVariablesResponse> doGetVariables(@RequestBody GetVariablesRequest request);
 
 	@PostExchange("/variables/search")
-	Mono<GetVariablesResponse> doGetVariables88(GetVariablesRequest88 request);
+	Mono<GetVariablesResponse> doGetVariables88(@RequestBody GetVariablesRequest88 request);
 
 	record GetVariablesRequest(Filter filter) {
 		public record Filter(long processInstanceKey) { }
@@ -127,7 +128,7 @@ public interface OperateClient {
 	record GetVariablesResponse(List<Item> items) {
 		public record Item(
 				long key,
-				long processDefinitionKey,
+				Long processDefinitionKey,
 				long processInstanceKey,
 				String name,
 				String value) {

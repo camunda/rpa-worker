@@ -91,7 +91,7 @@ public class ZeebeJobService {
 
 								.flatMap(xr -> Mono.fromCompletionStage(zeebeClient
 												.newSetVariablesCommand(job.getProcessInstanceKey())
-												.variables(xr.outputVariables())
+												.variables(outputVariables89Compat(xr.outputVariables()))
 												.send())
 										.thenReturn(xr))
 								
@@ -209,5 +209,12 @@ public class ZeebeJobService {
 	
 	public void pushDetached(long jobKey) {
 		detachedJobs.add(jobKey);
+	}
+	
+	private static Map<String, Object> outputVariables89Compat(Map<String, Object> vars) {
+		if(vars.isEmpty())
+			return Map.of("_v89Workaround", "true");
+		
+		return vars;
 	}
 }
