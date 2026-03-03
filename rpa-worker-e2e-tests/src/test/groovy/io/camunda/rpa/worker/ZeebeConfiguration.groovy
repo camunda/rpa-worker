@@ -73,6 +73,9 @@ class ZeebeConfiguration {
 		configProperties["camunda.client.rest-address"] = overrides['camunda.client.zeebe.base-url'] ?: "http://zeebe.${camundaHost}/zeebe/"
 		configProperties["camunda.client.grpc-address"] = "http://zeebe.${camundaHost}"
 		
+		configProperties["camunda.client.auth.token-url"] = configProperties["camunda.client.auth.issuer"]
+		configProperties["camunda.client.auth.issuer-url"] = configProperties["camunda.client.auth.issuer"]
+		
 		configProperties.putAll(overrides)
 	}
 
