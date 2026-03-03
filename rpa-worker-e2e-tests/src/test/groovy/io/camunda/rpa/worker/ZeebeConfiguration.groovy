@@ -57,7 +57,7 @@ class ZeebeConfiguration {
 			configProperties["camunda.client.auth.client-secret"] = clientSecret
 		}
 		configProperties["camunda.client.auth.operate-secret"] = operateSecret
-		configProperties["camunda.client.zeebe.rest-address"] = "http://zeebe.${camundaHost}"
+		configProperties["camunda.client.zeebe.rest-address"] = "http://zeebe.${camundaHost}/zeebe/"
 		configProperties["camunda.client.zeebe.grpc-address"] = "http://zeebe.${camundaHost}"
 		configProperties["camunda.client.identity.base-url"] = "http://${camundaHost}/auth/"
 		configProperties["camunda.client.auth.issuer"] = "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect/token"
