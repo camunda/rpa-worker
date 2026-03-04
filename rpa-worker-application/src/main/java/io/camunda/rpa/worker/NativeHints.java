@@ -121,7 +121,14 @@ class NativeHints implements RuntimeHintsRegistrar {
 						TypeReference.of(PrivateKey.class),
 						TypeReference.of(X509Certificate.class),
 
-						TypeReference.of(JobWorkerValueCustomizerCompat.class))
+						TypeReference.of(JobWorkerValueCustomizerCompat.class),
+						TypeReference.of(io.camunda.client.impl.response.ActivatedJobImpl.class),
+						TypeReference.of(io.camunda.zeebe.client.impl.response.ActivatedJobImpl.class),
+						TypeReference.of(io.camunda.client.api.ProblemDetail.class),
+						TypeReference.of(io.camunda.client.protocol.rest.ProblemDetail.class),
+						TypeReference.of(io.camunda.zeebe.client.protocol.rest.ProblemDetail.class),
+						TypeReference.of(io.camunda.client.protocol.rest.JobErrorRequest.class),
+						TypeReference.of(io.camunda.zeebe.client.protocol.rest.JobErrorRequest.class))
 
 				.forEach(klass -> hints.reflection().registerType(klass, MemberCategory.values()));
 	}
