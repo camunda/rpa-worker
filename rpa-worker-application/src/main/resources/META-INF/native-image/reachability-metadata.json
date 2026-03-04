@@ -3625,6 +3625,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.$Proxy241MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.$Proxy242MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.$Proxy244MetaClass"
     },
     {
@@ -6040,13 +6043,78 @@
       "type": "io.camunda.client.health.HealthCheck"
     },
     {
-      "type": "io.camunda.client.impl.CamundaClientCredentials"
+      "type": "io.camunda.client.impl.CamundaClientCredentials",
+      "fields": [
+        {
+          "name": "accessToken"
+        },
+        {
+          "name": "tokenType"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getAccessToken",
+          "parameterTypes": []
+        },
+        {
+          "name": "getExpiry",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTokenType",
+          "parameterTypes": []
+        },
+        {
+          "name": "setExpiresIn",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setExpiry",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
     },
     {
       "type": "io.camunda.client.impl.CamundaClientImpl"
     },
     {
       "type": "io.camunda.client.impl.CamundaObjectMapper"
+    },
+    {
+      "type": "io.camunda.client.impl.NoopCredentialsProvider"
+    },
+    {
+      "type": "io.camunda.client.impl.command.TopologyRequestImpl"
+    },
+    {
+      "type": "io.camunda.client.impl.http.ApiCallback"
+    },
+    {
+      "type": "io.camunda.client.impl.http.HttpClient"
+    },
+    {
+      "type": "io.camunda.client.impl.oauth.OAuthCredentialsCache$OAuthCachedCredentials",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        },
+        {
+          "name": "getCredentials",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "io.camunda.client.impl.oauth.OAuthCredentialsProvider"
@@ -6109,6 +6177,141 @@
       "type": "io.camunda.client.metrics.MicrometerMetricsRecorder"
     },
     {
+      "type": "io.camunda.client.protocol.rest.BrokerInfo",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setHost",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setNodeId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setPartitions",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setPort",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.protocol.rest.Partition",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setHealth",
+          "parameterTypes": [
+            "io.camunda.client.protocol.rest.Partition$HealthEnum"
+          ]
+        },
+        {
+          "name": "setPartitionId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setRole",
+          "parameterTypes": [
+            "io.camunda.client.protocol.rest.Partition$RoleEnum"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.protocol.rest.Partition$HealthEnum",
+      "methods": [
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.protocol.rest.Partition$RoleEnum",
+      "methods": [
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.protocol.rest.TopologyResponse",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setBrokers",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setClusterSize",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setGatewayVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setPartitionsCount",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setReplicationFactor",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.spring.actuator.CamundaClientHealthIndicator"
     },
     {
@@ -6146,6 +6349,13 @@
           "name": "deploymentPostProcessor",
           "parameterTypes": [
             "org.springframework.context.ApplicationEventPublisher"
+          ]
+        },
+        {
+          "name": "deploymentPostProcessor",
+          "parameterTypes": [
+            "org.springframework.context.ApplicationEventPublisher",
+            "io.camunda.client.spring.properties.CamundaClientProperties"
           ]
         },
         {
@@ -6384,11 +6594,37 @@
       ]
     },
     {
+      "type": "io.camunda.client.spring.configuration.DefaultJsonMapperConfiguration",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "jsonMapper",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.spring.configuration.ExecutorServiceConfiguration"
+    },
+    {
+      "type": "io.camunda.client.spring.configuration.Jackson3JsonMapperConfiguration",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "io.camunda.client.spring.configuration.JsonMapperConfiguration",
       "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
         {
           "name": "<init>",
           "parameterTypes": [
@@ -6497,6 +6733,14 @@
       ]
     },
     {
+      "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$557476857",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.spring.properties.CamundaClientAuthPropertiesBeanInfo"
     },
     {
@@ -6529,6 +6773,14 @@
     },
     {
       "type": "io.camunda.client.spring.properties.CamundaClientCloudProperties$SpockMock$671472700",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientCloudProperties$SpockMock$862101881",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -6631,6 +6883,14 @@
     },
     {
       "type": "io.camunda.client.spring.properties.CamundaClientProperties$ClientModeEditor"
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$1287716435",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
     },
     {
       "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$141023112",
@@ -7694,6 +7954,12 @@
       "jniAccessible": true,
       "methods": [
         {
+          "name": "authDebug",
+          "parameterTypes": [
+            "org.springframework.core.env.Environment"
+          ]
+        },
+        {
           "name": "main",
           "parameterTypes": [
             "java.lang.String[]"
@@ -7760,6 +8026,9 @@
     {
       "type": "io.camunda.rpa.worker.RpaWorkerApplication$1",
       "allDeclaredFields": true
+    },
+    {
+      "type": "io.camunda.rpa.worker.RpaWorkerApplication$2"
     },
     {
       "type": "io.camunda.rpa.worker.RpaWorkerApplication$TempListener"
@@ -7866,6 +8135,14 @@
             "java.lang.String",
             "java.lang.Object"
           ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.api.StubbedResponseGenerator$SpockMock$1031614831",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
         }
       ]
     },
@@ -10993,6 +11270,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1759510047",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$180407589",
       "fields": [
         {
@@ -11298,6 +11583,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$926490621",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$948983162",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -11980,6 +12273,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$1484739939",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$1502575744",
       "fields": [
         {
@@ -12005,6 +12306,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$1979086957",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$2058682631",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -12878,6 +13187,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$1930791916",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$1949995435",
       "fields": [
         {
@@ -12927,6 +13244,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$294706182",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$306997231",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -15389,7 +15714,23 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1695880845",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1723789943",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1734677749",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -16900,6 +17241,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$3054721",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$39100140",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -20803,6 +21152,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$127801513",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$1293759515",
       "fields": [
         {
@@ -21092,6 +21449,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$715511130",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$717274889",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -21646,6 +22011,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.util.ApplicationRestarter$SpockMock$1834526397",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.util.ApplicationRestarter$SpockMock$1903771583",
       "fields": [
         {
@@ -21785,6 +22158,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.util.InternetConnectivityProvider$SpockMock$174596831",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.util.InternetConnectivityProvider$SpockMock$1775979618",
       "fields": [
         {
@@ -21802,6 +22183,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.util.InternetConnectivityProvider$SpockMock$185036598",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.util.InternetConnectivityProvider$SpockMock$1906846574",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -22674,6 +23063,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$485870675",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$508822218",
       "fields": [
         {
@@ -22683,6 +23080,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$519493961",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$55199095",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -23116,6 +23521,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$683200736",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$742826390",
       "fields": [
         {
@@ -23400,6 +23813,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceVariablesManager$SpockMock$805795960",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceVariablesManager$SpockMock$884558461",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -23713,6 +24134,12 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.$Proxy241Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.$Proxy242BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.$Proxy242Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.$Proxy244BeanInfo"
@@ -25940,6 +26367,10 @@
             "java.util.List",
             "java.util.Map"
           ]
+        },
+        {
+          "name": "emptyVariables",
+          "parameterTypes": []
         },
         {
           "name": "getBuilder1",
@@ -29338,6 +29769,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$1448251945",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$1560802465",
       "fields": [
         {
@@ -29930,6 +30369,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$1107236075",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$1121040117",
@@ -31457,6 +31904,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeMetricsService$SpockMock$1027720630",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeMetricsService$SpockMock$1079870364",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -33296,6 +33751,15 @@
       "type": "io.camunda.zeebe.client.impl.ZeebeStreamingClientFutureImpl"
     },
     {
+      "type": "io.camunda.zeebe.client.impl.command.TopologyRequestImpl"
+    },
+    {
+      "type": "io.camunda.zeebe.client.impl.http.ApiCallback"
+    },
+    {
+      "type": "io.camunda.zeebe.client.impl.http.HttpClient"
+    },
+    {
       "type": "io.camunda.zeebe.client.impl.oauth.OAuthCredentialsCache"
     },
     {
@@ -33392,6 +33856,190 @@
       "type": "io.camunda.zeebe.client.impl.worker.JobRunnableFactoryImpl"
     },
     {
+      "type": "io.camunda.zeebe.client.protocol.rest.ActivatedJobResult",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setCustomHeaders",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        },
+        {
+          "name": "setDeadline",
+          "parameterTypes": [
+            "java.lang.Long"
+          ]
+        },
+        {
+          "name": "setElementId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setElementInstanceKey",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setJobKey",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setProcessDefinitionId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setProcessDefinitionKey",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setProcessDefinitionVersion",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setProcessInstanceKey",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setRetries",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setTenantId",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setType",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setVariables",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        },
+        {
+          "name": "setWorker",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.BrokerInfo",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setHost",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setNodeId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setPartitions",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setPort",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.JobActivationRequest",
+      "methods": [
+        {
+          "name": "getFetchVariable",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMaxJobsToActivate",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRequestTimeout",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTenantFilter",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTenantIds",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTimeout",
+          "parameterTypes": []
+        },
+        {
+          "name": "getType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWorker",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.JobActivationResult",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setJobs",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.client.protocol.rest.JobChangeset",
       "allDeclaredFields": true,
       "methods": [
@@ -33406,14 +34054,182 @@
       ]
     },
     {
+      "type": "io.camunda.zeebe.client.protocol.rest.JobFailRequest",
+      "methods": [
+        {
+          "name": "getErrorMessage",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRetries",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRetryBackOff",
+          "parameterTypes": []
+        },
+        {
+          "name": "getVariables",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.JobKindEnum",
+      "methods": [
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.JobListenerEventTypeEnum",
+      "methods": [
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.client.protocol.rest.JobUpdateRequest",
       "allDeclaredFields": true,
       "methods": [
         {
           "name": "getChangeset",
           "parameterTypes": []
+        },
+        {
+          "name": "getOperationReference",
+          "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.Partition",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setHealth",
+          "parameterTypes": [
+            "io.camunda.zeebe.client.protocol.rest.Partition$HealthEnum"
+          ]
+        },
+        {
+          "name": "setPartitionId",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setRole",
+          "parameterTypes": [
+            "io.camunda.zeebe.client.protocol.rest.Partition$RoleEnum"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.Partition$HealthEnum",
+      "methods": [
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.Partition$RoleEnum",
+      "methods": [
+        {
+          "name": "fromValue",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.SetVariableRequest",
+      "methods": [
+        {
+          "name": "getLocal",
+          "parameterTypes": []
+        },
+        {
+          "name": "getOperationReference",
+          "parameterTypes": []
+        },
+        {
+          "name": "getVariables",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.TenantFilterEnum",
+      "methods": [
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.TopologyResponse",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setBrokers",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setClusterSize",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setGatewayVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setPartitionsCount",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setReplicationFactor",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.zeebe.client.protocol.rest.UserTaskProperties"
     },
     {
       "type": "io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType",
@@ -34969,6 +35785,14 @@
       ]
     },
     {
+      "type": "io.grpc.Channel$SpockMock$1367108327",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.grpc.Channel$SpockMock$614561625",
       "fields": [
         {
@@ -34998,6 +35822,14 @@
     },
     {
       "type": "io.grpc.ClientCall$SpockMock$266359469",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.grpc.ClientCall$SpockMock$608236739",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -35207,6 +36039,9 @@
     {
       "type": "io.grpc.stub.ClientResponseObserver",
       "allDeclaredFields": true
+    },
+    {
+      "type": "io.grpc.stub.MetadataUtils"
     },
     {
       "type": "io.grpc.stub.MetadataUtils$HeaderAttachingClientInterceptor",
@@ -36676,6 +37511,9 @@
       "type": "io.vavr.CheckedFunction0"
     },
     {
+      "type": "io.vavr.CheckedFunction1"
+    },
+    {
       "type": "io.vavr.CheckedRunnable"
     },
     {
@@ -37087,6 +37925,9 @@
       "type": "java.io.PrintWriter"
     },
     {
+      "type": "java.io.RandomAccessFile"
+    },
+    {
       "type": "java.io.Reader",
       "allDeclaredFields": true
     },
@@ -37166,6 +38007,7 @@
     {
       "type": "java.lang.Boolean",
       "allDeclaredFields": true,
+      "serializable": true,
       "jniAccessible": true,
       "methods": [
         {
@@ -37358,6 +38200,7 @@
     },
     {
       "type": "java.lang.Double",
+      "serializable": true,
       "fields": [
         {
           "name": "TYPE"
@@ -37502,6 +38345,7 @@
     },
     {
       "type": "java.lang.Long",
+      "serializable": true,
       "jniAccessible": true,
       "fields": [
         {
@@ -38929,7 +39773,13 @@
       "type": "java.nio.channels.FileChannel"
     },
     {
+      "type": "java.nio.channels.FileLock"
+    },
+    {
       "type": "java.nio.channels.NetworkChannel"
+    },
+    {
+      "type": "java.nio.channels.OverlappingFileLockException"
     },
     {
       "type": "java.nio.channels.ReadableByteChannel",
@@ -39281,25 +40131,39 @@
       "type": "java.nio.file.attribute.UserPrincipal"
     },
     {
-      "type": "java.rmi.MarshalledObject"
+      "type": "java.rmi.MarshalledObject",
+      "serializable": true
     },
     {
       "type": "java.rmi.MarshalledObject[]"
     },
     {
-      "type": "java.rmi.dgc.Lease"
+      "type": "java.rmi.dgc.Lease",
+      "serializable": true
     },
     {
-      "type": "java.rmi.dgc.VMID"
+      "type": "java.rmi.dgc.VMID",
+      "serializable": true
     },
     {
-      "type": "java.rmi.server.ObjID"
+      "type": "java.rmi.server.ObjID",
+      "serializable": true
     },
     {
-      "type": "java.rmi.server.ObjID[]"
+      "type": "java.rmi.server.ObjID[]",
+      "serializable": true
     },
     {
-      "type": "java.rmi.server.UID"
+      "type": "java.rmi.server.RemoteObject",
+      "serializable": true
+    },
+    {
+      "type": "java.rmi.server.RemoteStub",
+      "serializable": true
+    },
+    {
+      "type": "java.rmi.server.UID",
+      "serializable": true
     },
     {
       "type": "java.security.AccessController",
@@ -40267,6 +41131,10 @@
       "type": "java.util.TimerTask"
     },
     {
+      "type": "java.util.TreeMap",
+      "serializable": true
+    },
+    {
       "type": "java.util.Vector"
     },
     {
@@ -40369,6 +41237,9 @@
     },
     {
       "type": "java.util.concurrent.CopyOnWriteArrayListCustomizer"
+    },
+    {
+      "type": "java.util.concurrent.CopyOnWriteArraySet"
     },
     {
       "type": "java.util.concurrent.CountDownLatch",
@@ -40918,6 +41789,14 @@
       "type": "javax.inject.Qualifier"
     },
     {
+      "type": "javax.management.InstanceNotFoundException",
+      "serializable": true
+    },
+    {
+      "type": "javax.management.JMException",
+      "serializable": true
+    },
+    {
       "type": "javax.management.MBeanInfo"
     },
     {
@@ -40942,10 +41821,19 @@
       "type": "javax.management.NotificationEmitter"
     },
     {
-      "type": "javax.management.ObjectName"
+      "type": "javax.management.ObjectInstance",
+      "serializable": true
+    },
+    {
+      "type": "javax.management.ObjectName",
+      "serializable": true
     },
     {
       "type": "javax.management.ObjectName[]"
+    },
+    {
+      "type": "javax.management.OperationsException",
+      "serializable": true
     },
     {
       "type": "javax.management.StandardEmitterMBean"
@@ -40960,10 +41848,26 @@
       "type": "javax.management.openmbean.CompositeData"
     },
     {
+      "type": "javax.management.openmbean.CompositeDataSupport",
+      "serializable": true
+    },
+    {
       "type": "javax.management.openmbean.CompositeData[]"
     },
     {
+      "type": "javax.management.openmbean.CompositeType",
+      "serializable": true
+    },
+    {
       "type": "javax.management.openmbean.OpenMBeanOperationInfoSupport"
+    },
+    {
+      "type": "javax.management.openmbean.OpenType",
+      "serializable": true
+    },
+    {
+      "type": "javax.management.openmbean.SimpleType",
+      "serializable": true
     },
     {
       "type": "javax.management.openmbean.TabularData"
@@ -41037,6 +41941,7 @@
     },
     {
       "type": "javax.management.remote.rmi.RMIConnectionImpl_Stub",
+      "serializable": true,
       "methods": [
         {
           "name": "<init>",
@@ -41062,6 +41967,7 @@
     },
     {
       "type": "javax.management.remote.rmi.RMIServerImpl_Stub",
+      "serializable": true,
       "methods": [
         {
           "name": "<init>",
@@ -42512,6 +43418,14 @@
       ]
     },
     {
+      "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$560438028",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$570473937",
       "fields": [
         {
@@ -42758,6 +43672,14 @@
       ]
     },
     {
+      "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$435163805",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$485430837",
       "fields": [
         {
@@ -42915,6 +43837,9 @@
       "type": "org.apache.commons.exec.launcher.Java13CommandLauncher"
     },
     {
+      "type": "org.apache.commons.lang3.function.TriFunction"
+    },
+    {
       "type": "org.apache.commons.logging.LogFactory"
     },
     {
@@ -42986,22 +43911,115 @@
       ]
     },
     {
+      "type": "org.apache.hc.client5.http.DnsResolver"
+    },
+    {
+      "type": "org.apache.hc.client5.http.SystemDefaultDnsResolver"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncConnectExec"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncConnectExec$1"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncConnectExec$2"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncExecChainElement"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncHttpRequestRetryExec"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncHttpRequestRetryExec$1"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncProtocolExec"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncProtocolExec$1"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncRedirectExec"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.AsyncRedirectExec$1"
+    },
+    {
       "type": "org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient"
     },
     {
       "type": "org.apache.hc.client5.http.impl.async.HttpAsyncClients"
     },
     {
+      "type": "org.apache.hc.client5.http.impl.async.InternalAbstractHttpAsyncClient"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.InternalAbstractHttpAsyncClient$2"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.InternalHttpAsyncExecRuntime"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.InternalHttpAsyncExecRuntime$1"
+    },
+    {
       "type": "org.apache.hc.client5.http.impl.classic.HttpClients"
     },
     {
+      "type": "org.apache.hc.client5.http.impl.nio.DefaultAsyncClientConnectionOperator"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.nio.DefaultAsyncClientConnectionOperator$1"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.nio.MultihomeIOSessionRequester"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager$3"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager$3$1"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManager$4"
+    },
+    {
+      "type": "org.apache.hc.core5.concurrent.BasicFuture"
+    },
+    {
+      "type": "org.apache.hc.core5.concurrent.CallbackContribution"
+    },
+    {
+      "type": "org.apache.hc.core5.concurrent.ComplexFuture"
+    },
+    {
       "type": "org.apache.hc.core5.http.nio.AsyncRequestProducer"
+    },
+    {
+      "type": "org.apache.hc.core5.http.nio.support.BasicRequestProducer"
+    },
+    {
+      "type": "org.apache.hc.core5.pool.LaxConnPool"
+    },
+    {
+      "type": "org.apache.hc.core5.pool.LaxConnPool$PerRoutePool"
+    },
+    {
+      "type": "org.apache.hc.core5.pool.StrictConnPool"
     },
     {
       "type": "org.apache.hc.core5.reactive.ReactiveDataConsumer"
     },
     {
       "type": "org.apache.hc.core5.reactive.ReactiveResponseConsumer"
+    },
+    {
+      "type": "org.apache.hc.core5.util.Asserts"
     },
     {
       "type": "org.apache.jasper.compiler.JspConfig"
@@ -47970,6 +48988,15 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$69780574",
+      "serializable": true,
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.File$SpockMock$951537188",
       "fields": [
         {
@@ -48139,6 +49166,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$2085623169",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$2092197312",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -48339,6 +49374,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.Object$SpockMock$882714791",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.Object$SpockMock$950004883",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -48562,6 +49605,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$728245210",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$741965069",
       "fields": [
         {
@@ -48579,6 +49630,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.Process$SpockMock$106742268",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.Process$SpockMock$1095678678",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -50484,6 +51543,14 @@
       "allDeclaredFields": true
     },
     {
+      "type": "org.springframework.boot.SpringApplication$SpockMock$1053682952",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.springframework.boot.SpringApplication$SpockMock$1120529114",
       "fields": [
         {
@@ -51090,6 +52157,24 @@
         },
         {
           "name": "jmxIncludeExcludePropertyEndpointFilter",
+          "parameterTypes": []
+        },
+        {
+          "name": "jmxMBeanExporter",
+          "parameterTypes": [
+            "javax.management.MBeanServer",
+            "org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory",
+            "org.springframework.beans.factory.ObjectProvider",
+            "org.springframework.boot.actuate.endpoint.jmx.JmxEndpointsSupplier"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration$JmxJacksonEndpointConfiguration",
+      "methods": [
+        {
+          "name": "<init>",
           "parameterTypes": []
         },
         {
@@ -54831,6 +55916,10 @@
           "parameterTypes": []
         },
         {
+          "name": "getError",
+          "parameterTypes": []
+        },
+        {
           "name": "getResources",
           "parameterTypes": []
         }
@@ -55690,6 +56779,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "org.springframework.boot.devtools.autoconfigure.ConditionalOnEnabledDevTools"
+    },
+    {
       "type": "org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration$DevToolsDataSourceCondition",
       "methods": [
         {
@@ -56150,7 +57242,36 @@
       ]
     },
     {
-      "type": "org.springframework.boot.health.actuate.endpoint.HealthEndpoint"
+      "type": "org.springframework.boot.health.actuate.endpoint.CompositeHealthDescriptor",
+      "methods": [
+        {
+          "name": "getComponents",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDetails",
+          "parameterTypes": []
+        },
+        {
+          "name": "getStatus",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.health.actuate.endpoint.Contributor$Blocking"
+    },
+    {
+      "type": "org.springframework.boot.health.actuate.endpoint.HealthDescriptor"
+    },
+    {
+      "type": "org.springframework.boot.health.actuate.endpoint.HealthEndpoint",
+      "methods": [
+        {
+          "name": "health",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "org.springframework.boot.health.actuate.endpoint.HealthEndpointGroups"
@@ -56165,6 +57286,19 @@
       "type": "org.springframework.boot.health.actuate.endpoint.HttpCodeStatusMapper"
     },
     {
+      "type": "org.springframework.boot.health.actuate.endpoint.IndicatedHealthDescriptor",
+      "methods": [
+        {
+          "name": "getDetails",
+          "parameterTypes": []
+        },
+        {
+          "name": "getStatus",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "org.springframework.boot.health.actuate.endpoint.ReactiveHealthEndpointWebExtension"
     },
     {
@@ -56175,6 +57309,15 @@
     },
     {
       "type": "org.springframework.boot.health.actuate.endpoint.StatusAggregator"
+    },
+    {
+      "type": "org.springframework.boot.health.actuate.endpoint.SystemHealthDescriptor",
+      "methods": [
+        {
+          "name": "getGroups",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "org.springframework.boot.health.application.AvailabilityStateHealthIndicator"
@@ -56481,6 +57624,19 @@
     },
     {
       "type": "org.springframework.boot.health.contributor.PingHealthIndicator"
+    },
+    {
+      "type": "org.springframework.boot.health.contributor.Status",
+      "methods": [
+        {
+          "name": "getCode",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDescription",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "org.springframework.boot.health.registry.AbstractRegistry"
@@ -56908,6 +58064,9 @@
     },
     {
       "type": "org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider"
+    },
+    {
+      "type": "org.springframework.boot.jpa.autoconfigure.EntityManagerFactoryDependsOnPostProcessor"
     },
     {
       "type": "org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer"
@@ -57640,6 +58799,12 @@
         {
           "name": "<init>",
           "parameterTypes": []
+        },
+        {
+          "name": "setShutdownQuietPeriod",
+          "parameterTypes": [
+            "java.time.Duration"
+          ]
         }
       ]
     },
@@ -58372,6 +59537,10 @@
           "parameterTypes": []
         },
         {
+          "name": "getServlet",
+          "parameterTypes": []
+        },
+        {
           "name": "setAddress",
           "parameterTypes": [
             "java.net.InetAddress"
@@ -58382,6 +59551,19 @@
           "parameterTypes": [
             "java.lang.Integer"
           ]
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.web.server.autoconfigure.ServerProperties$Servlet",
+      "methods": [
+        {
+          "name": "getJsp",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSession",
+          "parameterTypes": []
         }
       ]
     },
@@ -58491,6 +59673,32 @@
         {
           "name": "<init>",
           "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.web.server.servlet.Jsp",
+      "methods": [
+        {
+          "name": "getInitParameters",
+          "parameterTypes": []
+        },
+        {
+          "name": "setInitParameters",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.web.server.servlet.Session",
+      "methods": [
+        {
+          "name": "setPersistent",
+          "parameterTypes": [
+            "boolean"
+          ]
         }
       ]
     },
@@ -58658,6 +59866,108 @@
     },
     {
       "type": "org.springframework.boot.webflux.actuate.endpoint.web.WebFluxEndpointHandlerMapping$WebFluxLinksHandler"
+    },
+    {
+      "type": "org.springframework.boot.webflux.actuate.web.mappings.DispatcherHandlerMappingDescription",
+      "methods": [
+        {
+          "name": "getDetails",
+          "parameterTypes": []
+        },
+        {
+          "name": "getHandler",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPredicate",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.webflux.actuate.web.mappings.DispatcherHandlerMappingDetails",
+      "methods": [
+        {
+          "name": "getHandlerFunction",
+          "parameterTypes": []
+        },
+        {
+          "name": "getHandlerMethod",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRequestMappingConditions",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.webflux.actuate.web.mappings.DispatcherHandlersMappingDescriptionProvider"
+    },
+    {
+      "type": "org.springframework.boot.webflux.actuate.web.mappings.RequestMappingConditionsDescription",
+      "methods": [
+        {
+          "name": "getConsumes",
+          "parameterTypes": []
+        },
+        {
+          "name": "getHeaders",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMethods",
+          "parameterTypes": []
+        },
+        {
+          "name": "getParams",
+          "parameterTypes": []
+        },
+        {
+          "name": "getPatterns",
+          "parameterTypes": []
+        },
+        {
+          "name": "getProduces",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.webflux.actuate.web.mappings.RequestMappingConditionsDescription$MediaTypeExpressionDescription",
+      "methods": [
+        {
+          "name": "getMediaType",
+          "parameterTypes": []
+        },
+        {
+          "name": "isNegated",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.webflux.actuate.web.mappings.RequestMappingConditionsDescription$MediaTypeExpressionDescription[]"
+    },
+    {
+      "type": "org.springframework.boot.webflux.actuate.web.mappings.RequestMappingConditionsDescription$NameValueExpressionDescription",
+      "methods": [
+        {
+          "name": "getName",
+          "parameterTypes": []
+        },
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        },
+        {
+          "name": "isNegated",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.webflux.actuate.web.mappings.RequestMappingConditionsDescription$NameValueExpressionDescription[]"
     },
     {
       "type": "org.springframework.boot.webflux.autoconfigure.HttpHandlerAutoConfiguration",
@@ -58927,6 +60237,19 @@
       "type": "org.springframework.boot.webflux.autoconfigure.actuate.web.WebFluxEndpointManagementContextConfiguration$ServerCodecConfigurerEndpointJsonMapperBeanPostProcessor"
     },
     {
+      "type": "org.springframework.boot.webflux.autoconfigure.actuate.web.mappings.WebFluxMappingsAutoConfiguration",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "dispatcherHandlersMappingDescriptionProvider",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "org.springframework.boot.webflux.autoconfigure.error.AbstractErrorWebExceptionHandler"
     },
     {
@@ -59104,6 +60427,15 @@
     },
     {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$1417858920",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$1442187388",
+      "serializable": true,
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -60314,6 +61646,14 @@
       ]
     },
     {
+      "type": "org.springframework.http.ResponseEntity$SpockMock$761109641",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.springframework.http.ResponseEntity$SpockMock$919655299",
       "fields": [
         {
@@ -61167,6 +62507,9 @@
       "type": "org.springframework.web.reactive.HandlerMapping"
     },
     {
+      "type": "org.springframework.web.reactive.HandlerMappingEditor"
+    },
+    {
       "type": "org.springframework.web.reactive.HandlerResult"
     },
     {
@@ -61174,6 +62517,9 @@
     },
     {
       "type": "org.springframework.web.reactive.accept.ApiVersionStrategy"
+    },
+    {
+      "type": "org.springframework.web.reactive.accept.ApiVersionStrategyEditor"
     },
     {
       "type": "org.springframework.web.reactive.accept.RequestedContentTypeResolver"
@@ -61332,6 +62678,12 @@
     },
     {
       "type": "org.springframework.web.reactive.function.BodyInsertersCustomizer"
+    },
+    {
+      "type": "org.springframework.web.reactive.function.client.ClientRequest"
+    },
+    {
+      "type": "org.springframework.web.reactive.function.client.ClientRequest$Builder"
     },
     {
       "type": "org.springframework.web.reactive.function.client.ClientRequestObservationConvention"
@@ -61607,6 +62959,9 @@
       "serializable": true
     },
     {
+      "type": "org.springframework.web.reactive.function.client.WebClientResponseException$NotFound"
+    },
+    {
       "type": "org.springframework.web.reactive.function.client.WebClientResponseExceptionBeanInfo"
     },
     {
@@ -61774,6 +63129,15 @@
     },
     {
       "type": "org.springframework.web.service.annotation.PostExchange"
+    },
+    {
+      "type": "org.springframework.web.service.invoker.HttpExchangeAdapter"
+    },
+    {
+      "type": "org.springframework.web.service.invoker.HttpServiceProxyFactory"
+    },
+    {
+      "type": "org.springframework.web.service.invoker.HttpServiceProxyFactory$Builder"
     },
     {
       "type": "org.springframework.web.service.registry.HttpServiceProxyRegistry"
@@ -62846,6 +64210,14 @@
     },
     {
       "type": "reactor.core.publisher.Mono$SpockMock$1166576329",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "reactor.core.publisher.Mono$SpockMock$1262512314",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -64773,6 +66145,15 @@
       "type": "sun.util.resources.cldr.CalendarData"
     },
     {
+      "type": "sun.util.resources.cldr.TimeZoneNames"
+    },
+    {
+      "type": "sun.util.resources.cldr.TimeZoneNames_en"
+    },
+    {
+      "type": "sun.util.resources.cldr.TimeZoneNames_en_US"
+    },
+    {
       "type": "tools.jackson.core.FormatSchema"
     },
     {
@@ -64780,6 +66161,9 @@
     },
     {
       "type": "tools.jackson.core.JsonParser"
+    },
+    {
+      "type": "tools.jackson.core.ObjectReadContext"
     },
     {
       "type": "tools.jackson.core.PrettyPrinter"
@@ -64792,6 +66176,9 @@
     },
     {
       "type": "tools.jackson.core.TreeNode"
+    },
+    {
+      "type": "tools.jackson.core.Version"
     },
     {
       "type": "tools.jackson.core.Versioned"
@@ -64859,6 +66246,12 @@
       "type": "tools.jackson.databind.ObjectMapperCustomizer"
     },
     {
+      "type": "tools.jackson.databind.ValueDeserializer"
+    },
+    {
+      "type": "tools.jackson.databind.ValueSerializer"
+    },
+    {
       "type": "tools.jackson.databind.cfg.ContextAttributes"
     },
     {
@@ -64899,6 +66292,9 @@
     },
     {
       "type": "tools.jackson.databind.ser.Serializers[]"
+    },
+    {
+      "type": "tools.jackson.databind.ser.ValueSerializerModifier[]"
     },
     {
       "type": "tools.jackson.dataformat.cbor.CBORMapper"
@@ -66361,6 +67757,16 @@
     {
       "type": {
         "lambda": {
+          "declaringClass": "org.springframework.boot.devtools.autoconfigure.LocalDevToolsAutoConfiguration$RestartConfiguration",
+          "interfaces": [
+            "org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory"
+          ]
+        }
+      }
+    },
+    {
+      "type": {
+        "lambda": {
           "declaringClass": "org.springframework.boot.http.client.autoconfigure.reactive.ReactiveHttpClientAutoConfiguration$ReactorNetty",
           "interfaces": [
             "org.springframework.boot.http.client.autoconfigure.reactive.ClientHttpConnectorBuilderCustomizer"
@@ -66569,6 +67975,9 @@
       "glob": "META-INF/services/ch.qos.logback.classic.spi.Configurator"
     },
     {
+      "glob": "META-INF/services/io.camunda.client.bean.InfoFactory"
+    },
+    {
       "glob": "META-INF/services/io.grpc.LoadBalancerProvider"
     },
     {
@@ -66770,6 +68179,15 @@
       "glob": "application-default.yml"
     },
     {
+      "glob": "application-e2edebug.xml"
+    },
+    {
+      "glob": "application-e2edebug.yaml"
+    },
+    {
+      "glob": "application-e2edebug.yml"
+    },
+    {
       "glob": "application-ftest.properties"
     },
     {
@@ -66831,6 +68249,9 @@
     },
     {
       "glob": "application.yml"
+    },
+    {
+      "glob": "auth-methods/none.yaml"
     },
     {
       "glob": "auth-methods/oidc.yaml"
@@ -66918,6 +68339,18 @@
     },
     {
       "glob": "config/application-default.yml"
+    },
+    {
+      "glob": "config/application-e2edebug.properties"
+    },
+    {
+      "glob": "config/application-e2edebug.xml"
+    },
+    {
+      "glob": "config/application-e2edebug.yaml"
+    },
+    {
+      "glob": "config/application-e2edebug.yml"
     },
     {
       "glob": "config/application-ftest.properties"
@@ -67088,6 +68521,18 @@
       "glob": "config/rpa-worker-default.yml"
     },
     {
+      "glob": "config/rpa-worker-e2edebug.properties"
+    },
+    {
+      "glob": "config/rpa-worker-e2edebug.xml"
+    },
+    {
+      "glob": "config/rpa-worker-e2edebug.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-e2edebug.yml"
+    },
+    {
       "glob": "config/rpa-worker-v87-dev-mine.properties"
     },
     {
@@ -67139,6 +68584,9 @@
       "glob": "home/pounder/workspace/camunda/rpa-worker/scripts/"
     },
     {
+      "glob": "home/user/workspace/rpa-worker/python"
+    },
+    {
       "glob": "io/camunda/client/spring/configuration/AnnotationProcessorConfiguration.class"
     },
     {
@@ -67160,7 +68608,13 @@
       "glob": "io/camunda/client/spring/configuration/CredentialsProviderConfiguration.class"
     },
     {
+      "glob": "io/camunda/client/spring/configuration/DefaultJsonMapperConfiguration.class"
+    },
+    {
       "glob": "io/camunda/client/spring/configuration/ExecutorServiceConfiguration.class"
+    },
+    {
+      "glob": "io/camunda/client/spring/configuration/Jackson3JsonMapperConfiguration.class"
     },
     {
       "glob": "io/camunda/client/spring/configuration/JsonMapperConfiguration.class"
@@ -69137,6 +70591,12 @@
       "glob": "org/springframework/boot/actuate/autoconfigure/endpoint/jackson/JacksonEndpointAutoConfiguration.class"
     },
     {
+      "glob": "org/springframework/boot/actuate/autoconfigure/endpoint/jmx/JmxEndpointAutoConfiguration$JmxJackson2EndpointConfiguration.class"
+    },
+    {
+      "glob": "org/springframework/boot/actuate/autoconfigure/endpoint/jmx/JmxEndpointAutoConfiguration$JmxJacksonEndpointConfiguration.class"
+    },
+    {
       "glob": "org/springframework/boot/actuate/autoconfigure/endpoint/jmx/JmxEndpointAutoConfiguration.class"
     },
     {
@@ -69854,6 +71314,12 @@
       "glob": "org/springframework/boot/context/properties/EnableConfigurationPropertiesRegistrar.class"
     },
     {
+      "glob": "org/springframework/boot/devtools/autoconfigure/ConditionalOnEnabledDevTools.class"
+    },
+    {
+      "glob": "org/springframework/boot/devtools/autoconfigure/DevToolsDataSourceAutoConfiguration$DatabaseShutdownExecutorEntityManagerFactoryDependsOnConfiguration.class"
+    },
+    {
       "glob": "org/springframework/boot/devtools/autoconfigure/DevToolsDataSourceAutoConfiguration$DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor.class"
     },
     {
@@ -70029,6 +71495,12 @@
     },
     {
       "glob": "org/springframework/boot/jackson2/autoconfigure/Jackson2AutoConfiguration.class"
+    },
+    {
+      "glob": "org/springframework/boot/jdbc/autoconfigure$DataSourceAutoConfiguration.class"
+    },
+    {
+      "glob": "org/springframework/boot/jdbc/autoconfigure/DataSourceAutoConfiguration.class"
     },
     {
       "glob": "org/springframework/boot/jsonb/autoconfigure$JsonbAutoConfiguration.class"
@@ -70569,6 +72041,18 @@
     },
     {
       "glob": "rpa-worker-default.yml"
+    },
+    {
+      "glob": "rpa-worker-e2edebug.properties"
+    },
+    {
+      "glob": "rpa-worker-e2edebug.xml"
+    },
+    {
+      "glob": "rpa-worker-e2edebug.yaml"
+    },
+    {
+      "glob": "rpa-worker-e2edebug.yml"
     },
     {
       "glob": "rpa-worker-v87-dev-mine.properties"

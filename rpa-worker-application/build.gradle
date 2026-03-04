@@ -125,7 +125,7 @@ tasks.named("functionalTest", Test).configure { Test task ->
 }
 
 processAot {
-	jvmArgs("-Dmanagement.prometheus.metrics.export.pushgateway.enabled=true")
+	jvmArgs("-Dmanagement.prometheus.metrics.export.pushgateway.enabled=true", "-Dcamunda.client.enabled=true", "-Dcamunda.client.mode=selfmanaged")
 }
 
 processTestAot.enabled = false
