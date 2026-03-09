@@ -6034,6 +6034,24 @@
       "type": "io.camunda.client.api.JsonMapper"
     },
     {
+      "type": "io.camunda.client.api.command.ActivateJobsCommandStep1"
+    },
+    {
+      "type": "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep2"
+    },
+    {
+      "type": "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep3"
+    },
+    {
+      "type": "io.camunda.client.api.command.FinalCommandStep"
+    },
+    {
+      "type": "io.camunda.client.api.response.ActivateJobsResponse"
+    },
+    {
+      "type": "io.camunda.client.api.response.ActivatedJob"
+    },
+    {
       "type": "io.camunda.client.api.worker.BackoffSupplier"
     },
     {
@@ -6216,6 +6234,43 @@
       ]
     },
     {
+      "type": "io.camunda.client.protocol.rest.JobActivationRequest",
+      "methods": [
+        {
+          "name": "getFetchVariable",
+          "parameterTypes": []
+        },
+        {
+          "name": "getMaxJobsToActivate",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRequestTimeout",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTenantFilter",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTenantIds",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTimeout",
+          "parameterTypes": []
+        },
+        {
+          "name": "getType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWorker",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.protocol.rest.Partition",
       "methods": [
         {
@@ -6273,6 +6328,54 @@
       ]
     },
     {
+      "type": "io.camunda.client.protocol.rest.ProblemDetail",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setDetail",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setInstance",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setStatus",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setTitle",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setType",
+          "parameterTypes": [
+            "java.net.URI"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.protocol.rest.TenantFilterEnum",
+      "methods": [
+        {
+          "name": "getValue",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.protocol.rest.TopologyResponse",
       "methods": [
         {
@@ -6293,6 +6396,12 @@
         },
         {
           "name": "setGatewayVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setLastCompletedChangeId",
           "parameterTypes": [
             "java.lang.String"
           ]
@@ -6851,6 +6960,12 @@
           "name": "setMode",
           "parameterTypes": [
             "io.camunda.client.spring.properties.CamundaClientProperties$ClientMode"
+          ]
+        },
+        {
+          "name": "setPreferRestOverGrpc",
+          "parameterTypes": [
+            "boolean"
           ]
         },
         {
@@ -29697,6 +29812,14 @@
           "name": "<init>",
           "parameterTypes": [
             "io.camunda.rpa.worker.zeebe.ZeebeProperties",
+            "io.camunda.client.CamundaClient",
+            "io.camunda.rpa.worker.zeebe.ZeebeJobService"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.zeebe.ZeebeProperties",
             "io.camunda.zeebe.client.ZeebeClient",
             "io.camunda.rpa.worker.zeebe.ZeebeJobService"
           ]
@@ -34164,6 +34287,45 @@
       ]
     },
     {
+      "type": "io.camunda.zeebe.client.protocol.rest.ProblemDetail",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setDetail",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setInstance",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setStatus",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setTitle",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setType",
+          "parameterTypes": [
+            "java.net.URI"
+          ]
+        }
+      ]
+    },
+    {
       "type": "io.camunda.zeebe.client.protocol.rest.SetVariableRequest",
       "methods": [
         {
@@ -34210,6 +34372,12 @@
         },
         {
           "name": "setGatewayVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setLastCompletedChangeId",
           "parameterTypes": [
             "java.lang.String"
           ]
@@ -35942,6 +36110,9 @@
       "type": "io.grpc.Status"
     },
     {
+      "type": "io.grpc.StatusRuntimeException"
+    },
+    {
       "type": "io.grpc.binder.internal.IntentNameResolverProvider"
     },
     {
@@ -36011,6 +36182,9 @@
     },
     {
       "type": "io.grpc.netty.ProtocolNegotiators$GrpcNegotiationHandler"
+    },
+    {
+      "type": "io.grpc.netty.ProtocolNegotiators$PlaintextHandler"
     },
     {
       "type": "io.grpc.netty.ProtocolNegotiators$ProxyProtocolNegotiationHandler"
@@ -37317,6 +37491,15 @@
     },
     {
       "type": "io.netty.util.internal.shaded.org.jctools.queues.atomic.MpmcAtomicArrayQueueProducerIndexField"
+    },
+    {
+      "type": "io.netty.util.internal.shaded.org.jctools.queues.atomic.unpadded.MpscAtomicUnpaddedArrayQueueConsumerIndexField"
+    },
+    {
+      "type": "io.netty.util.internal.shaded.org.jctools.queues.atomic.unpadded.MpscAtomicUnpaddedArrayQueueProducerIndexField"
+    },
+    {
+      "type": "io.netty.util.internal.shaded.org.jctools.queues.atomic.unpadded.MpscAtomicUnpaddedArrayQueueProducerLimitField"
     },
     {
       "type": "io.netty.util.internal.shaded.org.jctools.queues.unpadded.MpscUnpaddedArrayQueueConsumerIndexField",
@@ -43953,10 +44136,16 @@
       "type": "org.apache.hc.client5.http.impl.async.HttpAsyncClients"
     },
     {
+      "type": "org.apache.hc.client5.http.impl.async.HttpAsyncMainClientExec$1"
+    },
+    {
       "type": "org.apache.hc.client5.http.impl.async.InternalAbstractHttpAsyncClient"
     },
     {
       "type": "org.apache.hc.client5.http.impl.async.InternalAbstractHttpAsyncClient$2"
+    },
+    {
+      "type": "org.apache.hc.client5.http.impl.async.InternalAbstractHttpAsyncClient$2$1"
     },
     {
       "type": "org.apache.hc.client5.http.impl.async.InternalHttpAsyncExecRuntime"
@@ -43998,7 +44187,34 @@
       "type": "org.apache.hc.core5.concurrent.ComplexFuture"
     },
     {
+      "type": "org.apache.hc.core5.http.impl.nio.AbstractHttp1IOEventHandler"
+    },
+    {
+      "type": "org.apache.hc.core5.http.impl.nio.AbstractHttp1StreamDuplexer"
+    },
+    {
+      "type": "org.apache.hc.core5.http.impl.nio.ClientHttp1IOEventHandler"
+    },
+    {
+      "type": "org.apache.hc.core5.http.impl.nio.ClientHttp1StreamDuplexer"
+    },
+    {
+      "type": "org.apache.hc.core5.http.impl.nio.ClientHttp1StreamHandler"
+    },
+    {
       "type": "org.apache.hc.core5.http.nio.AsyncRequestProducer"
+    },
+    {
+      "type": "org.apache.hc.core5.http.nio.entity.AbstractBinAsyncEntityConsumer"
+    },
+    {
+      "type": "org.apache.hc.core5.http.nio.entity.AbstractBinDataConsumer"
+    },
+    {
+      "type": "org.apache.hc.core5.http.nio.support.AbstractAsyncResponseConsumer"
+    },
+    {
+      "type": "org.apache.hc.core5.http.nio.support.AbstractAsyncResponseConsumer$1"
     },
     {
       "type": "org.apache.hc.core5.http.nio.support.BasicRequestProducer"
@@ -44017,6 +44233,21 @@
     },
     {
       "type": "org.apache.hc.core5.reactive.ReactiveResponseConsumer"
+    },
+    {
+      "type": "org.apache.hc.core5.reactor.AbstractSingleCoreIOReactor"
+    },
+    {
+      "type": "org.apache.hc.core5.reactor.IOReactorWorker"
+    },
+    {
+      "type": "org.apache.hc.core5.reactor.InternalChannel"
+    },
+    {
+      "type": "org.apache.hc.core5.reactor.InternalDataChannel"
+    },
+    {
+      "type": "org.apache.hc.core5.reactor.SingleCoreIOReactor"
     },
     {
       "type": "org.apache.hc.core5.util.Asserts"
@@ -58739,6 +58970,9 @@
       "type": "org.springframework.boot.reactor.netty.NettyReactiveWebServerFactory"
     },
     {
+      "type": "org.springframework.boot.reactor.netty.NettyWebServer"
+    },
+    {
       "type": "org.springframework.boot.reactor.netty.autoconfigure.NettyReactiveWebServerAutoConfiguration",
       "methods": [
         {
@@ -59508,6 +59742,9 @@
       "type": "org.springframework.boot.web.server.ConfigurableWebServerFactory"
     },
     {
+      "type": "org.springframework.boot.web.server.PortInUseException"
+    },
+    {
       "type": "org.springframework.boot.web.server.PortInUseFailureAnalyzer",
       "methods": [
         {
@@ -59675,6 +59912,12 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "org.springframework.boot.web.server.reactive.context.WebServerManager"
+    },
+    {
+      "type": "org.springframework.boot.web.server.reactive.context.WebServerStartStopLifecycle"
     },
     {
       "type": "org.springframework.boot.web.server.servlet.Jsp",
@@ -65167,6 +65410,9 @@
       "type": "reactor.netty.tcp.SslProvider$SslReadHandler"
     },
     {
+      "type": "reactor.netty.transport.ServerTransport"
+    },
+    {
       "type": "reactor.netty.transport.ServerTransport$Acceptor"
     },
     {
@@ -68239,6 +68485,15 @@
       "glob": "application-v87-snapshot-dev-mine.yml"
     },
     {
+      "glob": "application-v88e2e.xml"
+    },
+    {
+      "glob": "application-v88e2e.yaml"
+    },
+    {
+      "glob": "application-v88e2e.yml"
+    },
+    {
       "glob": "application.properties"
     },
     {
@@ -68413,6 +68668,18 @@
       "glob": "config/application-v87-snapshot-dev-mine.yml"
     },
     {
+      "glob": "config/application-v88e2e.properties"
+    },
+    {
+      "glob": "config/application-v88e2e.xml"
+    },
+    {
+      "glob": "config/application-v88e2e.yaml"
+    },
+    {
+      "glob": "config/application-v88e2e.yml"
+    },
+    {
       "glob": "config/application.properties"
     },
     {
@@ -68555,6 +68822,18 @@
     },
     {
       "glob": "config/rpa-worker-v87-snapshot-dev-mine.yml"
+    },
+    {
+      "glob": "config/rpa-worker-v88e2e.properties"
+    },
+    {
+      "glob": "config/rpa-worker-v88e2e.xml"
+    },
+    {
+      "glob": "config/rpa-worker-v88e2e.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-v88e2e.yml"
     },
     {
       "glob": "config/rpa-worker.properties"
@@ -72077,6 +72356,18 @@
     },
     {
       "glob": "rpa-worker-v87-snapshot-dev-mine.yml"
+    },
+    {
+      "glob": "rpa-worker-v88e2e.properties"
+    },
+    {
+      "glob": "rpa-worker-v88e2e.xml"
+    },
+    {
+      "glob": "rpa-worker-v88e2e.yaml"
+    },
+    {
+      "glob": "rpa-worker-v88e2e.yml"
     },
     {
       "glob": "rpa-worker.properties"

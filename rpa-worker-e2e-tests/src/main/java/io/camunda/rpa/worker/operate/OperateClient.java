@@ -21,13 +21,13 @@ public interface OperateClient {
 			Long key,
 			Long id,
 			Long processInstanceKey,
-			int processVersion,
+			Integer processVersion,
 			String processVersionTag,
 			String bpmnProcessId,
 			Long parentKey,
 			Long parentFlowNodeInstanceKey,
 			State state,
-			boolean incident,
+			Boolean incident,
 			long processDefinitionKey) {
 		
 		public Long key() {
@@ -127,9 +127,9 @@ public interface OperateClient {
 
 	record GetVariablesResponse(List<Item> items) {
 		public record Item(
-				long key,
+				Long key,
 				Long processDefinitionKey,
-				long processInstanceKey,
+				Long processInstanceKey,
 				String name,
 				String value) {
 		}

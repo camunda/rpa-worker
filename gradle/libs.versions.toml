@@ -1,6 +1,6 @@
 [versions]
 springDoc = "3.0.1"
-camundaStarter = "8.9.0-alpha5-rc1"
+camundaStarter = "8.9.0-alpha5-rc3"
 vavr = "0.10.5"
 commons-exec = "1.6.0"
 commons-lang = "3.20.0" 

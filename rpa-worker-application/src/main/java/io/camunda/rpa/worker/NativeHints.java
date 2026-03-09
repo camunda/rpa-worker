@@ -128,7 +128,10 @@ class NativeHints implements RuntimeHintsRegistrar {
 						TypeReference.of(io.camunda.client.protocol.rest.ProblemDetail.class),
 						TypeReference.of(io.camunda.zeebe.client.protocol.rest.ProblemDetail.class),
 						TypeReference.of(io.camunda.client.protocol.rest.JobErrorRequest.class),
-						TypeReference.of(io.camunda.zeebe.client.protocol.rest.JobErrorRequest.class))
+						TypeReference.of(io.camunda.zeebe.client.protocol.rest.JobErrorRequest.class),
+						TypeReference.of(io.camunda.client.protocol.rest.TopologyResponse.class),
+						TypeReference.of(io.camunda.zeebe.client.protocol.rest.TopologyResponse.class),
+						TypeReference.of(io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyResponse.class))
 
 				.forEach(klass -> hints.reflection().registerType(klass, MemberCategory.values()));
 	}
