@@ -61,7 +61,7 @@ public interface OperateClient {
 	Mono<GetIncidentsResponse> getIncidents88b(@RequestBody GetIncidentsRequest88b request);
 
 	record GetIncidentsRequest(Filter filter) {
-		public record Filter(long processInstanceKey) {}
+		public record Filter(Long processInstanceKey) {}
 	}
 
 	record GetIncidentsRequest88b(Filter filter) {
@@ -71,15 +71,15 @@ public interface OperateClient {
 
 	record GetIncidentsResponse(List<Item> items) {
 		public record Item(
-				long key, 
-				long processDefinitionKey, 
-				long processInstanceKey, 
+				Long key, 
+				Long processDefinitionKey, 
+				Long processInstanceKey, 
 				Type type, 
 				Type errorType,
 				String message, 
 				String errorMessage,
 				State state, 
-				long jobKey) {
+				Long jobKey) {
 			
 			public Type type() {
 				return Optional.ofNullable(type)
