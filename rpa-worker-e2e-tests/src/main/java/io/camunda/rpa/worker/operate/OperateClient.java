@@ -28,7 +28,7 @@ public interface OperateClient {
 			Long parentFlowNodeInstanceKey,
 			State state,
 			Boolean incident,
-			long processDefinitionKey) {
+			Long processDefinitionKey) {
 		
 		public Long key() {
 			return Optional.ofNullable(key)
