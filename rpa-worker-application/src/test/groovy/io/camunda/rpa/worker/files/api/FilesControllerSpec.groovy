@@ -125,7 +125,6 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 						new HttpHeaders(),
 						[] as byte[],
 						Charset.defaultCharset()))
-//						new MockSer(Request.HttpMethod.GET, "", [:], null, null), [] as byte[], [:]))
 		
 		Path file2Destination = workspace.path().resolve("input/file2.txt")
 		documentClient.getDocument("document-id-2", "store-id", _) >> Flux.empty()

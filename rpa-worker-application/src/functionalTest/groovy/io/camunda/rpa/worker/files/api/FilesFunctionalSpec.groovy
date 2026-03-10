@@ -32,7 +32,6 @@ import spock.util.concurrent.PollingConditions
 import tools.jackson.core.type.TypeReference
 
 import java.nio.file.Files
-import java.time.Duration
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
@@ -141,7 +140,7 @@ Do Nothing
 		response.result() == ExecutionResults.Result.PASS
 
 		when:
-		Map<String, FilesController.RetrieveFileResult> resp = post()
+		Map<String, FilesController.RetrieveFileResult> resp = block post()
 				.uri("/file/retrieve/${theWorkspace.path().fileName.toString()}")
 				.body(BodyInserters.fromValue([
 						
@@ -159,7 +158,6 @@ Do Nothing
 		
 				.retrieve()
 				.bodyToMono(new ParameterizedTypeReference<Map<String, FilesController.RetrieveFileResult>>() {})
-				.block(Duration.ofMinutes(1)) // TODO NO
 
 		then:
 		resp.size() == 2
