@@ -261,7 +261,6 @@ jobs:
   native_darwin_amd64:
     needs:
       - build
-      - windows_test
     runs-on: macos-15-intel
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:

@@ -149,6 +149,7 @@ tasks.register("installCamunda") {
 
 		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
 		
+		waitForWithTimeout("ip -brief a show dev cni0", Duration.ofMinutes(1), "Container network did not show up")
 		String hostIp = wrapProcessForResult("ip -brief a show dev cni0".execute()).with {
 			return it.split("\\s+")[2].split("/")[0]
 		}
