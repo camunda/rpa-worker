@@ -4,10 +4,8 @@ camundaStarter = "8.9.0-alpha5-rc3"
 vavr = "0.10.5"
 commons-exec = "1.6.0"
 commons-lang = "3.20.0" 
-#reactiveFeign = "4.2.1" ## TODO
 javaSemver = "0.10.2"
 slf4j = "2.1.0-alpha1"
-xmachinery = "0.4.0-dev.21"
 caffeine = "3.2.3"
 jbAnnotations = "26.0.2-1"
 rpaRuntime = "0.2.3"
@@ -40,8 +38,6 @@ vavr = { module = "io.vavr:vavr", version.ref = "vavr" }
 commons-exec = { module = "org.apache.commons:commons-exec", version.ref = "commons-exec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 jackson-dataFormatYaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml" }
-## TODO
-#reactiveFeign = { module = "com.playtika.reactivefeign:feign-reactor-webclient", version.ref = "reactiveFeign" }
 javaSemver = { module = "com.github.zafarkhaja:java-semver", version.ref = "javaSemver" }
 lombok = { module = "org.projectlombok:lombok" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
