@@ -290,7 +290,6 @@ jobs:
   native_darwin_aarch64:
     needs:
       - build
-      - windows_test
     runs-on: macos-latest
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
     permissions:
