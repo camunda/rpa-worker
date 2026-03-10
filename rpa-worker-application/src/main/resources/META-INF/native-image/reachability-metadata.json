@@ -6102,6 +6102,9 @@
       ]
     },
     {
+      "type": "io.camunda.client.impl.CamundaClientFutureImpl"
+    },
+    {
       "type": "io.camunda.client.impl.CamundaClientImpl"
     },
     {
