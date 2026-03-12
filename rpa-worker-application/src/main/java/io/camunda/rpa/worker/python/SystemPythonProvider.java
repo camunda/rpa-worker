@@ -41,7 +41,7 @@ public class SystemPythonProvider {
 	}
 
 	private Mono<ProcessService.ExecutionResult> checkPythonInterpreter(Object exeName, UnaryOperator<ExecutionCustomizer> customizer) {
-		return processService.execute(exeName, c -> customizer.apply(c).silent().arg("--version"))
+		return processService.execute(exeName, c -> customizer.apply(c).arg("--version"))
 				.filter(xr -> ! WINDOWS_NO_PYTHON_EXIT_CODES.contains(xr.exitCode()))
 				.filter(xr -> {
 					Matcher matcher = PYTHON_VERSION_PATTERN.matcher(xr.stdout());
