@@ -7,6 +7,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.core.LayoutBase;
 import ch.qos.logback.core.OutputStreamAppender;
+import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Marker;
@@ -80,12 +81,14 @@ public class JsonLogbackLoggingSystem extends LogbackLoggingSystem {
 		throwableProxyConverter = new ThrowableProxyConverter();
 		throwableProxyConverter.start();
 
-		getAppenders().forEach(a -> a.setLayout(new LayoutBase<>() {
+		LayoutWrappingEncoder<ILoggingEvent> encoder = new LayoutWrappingEncoder<>();
+		encoder.setLayout(new LayoutBase<>() {
 			@Override
 			public String doLayout(ILoggingEvent event) {
 				return render(event);
 			}
-		}));
+		});
+		getAppenders().forEach(a -> a.setEncoder(encoder));
 	}
 
 	private static Stream<OutputStreamAppender<ILoggingEvent>> getAppenders() {

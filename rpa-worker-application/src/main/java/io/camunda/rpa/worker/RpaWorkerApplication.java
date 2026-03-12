@@ -25,6 +25,7 @@ public class RpaWorkerApplication {
 	public static final int EXIT_NO_ROBOT = 197;
 
 	public static void main(String[] args) {
+		System.setProperty("slf4j.internal.verbosity", "WARN");
 		System.setProperty("spring.config.name", "application,rpa-worker");
 		startApplication(args);
 	}

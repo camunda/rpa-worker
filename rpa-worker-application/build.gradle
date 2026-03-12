@@ -217,12 +217,22 @@ tasks.register("zipNativeImage", Zip) {
 	
 	from(nativeCompile.outputs.files.singleFile) {
 		exclude("*.so", "*.dll", "*.dynlib", "*.args")
+		filePermissions {
+			user {
+				execute = true
+			}
+			group {
+				execute = true
+			}
+			other {
+				execute = true
+			}
+		}
 	}
 
 	from(project.layout.files("src/main/resources/META-INF/application.sample.properties")) {
 		rename { "application.properties" }
 	}
-
 }
 
 bootJar {

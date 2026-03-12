@@ -37398,6 +37398,15 @@
       ]
     },
     {
+      "type": "io.netty.util.concurrent.ConcurrentSkipListIntObjMultimap"
+    },
+    {
+      "type": "io.netty.util.concurrent.ConcurrentSkipListIntObjMultimap$Index"
+    },
+    {
+      "type": "io.netty.util.concurrent.ConcurrentSkipListIntObjMultimap$Node"
+    },
+    {
       "type": "io.netty.util.concurrent.DefaultPromise",
       "fields": [
         {
@@ -39314,6 +39323,15 @@
       "allDeclaredFields": true
     },
     {
+      "type": "java.lang.invoke.VarHandle",
+      "methods": [
+        {
+          "name": "acquireFence",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "java.lang.management.BufferPoolMXBean"
     },
     {
@@ -39891,6 +39909,24 @@
         {
           "name": "alignedSlice",
           "parameterTypes": [
+            "int"
+          ]
+        },
+        {
+          "name": "put",
+          "parameterTypes": [
+            "int",
+            "java.nio.ByteBuffer",
+            "int",
+            "int"
+          ]
+        },
+        {
+          "name": "put",
+          "parameterTypes": [
+            "int",
+            "byte[]",
+            "int",
             "int"
           ]
         },
@@ -51242,6 +51278,15 @@
           ]
         },
         {
+          "name": "springDocApiVersionCustomizer",
+          "parameterTypes": [
+            "java.util.Optional",
+            "org.springdoc.core.properties.SpringDocConfigProperties",
+            "java.util.Optional",
+            "java.util.List"
+          ]
+        },
+        {
           "name": "springWebProvider",
           "parameterTypes": []
         },
@@ -60477,6 +60522,15 @@
       ]
     },
     {
+      "type": "org.springframework.boot.webflux.autoconfigure.actuate.web.WebFluxEndpointManagementContextConfiguration$HealthConfiguration",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "org.springframework.boot.webflux.autoconfigure.actuate.web.WebFluxEndpointManagementContextConfiguration$ServerCodecConfigurerEndpointJackson2JsonMapperBeanPostProcessor"
     },
     {
@@ -67946,6 +68000,16 @@
     {
       "type": {
         "lambda": {
+          "declaringClass": "org.springdoc.webflux.core.configuration.SpringDocWebFluxConfiguration",
+          "interfaces": [
+            "org.springframework.beans.factory.SmartInitializingSingleton"
+          ]
+        }
+      }
+    },
+    {
+      "type": {
+        "lambda": {
           "declaringClass": "org.springframework.boot.LazyInitializationExcludeFilter",
           "interfaces": [
             "org.springframework.boot.LazyInitializationExcludeFilter"
@@ -68530,6 +68594,9 @@
       "glob": "ch/qos/logback/classic/LoggerContext.class"
     },
     {
+      "glob": "ch/qos/logback/classic/logback-classic-version.properties"
+    },
+    {
       "glob": "ch/qos/logback/classic/spi/ILoggingEvent.class"
     },
     {
@@ -68537,6 +68604,9 @@
     },
     {
       "glob": "ch/qos/logback/core/Appender.class"
+    },
+    {
+      "glob": "ch/qos/logback/core/logback-core-version.properties"
     },
     {
       "glob": "ch/qos/logback/core/spi/AppenderAttachable.class"
@@ -71963,6 +72033,9 @@
     },
     {
       "glob": "org/springframework/boot/webflux/autoconfigure/actuate/endpoint/web/WebFluxHealthEndpointExtensionAutoConfiguration.class"
+    },
+    {
+      "glob": "org/springframework/boot/webflux/autoconfigure/actuate/web/WebFluxEndpointManagementContextConfiguration$HealthConfiguration.class"
     },
     {
       "glob": "org/springframework/boot/webflux/autoconfigure/actuate/web/WebFluxEndpointManagementContextConfiguration$ServerCodecConfigurerEndpointJackson2JsonMapperBeanPostProcessor.class"
