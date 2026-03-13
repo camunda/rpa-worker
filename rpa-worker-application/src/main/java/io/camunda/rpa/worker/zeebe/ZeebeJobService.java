@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.zeebe;
 
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
+import io.camunda.rpa.worker.files.FilesService;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
 import io.camunda.rpa.worker.robot.ExecutionResults;
 import io.camunda.rpa.worker.robot.RobotExecutionListener;
@@ -9,6 +10,7 @@ import io.camunda.rpa.worker.script.RobotScript;
 import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
+import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.camunda.zeebe.client.ZeebeClient;
 import io.camunda.zeebe.client.api.command.FailJobCommandStep1;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
