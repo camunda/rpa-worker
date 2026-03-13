@@ -30,9 +30,10 @@ repositories {
 
 dependencies {
 	implementation libs.spring.boot.starter.validation
+	implementation libs.spring.boot.starter.actuator
+	implementation libs.spring.boot.starter.webflux
 
 	implementation libs.vavr
-	implementation libs.reactiveFeign
 	implementation libs.slf4j.api
 
 	implementation libs.camundaStarter

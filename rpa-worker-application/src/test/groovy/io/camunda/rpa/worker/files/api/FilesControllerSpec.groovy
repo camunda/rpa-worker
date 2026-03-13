@@ -1,7 +1,5 @@
 package io.camunda.rpa.worker.files.api
 
-import feign.FeignException
-import feign.Request
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.api.StubbedResponseGenerator
 import io.camunda.rpa.worker.files.FilesService
@@ -12,12 +10,16 @@ import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
 import org.springframework.core.io.buffer.DataBuffer
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
 
+import java.nio.charset.Charset
 import java.nio.file.Path
 import java.nio.file.PathMatcher
 import java.nio.file.Paths
@@ -112,7 +114,12 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		and:
 		Path file1Destination = workspace.path().resolve("input/file1.txt")
 		filesService.getDocument("document-id-1", "store-id", _) >> Flux.error(
-				new FeignException.NotFound("", new Request(Request.HttpMethod.GET, "", [:], null, null), [] as byte[], [:]))
+				WebClientResponseException.create(
+						HttpStatus.NOT_FOUND.value(), 
+						"",
+						new HttpHeaders(),
+						[] as byte[],
+						Charset.defaultCharset()))
 		
 		Path file2Destination = workspace.path().resolve("input/file2.txt")
 		filesService.getDocument("document-id-2", "store-id", _) >> Flux.empty()

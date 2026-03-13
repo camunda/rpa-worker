@@ -1,18 +1,19 @@
 package io.camunda.rpa.worker.secrets.camunda;
 
+import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthProperties;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
-import io.camunda.zeebe.spring.client.configuration.condition.ConditionalOnCamundaClientEnabled;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
+import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactivefeign.webclient.WebReactiveFeign;
+import org.springframework.web.reactive.function.client.support.WebClientAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @Configuration
@@ -30,15 +31,19 @@ class CamundaSecretsClientConfiguration {
 				zeebeAuthProperties.clientId(),
 				zeebeAuthProperties.clientSecret(),
 				camundaSecretsClientProperties.tokenAudience());
-		
-		return WebReactiveFeign
-				.<CamundaSecretsClient>builder(webClientBuilder)
-				.addRequestInterceptor(reactiveHttpRequest -> authenticator
-						.doOnNext(token -> reactiveHttpRequest
-								.headers().put(HttpHeaders.AUTHORIZATION, Collections.singletonList("Bearer %s".formatted(token))))
-						.thenReturn(reactiveHttpRequest))
-				.target(CamundaSecretsClient.class, Optional.ofNullable(clientProperties.secretsEndpoint())
-						.map(Object::toString)
-						.orElse("http://no-secrets/"));
+
+		return HttpServiceProxyFactory
+				.builderFor(WebClientAdapter.create(WebClient.builder()
+						.baseUrl(Optional.ofNullable(clientProperties.secretsEndpoint())
+								.map(Object::toString)
+								.orElse("http://no-secrets/"))
+						.filter((request, next) -> authenticator
+								.map(token -> ClientRequest.from(request)
+										.header(HttpHeaders.AUTHORIZATION, "Bearer %s".formatted(token))
+										.build())
+								.flatMap(next::exchange))
+						.build()))
+				.build()
+				.createClient(CamundaSecretsClient.class);
 	}
 }

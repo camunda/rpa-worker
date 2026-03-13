@@ -42,7 +42,7 @@ class ScriptSandboxFunctionalSpec extends AbstractFunctionalSpec implements Publ
 				.exchangeToMono(toResponseEntity(ValidationFailureDto))
 
 		then:
-		resp.statusCode == HttpStatus.UNPROCESSABLE_ENTITY
+		resp.statusCode == HttpStatus.UNPROCESSABLE_CONTENT
 		resp.body.fieldErrors().size() == 1
 		with(resp.body.fieldErrors()['script']) {
 			code() == "NotBlank"
@@ -366,6 +366,9 @@ Two
 	@TestPropertySource(properties = "camunda.rpa.robot.fail-fast=false")
 	static class NoFailFastFunctionalSpec extends AbstractFunctionalSpec {
 		void "Robot script execution does not fail fast"() {
+			given:
+			withNoSecrets()
+			
 			when:
 			EvaluateScriptResponse r = post()
 					.uri("/script/evaluate")
