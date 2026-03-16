@@ -7,6 +7,7 @@ import io.camunda.zeebe.client.api.command.FinalCommandStep
 import io.camunda.zeebe.client.api.response.ActivateJobsResponse
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import reactor.core.publisher.Mono
+import reactor.core.publisher.Sinks
 import reactor.core.scheduler.Schedulers
 import spock.lang.Specification
 import spock.lang.Subject
@@ -38,8 +39,13 @@ class ZeebeJobPollerSpec extends Specification {
 		spliterator() >> { pollQueue.collect { TASK_PREFIX + it }.spliterator() }
 	}
 
+	Sinks.One<?> failDelayGeneratorSink
+
 	@Subject
-	ZeebeJobPoller jobPoller = new ZeebeJobPoller(zeebeProperties, zeebeClient, zeebeJobService, tagGenerator)
+	ZeebeJobPoller jobPoller = new ZeebeJobPoller(zeebeProperties, zeebeClient, zeebeJobService, tagGenerator, { 
+		failDelayGeneratorSink = Sinks.one()
+		return failDelayGeneratorSink.asMono()
+	})
 	
 	void "Starts polling all tags on init"() {
 		given:
@@ -157,7 +163,12 @@ class ZeebeJobPollerSpec extends Specification {
 
 		then:
 		1 * activate1.jobType(TASK_PREFIX + "tag-one") >> { throw new RuntimeException("Error in client!") }
-
+		0 * activate1._
+		0 * zeebeJobService._
+		
+		when:
+		failDelayGeneratorSink.tryEmitEmpty()
+		
 		then:
 		1 * activate1.jobType(TASK_PREFIX + "tag-two") >> activateJobClientCall(job)
 		1 * zeebeJobService.handleJob(job) >> { Mono.error(new RuntimeException("Error in handler!")) }
