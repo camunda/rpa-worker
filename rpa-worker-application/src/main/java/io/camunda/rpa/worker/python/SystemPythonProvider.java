@@ -48,9 +48,9 @@ public class SystemPythonProvider {
 					boolean found = matcher.find();
 					if ( ! found) return false;
 					Version version = Version.parse(matcher.group("version"));
-					
+
 					boolean valid = version.isHigherThanOrEquivalentTo(MINIMUM_PYTHON_VERSION) && (version.isLowerThan(MAXIMUM_PYTHON_VERSION) || pythonProperties.allowUnsupportedPython());
-					if( ! valid) log.atWarn()
+					if ( ! valid) log.atWarn()
 							.kv("version", version)
 							.kv("interpreter", exeName)
 							.log("Python interpreter is not valid (>=%s,<%s)".formatted(MINIMUM_PYTHON_VERSION, MAXIMUM_PYTHON_VERSION));
@@ -58,8 +58,24 @@ public class SystemPythonProvider {
 							.kv("version", version)
 							.kv("interpreter", exeName)
 							.log("Python interpreter is valid");
-					
+
 					return valid;
-				});
+				})
+				.flatMap(_ -> processService.execute(exeName, c -> c
+								.arg("-m").arg("venv")
+								.silent()
+								.required()
+								.allowExitCodes(new int[]{0, 2}))
+						.doOnError(_ -> log.atWarn()
+								.kv("interpreter", exeName)
+								.log("Discovered Python interpreter does not provide VEnv. If this Python is managed by the system package manager you may need to install the 'python3-venv' package")))
+				.flatMap(_ -> processService.execute(exeName, c -> c
+								.arg("-m").arg("pip")
+								.silent()
+								.required()
+								.allowExitCode(0))
+						.doOnError(_ -> log.atWarn()
+								.kv("interpreter", exeName)
+								.log("Discovered Python interpreter does not provide Pip. If this Python is managed by the system package manager you may need to install the 'python3-pip' package")));
 	}
 }

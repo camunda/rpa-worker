@@ -3,6 +3,7 @@ package io.camunda.rpa.worker.python
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
+import org.apache.commons.exec.ExecuteException
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -35,6 +36,24 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
 		}
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(2, "venv: error: the following arguments are required: ENV_DIR", "", null))
+		}
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("pip") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Usage:", "", null))
+		}
 		
 		and:
 		r == "python3"
@@ -54,6 +73,24 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute("python", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(2, "venv: error: the following arguments are required: ENV_DIR", "", null))
+		}
+		1 * processService.execute("python", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("pip") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Usage:", "", null))
 		}
 
 		and:
@@ -80,6 +117,24 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute(pythonInterpreter, _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(2, "venv: error: the following arguments are required: ENV_DIR", "", null))
+		}
+		1 * processService.execute(pythonInterpreter, _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("pip") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Usage:", "", null))
 		}
 
 		and:
@@ -132,6 +187,73 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.13.0", "", null))
+		}
+
+		and:
+		! r
+	}
+
+	void "Returns empty when system Python is not valid - No VEnv"() {
+		given:
+		processService.execute("python", _) >> Mono.error(new IOException())
+
+		when:
+		Object r = block provider.systemPython()
+		
+		then:
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.error(new ExecuteException("No module named venv", 1))
+		}
+		
+		and:
+		! r
+	}
+
+	void "Returns empty when system Python is not valid - No Pip"() {
+		given:
+		processService.execute("python", _) >> Mono.error(new IOException())
+
+		when:
+		Object r = block provider.systemPython()
+
+		then:
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(2, "venv: error: the following arguments are required: ENV_DIR", "", null))
+		}
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("pip") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.error(new ExecuteException("No module named pip", 1))
 		}
 
 		and:

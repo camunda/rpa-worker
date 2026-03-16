@@ -6,6 +6,7 @@ import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
 import org.apache.commons.exec.CommandLine
+import org.apache.commons.exec.ExecuteException
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.core.io.buffer.DefaultDataBufferFactory
@@ -104,6 +105,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 				1 * arg("venv") >> it
 				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
 				1 * inheritEnv() >> it
+				1 * required() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
@@ -152,6 +154,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 				1 * arg("venv") >> it
 				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
 				1 * inheritEnv() >> it
+				1 * required() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
@@ -441,6 +444,36 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		block service.purgeEnvironment()
 		
 		then:
+		1 * io.deleteDirectoryRecursively(Paths.get("/path/to/python/"))
+	}
+	
+	void "Cleans up when creating new Python environment fails"() {
+		given:
+		processService.execute("python3", _) >> Mono.error(new IOException())
+		
+		when:
+		block service.getPythonInterpreter()
+
+		then:
+		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		1 * systemPythonProvider.systemPython() >> Mono.just("python")
+
+		and:
+		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
+				1 * inheritEnv() >> it
+				1 * required() >> it
+			})
+			return Mono.error(new ExecuteException("Failed to create venv for some reason", 1))
+		}
+		
+		and:
+		thrown(RuntimeException)
+		
+		and:
 		1 * io.deleteDirectoryRecursively(Paths.get("/path/to/python/"))
 	}
 }

@@ -53,12 +53,17 @@ public class PythonSetupService {
 				.switchIfEmpty(Mono.defer(this::installPython))
 				.flatMap(pathOrString -> processService.execute(pathOrString, c -> c
 								.arg("-m").arg("venv")
+								.required()
 								.bindArg("pyEnvPath", pythonProperties.path().resolve("venv/"))
 								.inheritEnv())
 
 						.doOnSubscribe(_ -> log.atInfo()
 								.kv("dir", pythonProperties.path())
-								.log("Creating new Python environment")))
+								.log("Creating new Python environment"))
+				
+						.onErrorResume(thrown -> io.run(() -> 
+								io.deleteDirectoryRecursively(pythonProperties.path()))
+								.then(Mono.error(thrown))))
 				
 				.then(maybeReinstallBaseRequirements())
 				.then(maybeReinstallExtraRequirements())
