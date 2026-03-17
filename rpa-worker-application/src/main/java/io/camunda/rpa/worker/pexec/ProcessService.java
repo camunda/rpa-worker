@@ -148,7 +148,7 @@ public class ProcessService {
 
 			@Override
 			public ExecutionCustomizer silent() {
-				this.silent = true;
+//				this.silent = true;
 				return this;
 			}
 
