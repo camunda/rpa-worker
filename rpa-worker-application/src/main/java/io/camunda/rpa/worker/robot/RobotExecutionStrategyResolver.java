@@ -49,7 +49,7 @@ class RobotExecutionStrategyResolver implements FactoryBean<ResolvedRobotExecuti
 						.log("Found existing Python environment, will use Python execution strategy"))
 				.map(_ -> pythonStrategy())
 
-				.switchIfEmpty(Mono.defer(systemPythonProvider::systemPython)
+				.switchIfEmpty(Mono.defer(systemPythonProvider::getSystemPython)
 						.flatMap(_ -> internetConnectivityProvider.hasConnectivity())
 						.filter(it -> it)
 						.doOnNext(_ -> log.atInfo()

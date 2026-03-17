@@ -105,7 +105,7 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 		
 		and:
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		systemPythonProvider.systemPython() >> Mono.just("python3")
+		systemPythonProvider.getSystemPython() >> Mono.just("python3")
 		connectivityProvider.hasConnectivity() >> Mono.just(true)
 
 		and:
@@ -130,7 +130,7 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 		
 		and:
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		systemPythonProvider.systemPython() >> Mono.empty()
+		systemPythonProvider.getSystemPython() >> Mono.empty()
 		connectivityProvider.hasConnectivity() >> Mono.just(true)
 
 		and:
@@ -155,7 +155,7 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 		
 		and:
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		systemPythonProvider.systemPython() >> Mono.empty()
+		systemPythonProvider.getSystemPython() >> Mono.empty()
 		connectivityProvider.hasConnectivity() >> Mono.just(true)
 
 		and:
@@ -180,7 +180,7 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 		
 		and:
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		systemPythonProvider.systemPython() >> Mono.just("python3")
+		systemPythonProvider.getSystemPython() >> Mono.just("python3")
 		InternetConnectivityProvider connectivityProvider = new InternetConnectivityProvider(webClientBuilder) {
 			@Override
 			protected String getTestUrl() {
