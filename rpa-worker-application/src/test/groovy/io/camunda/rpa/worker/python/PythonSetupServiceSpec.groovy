@@ -77,7 +77,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(pythonPath)
-		0 * systemPythonProvider.systemPython()
+		0 * systemPythonProvider.getSystemPython()
 		
 		and:
 		r.path() == pythonPath
@@ -96,7 +96,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.just("python")
+		1 * systemPythonProvider.getSystemPython() >> Mono.just("python")
 
 		and:
 		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
@@ -154,7 +154,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.just(interpreter)
+		1 * systemPythonProvider.getSystemPython() >> Mono.just(interpreter)
 
 		and:
 		1 * processService.execute(interpreter, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
@@ -213,7 +213,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		then: "Existing Python venv is checked (not there) and system Python is checked (not there)"
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.empty()
+		1 * systemPythonProvider.getSystemPython() >> Mono.empty()
 		
 		and: "The standalone Python archive is downloaded from the configured URL"
 		1 * io.createTempFile(_, ".zip") >> pythonArchive
@@ -253,7 +253,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 	void "Installs user requirements into new environments when provided"() {
 		given:
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		systemPythonProvider.systemPython() >> Mono.just("python3")
+		systemPythonProvider.getSystemPython() >> Mono.just("python3")
 		processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Stub(ExecutionCustomizer) {
 				arg("--version") >> it
@@ -405,7 +405,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		and:
 		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		systemPythonProvider.systemPython() >> Mono.empty()
+		systemPythonProvider.getSystemPython() >> Mono.empty()
 
 		and:
 		webClient.get() >> Mock(WebClient.RequestHeadersUriSpec) {
@@ -483,7 +483,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.just("python")
+		1 * systemPythonProvider.getSystemPython() >> Mono.just("python")
 
 		and:
 		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
@@ -513,7 +513,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.just("python")
+		1 * systemPythonProvider.getSystemPython() >> Mono.just("python")
 
 		and:
 		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->

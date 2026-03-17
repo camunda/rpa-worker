@@ -49,7 +49,7 @@ public class PythonSetupService {
 	}
 
 	private Mono<Path> createPythonEnvironment() {
-		return systemPythonProvider.systemPython()
+		return systemPythonProvider.getSystemPython()
 				.switchIfEmpty(Mono.defer(this::installPython))
 				.flatMap(pathOrString -> processService.execute(pathOrString, c -> c
 								.arg("-m").arg("venv")

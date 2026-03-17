@@ -26,7 +26,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		processService.execute("python", _) >> Mono.error(new IOException())
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 		
 		then:
 		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -55,7 +55,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		processService.execute("python3", _) >> Mono.error(new IOException())
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 
 		then:
 		1 * processService.execute("python", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -89,7 +89,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				processService)
 
 		when:
-		Object r = block newProvider.systemPython()
+		Object r = block newProvider.getSystemPython()
 
 		then:
 		1 * processService.execute(pythonInterpreter, _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -120,7 +120,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				new ProcessService.ExecutionResult(SystemPythonProvider.WINDOWS_NO_PYTHON_EXIT_CODES.first(), "", "", Duration.ZERO))
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 
 		then: "Fake Python is ignored and returns empty"
 		! r
@@ -131,7 +131,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		processService.execute("python", _) >> Mono.error(new IOException())
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 
 		then:
 		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -151,7 +151,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		processService.execute("python", _) >> Mono.error(new IOException())
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 
 		then:
 		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -171,7 +171,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		processService.execute("python", _) >> Mono.error(new IOException())
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 		
 		then:
 		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -197,7 +197,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 
 	void "Returns system Python when valid (aliased Python)"() {
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 
 		then:
 		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->

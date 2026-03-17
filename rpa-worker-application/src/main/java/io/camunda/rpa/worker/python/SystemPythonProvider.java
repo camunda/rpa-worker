@@ -3,7 +3,7 @@ package io.camunda.rpa.worker.python;
 import com.github.zafarkhaja.semver.Version;
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer;
 import io.camunda.rpa.worker.pexec.ProcessService;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Flux;
@@ -17,9 +17,8 @@ import java.util.regex.Pattern;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class SystemPythonProvider {
-	
+
 	static final Set<Integer> WINDOWS_NO_PYTHON_EXIT_CODES = Set.of(49, 9009);
 
 	private static final Version MINIMUM_PYTHON_VERSION = Version.of(3, 10);
@@ -28,8 +27,16 @@ public class SystemPythonProvider {
 
 	private final PythonProperties pythonProperties;
 	private final ProcessService processService;
-	
-	public Mono<Object> systemPython() {
+	@Getter
+	private final Mono<Object> systemPython;
+
+	SystemPythonProvider(PythonProperties pythonProperties, ProcessService processService) {
+		this.pythonProperties = pythonProperties;
+		this.processService = processService;
+		this.systemPython = findSystemPython().cache();
+	}
+
+	private Mono<Object> findSystemPython() {
 		return Mono.<Object>justOrEmpty(pythonProperties.interpreter())
 				.flatMap(p -> checkPythonInterpreter(p, ExecutionCustomizer::required).map(_ -> p))
 				.flux()
