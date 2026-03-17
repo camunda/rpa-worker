@@ -115,6 +115,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * silent() >> it
 				1 * required() >> it
+				1 * inheritEnv() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
@@ -173,6 +174,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * silent() >> it
 				1 * required() >> it
+				1 * inheritEnv() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}
@@ -291,6 +293,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * silent() >> it
 				1 * required() >> it
+				1 * inheritEnv() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
 		}

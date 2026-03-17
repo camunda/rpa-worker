@@ -57,10 +57,15 @@ public class PythonSetupService {
 								.bindArg("pyEnvPath", pythonProperties.path().resolve("venv/"))
 								.inheritEnv())
 
-						.then(Mono.defer(() -> processService.execute(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pipExe()), c -> c
-										.silent()
-										.required()
-										.allowExitCode(0)))
+						.then(Mono.defer(() -> processService.execute(pythonProperties.path()
+												.resolve("venv/")
+												.resolve(pyExeEnv.binDir())
+												.resolve(pyExeEnv.pipExe()),
+										c -> c
+												.silent()
+												.required()
+												.inheritEnv()
+												.allowExitCode(0)))
 
 								.doOnError(_ -> log.atWarn()
 										.kv("interpreter", pathOrString)
