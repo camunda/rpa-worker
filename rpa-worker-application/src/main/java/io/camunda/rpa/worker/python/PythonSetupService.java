@@ -64,6 +64,7 @@ public class PythonSetupService {
 
 								.doOnError(_ -> log.atWarn()
 										.kv("interpreter", pathOrString)
+										.kv("pipSearchLocation", pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pipExe()))
 										.log("Discovered Python interpreter does not provide Pip. If this Python is managed by the system package manager you may need to install the 'python3-pip' package")))
 
 						.doOnSubscribe(_ -> log.atInfo()
