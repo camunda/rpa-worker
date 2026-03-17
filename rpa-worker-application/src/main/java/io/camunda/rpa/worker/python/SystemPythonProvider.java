@@ -71,7 +71,7 @@ public class SystemPythonProvider {
 								.log("Discovered Python interpreter does not provide VEnv. If this Python is managed by the system package manager you may need to install the 'python3-venv' package")))
 				.flatMap(_ -> processService.execute(exeName, c -> c
 								.arg("-m").arg("pip")
-								.silent()
+//								.silent()
 								.required()
 								.allowExitCode(0))
 						.doOnError(_ -> log.atWarn()

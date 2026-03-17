@@ -49,7 +49,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("-m") >> it
 				1 * arg("pip") >> it
-				1 * silent() >> it
+//				1 * silent() >> it
 				1 * required() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Usage:", "", null))
@@ -87,7 +87,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("-m") >> it
 				1 * arg("pip") >> it
-				1 * silent() >> it
+//				1 * silent() >> it
 				1 * required() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Usage:", "", null))
@@ -131,7 +131,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("-m") >> it
 				1 * arg("pip") >> it
-				1 * silent() >> it
+//				1 * silent() >> it
 				1 * required() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Usage:", "", null))
@@ -250,7 +250,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 			fn.apply(Mock(ExecutionCustomizer) {
 				1 * arg("-m") >> it
 				1 * arg("pip") >> it
-				1 * silent() >> it
+//				1 * silent() >> it
 				1 * required() >> it
 			})
 			return Mono.error(new ExecuteException("No module named pip", 1))
