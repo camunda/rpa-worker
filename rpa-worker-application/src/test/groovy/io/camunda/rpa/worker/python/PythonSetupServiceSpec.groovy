@@ -111,6 +111,15 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+		
+		and:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
 		1 * io.notExists(Paths.get("/path/to/python/requirements.last")) >> true
 		1 * io.newOutputStream(_) >> Stub(OutputStream)
@@ -154,6 +163,15 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 				1 * arg("venv") >> it
 				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
 				1 * inheritEnv() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+		
+		and:
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
 				1 * required() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
@@ -267,6 +285,15 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		when:
 		block serviceWithExtraRequirements.getPythonInterpreter()
+		
+		then:
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
 
 		then:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
@@ -473,6 +500,44 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		and:
 		thrown(RuntimeException)
 		
+		and:
+		1 * io.deleteDirectoryRecursively(Paths.get("/path/to/python/"))
+	}
+
+	void "Errors and cleans up when new Python environment has no Pip"() {
+		given:
+		processService.execute("python3", _) >> Mono.error(new IOException())
+
+		when:
+		block service.getPythonInterpreter()
+
+		then:
+		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		1 * systemPythonProvider.systemPython() >> Mono.just("python")
+
+		and:
+		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
+				1 * inheritEnv() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.error(new ExecuteException("No Pip", 1))
+		}
+
+		and:
+		thrown(RuntimeException)
+
 		and:
 		1 * io.deleteDirectoryRecursively(Paths.get("/path/to/python/"))
 	}

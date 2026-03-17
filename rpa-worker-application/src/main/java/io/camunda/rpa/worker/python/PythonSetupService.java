@@ -57,14 +57,22 @@ public class PythonSetupService {
 								.bindArg("pyEnvPath", pythonProperties.path().resolve("venv/"))
 								.inheritEnv())
 
+						.then(Mono.defer(() -> processService.execute(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pipExe()), c -> c
+										.silent()
+										.required()
+										.allowExitCode(0)))
+
+								.doOnError(_ -> log.atWarn()
+										.kv("interpreter", pathOrString)
+										.log("Discovered Python interpreter does not provide Pip. If this Python is managed by the system package manager you may need to install the 'python3-pip' package")))
+
 						.doOnSubscribe(_ -> log.atInfo()
 								.kv("dir", pythonProperties.path())
 								.log("Creating new Python environment"))
-				
-						.onErrorResume(thrown -> io.run(() -> 
-								io.deleteDirectoryRecursively(pythonProperties.path()))
+
+						.onErrorResume(thrown -> purgeEnvironment()
 								.then(Mono.error(thrown))))
-				
+
 				.then(maybeReinstallBaseRequirements())
 				.then(maybeReinstallExtraRequirements())
 				.thenReturn(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
