@@ -34,13 +34,15 @@ public class SystemPythonProvider {
 				.flatMap(p -> checkPythonInterpreter(p, ExecutionCustomizer::required).map(_ -> p))
 				.flux()
 				.switchIfEmpty(Flux.<Object>just("python3", "python")
-						.flatMap(exeName -> checkPythonInterpreter(exeName, ExecutionCustomizer::silent)
+						.concatMap(exeName -> checkPythonInterpreter(exeName, ExecutionCustomizer::silent)
 								.onErrorComplete(IOException.class)
-								.map(_ -> exeName)))
-				.next();
+								.map(_ -> exeName))
+						.next())
+				.singleOrEmpty();
 	}
 
 	private Mono<ProcessService.ExecutionResult> checkPythonInterpreter(Object exeName, UnaryOperator<ExecutionCustomizer> customizer) {
+		log.atInfo().kv("exeName", exeName).log("checkPythonInterpreter");
 		return processService.execute(exeName, c -> customizer.apply(c).arg("--version"))
 				.filter(xr -> ! WINDOWS_NO_PYTHON_EXIT_CODES.contains(xr.exitCode()))
 				.filter(xr -> {

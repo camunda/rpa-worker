@@ -43,7 +43,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				1 * silent() >> it
 				1 * required() >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(2, "venv: error: the following arguments are required: ENV_DIR", "", null))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", null))
 		}
 		
 		and:
@@ -72,7 +72,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				1 * silent() >> it
 				1 * required() >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(2, "venv: error: the following arguments are required: ENV_DIR", "", null))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", null))
 		}
 
 		and:
@@ -107,7 +107,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				1 * silent() >> it
 				1 * required() >> it
 			})
-			return Mono.just(new ProcessService.ExecutionResult(2, "venv: error: the following arguments are required: ENV_DIR", "", null))
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", null))
 		}
 
 		and:
@@ -194,4 +194,34 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		and:
 		! r
 	}
+
+	void "Returns system Python when valid (aliased Python)"() {
+		when:
+		Object r = block provider.systemPython()
+
+		then:
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", null))
+		}
+		
+		and:
+		0 * processService.execute("python", _)
+
+		and:
+		r == "python3"
+	}
+
 }
