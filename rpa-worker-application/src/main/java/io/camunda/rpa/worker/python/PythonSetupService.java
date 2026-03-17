@@ -49,17 +49,36 @@ public class PythonSetupService {
 	}
 
 	private Mono<Path> createPythonEnvironment() {
-		return systemPythonProvider.systemPython()
+		return systemPythonProvider.getSystemPython()
 				.switchIfEmpty(Mono.defer(this::installPython))
 				.flatMap(pathOrString -> processService.execute(pathOrString, c -> c
 								.arg("-m").arg("venv")
+								.required()
 								.bindArg("pyEnvPath", pythonProperties.path().resolve("venv/"))
 								.inheritEnv())
 
+						.then(Mono.defer(() -> processService.execute(pythonProperties.path()
+												.resolve("venv/")
+												.resolve(pyExeEnv.binDir())
+												.resolve(pyExeEnv.pipExe()),
+										c -> c
+												.silent()
+												.required()
+												.inheritEnv()
+												.allowExitCode(0)))
+
+								.doOnError(_ -> log.atWarn()
+										.kv("interpreter", pathOrString)
+										.kv("pipSearchLocation", pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pipExe()))
+										.log("Discovered Python interpreter does not provide Pip. If this Python is managed by the system package manager you may need to install the 'python3-pip' package")))
+
 						.doOnSubscribe(_ -> log.atInfo()
 								.kv("dir", pythonProperties.path())
-								.log("Creating new Python environment")))
-				
+								.log("Creating new Python environment"))
+
+						.onErrorResume(thrown -> purgeEnvironment()
+								.then(Mono.error(thrown))))
+
 				.then(maybeReinstallBaseRequirements())
 				.then(maybeReinstallExtraRequirements())
 				.thenReturn(pythonProperties.path().resolve("venv/").resolve(pyExeEnv.binDir()).resolve(pyExeEnv.pythonExe()));
