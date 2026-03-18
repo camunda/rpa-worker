@@ -1,45 +1,45 @@
 [versions]
-springDoc = "2.8.13"
-camundaStarter = "8.7.13"
+spring-boot = "4.0.3"
+spring-dependency-management = "1.1.7"
+springDoc = "3.0.2"
+camundaStarter = "8.9.0-alpha5"
 vavr = "0.10.5"
-commons-exec = "1.5.0"
-commons-lang = "3.19.0" 
-reactiveFeign = "4.2.1"
+commons-exec = "1.6.0"
+commons-lang = "3.20.0" 
 javaSemver = "0.10.2"
 slf4j = "2.1.0-alpha1"
-xmachinery = "0.4.0-dev.21"
-caffeine = "3.2.2"
-jbAnnotations = "26.0.2"
+caffeine = "3.2.3"
+jbAnnotations = "26.0.2-1"
 rpaRuntime = "0.2.3"
 
-spock = "2.4-M6-groovy-4.0"
-byteBuddy = "1.17.7"
-objenesis = "3.4"
-groovy = "4.0.28"
-blockhound = "1.0.14.RELEASE"
-mockwebserver = "4.12.0"
+spock = "2.4-groovy-5.0"
+byteBuddy = "1.18.4"
+objenesis = "3.5"
+groovy = "5.0.4"
+blockhound = "1.0.16.RELEASE"
+mockwebserver = "5.3.2"
 
 [plugins]
-spring-boot = { id = "org.springframework.boot", version = "3.5.6" }
-spring-dependencyManagement = {id = "io.spring.dependency-management", version = "1.1.7" }
-graal-buildTools = { id = "org.graalvm.buildtools.native", version = "0.11.1" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-dependencyManagement = {id = "io.spring.dependency-management", version.ref = "spring-dependency-management" }
+graal-buildTools = { id = "org.graalvm.buildtools.native", version = "0.11.4" }
 testLogger = { id = "com.adarshr.test-logger", version = "4.0.0" }
 
 [libraries]
 spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
 spring-boot-starter-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator" }
 spring-boot-starter-validation = { module = "org.springframework.boot:spring-boot-starter-validation" }
+spring-boot-starter-webclient = { module = "org.springframework.boot:spring-boot-starter-webclient" }
 
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools" }
 spring-boot-configurationProcessor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
 
 springDocStarter = { module = "org.springdoc:springdoc-openapi-starter-webflux-ui", version.ref = "springDoc" }
-camundaStarter = { module = "io.camunda:spring-boot-starter-camunda-sdk", version.ref = "camundaStarter" }
+camundaStarter = { module = "io.camunda:camunda-spring-boot-starter", version.ref = "camundaStarter" }
 vavr = { module = "io.vavr:vavr", version.ref = "vavr" }
 commons-exec = { module = "org.apache.commons:commons-exec", version.ref = "commons-exec" }
 commons-lang = { module = "org.apache.commons:commons-lang3", version.ref = "commons-lang" }
 jackson-dataFormatYaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml" }
-reactiveFeign = { module = "com.playtika.reactivefeign:feign-reactor-webclient", version.ref = "reactiveFeign" }
 javaSemver = { module = "com.github.zafarkhaja:java-semver", version.ref = "javaSemver" }
 lombok = { module = "org.projectlombok:lombok" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }

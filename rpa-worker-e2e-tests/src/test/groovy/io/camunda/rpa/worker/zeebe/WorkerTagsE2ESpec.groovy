@@ -1,11 +1,11 @@
 package io.camunda.rpa.worker.zeebe
 
-import com.fasterxml.jackson.core.type.TypeReference
 import groovy.util.logging.Slf4j
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
+import tools.jackson.core.type.TypeReference
 
 @Slf4j
 class WorkerTagsE2ESpec extends AbstractE2ESpec {
