@@ -477,6 +477,79 @@ Assert input variable
 		}
 	}
 
+	void "Runs Task Testing job, automatically uploading log file and adding it to output variables"() {
+		given:
+		withSimpleSecrets(SOME_SIMPLE_SECRETS)
+		
+		and:
+		zeebeApi.setDispatcher { rr ->
+			
+			new MockResponse().tap {
+				setResponseCode(201)
+				setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
+				setBody(new JsonOutput().toJson([
+						'camunda.document.type': 'camunda',
+						storeId                : 'the-store',
+						documentId             : 'document-id',
+						contentHash            : 'content-hash',
+						metadata               : [fileName: 'filename']
+				]))
+			}
+		}
+
+		when:
+		zeebeJobService.handleJob(anRpaJob([
+				anInputVariable: 'input-variable-value',
+				(TaskTestingZeebeResultsProcessor.TASK_TESTING_VARIABLE_NAME): true
+		])).subscribe()
+		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
+
+		then:
+		1 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+			1 * updateTimeout(environment.getRequiredProperty("camunda.rpa.robot.default-timeout", Duration)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
+				1 * send()
+			}
+		}
+
+		and:
+		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			1 * send() >> {
+				handlerDidFinish.countDown()
+				return null
+			}
+		}
+
+		and:
+		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+			1 * variables([
+					anOutputVariable: 'output-variable-value',
+					(TaskTestingZeebeResultsProcessor.TASK_TESTING_LOG_OUTPUT_VARIABLE_NAME): new ZeebeDocumentDescriptor(
+							"the-store",
+							"document-id",
+							new ZeebeDocumentDescriptor.Metadata(null, "filename", null, null, null, null, null),
+							"content-hash")
+			]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
+				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+			}
+		}
+		
+		and:
+		with(zeebeApi.takeRequest(1, TimeUnit.SECONDS)) { req ->
+			MultipartReader mpr = new MultipartReader(ResponseBody.create(
+					req.body.readUtf8(),
+					MediaType.parse(req.headers.get("Content-Type"))))
+
+			Map<String, FormFieldPart> parts = new IterableMultiPart(mpr).collectEntries {
+				[it.name(), it]
+			}
+
+			ZeebeDocumentDescriptor.Metadata metadata = objectMapper.readValue(parts.metadata.value(), ZeebeDocumentDescriptor.Metadata)
+			metadata.processDefinitionId() == "123"
+			metadata.processInstanceKey() == 234
+		}
+
+	}
+
 	static class ZeebeScriptSourceFunctionalSpec extends AbstractZeebeFunctionalSpec  {
 		
 		CountDownLatch handlerDidFinish = new CountDownLatch(1)

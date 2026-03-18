@@ -4,17 +4,15 @@ import feign.FeignException
 import feign.Request
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.api.StubbedResponseGenerator
-import io.camunda.rpa.worker.files.DocumentClient
+import io.camunda.rpa.worker.files.FilesService
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.io.IO
+import io.camunda.rpa.worker.util.PathUtils
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
-import org.springframework.beans.factory.ObjectProvider
 import org.springframework.core.io.buffer.DataBuffer
-import org.springframework.http.HttpEntity
 import org.springframework.http.ResponseEntity
-import org.springframework.util.MultiValueMap
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import spock.lang.Specification
@@ -40,14 +38,11 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		wrap(_) >> { Mono<?> m -> m }
 	}
 
-	DocumentClient documentClient = Stub()
-	ObjectProvider<DocumentClient> documentClientProvider = Stub() {
-		getObject() >> documentClient
-	}
+	FilesService filesService = Stub()
 	StubbedResponseGenerator stubbedResponseGenerator = Stub()
 
 	@Subject
-	FilesController controller = new FilesController(workspaceService, io, documentClientProvider, stubbedResponseGenerator)
+	FilesController controller = new FilesController(workspaceService, io, stubbedResponseGenerator, filesService)
 	
 	void "Uploads files from workspace to Zeebe"() {
 		given:
@@ -71,13 +66,13 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 		}
 		
 		and:
-		documentClient.uploadDocument(_, _) >> { MultiValueMap<String, HttpEntity<?>> reqBody, Map params -> 
-			Mono.just(new ZeebeDocumentDescriptor(
+		filesService.uploadDocument(_, _) >> { WorkspaceFile wf, ZeebeDocumentDescriptor.Metadata m ->
+			return Mono.just(new ZeebeDocumentDescriptor(
 					"store-id",
 					"document-id",
 					new ZeebeDocumentDescriptor.Metadata(
-							"content-type", 
-							reqBody.getFirst("file").getHeaders().getContentDisposition().getFilename(), 
+							"content-type",
+							PathUtils.fixSlashes(workspace.path().relativize(wf.path())),
 							null, 
 							123, 
 							null, 
@@ -116,14 +111,14 @@ class FilesControllerSpec extends Specification implements PublisherUtils {
 
 		and:
 		Path file1Destination = workspace.path().resolve("input/file1.txt")
-		documentClient.getDocument("document-id-1", "store-id", _) >> Flux.error(
+		filesService.getDocument("document-id-1", "store-id", _) >> Flux.error(
 				new FeignException.NotFound("", new Request(Request.HttpMethod.GET, "", [:], null, null), [] as byte[], [:]))
 		
 		Path file2Destination = workspace.path().resolve("input/file2.txt")
-		documentClient.getDocument("document-id-2", "store-id", _) >> Flux.empty()
+		filesService.getDocument("document-id-2", "store-id", _) >> Flux.empty()
 		
 		Path file3Destination = workspace.path().resolve("input/file3.txt")
-		documentClient.getDocument("document-id-3", "store-id", _) >> Flux.empty()
+		filesService.getDocument("document-id-3", "store-id", _) >> Flux.empty()
 
 
 		when:
