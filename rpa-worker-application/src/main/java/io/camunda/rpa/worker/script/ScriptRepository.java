@@ -1,9 +1,9 @@
 package io.camunda.rpa.worker.script;
 
-import feign.FeignException;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.util.ArchiveUtils;
 import io.camunda.rpa.worker.zeebe.RpaResource;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -21,7 +21,7 @@ public interface ScriptRepository {
 
 	default Mono<RobotScript> getById(String id) {
 		return findById(id)
-				.onErrorComplete(FeignException.NotFound.class)
+				.onErrorComplete(WebClientResponseException.NotFound.class)
 				.switchIfEmpty(Mono.error(new ScriptNotFoundException(id)));
 	}
 	

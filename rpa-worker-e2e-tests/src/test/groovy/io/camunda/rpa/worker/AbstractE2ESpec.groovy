@@ -1,7 +1,5 @@
 package io.camunda.rpa.worker
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import feign.FeignException
 import groovy.json.JsonOutput
 import groovy.text.StreamingTemplateEngine
 import groovy.transform.stc.ClosureParams
@@ -30,11 +28,13 @@ import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ActiveProfilesResolver
 import org.springframework.test.context.ContextConfiguration
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.core.scheduler.Schedulers
 import reactor.util.retry.Retry
 import spock.lang.Specification
+import tools.jackson.databind.ObjectMapper
 
 import java.time.Duration
 import java.util.concurrent.TimeUnit
@@ -61,7 +61,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	final Retry waitForObjectRetrySpec = Retry.fixedDelay(30, Duration.ofSeconds(3))
 			.filter { thrown ->
 				thrown instanceof ConditionNotSatisfiedError
-						|| thrown instanceof FeignException.NotFound
+						|| thrown instanceof WebClientResponseException.NotFound
 			}
 
 	@Autowired
@@ -264,7 +264,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 				})
 	}
 
-	private class SpecificationHelper {
+	class SpecificationHelper {
 
 		@ConditionBlock
 		GetProcessInstanceResponse waitForProcessInstance(

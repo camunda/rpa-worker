@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.files
 
-import com.fasterxml.jackson.core.type.TypeReference
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
@@ -9,6 +8,7 @@ import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder
 import org.springframework.util.MultiValueMap
 import spock.lang.Issue
+import tools.jackson.core.type.TypeReference
 
 class FileHandlingE2ESpec extends AbstractE2ESpec {
 

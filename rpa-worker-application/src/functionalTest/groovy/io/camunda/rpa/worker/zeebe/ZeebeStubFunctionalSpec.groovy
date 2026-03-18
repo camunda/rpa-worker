@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Paths
 import java.time.Duration
 
-@TestPropertySource(properties = ["camunda.client.zeebe.enabled=false"])
+@TestPropertySource(properties = ["camunda.client.zeebe.enabled=false", "camunda.client.enabled=false"])
 class ZeebeStubFunctionalSpec extends AbstractFunctionalSpec implements PublisherUtils {
 
 	@SpringBean

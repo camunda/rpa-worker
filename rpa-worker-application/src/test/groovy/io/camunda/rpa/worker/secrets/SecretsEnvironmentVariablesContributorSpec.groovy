@@ -1,12 +1,12 @@
 package io.camunda.rpa.worker.secrets
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.robot.EnvironmentVariablesContributor
 import io.camunda.zeebe.client.api.response.ActivatedJob
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
+import tools.jackson.databind.ObjectMapper
 
 class SecretsEnvironmentVariablesContributorSpec extends Specification implements PublisherUtils {
 

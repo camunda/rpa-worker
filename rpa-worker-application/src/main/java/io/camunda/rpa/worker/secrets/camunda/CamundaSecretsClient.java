@@ -1,11 +1,13 @@
 package io.camunda.rpa.worker.secrets.camunda;
 
-import feign.RequestLine;
+import org.springframework.web.service.annotation.GetExchange;
+import org.springframework.web.service.annotation.HttpExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
+@HttpExchange
 interface CamundaSecretsClient {
-	@RequestLine("GET /secrets")
+	@GetExchange("/secrets")
 	Mono<Map<String, String>> getSecrets();
 }

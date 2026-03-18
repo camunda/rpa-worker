@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.logging;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.function.Supplier;
 
