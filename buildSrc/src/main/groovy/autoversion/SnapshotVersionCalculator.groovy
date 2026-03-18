@@ -27,9 +27,10 @@ class SnapshotVersionCalculator implements VersionCalculator {
 
 	@SuppressWarnings("deprecation")
 	private String doCalculateVersion(Git git) {
-		Option<Map.Entry<String, Ref>> lastTag = Option.ofOptional(git.getRepository().getTags().entrySet().stream()
+		Option<Map.Entry<String, Ref>> lastTag = Stream.ofAll(git.getRepository().getTags().entrySet().stream())
+				.reverse()
 				.filter(tag -> ! (tag.getKey().contains("-") || tag.getKey().contains("+")))
-				.findFirst())
+				.headOption()
 
 		Option<Integer> commitsSinceLastTag = lastTag.toTry().mapTry(lt ->
 				git.log().addRange(
