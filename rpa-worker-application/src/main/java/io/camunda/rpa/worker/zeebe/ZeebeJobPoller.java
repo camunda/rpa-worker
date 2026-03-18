@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Component
@@ -31,6 +32,8 @@ import java.util.stream.Collectors;
 class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 
 	static final Duration JOB_POLL_TIME = Duration.ofMillis(200);
+	
+	private static final Supplier<Mono<?>> DEFAULT_DELAY_GENERATOR = () -> Mono.delay(Duration.ofSeconds(10));
 
 	private static final Predicate<Throwable> isGrpcShutdownNoise = thrown ->
 			thrown instanceof StatusRuntimeException srex
@@ -41,6 +44,7 @@ class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 	private final ZeebeClient zeebeClient;
 	private final ZeebeJobService zeebeJobService;
 	private final Iterable<String> tagGenerator;
+	private final Supplier<Mono<?>> delayGenerator;
 	
 	private Disposable poller;
 	private AtomicBoolean shuttingDown = new AtomicBoolean(false);
@@ -50,7 +54,8 @@ class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 		this(zeebeProperties,
 				zeebeClient,
 				zeebeJobService,
-				defaultTagGenerator(zeebeProperties.workerTags(), zeebeProperties.rpaTaskPrefix()));
+				defaultTagGenerator(zeebeProperties.workerTags(), zeebeProperties.rpaTaskPrefix()),
+				DEFAULT_DELAY_GENERATOR);
 	}
 
 	private static Iterable<String> defaultTagGenerator(Set<String> workerTags, String taskPrefix) {
@@ -82,8 +87,10 @@ class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 
 								.doOnError(thrown -> log.atError()
 										.setCause(thrown)
+										.kv("jobType", jobType)
 										.log("Error polling Zeebe for jobs"))
-								.onErrorReturn(Collections::emptyList)
+								.onErrorResume(_ -> 
+										delayGenerator.get().thenReturn(Collections::emptyList))
 
 								.doOnSubscribe(_ -> log.atTrace()
 										.kv("jobType", jobType)
