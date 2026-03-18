@@ -1,7 +1,12 @@
 import releasenotes.ReleaseNotesPlugin
 
+import java.net.http.HttpClient
+import java.net.http.HttpRequest
+import java.net.http.HttpResponse
 import java.nio.file.Files
 import java.nio.file.LinkOption
+import java.time.Duration
+import java.time.Instant
 
 plugins {
 	id 'java'
@@ -238,4 +243,36 @@ tasks.register("zipNativeImage", Zip) {
 bootJar {
 	if(project.hasProperty("dockerJar"))
 		archiveBaseName = "${archiveBaseName.get()}-docker-${project.property("nativeArch")}"
+}
+
+
+tasks.register("testDiscoApi") {
+	doLast {
+		Instant maxTime = Instant.now().plus(Duration.ofMinutes(10))
+		Duration delay = Duration.ofSeconds(2)
+		HttpClient client = HttpClient.newBuilder()
+				.connectTimeout(Duration.ofSeconds(10))
+				.followRedirects(HttpClient.Redirect.NORMAL)
+				.build()
+		boolean responseSeen = false
+		while(Instant.now() < maxTime) {
+			HttpRequest request = HttpRequest.newBuilder()
+					.GET()
+					.uri(URI.create("https://api.foojay.io/disco/v3.0/major_versions"))
+					.timeout(Duration.ofSeconds(10))
+					.build()
+			try {
+				HttpResponse<Void> resp = client.send(request, HttpResponse.BodyHandlers.discarding())
+				assert resp.statusCode() == 200
+				responseSeen = true
+				break
+			} catch (Exception thrown) {
+				logger.quiet(thrown.toString())
+				Thread.sleep(delay)
+				delay = delay.multipliedBy(2)
+			}
+		}
+		if( ! responseSeen) throw new GradleException("Disco API not reachable")
+		else logger.quiet("OK")
+	}
 }
