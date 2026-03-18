@@ -6,6 +6,7 @@ import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
 import org.apache.commons.exec.CommandLine
+import org.apache.commons.exec.ExecuteException
 import org.springframework.core.io.buffer.DataBuffer
 import org.springframework.core.io.buffer.DataBufferUtils
 import org.springframework.core.io.buffer.DefaultDataBufferFactory
@@ -76,7 +77,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.of(pythonPath)
-		0 * systemPythonProvider.systemPython()
+		0 * systemPythonProvider.getSystemPython()
 		
 		and:
 		r.path() == pythonPath
@@ -95,7 +96,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.just("python")
+		1 * systemPythonProvider.getSystemPython() >> Mono.just("python")
 
 		and:
 		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
@@ -103,6 +104,17 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 				1 * arg("-m") >> it
 				1 * arg("venv") >> it
 				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
+				1 * inheritEnv() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+		
+		and:
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * required() >> it
 				1 * inheritEnv() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
@@ -143,7 +155,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.just(interpreter)
+		1 * systemPythonProvider.getSystemPython() >> Mono.just(interpreter)
 
 		and:
 		1 * processService.execute(interpreter, _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
@@ -151,6 +163,17 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 				1 * arg("-m") >> it
 				1 * arg("venv") >> it
 				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
+				1 * inheritEnv() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+		
+		and:
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * required() >> it
 				1 * inheritEnv() >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
@@ -192,7 +215,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		then: "Existing Python venv is checked (not there) and system Python is checked (not there)"
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.empty()
+		1 * systemPythonProvider.getSystemPython() >> Mono.empty()
 		
 		and: "The standalone Python archive is downloaded from the configured URL"
 		1 * io.createTempFile(_, ".zip") >> pythonArchive
@@ -232,7 +255,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 	void "Installs user requirements into new environments when provided"() {
 		given:
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		systemPythonProvider.systemPython() >> Mono.just("python3")
+		systemPythonProvider.getSystemPython() >> Mono.just("python3")
 		processService.execute("python3", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
 			fn.apply(Stub(ExecutionCustomizer) {
 				arg("--version") >> it
@@ -264,6 +287,16 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 
 		when:
 		block serviceWithExtraRequirements.getPythonInterpreter()
+		
+		then:
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * required() >> it
+				1 * inheritEnv() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
 
 		then:
 		1 * io.createTempFile("requirements", ".txt") >> Paths.get("/tmp/requirements.txt")
@@ -375,7 +408,7 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		and:
 		io.notExists(pythonProperties.path().resolve("venv/pyvenv.cfg")) >> true
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		systemPythonProvider.systemPython() >> Mono.empty()
+		systemPythonProvider.getSystemPython() >> Mono.empty()
 
 		and:
 		webClient.get() >> Mock(WebClient.RequestHeadersUriSpec) {
@@ -441,6 +474,74 @@ class PythonSetupServiceSpec extends Specification implements PublisherUtils {
 		block service.purgeEnvironment()
 		
 		then:
+		1 * io.deleteDirectoryRecursively(Paths.get("/path/to/python/"))
+	}
+	
+	void "Cleans up when creating new Python environment fails"() {
+		given:
+		processService.execute("python3", _) >> Mono.error(new IOException())
+		
+		when:
+		block service.getPythonInterpreter()
+
+		then:
+		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		1 * systemPythonProvider.getSystemPython() >> Mono.just("python")
+
+		and:
+		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
+				1 * inheritEnv() >> it
+				1 * required() >> it
+			})
+			return Mono.error(new ExecuteException("Failed to create venv for some reason", 1))
+		}
+		
+		and:
+		thrown(RuntimeException)
+		
+		and:
+		1 * io.deleteDirectoryRecursively(Paths.get("/path/to/python/"))
+	}
+
+	void "Errors and cleans up when new Python environment has no Pip"() {
+		given:
+		processService.execute("python3", _) >> Mono.error(new IOException())
+
+		when:
+		block service.getPythonInterpreter()
+
+		then:
+		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
+		1 * systemPythonProvider.getSystemPython() >> Mono.just("python")
+
+		and:
+		1 * processService.execute("python", _) >> { __, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * bindArg("pyEnvPath", pythonProperties.path().resolve("venv/")) >> it
+				1 * inheritEnv() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", Duration.ZERO))
+		}
+
+		1 * processService.execute(pythonProperties.path().resolve("venv/").resolve(PythonSetupService.pyExeEnv.binDir().resolve(PythonSetupService.pyExeEnv.pipExe())), _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.error(new ExecuteException("No Pip", 1))
+		}
+
+		and:
+		thrown(RuntimeException)
+
+		and:
 		1 * io.deleteDirectoryRecursively(Paths.get("/path/to/python/"))
 	}
 }

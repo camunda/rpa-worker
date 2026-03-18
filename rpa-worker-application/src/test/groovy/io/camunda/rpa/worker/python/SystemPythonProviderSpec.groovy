@@ -3,6 +3,7 @@ package io.camunda.rpa.worker.python
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
+import org.apache.commons.exec.ExecuteException
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
@@ -25,7 +26,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		processService.execute("python", _) >> Mono.error(new IOException())
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 		
 		then:
 		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -34,6 +35,15 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", null))
 		}
 		
 		and:
@@ -45,7 +55,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		processService.execute("python3", _) >> Mono.error(new IOException())
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 
 		then:
 		1 * processService.execute("python", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -54,6 +64,15 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute("python", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", null))
 		}
 
 		and:
@@ -70,7 +89,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				processService)
 
 		when:
-		Object r = block newProvider.systemPython()
+		Object r = block newProvider.getSystemPython()
 
 		then:
 		1 * processService.execute(pythonInterpreter, _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -80,6 +99,15 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				1 * arg("--version") >> it
 			})
 			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute(pythonInterpreter, _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", null))
 		}
 
 		and:
@@ -92,7 +120,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 				new ProcessService.ExecutionResult(SystemPythonProvider.WINDOWS_NO_PYTHON_EXIT_CODES.first(), "", "", Duration.ZERO))
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 
 		then: "Fake Python is ignored and returns empty"
 		! r
@@ -103,7 +131,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		processService.execute("python", _) >> Mono.error(new IOException())
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 
 		then:
 		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -123,7 +151,7 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 		processService.execute("python", _) >> Mono.error(new IOException())
 
 		when:
-		Object r = block provider.systemPython()
+		Object r = block provider.getSystemPython()
 
 		then:
 		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
@@ -136,5 +164,63 @@ class SystemPythonProviderSpec extends Specification implements PublisherUtils {
 
 		and:
 		! r
+	}
+
+	void "Returns empty when system Python is not valid - No VEnv"() {
+		given:
+		processService.execute("python", _) >> Mono.error(new IOException())
+
+		when:
+		Object r = block provider.getSystemPython()
+		
+		then:
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.error(new ExecuteException("No module named venv", 1))
+		}
+		
+		and:
+		! r
+	}
+
+	void "Returns system Python when valid (aliased Python)"() {
+		when:
+		Object r = block provider.getSystemPython()
+
+		then:
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * silent() >> it
+				1 * arg("--version") >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "Python 3.11.1", "", null))
+		}
+		1 * processService.execute("python3", _) >> { _, UnaryOperator<ExecutionCustomizer> fn ->
+			fn.apply(Mock(ExecutionCustomizer) {
+				1 * arg("-m") >> it
+				1 * arg("venv") >> it
+				1 * silent() >> it
+				1 * required() >> it
+			})
+			return Mono.just(new ProcessService.ExecutionResult(0, "", "", null))
+		}
+		
+		and:
+		0 * processService.execute("python", _)
+
+		and:
+		r == "python3"
 	}
 }
