@@ -79,7 +79,7 @@ class RobotExecutionStrategyResolverSpec extends Specification {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.just("python")
+		1 * systemPythonProvider.getSystemPython() >> Mono.just("python")
 		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(true)
 
 		and:
@@ -97,7 +97,7 @@ class RobotExecutionStrategyResolverSpec extends Specification {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.empty()
+		1 * systemPythonProvider.getSystemPython() >> Mono.empty()
 		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(true)
 
 		and:
@@ -115,7 +115,7 @@ class RobotExecutionStrategyResolverSpec extends Specification {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.empty()
+		1 * systemPythonProvider.getSystemPython() >> Mono.empty()
 		0 * internetConnectivityProvider.hasConnectivity() 
 
 		and:
@@ -133,7 +133,7 @@ class RobotExecutionStrategyResolverSpec extends Specification {
 
 		then:
 		1 * existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
-		1 * systemPythonProvider.systemPython() >> Mono.just("python")
+		1 * systemPythonProvider.getSystemPython() >> Mono.just("python")
 		1 * internetConnectivityProvider.hasConnectivity() >> Mono.just(false)
 
 		and:
