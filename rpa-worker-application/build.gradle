@@ -72,6 +72,7 @@ dependencies {
 	implementation libs.javaSemver
 	implementation libs.slf4j.api
 	implementation libs.caffeine
+	implementation libs.htmlUnit
 	
 	// TODO: Forced update to transitive dependency - remove when no longer required
 	implementation libs.commons.lang

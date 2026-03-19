@@ -44,6 +44,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 	ZeebeMetricsService metricsService = Mock()
 	WorkspaceService workspaceService = Stub()
 	FilesService filesService = Stub()
+	TaskTestingReportRenderer reportRenderer = Stub()
 
 	@Subject
 	ZeebeJobService service = new ZeebeJobService(
@@ -54,7 +55,8 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 			workspaceCleanupService, 
 			metricsService,
 			workspaceService,
-			filesService)
+			filesService, 
+			reportRenderer)
 
 	void "Runs received task and reports success"() {
 		given:

@@ -502,7 +502,7 @@ Assert input variable
 				anInputVariable: 'input-variable-value',
 				(TaskTestingZeebeResultsProcessor.TASK_TESTING_VARIABLE_NAME): true
 		])).subscribe()
-		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
+		handlerDidFinish.awaitRequired(5, TimeUnit.SECONDS)
 
 		then:
 		1 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {

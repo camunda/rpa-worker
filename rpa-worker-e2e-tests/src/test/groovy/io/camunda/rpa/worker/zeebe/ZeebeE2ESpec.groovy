@@ -509,6 +509,9 @@ Tasks
 
 		then:
 		contents.contains("from-the-log-file")
+		
+		and: "The report has been re-rendered for Task Testing"
+		! contents.contains("<script")
 	}
 }
 	

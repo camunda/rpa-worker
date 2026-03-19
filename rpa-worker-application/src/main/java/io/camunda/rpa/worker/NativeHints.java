@@ -17,6 +17,7 @@ import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.ssl.SslHandshakeCompletionEvent;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.SupportedCipherSuiteFilter;
+import org.htmlunit.javascript.host.html.HTMLInputElement;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -131,7 +132,9 @@ class NativeHints implements RuntimeHintsRegistrar {
 						TypeReference.of(io.camunda.zeebe.client.protocol.rest.JobErrorRequest.class),
 						TypeReference.of(io.camunda.client.protocol.rest.TopologyResponse.class),
 						TypeReference.of(io.camunda.zeebe.client.protocol.rest.TopologyResponse.class),
-						TypeReference.of(io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyResponse.class))
+						TypeReference.of(io.camunda.zeebe.gateway.protocol.GatewayOuterClass.TopologyResponse.class),
+
+						TypeReference.of(HTMLInputElement.class))
 
 				.forEach(klass -> hints.reflection().registerType(klass, MemberCategory.values()));
 	}
