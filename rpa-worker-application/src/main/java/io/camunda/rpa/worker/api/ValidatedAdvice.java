@@ -16,7 +16,7 @@ class ValidatedAdvice {
 	
 	@ExceptionHandler
 	public Mono<ResponseEntity<?>> handleValidationFailure(WebExchangeBindException thrown) {
-		return Mono.just(ResponseEntity.unprocessableEntity()
+		return Mono.just(ResponseEntity.unprocessableContent()
 				.body(Map.of("fieldErrors", thrown.getFieldErrors().stream()
 						.collect(Collectors.toMap(FieldError::getField, err -> new HashMap<>() {{
 							put("code", err.getCode());

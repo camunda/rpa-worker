@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.files.api;
 
+import io.camunda.client.api.response.ActivatedJob;
 import io.camunda.rpa.worker.api.StubbedResponseGenerator;
 import io.camunda.rpa.worker.files.FilesService;
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor;
@@ -7,7 +8,6 @@ import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.camunda.rpa.worker.zeebe.ZeebeJobInfo;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

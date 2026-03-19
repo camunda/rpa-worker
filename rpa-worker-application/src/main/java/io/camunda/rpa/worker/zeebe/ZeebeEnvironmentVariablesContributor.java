@@ -1,9 +1,9 @@
 package io.camunda.rpa.worker.zeebe;
 
+import io.camunda.client.api.response.ActivatedJob;
 import io.camunda.rpa.worker.robot.EnvironmentVariablesContributor;
 import io.camunda.rpa.worker.robot.PreparedScript;
 import io.camunda.rpa.worker.workspace.Workspace;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 

@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.zeebe
 
+import io.camunda.client.api.response.ActivatedJob
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.files.FilesService
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
@@ -7,7 +8,6 @@ import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceFile
 import io.camunda.rpa.worker.workspace.WorkspaceService
-import io.camunda.zeebe.client.api.response.ActivatedJob
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject

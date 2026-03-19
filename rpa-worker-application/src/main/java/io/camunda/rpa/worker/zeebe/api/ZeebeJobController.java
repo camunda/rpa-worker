@@ -1,9 +1,9 @@
 package io.camunda.rpa.worker.zeebe.api;
 
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.command.ThrowErrorCommandStep1;
 import io.camunda.rpa.worker.api.StubbedResponseGenerator;
 import io.camunda.rpa.worker.zeebe.ZeebeJobService;
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 class ZeebeJobController {
 	
-	private final ObjectProvider<ZeebeClient> zeebeClient;
+	private final ObjectProvider<CamundaClient> zeebeClient;
 	private final ObjectProvider<ZeebeJobService> zeebeJobService;
 	private final StubbedResponseGenerator stubbedResponseGenerator;
 	

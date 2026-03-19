@@ -1,13 +1,13 @@
 package io.camunda.rpa.worker.zeebe
 
 import groovy.json.JsonOutput
+import io.camunda.client.CamundaClient
+import io.camunda.client.api.command.SetVariablesCommandStep1
+import io.camunda.client.api.command.UpdateJobCommandStep1
+import io.camunda.client.api.response.ActivatedJob
+import io.camunda.client.impl.CamundaClientFutureImpl
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
-import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.command.SetVariablesCommandStep1
-import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
-import io.camunda.zeebe.client.api.response.ActivatedJob
-import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
 import org.spockframework.spring.SpringBean
 import org.spockframework.spring.SpringSpy
@@ -19,14 +19,14 @@ import org.springframework.test.annotation.DirtiesContext
 abstract class AbstractZeebeFunctionalSpec extends AbstractFunctionalSpec {
 
 	@SpringBean
-	ZeebeClient zeebeClient = Mock(ZeebeClient) {
+	CamundaClient camundaClient = Mock(CamundaClient) {
 		newUpdateJobCommand(_) >> Stub(UpdateJobCommandStep1) {
 			updateTimeout(_) >> Stub(UpdateJobCommandStep1.UpdateJobCommandStep2)
 		}
 		
 		newSetVariablesCommand(_) >> Stub(SetVariablesCommandStep1) {
 			variables(_) >> Stub(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 	}

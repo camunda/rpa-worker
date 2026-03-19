@@ -1,13 +1,13 @@
 package io.camunda.rpa.worker.zeebe
 
+import io.camunda.client.CamundaClient
+import io.camunda.client.api.command.TopologyRequestStep1
+import io.camunda.client.api.response.Topology
+import io.camunda.client.impl.CamundaClientFutureImpl
 import io.camunda.client.spring.properties.CamundaClientAuthProperties
 import io.camunda.client.spring.properties.CamundaClientCloudProperties
 import io.camunda.client.spring.properties.CamundaClientProperties
 import io.camunda.rpa.worker.PublisherUtils
-import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.command.TopologyRequestStep1
-import io.camunda.zeebe.client.api.response.Topology
-import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl
 import org.springframework.beans.factory.ObjectProvider
 import spock.lang.Specification
 import spock.lang.Subject
@@ -17,8 +17,8 @@ import java.time.Duration
 
 class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 	
-	ZeebeClient zeebeClient = Mock()
-	ObjectProvider<ZeebeClient> zeebeClientProvider = Stub() {
+	CamundaClient zeebeClient = Mock()
+	ObjectProvider<CamundaClient> zeebeClientProvider = Stub() {
 		getObject() >> zeebeClient
 	}
 
@@ -52,7 +52,7 @@ class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 		
 		and:
 		zeebeClient.newTopologyRequest() >> Stub(TopologyRequestStep1) {
-			send() >> new ZeebeClientFutureImpl().tap {
+			send() >> new CamundaClientFutureImpl().tap {
 				complete(Stub(Topology))
 			}
 		}
@@ -68,7 +68,7 @@ class ZeebeStartupCheckSpec extends Specification implements PublisherUtils {
 
 		and:
 		zeebeClient.newTopologyRequest() >> Stub(TopologyRequestStep1) {
-			send() >> new ZeebeClientFutureImpl().tap {
+			send() >> new CamundaClientFutureImpl().tap {
 				completeExceptionally(new ConnectException("Bang!"))
 			}
 		}
