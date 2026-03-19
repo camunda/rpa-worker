@@ -1,7 +1,9 @@
 package io.camunda.rpa.worker
 
+import groovy.util.logging.Slf4j
 import org.springframework.mock.env.MockPropertySource
 
+@Slf4j
 class ZeebeConfiguration {
 
 	private static final ZeebeConfiguration instance = new ZeebeConfiguration()
@@ -15,8 +17,8 @@ class ZeebeConfiguration {
 	ZeebeConfiguration() {
 		
 		Map<String, String> overrides = [:]
-		
-		if (System.getenv("CAMUNDA_VERSION") in ["v88", "v89"])
+
+		if (System.getenv("CAMUNDA_VERSION"))
 			new Properties().tap { p ->
 				p.load(getClass().getClassLoader().getResourceAsStream("application-${System.getenv("CAMUNDA_VERSION")}e2e.properties"))
 				overrides.putAll(p)
@@ -27,21 +29,11 @@ class ZeebeConfiguration {
 				p.load(getClass().getClassLoader().getResourceAsStream("application-${System.properties['camunda.rpa.e2e.worker.override']}.properties"))
 				overrides.putAll(p)
 			}
-
-		String camundaHost = overrides['camunda.rpa.e2e.camunda-host']
-				?: System.getenv("CAMUNDA_RPA_E2E_CAMUNDAHOST")
-				?: "camunda.local"
-
-		String clientId = overrides['camunda.rpa.e2e.client-id']
-				?: System.getenv("CAMUNDA_RPA_E2E_CLIENTID")
-				?: System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTID")
-				?: "zeebe"
-		
-		String clientSecret = overrides['camunda.rpa.e2e.client-secret']
-				?: System.getenv("CAMUNDA_RPA_E2E_CLIENTSECRET")
-				?: System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET")
-				?: "unset"
-
+//
+//		String clientId = System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTID") ?: "zeebe"
+//		
+//		String clientSecret = System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET") ?: "unset"
+//
 		String operateClient = overrides['camunda.rpa.e2e.operate-client']
 				?: System.getenv("CAMUNDA_RPA_E2E_OPERATECLIENT")
 				?: "e2e"
@@ -51,36 +43,28 @@ class ZeebeConfiguration {
 				?: "e2e-client-secret"
 
 		configProperties['json.logging.enabled'] = 'false'
-		if(overrides['camunda.rpa.zeebe.auth-method'] != "cookie") {
-			configProperties["camunda.client.mode"] = "selfmanaged"
-			configProperties["camunda.client.auth.client-id"] = clientId
-			configProperties["camunda.client.auth.client-secret"] = clientSecret
-		}
-		configProperties["camunda.client.auth.operate-secret"] = operateSecret
-		configProperties["camunda.client.zeebe.rest-address"] = "http://localhost:8080/zeebe/"
-		configProperties["camunda.client.rest-address"] = "http://localhost:8080/zeebe/"
-		configProperties["camunda.client.zeebe.grpc-address"] = "http://zeebe.${camundaHost}"
-		configProperties["camunda.client.identity.base-url"] = "http://${camundaHost}/auth/"
-		configProperties["camunda.client.auth.issuer"] = "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect/token"
-		configProperties["camunda.rpa.zeebe.auth-endpoint"] = "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect"
-		configProperties["camunda.client.zeebe.base-url"] = 'http://localhost:8080/zeebe/'
-		configProperties["camunda.client.zeebe.audience"] = "zeebe.${camundaHost}"
-		configProperties["camunda.rpa.e2e.camunda-host"] = camundaHost
-		configProperties["camunda.rpa.e2e.operate-client"] = operateClient
-		configProperties["camunda.rpa.e2e.operate-client-secret"] = operateSecret
+
+//		if(overrides['camunda.rpa.zeebe.auth-method'] != "cookie") {
+////			configProperties["camunda.client.mode"] = "selfmanaged"
+//			configProperties["camunda.client.auth.client-id"] = clientId
+//			configProperties["camunda.client.auth.client-secret"] = clientSecret
+//		}
+		
+		System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET").with {
+			if(it) configProperties["camunda.client.auth.client-secret"] = it
+		} // TODO: Move to props (only for 8.7)
+		
 		configProperties["logging.level.io.camunda.zeebe.client.impl.ZeebeCallCredentials"] = "OFF"
+		configProperties["logging.level.io.camunda.client.impl.CamundaCallCredentials"] = "OFF"
+		
 		configProperties['camunda.rpa.python-runtime.type'] = "python"
 		
-		configProperties["camunda.client.rest-address"] = overrides['camunda.client.zeebe.base-url'] ?: "http://localhost:8080/zeebe/"
-		configProperties["camunda.client.grpc-address"] = "http://zeebe.${camundaHost}"
-		
-		configProperties["camunda.client.auth.token-url"] = configProperties["camunda.client.auth.issuer"]
-		configProperties["camunda.client.auth.issuer-url"] = configProperties["camunda.client.auth.issuer"]
-		configProperties["camunda.client.auth.method"] = "oidc"
-		configProperties["camunda.client.auth.audience"] = "zeebe.camunda.local"
-		configProperties["camunda.client.enabled"] = "true"
+		configProperties["camunda.rpa.e2e.operate-client"] = operateClient
+		configProperties["camunda.rpa.e2e.operate-client-secret"] = operateSecret
 		
 		configProperties.putAll(overrides)
+		
+		int four = 2 + 2
 	}
 
 	Map<String, String> getEnvironment() {
@@ -94,6 +78,8 @@ class ZeebeConfiguration {
 	
 	MockPropertySource installProperties(MockPropertySource propertySource) {
 		configProperties.each { k, v ->
+			println "${k} = ${v}"
+			if( ! k || ! v) return
 			propertySource.withProperty(k, v)
 		}
 		return propertySource

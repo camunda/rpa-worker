@@ -24,7 +24,6 @@ class ZeebeJobPollerSpec extends Specification {
 	ZeebeProperties zeebeProperties = ZeebeProperties.builder()
 			.rpaTaskPrefix(TASK_PREFIX)
 			.workerTags(["tag-one", "tag-two"].toSet())
-			.authEndpoint("http://auth/".toURI())
 			.maxConcurrentJobs(1)
 			.build()
 

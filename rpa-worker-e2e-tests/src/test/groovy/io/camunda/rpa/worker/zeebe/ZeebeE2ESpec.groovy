@@ -2,10 +2,10 @@ package io.camunda.rpa.worker.zeebe
 
 
 import groovy.util.logging.Slf4j
+import io.camunda.client.api.response.ProcessInstanceEvent
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.operate.OperateClient
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 

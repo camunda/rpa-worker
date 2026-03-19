@@ -1,7 +1,6 @@
 
 tasks.withType(JavaCompile).configureEach {
 	options.compilerArgs << "-Werror"
-	
 }
 
 tasks.withType(GroovyCompile).configureEach {
