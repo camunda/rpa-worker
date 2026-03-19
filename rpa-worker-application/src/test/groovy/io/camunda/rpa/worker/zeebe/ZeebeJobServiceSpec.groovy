@@ -1,6 +1,13 @@
 package io.camunda.rpa.worker.zeebe
 
 import groovy.json.JsonOutput
+import io.camunda.client.CamundaClient
+import io.camunda.client.api.command.CompleteJobCommandStep1
+import io.camunda.client.api.command.FailJobCommandStep1
+import io.camunda.client.api.command.SetVariablesCommandStep1
+import io.camunda.client.api.command.UpdateJobCommandStep1
+import io.camunda.client.api.response.ActivatedJob
+import io.camunda.client.impl.CamundaClientFutureImpl
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.files.FilesService
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException
@@ -13,13 +20,6 @@ import io.camunda.rpa.worker.script.ScriptRepository
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
 import io.camunda.rpa.worker.workspace.WorkspaceService
-import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
-import io.camunda.zeebe.client.api.command.FailJobCommandStep1
-import io.camunda.zeebe.client.api.command.SetVariablesCommandStep1
-import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
-import io.camunda.zeebe.client.api.response.ActivatedJob
-import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl
 import io.camunda.zeebe.model.bpmn.instance.zeebe.ZeebeBindingType
 import reactor.core.publisher.Mono
 import spock.lang.Specification
@@ -31,7 +31,7 @@ import java.time.Duration
 
 class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 
-	ZeebeClient zeebeClient = Mock()
+	CamundaClient zeebeClient = Mock()
 
 	RobotService robotService = Mock()
 	RobotScript script = RobotScript.builder().id("this_script").body(null).build()
@@ -103,7 +103,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		and:
 		1 * zeebeClient.newSetVariablesCommand(job.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
 			1 * variables(expectedOutputVars) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 	}
@@ -137,7 +137,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		and:
 		1 * zeebeClient.newSetVariablesCommand(job.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
 			1 * variables(expectedOutputVars) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 
@@ -305,7 +305,7 @@ class ZeebeJobServiceSpec extends Specification implements PublisherUtils {
 		then:
 		1 * zeebeClient.newSetVariablesCommand(job.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
 			1 * variables(expectedOutputVars) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 

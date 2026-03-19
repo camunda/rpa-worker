@@ -1,9 +1,9 @@
 package io.camunda.rpa.worker.zeebe;
 
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.response.ActivateJobsResponse;
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.rpa.worker.util.LoopingListIterator;
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.response.ActivateJobsResponse;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import jakarta.annotation.PreDestroy;
@@ -41,16 +41,16 @@ class ZeebeJobPoller implements ApplicationListener<ZeebeReadyEvent> {
 					&& srex.getStatus().getDescription().contains("shutdown");
 
 	private final ZeebeProperties zeebeProperties;
-	private final ZeebeClient zeebeClient;
+	private final CamundaClient zeebeClient;
 	private final ZeebeJobService zeebeJobService;
 	private final Iterable<String> tagGenerator;
 	private final Supplier<Mono<?>> delayGenerator;
 	
 	private Disposable poller;
-	private AtomicBoolean shuttingDown = new AtomicBoolean(false);
+	private final AtomicBoolean shuttingDown = new AtomicBoolean(false);
 
 	@Autowired
-	public ZeebeJobPoller(ZeebeProperties zeebeProperties, ZeebeClient zeebeClient, ZeebeJobService zeebeJobService) {
+	public ZeebeJobPoller(ZeebeProperties zeebeProperties, CamundaClient zeebeClient, ZeebeJobService zeebeJobService) {
 		this(zeebeProperties,
 				zeebeClient,
 				zeebeJobService,

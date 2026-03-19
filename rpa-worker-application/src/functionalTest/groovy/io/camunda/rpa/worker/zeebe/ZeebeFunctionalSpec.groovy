@@ -1,17 +1,17 @@
 package io.camunda.rpa.worker.zeebe
 
 import groovy.json.JsonOutput
+import io.camunda.client.api.command.CompleteJobCommandStep1
+import io.camunda.client.api.command.FailJobCommandStep1
+import io.camunda.client.api.command.SetVariablesCommandStep1
+import io.camunda.client.api.command.UpdateJobCommandStep1
+import io.camunda.client.api.response.ActivatedJob
+import io.camunda.client.impl.CamundaClientFutureImpl
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.files.api.StoreFilesRequest
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.util.IterableMultiPart
 import io.camunda.rpa.worker.workspace.Workspace
-import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
-import io.camunda.zeebe.client.api.command.FailJobCommandStep1
-import io.camunda.zeebe.client.api.command.SetVariablesCommandStep1
-import io.camunda.zeebe.client.api.command.UpdateJobCommandStep1
-import io.camunda.zeebe.client.api.response.ActivatedJob
-import io.camunda.zeebe.client.impl.ZeebeClientFutureImpl
 import okhttp3.MediaType
 import okhttp3.MultipartReader
 import okhttp3.ResponseBody
@@ -132,14 +132,14 @@ Check
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 		
 		then:
-		1 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+		1 * camundaClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
 			1 * updateTimeout(environment.getRequiredProperty("camunda.rpa.robot.default-timeout", Duration)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
 				1 * send()
 			}
 		}
 		
 		and:
-		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		1 * camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			1 * send() >> {
 				handlerDidFinish.countDown()
 				return null
@@ -147,9 +147,9 @@ Check
 		}
 
 		and:
-		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+		1 * camundaClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
 			1 * variables([anOutputVariable: 'output-variable-value']) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 	}
@@ -163,14 +163,14 @@ Check
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+		1 * camundaClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
 			1 * variables(emptyVariables()) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 
 		and:
-		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+		1 * camundaClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("There were task failures") }) >> it
 				1 * send() >> {
@@ -190,14 +190,14 @@ Check
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+		1 * camundaClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
 			1 * variables(emptyVariables()) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 		
 		and:
-		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+		1 * camundaClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("There were task errors") }) >> it
 				1 * send() >> {
@@ -214,7 +214,7 @@ Check
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+		1 * camundaClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("Script not found") }) >> it
 				_ * variables(_) >> it
@@ -242,14 +242,14 @@ Check
 		handlerDidFinish.awaitRequired(10, TimeUnit.SECONDS)
 
 		then:
-		5 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+		5 * camundaClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
 			5 * updateTimeout(environment.getRequiredProperty("camunda.rpa.robot.default-timeout", Duration)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
 				5 * send()
 			}
 		}
 		
 		and:
-		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		1 * camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			1 * send() >> {
 				handlerDidFinish.countDown()
 				return null
@@ -257,7 +257,7 @@ Check
 		}
 		
 		and:
-		1 * zeebeClient.newSetVariablesCommand(jobWithPreAndPostScripts.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
+		1 * camundaClient.newSetVariablesCommand(jobWithPreAndPostScripts.processInstanceKey) >> Mock(SetVariablesCommandStep1) {
 			1 * variables([
 					anOutputVariableFrom_pre0: "output-value-from-companion",
 					anOutputVariableSameName: "output-value-from-companion-post1",
@@ -266,7 +266,7 @@ Check
 					anOutputVariableFrom_post0: "output-value-from-companion",
 					anOutputVariableFrom_post1: "output-value-from-companion",
 			]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 	}
@@ -281,7 +281,7 @@ Check
 		handlerDidFinish.awaitRequired(14, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+		1 * camundaClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("The execution timed out") }) >> it
 				1 * send() >> {
@@ -302,14 +302,14 @@ Check
 		handlerDidFinish.awaitRequired(7, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+		1 * camundaClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
 			1 * updateTimeout(Duration.ofSeconds(3)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
 				1 * send()
 			}
 		}
 		
 		and:
-		1 * zeebeClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
+		1 * camundaClient.newFailCommand(_) >> Mock(FailJobCommandStep1) {
 			1 * retries(2) >> Mock(FailJobCommandStep1.FailJobCommandStep2) {
 				1 * errorMessage({ it.contains("The execution timed out") }) >> it
 				1 * send() >> {
@@ -336,7 +336,7 @@ Check
 		}
 		
 		and:
-		zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Stub(CompleteJobCommandStep1) {
+		camundaClient.newCompleteCommand(_ as ActivatedJob) >> Stub(CompleteJobCommandStep1) {
 			send() >> {
 				handlersDidFinish.countDown()
 				return null
@@ -373,7 +373,7 @@ Assert input variable
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		1 * camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			1 * send() >> {
 				handlerDidFinish.countDown()
 				return null
@@ -412,7 +412,7 @@ Assert input variable
 		}
 		
 		and:
-		zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			send() >> {
 				handlersDidFinish.countDown()
 				return null
@@ -455,14 +455,14 @@ Assert input variable
 		handlerDidFinish.awaitRequired(2, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+		1 * camundaClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
 			1 * updateTimeout(environment.getRequiredProperty("camunda.rpa.robot.default-timeout", Duration)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
 				1 * send()
 			}
 		}
 
 		and:
-		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		1 * camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			1 * send() >> {
 				handlerDidFinish.countDown()
 				return null
@@ -470,9 +470,9 @@ Assert input variable
 		}
 
 		and:
-		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+		1 * camundaClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
 			1 * variables(emptyVariables()) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 	}
@@ -505,14 +505,14 @@ Assert input variable
 		handlerDidFinish.awaitRequired(5, TimeUnit.SECONDS)
 
 		then:
-		1 * zeebeClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
+		1 * camundaClient.newUpdateJobCommand(_ as ActivatedJob) >> Mock(UpdateJobCommandStep1) {
 			1 * updateTimeout(environment.getRequiredProperty("camunda.rpa.robot.default-timeout", Duration)) >> Mock(UpdateJobCommandStep1.UpdateJobCommandStep2) {
 				1 * send()
 			}
 		}
 
 		and:
-		1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+		1 * camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 			1 * send() >> {
 				handlerDidFinish.countDown()
 				return null
@@ -520,7 +520,7 @@ Assert input variable
 		}
 
 		and:
-		1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+		1 * camundaClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
 			1 * variables([
 					anOutputVariable: 'output-variable-value',
 					(TaskTestingZeebeResultsProcessor.TASK_TESTING_LOG_OUTPUT_VARIABLE_NAME): new ZeebeDocumentDescriptor(
@@ -529,7 +529,7 @@ Assert input variable
 							new ZeebeDocumentDescriptor.Metadata(null, "filename", null, null, null, null, null),
 							"content-hash")
 			]) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-				1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+				1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 			}
 		}
 		
@@ -585,7 +585,7 @@ Assert input variable
 			}
 			
 			and:
-			1 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			1 * camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 				1 * send() >> {
 					handlerDidFinish.countDown()
 					return null
@@ -593,9 +593,9 @@ Assert input variable
 			}
 
 			and:
-			1 * zeebeClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
+			1 * camundaClient.newSetVariablesCommand(_) >> Mock(SetVariablesCommandStep1) {
 				1 * variables([anOutputVariable: 'output-variable-value']) >> Mock(SetVariablesCommandStep1.SetVariablesCommandStep2) {
-					1 * send() >> new ZeebeClientFutureImpl<>().tap { complete(null) }
+					1 * send() >> new CamundaClientFutureImpl<>().tap { complete(null) }
 				}
 			}
 		}

@@ -11,6 +11,7 @@ plugins {
 	alias(libs.plugins.spring.dependencyManagement)
 	alias(libs.plugins.graal.buildTools)
 	id 'rpa-worker.functional-testing'
+	id 'rpa-worker.compiler-configuration'
 }
 
 apply plugin: ReleaseNotesPlugin

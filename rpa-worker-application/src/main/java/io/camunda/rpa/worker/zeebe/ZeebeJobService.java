@@ -1,5 +1,8 @@
 package io.camunda.rpa.worker.zeebe;
 
+import io.camunda.client.CamundaClient;
+import io.camunda.client.api.command.FailJobCommandStep1;
+import io.camunda.client.api.response.ActivatedJob;
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.rpa.worker.files.FilesService;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
@@ -11,9 +14,6 @@ import io.camunda.rpa.worker.script.ScriptRepository;
 import io.camunda.rpa.worker.workspace.Workspace;
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
-import io.camunda.zeebe.client.ZeebeClient;
-import io.camunda.zeebe.client.api.command.FailJobCommandStep1;
-import io.camunda.zeebe.client.api.response.ActivatedJob;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +47,7 @@ public class ZeebeJobService {
 	static final String BEFORE_SCRIPT_LINK_NAME = "Before";
 	static final String AFTER_SCRIPT_LINK_NAME = "After";
 
-	private final ZeebeClient zeebeClient;
+	private final CamundaClient zeebeClient;
 	private final RobotService robotService;
 	private final ScriptRepository scriptRepository;
 	private final ObjectMapper objectMapper;
