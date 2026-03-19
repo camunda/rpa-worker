@@ -6,13 +6,13 @@ import groovy.transform.stc.ClosureParams
 import groovy.transform.stc.FromString
 import groovy.transform.stc.SimpleType
 import groovy.util.logging.Slf4j
+import io.camunda.client.CamundaClient
+import io.camunda.client.api.response.DeploymentEvent
+import io.camunda.client.api.response.ProcessInstanceEvent
 import io.camunda.rpa.worker.files.DocumentClient
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.rpa.worker.operate.OperateClient.GetProcessInstanceResponse
 import io.camunda.rpa.worker.operate.OperateClient.GetVariablesResponse.Item
-import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.response.DeploymentEvent
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
 import org.intellij.lang.annotations.Language
 import org.spockframework.lang.ConditionBlock
 import org.spockframework.runtime.ConditionNotSatisfiedError
@@ -68,7 +68,7 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	E2EProperties e2eProperties
 
 	@Autowired
-	ZeebeClient zeebeClient
+	CamundaClient zeebeClient
 
 	@Autowired
 	RpaWorkerClient rpaWorkerClient

@@ -1,8 +1,8 @@
 package io.camunda.rpa.worker.files
 
+import io.camunda.client.api.response.ProcessInstanceEvent
 import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.operate.OperateClient
-import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
 import org.springframework.http.HttpEntity
 import org.springframework.http.MediaType
 import org.springframework.http.client.MultipartBodyBuilder

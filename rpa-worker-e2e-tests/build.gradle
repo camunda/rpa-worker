@@ -14,6 +14,7 @@ plugins {
 	alias(libs.plugins.spring.boot)
 	alias(libs.plugins.spring.dependencyManagement)
 	alias(libs.plugins.testLogger)
+	id 'rpa-worker.compiler-configuration'
 }
 
 java {
