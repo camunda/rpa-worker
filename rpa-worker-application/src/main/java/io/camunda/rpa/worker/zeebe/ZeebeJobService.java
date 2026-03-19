@@ -55,6 +55,7 @@ public class ZeebeJobService {
 	private final ZeebeMetricsService zeebeMetricsService;
 	private final WorkspaceService workspaceService;
 	private final FilesService filesService;
+	private final TaskTestingReportRenderer reportRenderer;
 	
 	private final Set<Long> detachedJobs = new ConcurrentSkipListSet<>();
 
@@ -91,7 +92,7 @@ public class ZeebeJobService {
 												.map(Duration::parse)
 												.orElse(null),
 										Collections.singletonList(executionListenerFor(job)),
-										Collections.singletonList(new TaskTestingZeebeResultsProcessor(workspaceService, filesService, inputVariables, job)),
+										Collections.singletonList(new TaskTestingZeebeResultsProcessor(workspaceService, filesService, inputVariables, job, reportRenderer)),
 										Map.of(ZEEBE_JOB_WORKSPACE_PROPERTY, job), 
 										null)
 

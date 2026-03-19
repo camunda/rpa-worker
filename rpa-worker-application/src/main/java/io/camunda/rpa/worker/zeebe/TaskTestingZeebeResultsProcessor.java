@@ -7,6 +7,7 @@ import io.camunda.rpa.worker.util.MoreCollectors;
 import io.camunda.rpa.worker.workspace.WorkspaceService;
 import io.camunda.zeebe.client.api.response.ActivatedJob;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
+@Slf4j
 class TaskTestingZeebeResultsProcessor implements ExecutionResultsProcessor {
 	
 	static final String TASK_TESTING_VARIABLE_NAME = "camunda::isTesting";
@@ -23,6 +25,7 @@ class TaskTestingZeebeResultsProcessor implements ExecutionResultsProcessor {
 	private final FilesService filesService;
 	private final Map<String, Object> inputVariables;
 	private final ActivatedJob job;
+	private final TaskTestingReportRenderer taskTestingReportRenderer;
 	
 	@Override
 	public Mono<ExecutionResults> withExecutionResults(ExecutionResults results) {
@@ -30,6 +33,7 @@ class TaskTestingZeebeResultsProcessor implements ExecutionResultsProcessor {
 			return Mono.just(results);
 
 		return Mono.justOrEmpty(workspaceService.getWorkspaceFile(results.workspace(), "output/main/log.html"))
+				.flatMap(taskTestingReportRenderer::renderReportForTaskTesting)
 				.flatMap(log ->
 						filesService.uploadDocument(log,
 								FilesService.toMetadata(log,
@@ -39,7 +43,7 @@ class TaskTestingZeebeResultsProcessor implements ExecutionResultsProcessor {
 						.outputVariables(withVariable(results.outputVariables(), TASK_TESTING_LOG_OUTPUT_VARIABLE_NAME, zdd))
 						.build());
 	}
-	
+
 	private static <K, V> Map<K, V> withVariable(Map<K, V> map, K key, V value) {
 		return Stream.concat(
 						map.entrySet().stream(),

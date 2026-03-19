@@ -30,10 +30,12 @@ class TaskTestingZeebeResultsProcessorSpec extends Specification implements Publ
 			[originalOutputVariable: true],
 			workspace,
 			Duration.ofSeconds(1))
+
+	TaskTestingReportRenderer reportRenderer = Stub()
 	
 	void "Does nothing when not Task Testing"() {
 		given:
-		@Subject TaskTestingZeebeResultsProcessor processor = new TaskTestingZeebeResultsProcessor(workspaceService, filesService, [:], job)
+		@Subject TaskTestingZeebeResultsProcessor processor = new TaskTestingZeebeResultsProcessor(workspaceService, filesService, [:], job, reportRenderer)
 
 		when:
 		ExecutionResults results = block processor.withExecutionResults(originalResults)
@@ -45,15 +47,17 @@ class TaskTestingZeebeResultsProcessorSpec extends Specification implements Publ
 	void "Uploads log file automatically and sets output variable when Task Testing"() {
 		given:
 		ZeebeJobInfo jobInfo = new ZeebeJobInfo("process-id", 123L)
-		WorkspaceFile wf = new WorkspaceFile(workspace, "text/html", 123, Stub(Path))
-		ZeebeDocumentDescriptor zdd = new ZeebeDocumentDescriptor("store-id", "document-id", FilesService.toMetadata(wf, jobInfo), "content-hash")
-		
-		workspaceService.getWorkspaceFile(workspace, "output/main/log.html") >> Optional.of(wf)
-
-		filesService.uploadDocument(wf, FilesService.toMetadata(wf, jobInfo)) >> Mono.just(zdd)
+		WorkspaceFile originalHtmlReport = new WorkspaceFile(workspace, "text/html", 123, Stub(Path))
+		workspaceService.getWorkspaceFile(workspace, "output/main/log.html") >> Optional.of(originalHtmlReport)
 		
 		and:
-		@Subject TaskTestingZeebeResultsProcessor processor = new TaskTestingZeebeResultsProcessor(workspaceService, filesService, [(TaskTestingZeebeResultsProcessor.TASK_TESTING_VARIABLE_NAME): true], job)
+		WorkspaceFile renderedTaskTestingReport = new WorkspaceFile(workspace, "text/html", 234, Stub(Path))
+		ZeebeDocumentDescriptor zdd = new ZeebeDocumentDescriptor("store-id", "document-id", FilesService.toMetadata(renderedTaskTestingReport, jobInfo), "content-hash")
+		reportRenderer.renderReportForTaskTesting(originalHtmlReport) >> Mono.just(renderedTaskTestingReport)
+		filesService.uploadDocument(renderedTaskTestingReport, FilesService.toMetadata(renderedTaskTestingReport, jobInfo)) >> Mono.just(zdd)
+		
+		and:
+		@Subject TaskTestingZeebeResultsProcessor processor = new TaskTestingZeebeResultsProcessor(workspaceService, filesService, [(TaskTestingZeebeResultsProcessor.TASK_TESTING_VARIABLE_NAME): true], job, reportRenderer)
 
 		when:
 		ExecutionResults results = block processor.withExecutionResults(originalResults)

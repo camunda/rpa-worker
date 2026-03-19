@@ -11,6 +11,7 @@ slf4j = "2.1.0-alpha1"
 caffeine = "3.2.3"
 jbAnnotations = "26.0.2-1"
 rpaRuntime = "0.2.3"
+htmlUnit = "4.21.0"
 
 spock = "2.4-groovy-5.0"
 byteBuddy = "1.18.4"
@@ -51,6 +52,7 @@ jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "j
 netty-resolver-nativeMacOs = { module = "io.netty:netty-resolver-dns-native-macos" }
 rpa-workerPythonRequirements = { module = "io.camunda.rpa:rpa-worker-python-requirements", version.ref = "rpaRuntime" }
 rpa-staticRuntime = { module = "io.camunda.rpa:rpa-worker-static-runtime", version.ref = "rpaRuntime" }
+htmlUnit = { module = "org.htmlunit:htmlunit", version.ref = "htmlUnit" }
 
 reactor-test = { module = "io.projectreactor:reactor-test" }
 spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
