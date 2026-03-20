@@ -97,6 +97,7 @@ dependencies {
 	testImplementation libs.groovy.json
 	testImplementation libs.groovy.nio
 	testImplementation libs.jetbrains.annotations
+	testImplementation libs.jsoup
 
 	testRuntimeOnly libs.junit.platformLauncher
 	testRuntimeOnly libs.byteBuddy
@@ -264,7 +265,7 @@ tasks.register("testDiscoApi") {
 					.build()
 			try {
 				HttpResponse<Void> resp = client.send(request, HttpResponse.BodyHandlers.discarding())
-				assert resp.statusCode() == 200
+				if(resp.statusCode() != 200) throw new RuntimeException()
 				responseSeen = true
 				break
 			} catch (Exception thrown) {

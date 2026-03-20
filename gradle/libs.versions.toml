@@ -19,6 +19,7 @@ objenesis = "3.5"
 groovy = "5.0.4"
 blockhound = "1.0.16.RELEASE"
 mockwebserver = "5.3.2"
+jsoup = "1.22.1"
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
@@ -53,6 +54,7 @@ netty-resolver-nativeMacOs = { module = "io.netty:netty-resolver-dns-native-maco
 rpa-workerPythonRequirements = { module = "io.camunda.rpa:rpa-worker-python-requirements", version.ref = "rpaRuntime" }
 rpa-staticRuntime = { module = "io.camunda.rpa:rpa-worker-static-runtime", version.ref = "rpaRuntime" }
 htmlUnit = { module = "org.htmlunit:htmlunit", version.ref = "htmlUnit" }
+jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 
 reactor-test = { module = "io.projectreactor:reactor-test" }
 spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }

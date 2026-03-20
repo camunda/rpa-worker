@@ -546,6 +546,9 @@ Assert input variable
 			ZeebeDocumentDescriptor.Metadata metadata = objectMapper.readValue(parts.metadata.value(), ZeebeDocumentDescriptor.Metadata)
 			metadata.processDefinitionId() == "123"
 			metadata.processInstanceKey() == 234
+			metadata.fileName() == "report_noscript.html"
+			
+			parts.file.value()
 		}
 
 	}
