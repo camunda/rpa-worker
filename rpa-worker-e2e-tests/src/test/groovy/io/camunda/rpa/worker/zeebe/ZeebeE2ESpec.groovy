@@ -6,6 +6,8 @@ import io.camunda.rpa.worker.AbstractE2ESpec
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.zeebe.client.api.response.ProcessInstanceEvent
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 
 @Slf4j
 class ZeebeE2ESpec extends AbstractE2ESpec {
@@ -480,22 +482,16 @@ Check
 	
 	void "Task Testing automatically uploads log file"() {
 		given:
-		deployScript('task_failure', '''\
-*** Tasks ***
-Tasks
-    Log    from-the-log-file
-    Should Be Equal    one    two
-''')
+		deployScriptFile('rpa_challenge_chrome')
+
 		and:
-		deploySimpleRobotProcess('task_failure_on_default', 'task_failure')
+		deploySimpleRobotProcess('rpa_challenge_chrome_on_default', 'rpa_challenge_chrome')
 
 		when:
-		ProcessInstanceEvent pinstance = createInstance(['camunda::isTesting': true], "task_failure_on_default")
+		ProcessInstanceEvent pinstance = createInstance(['camunda::isTesting': true], "rpa_challenge_chrome_on_default")
 		
 		then:
-		spec.expectIncidents(pinstance.processInstanceKey) { incidents ->
-			incidents.size() == 1
-		}
+		expectNoIncident(pinstance.processInstanceKey)
 
 		when:
 		ZeebeDocumentDescriptor uploaded = objectMapper.convertValue(
@@ -508,10 +504,21 @@ Tasks
 				uploaded.documentId(), uploaded.storeId(), uploaded.contentHash())).text
 
 		then:
-		contents.contains("from-the-log-file")
+		contents.contains("Fill and submit the form")
 		
 		and: "The report has been re-rendered for Task Testing"
-		! contents.contains("<script")
+		Document doc = Jsoup.parse(contents)
+		doc.getElementById("s1-t1-k2-k2-k1-k1-k1")
+		doc.getElementsByClass(".closed").isEmpty()
+		doc.getElementsByTag("body").attr("data-theme") == "light"
+		doc.getElementsByClass(".element.header-toggle").isEmpty()
+		doc.getElementsByClass(".expand").isEmpty()
+		doc.getElementsByClass(".collapse").isEmpty()
+		! doc.getElementById("theme-toggle")
+		with(doc.getElementsByTag("script")) {
+			isEmpty() ||
+					(size() == 1 && it.attr("src").endsWith("cloudflare-static/email-decode.min.js"))
+		}
 	}
 }
 	

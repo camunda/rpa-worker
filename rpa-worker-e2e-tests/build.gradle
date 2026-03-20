@@ -5,6 +5,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.time.Duration
 import java.time.Instant
+import java.util.regex.Pattern
 
 plugins {
 	id 'java'
@@ -48,6 +49,7 @@ dependencies {
 	implementation libs.jackson.dataFormatYaml
 	implementation libs.javaSemver
 	implementation libs.slf4j.api
+	implementation libs.jsoup
 
 	// TODO: Forced update to transitive dependency - remove when no longer required
 	implementation libs.commons.lang
@@ -151,7 +153,9 @@ tasks.register("installCamunda") {
 
 		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/camunda_${System.getenv("CAMUNDA_VERSION")}.helmrelease.yaml".execute())
 		
-		waitForWithTimeout("ip -brief a show dev cni0", Duration.ofMinutes(1), "Container network did not show up")
+		waitForConditionWithTimeout("ip -brief a show dev cni0", Duration.ofMinutes(1), "Container network did not show up") {
+			return it.contains("UP") && it.find(Pattern.compile(/[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/))
+		}
 		String hostIp = wrapProcessForResult("ip -brief a show dev cni0".execute()).with {
 			return it.split("\\s+")[2].split("/")[0]
 		}
@@ -248,5 +252,20 @@ static void waitForWithTimeout(def waitForCmd, Duration timeout, String failMsg,
 		eachLoop()
 	}
 	if (waitExit != 0)
+		throw new GradleException(failMsg)
+}
+
+static void waitForConditionWithTimeout(def waitForCmd, Duration timeout, String failMsg, @ClosureParams(value = SimpleType.class, options = "java.lang.String") Closure<Boolean> condition) {
+	Instant endTime = Instant.now() + timeout
+	int waitExit = -1
+	while (Instant.now() < endTime) {
+		Process process = waitForCmd instanceof String ? waitForCmd.execute() : new ProcessBuilder((List<String>) waitForCmd).start()
+		waitExit = process.waitFor()
+		String out = process.in.text
+		String err = process.err.text
+		if (waitExit == 0 && condition(out)) break
+		else println "${out}\n${err}"
+	}
+	if(waitExit != 0)
 		throw new GradleException(failMsg)
 }
