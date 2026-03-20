@@ -1,0 +1,43 @@
+#!/usr/bin/env -S java --source 17
+
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
+
+public class EnsureToolchains {
+	private static final Instant maxTime = Instant.now().plus(Duration.ofMinutes(10));
+
+	public static void main(String[] args) throws InterruptedException, IOException {
+		ensureToolchain("ensureJdkSe");
+		ensureToolchain("ensureJdkGraal");
+	}
+	
+	public static void ensureToolchain(String toolchainTaskName) throws InterruptedException, IOException {
+		log("Running task '%s'".formatted(toolchainTaskName));
+		Duration delay = Duration.ofSeconds(2);
+		boolean didSucceed = false;
+		while(Instant.now().isBefore(maxTime)) {
+			int exit = new ProcessBuilder(Paths.get("gradlew").toAbsolutePath().toString(), toolchainTaskName)
+					.inheritIO()
+					.start()
+					.waitFor();
+			if(exit == 0) {
+				didSucceed = true;
+				break;
+			}
+			Thread.sleep(delay.toMillis());
+			delay = delay.multipliedBy(2);
+		}
+
+		if( ! didSucceed) {
+			log("Disco API not reachable");
+			System.exit(1);
+		}
+		else log("OK");
+	}
+
+	private static void log(String string) {
+		System.out.printf("%s - %s%n", Instant.now(), string);
+	}
+}
