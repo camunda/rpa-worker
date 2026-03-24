@@ -1641,6 +1641,63 @@
       "type": "groovy.runtime.metaclass.groovy.util.ProxyGeneratorMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.client.CamundaClientMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.CamundaFutureMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep3MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.ActivateJobsCommandStep1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.CompleteJobCommandStep1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.FailJobCommandStep1$FailJobCommandStep2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.FailJobCommandStep1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.FinalCommandStepMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.SetVariablesCommandStep1$SetVariablesCommandStep2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.SetVariablesCommandStep1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.ThrowErrorCommandStep1$ThrowErrorCommandStep2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.ThrowErrorCommandStep1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.TopologyRequestStep1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.UpdateJobCommandStep1$UpdateJobCommandStep2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.command.UpdateJobCommandStep1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.response.ActivatedJobMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.api.response.TopologyMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.client.impl.CamundaClientFutureImplMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.client.spring.properties.CamundaClientAuthPropertiesMetaClass"
     },
     {
@@ -1792,6 +1849,18 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.files.DocumentClientMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.files.FilesServiceMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.files.FilesServiceSpec$__spock_feature_0_0_closure2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.files.FilesServiceSpec$__spock_initializeFields_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.files.FilesServiceSpecMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.files.RetryingDocumentClientWrapperMetaClass"
@@ -2355,7 +2424,25 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_10_closure34MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure30$_closure53MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure30MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure35MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure31$_closure54MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure31MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure32$_closure55MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure32MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3$_closure21MetaClass"
@@ -2365,6 +2452,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3$_closure29MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3$_closure35MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3$_closure38MetaClass"
@@ -2382,6 +2472,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure4$_closure30MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure4$_closure36MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure4$_closure39MetaClass"
     },
     {
@@ -2395,6 +2488,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure5$_closure31MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure5$_closure37MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure5$_closure40MetaClass"
@@ -2418,6 +2514,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure6$_closure32MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure6$_closure38MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure6$_closure41MetaClass"
     },
     {
@@ -2431,6 +2530,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure7$_closure33MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure7$_closure39MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure7$_closure42MetaClass"
@@ -2448,10 +2550,19 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8$_closure34MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8$_closure40MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8$_closure43MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure41$_closure42MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure41MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure45MetaClass"
@@ -2523,6 +2634,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure13$_closure37MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure13$_closure43MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure13MetaClass"
     },
     {
@@ -2547,6 +2661,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure15$_closure37MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure15$_closure45MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure15$_closure47$_closure48MetaClass"
     },
     {
@@ -2559,10 +2676,22 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure16$_closure38MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure16$_closure46MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure16MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure17MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure18MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure19$_closure47MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure19MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure16$_closure31MetaClass"
@@ -2611,6 +2740,15 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure20MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure21MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure22$_closure48MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure22MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_6_closure19$_closure51MetaClass"
@@ -2673,6 +2811,15 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure23MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49$_closure50$_closure51MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49$_closure50MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25MetaClass"
     },
     {
@@ -2706,6 +2853,12 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure26MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure27MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure28$_closure52MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure28MetaClass"
     },
     {
@@ -2713,6 +2866,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_9_closure26MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_9_closure29MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_9_closure30MetaClass"
@@ -2749,6 +2905,12 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure28MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure33MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure34MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure36MetaClass"
@@ -2811,6 +2973,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure1$_closure13MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure1$_closure4MetaClass"
     },
     {
@@ -2818,6 +2983,12 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure2$_closure14MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure2MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure2$_closure5MetaClass"
@@ -2829,6 +3000,18 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure2MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure3$_closure15MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure3MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure4$_closure16MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure4MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure3$_closure6MetaClass"
     },
     {
@@ -2838,16 +3021,64 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure3MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure5$_closure17MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure5MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure6$_closure18MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure6MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure4$_closure9MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure4MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure7$_closure19MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure7MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure5$_closure10MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure5MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure8$_closure20MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure8MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure10$_closure22MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure10MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure9$_closure21MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure9MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure11$_closure23MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure11MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure12$_closure24MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure12MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.python.SystemPythonProviderSpecMetaClass"
@@ -2865,10 +3096,16 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.ExecutionResults$ExecutionResultMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.ExecutionResults$ExecutionResultsBuilderMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.ExecutionResults$ResultMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.ExecutionResultsMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.ExecutionResultsProcessorMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.ExecutionStrategyFunctionalSpec$1MetaClass"
@@ -2944,6 +3181,21 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_0_closure4MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure28MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure29$_closure34MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure29MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure30$_closure35MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure30MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_1_closure3MetaClass"
@@ -3024,6 +3276,12 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure30MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure32MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure33MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16MetaClass"
     },
     {
@@ -3097,6 +3355,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_initializeFields_closure1$_closure28MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_initializeFields_closure1$_closure31MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_initializeFields_closure1MetaClass"
@@ -3558,6 +3819,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.util.LoopingListIteratorSpecMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.util.PathUtilsMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.util.YamlMapperMetaClass"
     },
     {
@@ -3634,6 +3898,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.workspace.api.WorkspaceVariablesControllerSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.$Proxy235MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.$Proxy238MetaClass"
@@ -3909,7 +4176,31 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.RpaResourceMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.TaskTestingReportRendererMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_feature_0_0_closure2$_closure4MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_feature_0_0_closure2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_initializeFields_closure1$_closure3MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_initializeFields_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpecMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorSpec$__spock_initializeFields_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorSpecMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeAuthPropertiesMetaClass"
@@ -4263,6 +4554,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure1$_closure27MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure1$_closure32MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure1MetaClass"
     },
     {
@@ -4273,6 +4567,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure2$_closure28MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure2$_closure33MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure2MetaClass"
@@ -4290,16 +4587,28 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure29MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure34$_closure35MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure34MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure22$_closure60MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure22$_closure65MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure22MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure23$_closure61MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure23$_closure66MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure23MetaClass"
@@ -4309,6 +4618,12 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure62MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure67$_closure68MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure67MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24MetaClass"
@@ -4368,6 +4683,12 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure31MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure36$_closure37MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure36MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4MetaClass"
     },
     {
@@ -4387,6 +4708,15 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure33MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38$_closure39MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38$_closure40MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5MetaClass"
@@ -4413,6 +4743,12 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure36MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure41$_closure42MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure41MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6MetaClass"
     },
     {
@@ -4432,6 +4768,15 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure38MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43$_closure44MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43$_closure45MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7MetaClass"
@@ -4467,6 +4812,15 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure41MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46$_closure47MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46$_closure48MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8MetaClass"
     },
     {
@@ -4474,6 +4828,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure10$_closure45MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure10$_closure50MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure10MetaClass"
@@ -4489,6 +4846,12 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure46MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure51$_closure52MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure51MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11MetaClass"
@@ -4512,6 +4875,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure9$_closure44MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure9$_closure49MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure9MetaClass"
     },
     {
@@ -4531,6 +4897,15 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure48MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53$_closure54MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53$_closure55MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12MetaClass"
@@ -4560,6 +4935,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure13$_closure51MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure13$_closure56MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure13MetaClass"
     },
     {
@@ -4579,6 +4957,15 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure52MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57$_closure58MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57$_closure59MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14MetaClass"
@@ -4608,6 +4995,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_7_closure16$_closure55MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_7_closure16$_closure60MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_7_closure16MetaClass"
     },
     {
@@ -4621,6 +5011,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_8_closure17$_closure56MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_8_closure17$_closure61MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_8_closure17MetaClass"
@@ -4656,6 +5049,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure19$_closure57MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure19$_closure62MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure19MetaClass"
     },
     {
@@ -4665,6 +5061,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure20$_closure58MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure20$_closure63MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure20MetaClass"
     },
     {
@@ -4672,6 +5071,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure21$_closure59MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure21$_closure64MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure21MetaClass"
@@ -4722,6 +5124,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpecMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobInfoMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerMetaClass"
     },
     {
@@ -4731,7 +5136,13 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_2_closure7MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_2_closure8MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_3_closure10MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_3_closure11MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_3_closure8MetaClass"
@@ -4746,7 +5157,13 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_4_closure12MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_4_closure13MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure4$_closure16MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure4$_closure17MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure4MetaClass"
@@ -4761,7 +5178,16 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure18MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure19$_closure21MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure19MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure6MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure13$_closure14$_closure15MetaClass"
@@ -4771,6 +5197,15 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure13MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14$_closure15$_closure16MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14$_closure15MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1MetaClass"
@@ -5568,6 +6003,9 @@
       "type": "groovy.runtime.metaclass.jdk.proxy2.$Proxy100MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.jdk.proxy2.$Proxy101MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.jdk.proxy2.$Proxy86MetaClass"
     },
     {
@@ -5589,6 +6027,9 @@
       "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy116MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy139MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy221MetaClass"
     },
     {
@@ -5602,6 +6043,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy277MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy286MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy292MetaClass"
@@ -5685,6 +6129,18 @@
       "type": "groovy.runtime.metaclass.org.codehaus.groovy.runtime.memoize.Memoize$MemoizeFunctionMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.org.jsoup.JsoupMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.org.jsoup.nodes.DocumentMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.org.jsoup.nodes.ElementMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.org.jsoup.select.ElementsMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.org.mockito.internal.configuration.plugins.DefaultMockitoPluginsMetaClass"
     },
     {
@@ -5698,6 +6154,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.org.spockframework.runtime.DataIteratorFactory$DataProviderIteratorMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.org.spockframework.runtime.ErrorCollectorMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.org.spockframework.runtime.ErrorRethrowerMetaClass"
@@ -5970,6 +6429,12 @@
       "type": "groovy.runtime.metaclass.reactor.core.publisher.MonoToCompletableFutureMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.reactor.core.publisher.SinkOneSerializedMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.reactor.core.publisher.SinksMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.reactor.core.scheduler.SchedulersMetaClass"
     },
     {
@@ -6078,16 +6543,45 @@
       "allDeclaredFields": true
     },
     {
-      "type": "io.camunda.client.CamundaClient"
+      "type": "io.camunda.client.CamundaClient",
+      "methods": [
+        {
+          "name": "newSetVariablesCommand",
+          "parameterTypes": [
+            "long"
+          ]
+        },
+        {
+          "name": "newUpdateJobCommand",
+          "parameterTypes": [
+            "io.camunda.client.api.response.ActivatedJob"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.CamundaClientBeanInfo"
     },
     {
       "type": "io.camunda.client.CamundaClientConfiguration"
+    },
+    {
+      "type": "io.camunda.client.CamundaClientCustomizer"
     },
     {
       "type": "io.camunda.client.CredentialsProvider"
     },
     {
       "type": "io.camunda.client.annotation.customizer.JobWorkerValueCustomizer"
+    },
+    {
+      "type": "io.camunda.client.api.CamundaFuture"
+    },
+    {
+      "type": "io.camunda.client.api.CamundaFutureBeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.CamundaFutureCustomizer"
     },
     {
       "type": "io.camunda.client.api.JsonMapper"
@@ -6099,22 +6593,209 @@
       "type": "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep2"
     },
     {
+      "type": "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep2BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep2Customizer"
+    },
+    {
       "type": "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep3"
+    },
+    {
+      "type": "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep3BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep3Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.ActivateJobsCommandStep1BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.ActivateJobsCommandStep1Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.CommandWithCommunicationApiStep"
+    },
+    {
+      "type": "io.camunda.client.api.command.CommandWithOneOrMoreTenantsStep"
+    },
+    {
+      "type": "io.camunda.client.api.command.CommandWithOperationReferenceStep"
+    },
+    {
+      "type": "io.camunda.client.api.command.CommandWithTenantStep"
+    },
+    {
+      "type": "io.camunda.client.api.command.CommandWithVariables"
+    },
+    {
+      "type": "io.camunda.client.api.command.CompleteJobCommandStep1"
+    },
+    {
+      "type": "io.camunda.client.api.command.CompleteJobCommandStep1BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.CompleteJobCommandStep1Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.FailJobCommandStep1"
+    },
+    {
+      "type": "io.camunda.client.api.command.FailJobCommandStep1$FailJobCommandStep2"
+    },
+    {
+      "type": "io.camunda.client.api.command.FailJobCommandStep1$FailJobCommandStep2BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.FailJobCommandStep1$FailJobCommandStep2Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.FailJobCommandStep1BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.FailJobCommandStep1Customizer"
     },
     {
       "type": "io.camunda.client.api.command.FinalCommandStep"
     },
     {
+      "type": "io.camunda.client.api.command.FinalCommandStepBeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.FinalCommandStepCustomizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.SetVariablesCommandStep1"
+    },
+    {
+      "type": "io.camunda.client.api.command.SetVariablesCommandStep1$SetVariablesCommandStep2"
+    },
+    {
+      "type": "io.camunda.client.api.command.SetVariablesCommandStep1$SetVariablesCommandStep2BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.SetVariablesCommandStep1$SetVariablesCommandStep2Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.SetVariablesCommandStep1BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.SetVariablesCommandStep1Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.ThrowErrorCommandStep1"
+    },
+    {
+      "type": "io.camunda.client.api.command.ThrowErrorCommandStep1$ThrowErrorCommandStep2"
+    },
+    {
+      "type": "io.camunda.client.api.command.ThrowErrorCommandStep1$ThrowErrorCommandStep2BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.ThrowErrorCommandStep1$ThrowErrorCommandStep2Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.ThrowErrorCommandStep1BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.ThrowErrorCommandStep1Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.TopologyRequestStep1"
+    },
+    {
+      "type": "io.camunda.client.api.command.TopologyRequestStep1BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.TopologyRequestStep1Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.UpdateJobCommandStep1"
+    },
+    {
+      "type": "io.camunda.client.api.command.UpdateJobCommandStep1$UpdateJobCommandStep2"
+    },
+    {
+      "type": "io.camunda.client.api.command.UpdateJobCommandStep1$UpdateJobCommandStep2BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.UpdateJobCommandStep1$UpdateJobCommandStep2Customizer"
+    },
+    {
+      "type": "io.camunda.client.api.command.UpdateJobCommandStep1BeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.command.UpdateJobCommandStep1Customizer"
+    },
+    {
       "type": "io.camunda.client.api.response.ActivateJobsResponse"
     },
     {
-      "type": "io.camunda.client.api.response.ActivatedJob"
+      "type": "io.camunda.client.api.response.ActivatedJob",
+      "methods": [
+        {
+          "name": "getProcessInstanceKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRetries",
+          "parameterTypes": []
+        },
+        {
+          "name": "getType",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.api.response.ActivatedJobBeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.response.ActivatedJobCustomizer"
+    },
+    {
+      "type": "io.camunda.client.api.response.DocumentReferenceResponse"
+    },
+    {
+      "type": "io.camunda.client.api.response.Topology"
+    },
+    {
+      "type": "io.camunda.client.api.response.TopologyBeanInfo"
+    },
+    {
+      "type": "io.camunda.client.api.response.TopologyCustomizer"
+    },
+    {
+      "type": "io.camunda.client.api.search.enums.JobKind"
+    },
+    {
+      "type": "io.camunda.client.api.search.enums.ListenerEventType"
     },
     {
       "type": "io.camunda.client.api.worker.BackoffSupplier"
     },
     {
-      "type": "io.camunda.client.api.worker.JobClient"
+      "type": "io.camunda.client.api.worker.JobClient",
+      "methods": [
+        {
+          "name": "newCompleteCommand",
+          "parameterTypes": [
+            "io.camunda.client.api.response.ActivatedJob"
+          ]
+        },
+        {
+          "name": "newFailCommand",
+          "parameterTypes": [
+            "io.camunda.client.api.response.ActivatedJob"
+          ]
+        },
+        {
+          "name": "newThrowErrorCommand",
+          "parameterTypes": [
+            "long"
+          ]
+        }
+      ]
     },
     {
       "type": "io.camunda.client.health.HealthCheck"
@@ -6161,13 +6842,28 @@
       ]
     },
     {
-      "type": "io.camunda.client.impl.CamundaClientFutureImpl"
+      "type": "io.camunda.client.impl.CamundaClientFutureImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.impl.CamundaClientFutureImplBeanInfo"
+    },
+    {
+      "type": "io.camunda.client.impl.CamundaClientFutureImplCustomizer"
     },
     {
       "type": "io.camunda.client.impl.CamundaClientImpl"
     },
     {
       "type": "io.camunda.client.impl.CamundaObjectMapper"
+    },
+    {
+      "type": "io.camunda.client.impl.CamundaStreamingClientFutureImpl"
     },
     {
       "type": "io.camunda.client.impl.NoopCredentialsProvider"
@@ -6198,6 +6894,91 @@
     },
     {
       "type": "io.camunda.client.impl.oauth.OAuthCredentialsProvider"
+    },
+    {
+      "type": "io.camunda.client.impl.response.ActivatedJobImpl",
+      "methods": [
+        {
+          "name": "getBpmnProcessId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCustomHeaders",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDeadline",
+          "parameterTypes": []
+        },
+        {
+          "name": "getElementId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getElementInstanceKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getKind",
+          "parameterTypes": []
+        },
+        {
+          "name": "getListenerEventType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getProcessDefinitionKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getProcessDefinitionVersion",
+          "parameterTypes": []
+        },
+        {
+          "name": "getProcessInstanceKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRetries",
+          "parameterTypes": []
+        },
+        {
+          "name": "getRootProcessInstanceKey",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTags",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTenantId",
+          "parameterTypes": []
+        },
+        {
+          "name": "getType",
+          "parameterTypes": []
+        },
+        {
+          "name": "getUserTask",
+          "parameterTypes": []
+        },
+        {
+          "name": "getVariables",
+          "parameterTypes": []
+        },
+        {
+          "name": "getVariablesAsMap",
+          "parameterTypes": []
+        },
+        {
+          "name": "getWorker",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "io.camunda.client.impl.worker.ExponentialBackoff"
@@ -6328,6 +7109,32 @@
         },
         {
           "name": "getWorker",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.protocol.rest.JobChangeset",
+      "methods": [
+        {
+          "name": "getRetries",
+          "parameterTypes": []
+        },
+        {
+          "name": "getTimeout",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.protocol.rest.JobUpdateRequest",
+      "methods": [
+        {
+          "name": "getChangeset",
+          "parameterTypes": []
+        },
+        {
+          "name": "getOperationReference",
           "parameterTypes": []
         }
       ]
@@ -6896,6 +7703,14 @@
       ]
     },
     {
+      "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$2080358150",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$517307308",
       "fields": [
         {
@@ -6956,6 +7771,14 @@
     },
     {
       "type": "io.camunda.client.spring.properties.CamundaClientCloudProperties$SpockMock$671472700",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientCloudProperties$SpockMock$707795686",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -7072,6 +7895,14 @@
     },
     {
       "type": "io.camunda.client.spring.properties.CamundaClientProperties$ClientModeEditor"
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$1101841320",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
     },
     {
       "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$1287716435",
@@ -8416,6 +9247,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.api.StubbedResponseGenerator$SpockMock$611603451",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.api.StubbedResponseGenerator$SpockMock$635950739",
       "fields": [
         {
@@ -8830,6 +9669,14 @@
           "name": "<init>",
           "parameterTypes": [
             "io.camunda.rpa.worker.zeebe.ZeebeAuthProperties",
+            "io.camunda.client.spring.properties.CamundaClientProperties",
+            "io.camunda.rpa.worker.zeebe.ZeebeProperties"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.zeebe.ZeebeAuthProperties",
             "io.camunda.rpa.worker.zeebe.ZeebeProperties"
           ]
         },
@@ -8969,8 +9816,114 @@
           "parameterTypes": [
             "org.springframework.beans.factory.ObjectProvider"
           ]
+        },
+        {
+          "name": "getDocument",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.String",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "toMetadata",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.workspace.WorkspaceFile",
+            "io.camunda.rpa.worker.zeebe.ZeebeJobInfo"
+          ]
+        },
+        {
+          "name": "uploadDocument",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.workspace.WorkspaceFile",
+            "io.camunda.rpa.worker.files.ZeebeDocumentDescriptor$Metadata"
+          ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesService$SpockMock$2132072921",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceSpec",
+      "methods": [
+        {
+          "name": "$spock_feature_0_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_0_1",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_initializeFields",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getDocumentClient",
+          "parameterTypes": []
+        },
+        {
+          "name": "io_camunda_rpa_worker_PublisherUtils__TIMEOUT$get",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceSpec$__spock_feature_0_0_closure2",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "org.springframework.util.MultiValueMap",
+            "java.util.Map"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceSpec$__spock_feature_0_0_closure2BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceSpec$__spock_feature_0_0_closure2Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceSpec$__spock_initializeFields_closure1",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceSpec$__spock_initializeFields_closure1BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceSpec$__spock_initializeFields_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesServiceSpecCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.files.RetryingDocumentClientWrapper",
@@ -9059,6 +10012,12 @@
         {
           "name": "customProperties",
           "parameterTypes": []
+        },
+        {
+          "name": "equals",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
         },
         {
           "name": "expiresAt",
@@ -9289,8 +10248,21 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_feature_0_0_closure3BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_feature_0_0_closure3Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_feature_0_0_closure4",
       "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.workspace.WorkspaceFile",
+            "io.camunda.rpa.worker.files.ZeebeDocumentDescriptor$Metadata"
+          ]
+        },
         {
           "name": "doCall",
           "parameterTypes": [
@@ -9407,6 +10379,12 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_feature_0_1_closure6BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_feature_0_1_closure6Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_feature_0_1_closure7",
       "methods": [
         {
@@ -9515,6 +10493,12 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_feature_0_2_closure9BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_feature_0_2_closure9Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_initializeFields_closure1",
       "methods": [
         {
@@ -9563,6 +10547,12 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_initializeFields_closure2$_closure11BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_initializeFields_closure2$_closure11Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.files.api.FilesControllerSpec$__spock_initializeFields_closure2$_closure12",
@@ -11453,6 +12443,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1525163249",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1527190872",
       "fields": [
         {
@@ -11566,6 +12564,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$2044472918",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$2059268067",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -12512,6 +13518,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$1569795929",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$1816749431",
       "fields": [
         {
@@ -12545,6 +13559,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$309180099",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$381512388",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -13306,6 +14328,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$1212695704",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$1268673002",
       "fields": [
         {
@@ -13467,6 +14497,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$306997231",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$412433523",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -13681,6 +14719,41 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure30",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure30$_closure53",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure30$_closure53BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure30$_closure53Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure30BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure30Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_11_closure35",
       "methods": [
         {
@@ -13691,6 +14764,76 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure31",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure31$_closure54",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure31$_closure54BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure31$_closure54Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure31BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure31Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure32",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure32$_closure55",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure32$_closure55BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure32$_closure55Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure32BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_12_closure32Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3",
@@ -13742,6 +14885,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3$_closure29Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3$_closure35",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3$_closure35BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3$_closure35Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure3$_closure38",
@@ -13812,6 +14972,23 @@
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure4$_closure30Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure4$_closure36",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure4$_closure36BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure4$_closure36Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure4$_closure39",
       "methods": [
         {
@@ -13874,6 +15051,23 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure5$_closure37",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure5$_closure37BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure5$_closure37Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure5$_closure40",
       "methods": [
         {
@@ -13883,6 +15077,12 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure5BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_1_closure5Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure5",
@@ -13971,6 +15171,23 @@
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure6$_closure32Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure6$_closure38",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure6$_closure38BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure6$_closure38Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure6$_closure41",
       "methods": [
         {
@@ -14033,6 +15250,23 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure7$_closure39",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure7$_closure39BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure7$_closure39Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure7$_closure42",
       "methods": [
         {
@@ -14042,6 +15276,12 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure7BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure7Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8",
@@ -14089,6 +15329,23 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8$_closure40",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8$_closure40BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8$_closure40Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8$_closure43",
       "methods": [
         {
@@ -14098,6 +15355,12 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_2_closure8Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10",
@@ -14133,6 +15396,40 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure41",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure41$_closure42",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure41$_closure42BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure41$_closure42Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure41BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure41Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure10$_closure45",
       "methods": [
         {
@@ -14155,6 +15452,12 @@
         {
           "name": "doCall",
           "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
             "java.lang.Object",
             "java.util.function.UnaryOperator"
           ]
@@ -14173,12 +15476,26 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure11BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure11Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure12",
       "methods": [
         {
           "name": "doCall",
           "parameterTypes": [
             "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.util.function.Consumer"
           ]
         }
       ]
@@ -14248,6 +15565,12 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure12BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure12Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_3_closure13",
@@ -14466,6 +15789,23 @@
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure13$_closure37Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure13$_closure43",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure13$_closure43BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure13$_closure43Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure13BeanInfo"
     },
     {
@@ -14490,6 +15830,9 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure14$_closure44"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure14BeanInfo"
     },
     {
@@ -14509,6 +15852,13 @@
           "parameterTypes": [
             "java.lang.Object",
             "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
           ]
         }
       ]
@@ -14580,6 +15930,23 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure15$_closure45",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure15$_closure45BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure15$_closure45Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure15$_closure47",
       "methods": [
         {
@@ -14643,6 +16010,23 @@
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure16$_closure38Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure16$_closure46",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure16$_closure46BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure16$_closure46Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure16BeanInfo"
     },
     {
@@ -14654,11 +16038,76 @@
         {
           "name": "doCall",
           "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
             "java.lang.Object",
             "java.util.function.Consumer"
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure17BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure17Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure18",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure18BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure18Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure19",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure19$_closure47",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure19$_closure47BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure19$_closure47Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure19BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_4_closure19Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure16",
@@ -14876,6 +16325,12 @@
         {
           "name": "doCall",
           "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
             "java.lang.Object",
             "java.util.function.UnaryOperator"
           ]
@@ -14892,6 +16347,65 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure20BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure20Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure21",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure21BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure21Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure22",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure22$_closure48",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure22$_closure48BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure22$_closure48Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure22BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_5_closure22Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_6_closure19",
@@ -15063,6 +16577,12 @@
         {
           "name": "doCall",
           "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
             "java.lang.Object",
             "java.lang.Object"
           ]
@@ -15070,8 +16590,21 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_6_closure23BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_6_closure23Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_6_closure24",
       "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
         {
           "name": "doCall",
           "parameterTypes": [
@@ -15091,6 +16624,12 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_6_closure24BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_6_closure24Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure22",
@@ -15206,6 +16745,61 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49$_closure50",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49$_closure50$_closure51",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49$_closure50$_closure51BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49$_closure50$_closure51Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49$_closure50BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49$_closure50Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25$_closure49Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure25Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure26",
       "methods": [
         {
@@ -15214,8 +16808,21 @@
             "java.lang.Object",
             "java.lang.Object"
           ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "reactor.core.publisher.Flux",
+            "java.io.OutputStream"
+          ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure26BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure26Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_7_closure27",
@@ -15350,7 +16957,43 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure27",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure27BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure27Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure28",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure28$_closure52",
       "methods": [
         {
           "name": "doCall",
@@ -15359,6 +17002,18 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure28$_closure52BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure28$_closure52Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure28BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure28Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_8_closure29",
@@ -15389,6 +17044,24 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_9_closure26Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_9_closure29",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_9_closure29BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_9_closure29Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_feature_0_9_closure30",
@@ -15544,6 +17217,40 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure28Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure33",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.util.function.Supplier"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure33BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure33Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure34",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Runnable"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure34BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure34Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupServiceSpec$__spock_initializeFields_closure2$_closure36",
@@ -15883,6 +17590,10 @@
           ]
         },
         {
+          "name": "getSystemPython",
+          "parameterTypes": []
+        },
+        {
           "name": "systemPython",
           "parameterTypes": []
         }
@@ -15898,6 +17609,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1274040286",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1317704483",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -15946,6 +17665,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1734677749",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1826486778",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -16043,6 +17770,14 @@
           "parameterTypes": []
         },
         {
+          "name": "$spock_feature_0_6",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_0_7",
+          "parameterTypes": []
+        },
+        {
           "name": "$spock_initializeFields",
           "parameterTypes": []
         },
@@ -16067,6 +17802,23 @@
           ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure1$_closure13",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure1$_closure13BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure1$_closure13Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure1$_closure4",
@@ -16101,6 +17853,41 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure2",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure2$_closure14",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure2$_closure14BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure2$_closure14Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure2BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_0_closure2Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure2",
@@ -16149,6 +17936,76 @@
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure2Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure3",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure3$_closure15",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure3$_closure15BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure3$_closure15Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure3BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure3Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure4",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure4$_closure16",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure4$_closure16BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure4$_closure16Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure4BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_1_closure4Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure3",
       "methods": [
         {
@@ -16195,6 +18052,76 @@
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure3Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure5",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure5$_closure17",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure5$_closure17BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure5$_closure17Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure5BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure5Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure6",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure6$_closure18",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure6$_closure18BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure6$_closure18Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure6BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_2_closure6Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure4",
       "methods": [
         {
@@ -16230,6 +18157,41 @@
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure4Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure7",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure7$_closure19",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure7$_closure19BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure7$_closure19Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure7BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_4_closure7Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure5",
       "methods": [
         {
@@ -16263,6 +18225,181 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure5Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure8",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure8$_closure20",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure8$_closure20BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure8$_closure20Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure8BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_5_closure8Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure10",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure10$_closure22",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure10$_closure22BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure10$_closure22Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure10BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure10Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure9",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure9$_closure21",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure9$_closure21BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure9$_closure21Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure9BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_6_closure9Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure11",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure11$_closure23",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure11$_closure23BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure11$_closure23Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure11BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure11Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure12",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.util.function.UnaryOperator"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure12$_closure24",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure12$_closure24BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure12$_closure24Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure12BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpec$__spock_feature_0_7_closure12Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.python.SystemPythonProviderSpecBeanInfo"
@@ -16351,6 +18488,16 @@
             "java.util.Map",
             "io.camunda.rpa.worker.robot.ExecutionResults$Result",
             "java.util.Map",
+            "io.camunda.rpa.worker.workspace.Workspace",
+            "java.time.Duration"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.util.Map",
+            "io.camunda.rpa.worker.robot.ExecutionResults$Result",
+            "java.util.Map",
             "java.nio.file.Path"
           ]
         },
@@ -16378,6 +18525,14 @@
         },
         {
           "name": "results",
+          "parameterTypes": []
+        },
+        {
+          "name": "toBuilder",
+          "parameterTypes": []
+        },
+        {
+          "name": "workspace",
           "parameterTypes": []
         }
       ]
@@ -16430,6 +18585,27 @@
       "type": "io.camunda.rpa.worker.robot.ExecutionResults$ExecutionResultCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.robot.ExecutionResults$ExecutionResultsBuilder",
+      "methods": [
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "outputVariables",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.ExecutionResults$ExecutionResultsBuilderBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.ExecutionResults$ExecutionResultsBuilderCustomizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.robot.ExecutionResults$Result",
       "allDeclaredFields": true
     },
@@ -16446,7 +18622,21 @@
       "type": "io.camunda.rpa.worker.robot.ExecutionResultsCustomizer"
     },
     {
-      "type": "io.camunda.rpa.worker.robot.ExecutionResultsProcessor"
+      "type": "io.camunda.rpa.worker.robot.ExecutionResultsProcessor",
+      "methods": [
+        {
+          "name": "withExecutionResults",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.robot.ExecutionResults"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.ExecutionResultsProcessorBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.ExecutionResultsProcessorCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.robot.ExecutionStrategyFunctionalSpec",
@@ -17165,6 +19355,20 @@
             "java.util.Map",
             "java.time.Duration",
             "java.util.List",
+            "java.util.List",
+            "java.util.Map",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "execute",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.script.RobotScript",
+            "java.util.List",
+            "java.util.List",
+            "java.util.Map",
+            "java.time.Duration",
+            "java.util.List",
             "java.util.Map",
             "java.lang.String"
           ]
@@ -17233,6 +19437,17 @@
             "io.camunda.rpa.worker.script.RobotScript",
             "java.util.Map",
             "java.time.Duration",
+            "java.util.List",
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "execute",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.script.RobotScript",
+            "java.util.Map",
+            "java.time.Duration",
+            "java.util.List",
             "java.util.List",
             "java.lang.String"
           ]
@@ -17315,6 +19530,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1290969750",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1329216759",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -17532,6 +19755,10 @@
           "parameterTypes": []
         },
         {
+          "name": "$spock_feature_0_10",
+          "parameterTypes": []
+        },
+        {
           "name": "$spock_feature_0_2",
           "parameterTypes": []
         },
@@ -17649,6 +19876,91 @@
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_0_closure4Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure28",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure28BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure28Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure29",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure29$_closure34",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.robot.ExecutionResults"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure29$_closure34BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure29$_closure34Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure29BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure29Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure30",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure30$_closure35",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.robot.ExecutionResults"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure30$_closure35BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure30$_closure35Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure30BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_10_closure30Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_1_closure3",
@@ -18067,6 +20379,40 @@
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure30Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure32",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure32BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure32Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure33",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure33BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16$_closure33Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_feature_0_5_closure16BeanInfo"
@@ -18494,6 +20840,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_initializeFields_closure1$_closure28Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_initializeFields_closure1$_closure31",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.util.function.Supplier"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_initializeFields_closure1$_closure31BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_initializeFields_closure1$_closure31Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotServiceSpec$__spock_initializeFields_closure1BeanInfo"
@@ -19899,6 +22262,17 @@
             "java.util.List",
             "java.lang.Object"
           ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.util.List",
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
         }
       ]
     },
@@ -19971,6 +22345,17 @@
             "java.lang.Object",
             "java.lang.Object",
             "java.util.List",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.util.List",
+            "java.lang.Object",
             "java.lang.Object"
           ]
         }
@@ -21370,6 +23755,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$1274976446",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$127801513",
       "fields": [
         {
@@ -21715,6 +24108,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$816758344",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$89010055",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -22221,6 +24622,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.util.ApplicationRestarter$SpockMock$1684782790",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.util.ApplicationRestarter$SpockMock$1753018654",
       "fields": [
         {
@@ -22352,6 +24761,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.util.InternetConnectivityProvider$SpockMock$1014160033",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.util.InternetConnectivityProvider$SpockMock$1029236201",
       "fields": [
         {
@@ -22473,6 +24890,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.util.InternetConnectivityProvider$SpockMock$752766962",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.util.InternetConnectivityProvider$SpockMock$780159168",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -22778,6 +25203,23 @@
       "type": "io.camunda.rpa.worker.util.LoopingListIteratorSpecCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.util.PathUtils",
+      "methods": [
+        {
+          "name": "fixSlashes",
+          "parameterTypes": [
+            "java.nio.file.Path"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.util.PathUtilsBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.util.PathUtilsCustomizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.util.YamlMapper",
       "allDeclaredFields": true,
       "methods": [
@@ -22945,6 +25387,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1199039452",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1205151074",
       "fields": [
         {
@@ -23002,6 +25452,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1329741140",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1354151655",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -23502,6 +25960,10 @@
         {
           "name": "size",
           "parameterTypes": []
+        },
+        {
+          "name": "workspace",
+          "parameterTypes": []
         }
       ]
     },
@@ -23716,6 +26178,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$201046027",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$2084058577",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -24007,6 +26477,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceVariablesManager$SpockMock$1734299148",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceVariablesManager$SpockMock$1981238254",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -24366,6 +26844,12 @@
       "type": "io.camunda.rpa.worker.workspace.api.WorkspaceVariablesControllerSpecCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.$Proxy235BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.$Proxy235Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.$Proxy238BeanInfo"
     },
     {
@@ -24509,6 +26993,10 @@
         },
         {
           "name": "getBuilder3",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCamundaClient",
           "parameterTypes": []
         },
         {
@@ -25986,8 +28474,127 @@
           "parameterTypes": [
             "io.camunda.rpa.worker.io.IO"
           ]
+        },
+        {
+          "name": "renderReportForTaskTesting",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.workspace.WorkspaceFile"
+          ]
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRenderer$SpockMock$427190084",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec",
+      "methods": [
+        {
+          "name": "$spock_feature_0_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_initializeFields",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "io_camunda_rpa_worker_PublisherUtils__TIMEOUT$get",
+          "parameterTypes": []
+        },
+        {
+          "name": "setup",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_feature_0_0_closure2",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.nio.file.Path",
+            "java.lang.String",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_feature_0_0_closure2$_closure4",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_feature_0_0_closure2$_closure4BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_feature_0_0_closure2$_closure4Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_feature_0_0_closure2BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_feature_0_0_closure2Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_initializeFields_closure1",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_initializeFields_closure1$_closure3",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.util.function.Supplier"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_initializeFields_closure1$_closure3BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_initializeFields_closure1$_closure3Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_initializeFields_closure1BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpec$__spock_initializeFields_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRendererSpecCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessor",
@@ -25998,6 +28605,18 @@
         {
           "name": "TASK_TESTING_VARIABLE_NAME"
         }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.workspace.WorkspaceService",
+            "io.camunda.rpa.worker.files.FilesService",
+            "java.util.Map",
+            "io.camunda.client.api.response.ActivatedJob",
+            "io.camunda.rpa.worker.zeebe.TaskTestingReportRenderer"
+          ]
+        }
       ]
     },
     {
@@ -26005,6 +28624,54 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorSpec",
+      "methods": [
+        {
+          "name": "$spock_feature_0_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_0_1",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_initializeFields",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "io_camunda_rpa_worker_PublisherUtils__TIMEOUT$get",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorSpec$__spock_initializeFields_closure1",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorSpec$__spock_initializeFields_closure1BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorSpec$__spock_initializeFields_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingZeebeResultsProcessorSpecCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeAuthProperties",
@@ -28029,6 +30696,23 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure1$_closure27Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure1$_closure32",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure1$_closure32BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure1$_closure32Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure1BeanInfo"
     },
     {
@@ -28083,6 +30767,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure2$_closure28Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure2$_closure33",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure2$_closure33BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure2$_closure33Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure2BeanInfo"
@@ -28158,6 +30859,40 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure29Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure34",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure34$_closure35",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure34$_closure35BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure34$_closure35Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure34BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3$_closure34Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_0_closure3BeanInfo"
     },
     {
@@ -28192,6 +30927,23 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure22$_closure60Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure22$_closure65",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure22$_closure65BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure22$_closure65Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure22BeanInfo"
     },
     {
@@ -28224,6 +30976,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure23$_closure61Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure23$_closure66",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure23$_closure66BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure23$_closure66Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure23BeanInfo"
@@ -28275,6 +31044,40 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure62Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure67",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure67$_closure68",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure67$_closure68BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure67$_closure68Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure67BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24$_closure67Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_10_closure24BeanInfo"
@@ -28573,6 +31376,40 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure31Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure36",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure36$_closure37",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure36$_closure37BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure36$_closure37Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure36BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4$_closure36Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure4BeanInfo"
     },
     {
@@ -28672,6 +31509,57 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure33Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38$_closure39",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38$_closure39BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38$_closure39Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38$_closure40",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38$_closure40BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38$_closure40Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5$_closure38Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_1_closure5BeanInfo"
@@ -28789,6 +31677,40 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure36Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure41",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure41$_closure42",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure41$_closure42BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure41$_closure42Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure41BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6$_closure41Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure6BeanInfo"
     },
     {
@@ -28888,6 +31810,57 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure38Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43$_closure44",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43$_closure44BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43$_closure44Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43$_closure45",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43$_closure45BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43$_closure45Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7$_closure43Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_2_closure7BeanInfo"
@@ -29044,6 +32017,57 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure41Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46$_closure47",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46$_closure47BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46$_closure47Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46$_closure48",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46$_closure48BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46$_closure48Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8$_closure46Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_3_closure8BeanInfo"
     },
     {
@@ -29087,6 +32111,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure10$_closure45Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure10$_closure50",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure10$_closure50BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure10$_closure50Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure10BeanInfo"
@@ -29160,6 +32201,40 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure46Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure51",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure51$_closure52",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure51$_closure52BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure51$_closure52Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure51BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11$_closure51Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure11BeanInfo"
@@ -29255,6 +32330,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure9$_closure44Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure9$_closure49",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure9$_closure49BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure9$_closure49Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_4_closure9BeanInfo"
@@ -29356,6 +32448,57 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure48Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53$_closure54",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53$_closure54BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53$_closure54Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53$_closure55",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53$_closure55BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53$_closure55Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12$_closure53Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_5_closure12BeanInfo"
@@ -29487,6 +32630,23 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure13$_closure51Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure13$_closure56",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure13$_closure56BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure13$_closure56Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure13BeanInfo"
     },
     {
@@ -29586,6 +32746,57 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure52Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57$_closure58",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57$_closure58BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57$_closure58Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57$_closure59",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57$_closure59BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57$_closure59Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14$_closure57Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_6_closure14BeanInfo"
@@ -29711,6 +32922,23 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_7_closure16$_closure55Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_7_closure16$_closure60",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_7_closure16$_closure60BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_7_closure16$_closure60Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_7_closure16BeanInfo"
     },
     {
@@ -29779,6 +33007,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_8_closure17$_closure56Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_8_closure17$_closure61",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_8_closure17$_closure61BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_8_closure17$_closure61Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_8_closure17BeanInfo"
@@ -29929,6 +33174,23 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure19$_closure57Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure19$_closure62",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure19$_closure62BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure19$_closure62Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure19BeanInfo"
     },
     {
@@ -29974,6 +33236,23 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure20$_closure58Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure20$_closure63",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure20$_closure63BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure20$_closure63Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure20BeanInfo"
     },
     {
@@ -30017,6 +33296,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure21$_closure59Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure21$_closure64",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure21$_closure64BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure21$_closure64Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpec$__spock_feature_3_9_closure21BeanInfo"
@@ -30185,6 +33481,24 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeFunctionalSpecCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobInfo",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.Long"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobInfoBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobInfoCustomizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller",
       "allDeclaredFields": true,
       "methods": [
@@ -30194,6 +33508,16 @@
             "io.camunda.rpa.worker.zeebe.ZeebeProperties",
             "io.camunda.client.CamundaClient",
             "io.camunda.rpa.worker.zeebe.ZeebeJobService"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.zeebe.ZeebeProperties",
+            "io.camunda.client.CamundaClient",
+            "io.camunda.rpa.worker.zeebe.ZeebeJobService",
+            "java.lang.Iterable",
+            "java.util.function.Supplier"
           ]
         },
         {
@@ -30384,6 +33708,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$604345453",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$72729059",
       "fields": [
         {
@@ -30460,11 +33792,21 @@
         {
           "name": "activateJobClientCall",
           "parameterTypes": [
+            "io.camunda.client.api.response.ActivatedJob"
+          ]
+        },
+        {
+          "name": "activateJobClientCall",
+          "parameterTypes": [
             "io.camunda.zeebe.client.api.response.ActivatedJob"
           ]
         },
         {
           "name": "getActivate1",
+          "parameterTypes": []
+        },
+        {
+          "name": "getFailDelayGeneratorSink",
           "parameterTypes": []
         },
         {
@@ -30474,6 +33816,12 @@
         {
           "name": "getTASK_PREFIX",
           "parameterTypes": []
+        },
+        {
+          "name": "setFailDelayGeneratorSink",
+          "parameterTypes": [
+            "reactor.core.publisher.Sinks$One"
+          ]
         }
       ]
     },
@@ -30497,6 +33845,10 @@
       "methods": [
         {
           "name": "doCall",
+          "parameterTypes": []
+        },
+        {
+          "name": "doCall",
           "parameterTypes": [
             "java.lang.Object"
           ]
@@ -30510,8 +33862,29 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_2_closure7Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_2_closure8",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_2_closure8BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_2_closure8Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_3_closure10",
       "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        },
         {
           "name": "doCall",
           "parameterTypes": [
@@ -30525,6 +33898,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_3_closure10Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_3_closure11",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_3_closure11BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_3_closure11Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_3_closure8",
@@ -30591,6 +33981,23 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_4_closure12Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_4_closure13",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_4_closure13BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_feature_0_4_closure13Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure4",
       "methods": [
         {
@@ -30617,6 +34024,23 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure4$_closure16Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure4$_closure17",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure4$_closure17BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure4$_closure17Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure4BeanInfo"
@@ -30682,10 +34106,59 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure18Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure19",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure19$_closure21",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure19$_closure21BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure19$_closure21Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure19BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5$_closure19Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5BeanInfo"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure5Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure6",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure6BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$__spock_initializeFields_closure6Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1",
@@ -30748,6 +34221,55 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure13Customizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14$_closure15",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.util.function.BiFunction"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14$_closure15$_closure16",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14$_closure15$_closure16BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14$_closure15$_closure16Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14$_closure15BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14$_closure15Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1$_closure14Customizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPollerSpec$_activateJobClientCall_closure1BeanInfo"
     },
     {
@@ -30797,6 +34319,20 @@
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService",
       "allDeclaredFields": true,
       "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.client.CamundaClient",
+            "io.camunda.rpa.worker.robot.RobotService",
+            "io.camunda.rpa.worker.script.ScriptRepository",
+            "tools.jackson.databind.ObjectMapper",
+            "io.camunda.rpa.worker.workspace.WorkspaceCleanupService",
+            "io.camunda.rpa.worker.zeebe.ZeebeMetricsService",
+            "io.camunda.rpa.worker.workspace.WorkspaceService",
+            "io.camunda.rpa.worker.files.FilesService",
+            "io.camunda.rpa.worker.zeebe.TaskTestingReportRenderer"
+          ]
+        },
         {
           "name": "<init>",
           "parameterTypes": [
@@ -30890,6 +34426,12 @@
         {
           "name": "handleJob",
           "parameterTypes": [
+            "io.camunda.client.api.response.ActivatedJob"
+          ]
+        },
+        {
+          "name": "handleJob",
+          "parameterTypes": [
             "io.camunda.zeebe.client.api.response.ActivatedJob"
           ]
         },
@@ -30969,6 +34511,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$1442490405",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$1578534037",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -31287,6 +34837,20 @@
             "java.lang.Object",
             "java.lang.Object",
             "java.util.List",
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.util.List",
+            "java.lang.Object",
             "java.lang.Object",
             "java.lang.Object"
           ]
@@ -32029,6 +35593,20 @@
             "java.lang.Object",
             "java.lang.Object"
           ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.util.List",
+            "java.lang.Object",
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
         }
       ]
     },
@@ -32596,6 +36174,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeMetricsService$SpockMock$840194384",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeMetricsService$SpockMock$867804636",
       "fields": [
         {
@@ -32737,6 +36323,15 @@
           "parameterTypes": [
             "java.lang.String",
             "java.util.Set"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.util.Set",
+            "int",
+            "io.camunda.rpa.worker.zeebe.ZeebeProperties$AuthMethod"
           ]
         },
         {
@@ -33545,6 +37140,10 @@
         },
         {
           "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getCamundaClient",
           "parameterTypes": []
         },
         {
@@ -36371,6 +39970,14 @@
       ]
     },
     {
+      "type": "io.grpc.Channel$SpockMock$1127842752",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.grpc.Channel$SpockMock$1367108327",
       "fields": [
         {
@@ -36400,6 +40007,14 @@
     },
     {
       "type": "io.grpc.ClientCall$SpockMock$1430033980",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.grpc.ClientCall$SpockMock$1520205622",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -40651,6 +44266,12 @@
           ]
         },
         {
+          "name": "resolveSibling",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
           "name": "toAbsolutePath",
           "parameterTypes": []
         },
@@ -41543,6 +45164,10 @@
           "parameterTypes": [
             "java.util.Collection"
           ]
+        },
+        {
+          "name": "isEmpty",
+          "parameterTypes": []
         },
         {
           "name": "iterator",
@@ -42762,6 +46387,12 @@
       "type": "jdk.proxy2.$Proxy100Customizer"
     },
     {
+      "type": "jdk.proxy2.$Proxy101BeanInfo"
+    },
+    {
+      "type": "jdk.proxy2.$Proxy101Customizer"
+    },
+    {
       "type": "jdk.proxy2.$Proxy86BeanInfo"
     },
     {
@@ -42804,6 +46435,12 @@
       "type": "jdk.proxy3.$Proxy116Customizer"
     },
     {
+      "type": "jdk.proxy3.$Proxy139BeanInfo"
+    },
+    {
+      "type": "jdk.proxy3.$Proxy139Customizer"
+    },
+    {
       "type": "jdk.proxy3.$Proxy221BeanInfo"
     },
     {
@@ -42832,6 +46469,12 @@
     },
     {
       "type": "jdk.proxy3.$Proxy277Customizer"
+    },
+    {
+      "type": "jdk.proxy3.$Proxy286BeanInfo"
+    },
+    {
+      "type": "jdk.proxy3.$Proxy286Customizer"
     },
     {
       "type": "jdk.proxy3.$Proxy292BeanInfo"
@@ -43984,6 +47627,14 @@
       ]
     },
     {
+      "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$1748630934",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$1777193636",
       "fields": [
         {
@@ -44335,6 +47986,14 @@
     },
     {
       "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$525053927",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$568727404",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -58306,6 +61965,111 @@
       "type": "org.jooq.DSLContext"
     },
     {
+      "type": "org.jsoup.Connection"
+    },
+    {
+      "type": "org.jsoup.Jsoup",
+      "methods": [
+        {
+          "name": "parse",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jsoup.JsoupBeanInfo"
+    },
+    {
+      "type": "org.jsoup.JsoupCustomizer"
+    },
+    {
+      "type": "org.jsoup.internal.QuietAppendable"
+    },
+    {
+      "type": "org.jsoup.nodes.Document"
+    },
+    {
+      "type": "org.jsoup.nodes.DocumentBeanInfo"
+    },
+    {
+      "type": "org.jsoup.nodes.DocumentCustomizer"
+    },
+    {
+      "type": "org.jsoup.nodes.Element",
+      "methods": [
+        {
+          "name": "getElementById",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "getElementsByClass",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "getElementsByTag",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jsoup.nodes.ElementBeanInfo"
+    },
+    {
+      "type": "org.jsoup.nodes.ElementCustomizer"
+    },
+    {
+      "type": "org.jsoup.nodes.Node"
+    },
+    {
+      "type": "org.jsoup.nodes.NodeBeanInfo"
+    },
+    {
+      "type": "org.jsoup.nodes.NodeCustomizer"
+    },
+    {
+      "type": "org.jsoup.select.Elements",
+      "methods": [
+        {
+          "name": "attr",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.jsoup.select.ElementsBeanInfo"
+    },
+    {
+      "type": "org.jsoup.select.ElementsCustomizer"
+    },
+    {
+      "type": "org.jsoup.select.Evaluator"
+    },
+    {
+      "type": "org.jsoup.select.NodeFilter"
+    },
+    {
+      "type": "org.jsoup.select.NodeVisitor"
+    },
+    {
+      "type": "org.jsoup.select.Nodes"
+    },
+    {
+      "type": "org.jsoup.select.NodesBeanInfo"
+    },
+    {
+      "type": "org.jsoup.select.NodesCustomizer"
+    },
+    {
       "type": "org.junit.AssumptionViolatedException"
     },
     {
@@ -58800,6 +62564,15 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$1908158193",
+      "serializable": true,
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.File$SpockMock$1970640020",
       "fields": [
         {
@@ -59146,6 +62919,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$820749955",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$855771682",
       "fields": [
         {
@@ -59250,6 +63031,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.Object$SpockMock$789091276",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.Object$SpockMock$862948794",
       "fields": [
         {
@@ -59307,6 +63096,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$1202037889",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$1221822186",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -59698,6 +63495,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.Process$SpockMock$385706945",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.Process$SpockMock$410196918",
       "fields": [
         {
@@ -59890,7 +63695,13 @@
     },
     {
       "type": "org.spockframework.runtime.ErrorCollector",
-      "allDeclaredFields": true
+      "allDeclaredFields": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "org.spockframework.runtime.ErrorCollectorBeanInfo"
@@ -61478,6 +65289,14 @@
     },
     {
       "type": "org.springframework.boot.SpringApplication$SpockMock$1249332687",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.SpringApplication$SpockMock$1336374195",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -70392,6 +74211,15 @@
       ]
     },
     {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$1549397739",
+      "serializable": true,
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$1556106624",
       "fields": [
         {
@@ -71516,6 +75344,14 @@
     },
     {
       "type": "org.springframework.http.ResponseEntity$SpockMock$1948387701",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.http.ResponseEntity$SpockMock$1999569064",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -73603,6 +77439,9 @@
       "type": "reactor.core.publisher.ConnectableFlux"
     },
     {
+      "type": "reactor.core.publisher.ContextHolder"
+    },
+    {
       "type": "reactor.core.publisher.FlatMapTracker",
       "fields": [
         {
@@ -73637,6 +77476,14 @@
         {
           "name": "then",
           "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "reactor.core.publisher.Flux$SpockMock$1365722137",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
         }
       ]
     },
@@ -74027,6 +77874,9 @@
       "type": "reactor.core.publisher.Hooks"
     },
     {
+      "type": "reactor.core.publisher.InternalEmptySink"
+    },
+    {
       "type": "reactor.core.publisher.InternalFluxOperator",
       "allDeclaredFields": true
     },
@@ -74048,6 +77898,9 @@
     },
     {
       "type": "reactor.core.publisher.InternalMonoOperatorCustomizer"
+    },
+    {
+      "type": "reactor.core.publisher.InternalOneSink"
     },
     {
       "type": "reactor.core.publisher.LambdaMonoSubscriber",
@@ -74183,6 +78036,14 @@
     },
     {
       "type": "reactor.core.publisher.Mono$SpockMock$1847195606",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "reactor.core.publisher.Mono$SpockMock$1909941181",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -74838,6 +78699,15 @@
       ]
     },
     {
+      "type": "reactor.core.publisher.SinkEmptySerialized"
+    },
+    {
+      "type": "reactor.core.publisher.SinkEmptySerializedBeanInfo"
+    },
+    {
+      "type": "reactor.core.publisher.SinkEmptySerializedCustomizer"
+    },
+    {
       "type": "reactor.core.publisher.SinkManyEmitterProcessor",
       "fields": [
         {
@@ -74864,6 +78734,49 @@
       "type": "reactor.core.publisher.SinkManySerialized"
     },
     {
+      "type": "reactor.core.publisher.SinkOneSerialized"
+    },
+    {
+      "type": "reactor.core.publisher.SinkOneSerializedBeanInfo"
+    },
+    {
+      "type": "reactor.core.publisher.SinkOneSerializedCustomizer"
+    },
+    {
+      "type": "reactor.core.publisher.Sinks",
+      "methods": [
+        {
+          "name": "one",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "reactor.core.publisher.Sinks$EmitFailureHandler"
+    },
+    {
+      "type": "reactor.core.publisher.Sinks$Empty",
+      "methods": [
+        {
+          "name": "asMono",
+          "parameterTypes": []
+        },
+        {
+          "name": "tryEmitEmpty",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "reactor.core.publisher.Sinks$One"
+    },
+    {
+      "type": "reactor.core.publisher.SinksBeanInfo"
+    },
+    {
+      "type": "reactor.core.publisher.SinksCustomizer"
+    },
+    {
       "type": "reactor.core.publisher.SinksSpecs$AbstractSerializedSink",
       "fields": [
         {
@@ -74873,6 +78786,12 @@
           "name": "wip"
         }
       ]
+    },
+    {
+      "type": "reactor.core.publisher.SinksSpecs$AbstractSerializedSinkBeanInfo"
+    },
+    {
+      "type": "reactor.core.publisher.SinksSpecs$AbstractSerializedSinkCustomizer"
     },
     {
       "type": "reactor.core.publisher.SourceProducer",
@@ -75265,6 +79184,12 @@
       "type": "spock.lang.Specification",
       "allDeclaredFields": true,
       "methods": [
+        {
+          "name": "verifyAll",
+          "parameterTypes": [
+            "groovy.lang.Closure"
+          ]
+        },
         {
           "name": "with",
           "parameterTypes": [
@@ -76282,6 +80207,165 @@
     {
       "type": {
         "proxy": [
+          "io.camunda.client.CamundaClient",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.CamundaFuture",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.ActivateJobsCommandStep1",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep2",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.ActivateJobsCommandStep1$ActivateJobsCommandStep3",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.CompleteJobCommandStep1",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.FailJobCommandStep1",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.FailJobCommandStep1$FailJobCommandStep2",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.FinalCommandStep",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.SetVariablesCommandStep1",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.SetVariablesCommandStep1$SetVariablesCommandStep2",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.ThrowErrorCommandStep1",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.ThrowErrorCommandStep1$ThrowErrorCommandStep2",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.TopologyRequestStep1",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.UpdateJobCommandStep1",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.command.UpdateJobCommandStep1$UpdateJobCommandStep2",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.response.ActivateJobsResponse"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.response.ActivatedJob",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      },
+      "methods": [
+        {
+          "name": "equals",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.client.api.response.Topology",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
           "io.camunda.rpa.runtime.secrets.AuthClient"
         ]
       },
@@ -76349,6 +80433,14 @@
       "type": {
         "proxy": [
           "io.camunda.rpa.worker.robot.EnvironmentVariablesContributor",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.camunda.rpa.worker.robot.ExecutionResultsProcessor",
           "org.spockframework.mock.ISpockMockObject"
         ]
       }
@@ -80371,6 +84463,9 @@
       "glob": "org/hibernate/validator/ValidationMessages_en_GB.properties"
     },
     {
+      "glob": "org/htmlunit/cyberneko/html_entities.properties"
+    },
+    {
       "glob": "org/json/JSONObject.class"
     },
     {
@@ -82202,6 +86297,9 @@
     },
     {
       "glob": "sun/nio/ch/Interruptible.class"
+    },
+    {
+      "glob": "tasklog.html"
     },
     {
       "glob": "zeebe-client-legacy-property-mappings.properties"
