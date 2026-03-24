@@ -15,7 +15,7 @@ public interface AuthClient {
 	record AuthenticationResponse(String accessToken, int expiresIn) { }
 	
 	interface InternalClient {
-		@PostExchange(value = "/token", contentType = "application/x-www-form-urlencoded")
+		@PostExchange(value = "/", contentType = "application/x-www-form-urlencoded")
 		Mono<AuthenticationResponse> authenticate(@RequestBody MultiValueMap<String, Object> body);
 	}
 }

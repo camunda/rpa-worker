@@ -39,7 +39,7 @@ class ZeebeClientsConfiguration {
 	public AuthClient authClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
 		AuthClient.InternalClient client = HttpServiceProxyFactory
 				.builderFor(WebClientAdapter.create(webClientBuilder
-						.baseUrl(zeebeProperties.authEndpoint().toString())
+						.baseUrl(camundaClientProperties.getAuth().getTokenUrl().toString())
 						.build()))
 				.build()
 				.createClient(AuthClient.InternalClient.class);

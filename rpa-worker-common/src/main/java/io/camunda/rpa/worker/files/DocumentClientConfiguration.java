@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
 class DocumentClientConfiguration {
 
 	private final ZeebeAuthProperties zeebeAuthProperties;
+	private final CamundaClientProperties camundaClientProperties;
 	private final ZeebeProperties zeebeProperties;
 
 	@Bean
@@ -33,8 +34,8 @@ class DocumentClientConfiguration {
 			ZeebeAuthenticationService zeebeAuthenticationService) {
 		
 		Mono<String> authenticator = zeebeAuthenticationService.getAuthToken(
-				zeebeAuthProperties.clientId(), 
-				zeebeAuthProperties.clientSecret(), 
+				camundaClientProperties.getAuth().getClientId(), 
+				camundaClientProperties.getAuth().getClientSecret(), 
 				camundaClientProperties.getAuth().getAudience());
 
 		DocumentClient client = HttpServiceProxyFactory
