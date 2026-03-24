@@ -1,12 +1,7 @@
 import releasenotes.ReleaseNotesPlugin
 
-import java.net.http.HttpClient
-import java.net.http.HttpRequest
-import java.net.http.HttpResponse
 import java.nio.file.Files
 import java.nio.file.LinkOption
-import java.time.Duration
-import java.time.Instant
 
 plugins {
 	id 'java'
@@ -155,6 +150,8 @@ graalvmNative {
 			buildArgs.add("--initialize-at-build-time=org.slf4j.jul.JDK14LoggerAdapter")
 			buildArgs.add("--initialize-at-run-time=sun.net.dns.ResolverConfigurationImpl")
 			buildArgs.add("--enable-native-access=ALL-UNNAMED")
+			buildArgs.add("-H:CompilationExpirationPeriod=600.0")
+			buildArgs.add("-R:CompilationExpirationPeriod=600.0")
 		}
 	}
 }
@@ -173,13 +170,13 @@ tasks.register("fixProvisionedToolchainIfNecessary") {
 	
 	onlyIf { ! System.properties['os.name'].contains("Windows") }
 
-	JavaLauncher javaLauncher = javaToolchains.launcherFor {
+	Provider<JavaLauncher> javaLauncher = javaToolchains.launcherFor {
 		languageVersion = JavaLanguageVersion.of(25)
 		vendor = JvmVendorSpec.GRAAL_VM
-	}.get()
+	}
 	
 	doLast {
-		java.nio.file.Path binDir = javaLauncher.executablePath.asFile.toPath().parent
+		java.nio.file.Path binDir = javaLauncher.get().executablePath.asFile.toPath().parent
 
 		java.nio.file.Path nativeImagePath = binDir.resolve("native-image")
 		java.nio.file.Path nativeImageConfigurePath = binDir.resolve("native-image-configure")
@@ -247,34 +244,22 @@ bootJar {
 		archiveBaseName = "${archiveBaseName.get()}-docker-${project.property("nativeArch")}"
 }
 
+tasks.register("ensureJdkSe", JavaExec) {
+	it.jvmArgs("-version")
+	it.mainClass = "Noop"
+	
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(25)
+		vendor = JvmVendorSpec.ADOPTIUM
+	}
+}
 
-tasks.register("testDiscoApi") {
-	doLast {
-		Instant maxTime = Instant.now().plus(Duration.ofMinutes(10))
-		Duration delay = Duration.ofSeconds(2)
-		HttpClient client = HttpClient.newBuilder()
-				.connectTimeout(Duration.ofSeconds(10))
-				.followRedirects(HttpClient.Redirect.NORMAL)
-				.build()
-		boolean responseSeen = false
-		while(Instant.now() < maxTime) {
-			HttpRequest request = HttpRequest.newBuilder()
-					.GET()
-					.uri(URI.create("https://api.foojay.io/disco/v3.0/major_versions"))
-					.timeout(Duration.ofSeconds(10))
-					.build()
-			try {
-				HttpResponse<Void> resp = client.send(request, HttpResponse.BodyHandlers.discarding())
-				if(resp.statusCode() != 200) throw new RuntimeException()
-				responseSeen = true
-				break
-			} catch (Exception thrown) {
-				logger.quiet(thrown.toString())
-				Thread.sleep(delay)
-				delay = delay.multipliedBy(2)
-			}
-		}
-		if( ! responseSeen) throw new GradleException("Disco API not reachable")
-		else logger.quiet("OK")
+tasks.register("ensureJdkGraal", JavaExec) {
+	it.jvmArgs("-version")
+	it.mainClass = "Noop"
+
+	javaLauncher = javaToolchains.launcherFor {
+		languageVersion = JavaLanguageVersion.of(25)
+		vendor = JvmVendorSpec.GRAAL_VM
 	}
 }

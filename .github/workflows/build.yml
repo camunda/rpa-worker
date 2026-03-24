@@ -32,7 +32,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           ./gradlew setVersion
           ./gradlew build elementTemplate
           ./gradlew -PnativePlatform=linux -PnativeArch=amd64 -PdockerJar assemble
@@ -99,7 +99,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           ./gradlew setVersion
           ./gradlew -PnativePlatform=win32 -PnativeArch=amd64 check
 
@@ -215,7 +215,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           ./gradlew setVersion
           ./gradlew -PnativePlatform=linux -PnativeArch=amd64 nativeCompile zipNativeImage
 
@@ -251,7 +251,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           ./gradlew setVersion
           ./gradlew --% -Djava.io.tmpdir=D:/Temp/ -PnativePlatform=win32 -PnativeArch=amd64 nativeCompile zipNativeImage
 
@@ -281,7 +281,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           ./gradlew setVersion
           ./gradlew -PnativePlatform=darwin -PnativeArch=amd64 nativeCompile zipNativeImage
 
@@ -311,7 +311,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           ./gradlew setVersion
           ./gradlew -PnativePlatform=darwin -PnativeArch=aarch64 nativeCompile zipNativeImage 
 
@@ -399,7 +399,7 @@ jobs:
       
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           unzip rpa-worker_*_linux_amd64.zip
           rm rpa-worker_*_linux_amd64.zip
           export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_linux_amd64)
@@ -661,7 +661,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           Expand-Archive -Path rpa-worker_*_win32_amd64.zip
           rm rpa-worker_*_win32_amd64.zip
           Resolve-Path rpa-worker_*_win32_amd64/rpa-worker_*_win32_amd64.exe | Select-Object -ExpandProperty Path > workerpath.txt
@@ -714,7 +714,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           unzip rpa-worker_*_darwin_amd64.zip
           rm rpa-worker_*_darwin_amd64.zip
           export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_darwin_amd64)
@@ -769,7 +769,7 @@ jobs:
 
       - name: Build
         run: |
-          ./gradlew testDiscoApi
+          ./EnsureToolchains
           unzip rpa-worker_*_darwin_aarch64.zip
           rm rpa-worker_*_darwin_aarch64.zip
           export CAMUNDA_RPA_E2E_PATHTOWORKER=$(realpath rpa-worker_*_darwin_aarch64)
