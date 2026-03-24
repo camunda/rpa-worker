@@ -52,6 +52,7 @@ import java.security.cert.X509Certificate;
 import java.util.stream.Stream;
 
 
+@SuppressWarnings("removal")
 @Configuration
 @ImportRuntimeHints(NativeHints.class)
 class NativeHints implements RuntimeHintsRegistrar {
@@ -122,6 +123,7 @@ class NativeHints implements RuntimeHintsRegistrar {
 						TypeReference.of(PrivateKey.class),
 						TypeReference.of(X509Certificate.class),
 
+						// TODO What is going on with this?
 						TypeReference.of(JobWorkerValueCustomizerCompat.class),
 						TypeReference.of(io.camunda.client.impl.response.ActivatedJobImpl.class),
 						TypeReference.of(io.camunda.zeebe.client.impl.response.ActivatedJobImpl.class),
