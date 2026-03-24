@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker;
 
+import io.camunda.client.spring.annotation.customizer.JobWorkerValueCustomizerCompat;
 import io.grpc.ProxyDetector;
 import io.netty.handler.codec.http2.Http2SecurityUtil;
 import io.netty.handler.proxy.HttpProxyHandler;
@@ -121,7 +122,7 @@ class NativeHints implements RuntimeHintsRegistrar {
 						TypeReference.of(PrivateKey.class),
 						TypeReference.of(X509Certificate.class),
 
-//						TypeReference.of(JobWorkerValueCustomizerCompat.class),
+						TypeReference.of(JobWorkerValueCustomizerCompat.class),
 						TypeReference.of(io.camunda.client.impl.response.ActivatedJobImpl.class),
 						TypeReference.of(io.camunda.zeebe.client.impl.response.ActivatedJobImpl.class),
 						TypeReference.of(io.camunda.client.api.ProblemDetail.class),
