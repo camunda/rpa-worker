@@ -153,6 +153,13 @@ graalvmNative {
 			buildArgs.add("--enable-native-access=ALL-UNNAMED")
 			buildArgs.add("-H:CompilationExpirationPeriod=600.0")
 			buildArgs.add("-R:CompilationExpirationPeriod=600.0")
+			if(project.hasProperty("nativePlatform")
+					&& project.hasProperty("nativeArch")
+					&& project.properties.nativePlatform == "darwin"
+					&& project.properties.nativeArch == "aarch64") {
+				buildArgs.add("-R:MaximumHeapSizePercent=70")
+				buildArgs.add("-H:DeadlockWatchdogInterval=20")
+			}
 		}
 	}
 }
