@@ -151,8 +151,8 @@ graalvmNative {
 			buildArgs.add("--initialize-at-build-time=org.slf4j.jul.JDK14LoggerAdapter")
 			buildArgs.add("--initialize-at-run-time=sun.net.dns.ResolverConfigurationImpl")
 			buildArgs.add("--enable-native-access=ALL-UNNAMED")
-			buildArgs.add("-H:CompilationExpirationPeriod=600.0")
-			buildArgs.add("-R:CompilationExpirationPeriod=600.0")
+			buildArgs.add("-H:CompilationExpirationPeriod=900.0")
+			buildArgs.add("-R:CompilationExpirationPeriod=900.0")
 			if(project.hasProperty("nativePlatform")
 					&& project.hasProperty("nativeArch")
 					&& project.properties.nativePlatform == "darwin"
