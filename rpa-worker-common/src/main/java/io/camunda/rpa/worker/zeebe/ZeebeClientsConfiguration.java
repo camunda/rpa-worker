@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.zeebe;
 
+import io.camunda.client.CamundaClientConfiguration;
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.client.spring.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +14,11 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
 import tools.jackson.core.ObjectReadContext;
 import tools.jackson.core.Version;
 import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationContext;
@@ -23,6 +26,7 @@ import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.ValueSerializer;
 import tools.jackson.databind.module.SimpleModule;
 
+import java.net.URI;
 import java.util.Map;
 
 @Configuration
@@ -34,12 +38,13 @@ class ZeebeClientsConfiguration {
 	private final CamundaClientProperties camundaClientProperties;
 	private final ObjectProvider<ZeebeAuthenticationService> zeebeAuthenticationService;
 	private final ZeebeAuthProperties zeebeAuthProperties;
+	private final CamundaClientConfiguration camundaClientConfiguration;
 	
 	@Bean
 	public AuthClient authClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
 		AuthClient.InternalClient client = HttpServiceProxyFactory
 				.builderFor(WebClientAdapter.create(webClientBuilder
-						.baseUrl(camundaClientProperties.getAuth().getTokenUrl().toString())
+						.baseUrl(OidcConfigurationHelper.getTokenUrl(zeebeProperties, camundaClientProperties, WebClient.builder().build()).toString())
 						.build()))
 				.build()
 				.createClient(AuthClient.InternalClient.class);
@@ -95,6 +100,16 @@ class ZeebeClientsConfiguration {
 					return new AuthClient.AuthenticationResponse(
 							map.get("access_token"),
 							Integer.parseInt(map.get("expires_in")));
+				}
+			});
+			
+			addDeserializer(OidcConfigurationHelper.WellKnownConfiguration.class, new ValueDeserializer<>() {
+				@Override
+				public OidcConfigurationHelper.WellKnownConfiguration deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
+					ObjectReadContext codec = p.objectReadContext();
+					Map<String, String> map = codec.readValue(p, new TypeReference<>() {});
+					return new OidcConfigurationHelper.WellKnownConfiguration(
+							URI.create(map.get("token_endpoint")));
 				}
 			});
 		}};
