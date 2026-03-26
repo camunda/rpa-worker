@@ -10,11 +10,6 @@ import java.time.Duration
 
 abstract class SmokeTestsE2ESpec extends AbstractE2ESpec {
 
-	@Override
-	Map<String, String> getEnvironment() {
-		return [:]
-	}
-
 	@Ignore("Selenium version used by RPA libs too old, Selenium Manager cannot provision Firefox")
 	void "Runs the RPA Challenge"() {
 		when:

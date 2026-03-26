@@ -30,10 +30,6 @@ class ZeebeConfiguration {
 				overrides.putAll(p)
 			}
 
-		String camundaHost = overrides['camunda.rpa.e2e.camunda-host']
-				?: System.getenv("CAMUNDA_RPA_E2E_CAMUNDAHOST")
-				?: "camunda.local"
-
 		String clientId = System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTID") ?: "zeebe"
 		
 		String clientSecret = System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET") ?: "unset"
@@ -48,13 +44,8 @@ class ZeebeConfiguration {
 
 		configProperties['json.logging.enabled'] = 'false'
 
-//		configProperties["camunda.client.rest-address"] = "http://localhost:8080/zeebe/"
-//		configProperties["camunda.client.grpc-address"] = "http://zeebe.${camundaHost}"
-		
-//		configProperties["camunda.client.auth.issuer"] = "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect/token"
-//		configProperties["camunda.client.auth.audience"] = "zeebe.${camundaHost}"
 		if(overrides['camunda.rpa.zeebe.auth-method'] != "cookie") {
-			configProperties["camunda.client.mode"] = "selfmanaged"
+//			configProperties["camunda.client.mode"] = "selfmanaged"
 			configProperties["camunda.client.auth.client-id"] = clientId
 			configProperties["camunda.client.auth.client-secret"] = clientSecret
 		}
@@ -64,7 +55,6 @@ class ZeebeConfiguration {
 		
 		configProperties['camunda.rpa.python-runtime.type'] = "python"
 		
-//		configProperties["camunda.rpa.e2e.camunda-host"] = camundaHost
 		configProperties["camunda.rpa.e2e.operate-client"] = operateClient
 		configProperties["camunda.rpa.e2e.operate-client-secret"] = operateSecret
 		
