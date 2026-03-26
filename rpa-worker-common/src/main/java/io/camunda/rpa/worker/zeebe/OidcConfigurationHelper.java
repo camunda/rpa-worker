@@ -23,7 +23,13 @@ class OidcConfigurationHelper {
 						+ (camundaClientProperties.getAuth().getIssuerUrl().getPath().endsWith("/") ? "" : "/"))
 				.resolve(".well-known/openid-configuration");
 
-		return webClient.get().uri(wellKnownUrl).retrieve().bodyToMono(WellKnownConfiguration.class).block().tokenEndpoint();
+		return webClient
+				.get()
+				.uri(wellKnownUrl)
+				.retrieve()
+				.bodyToMono(WellKnownConfiguration.class)
+				.block()
+				.tokenEndpoint();
 	}
 
 	record WellKnownConfiguration(URI tokenEndpoint) { }

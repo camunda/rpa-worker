@@ -18,11 +18,11 @@ class ZeebeConfiguration {
 		
 		Map<String, String> overrides = [:]
 		
-		if (System.getenv("CAMUNDA_VERSION") in ["v88", "v89"])
-			new Properties().tap { p ->
-				p.load(getClass().getClassLoader().getResourceAsStream("application-${System.getenv("CAMUNDA_VERSION")}e2e.properties"))
-				overrides.putAll(p)
-			}
+//		if (System.getenv("CAMUNDA_VERSION") in ["v88", "v89"])
+		new Properties().tap { p ->
+			p.load(getClass().getClassLoader().getResourceAsStream("application-${System.getenv("CAMUNDA_VERSION")}e2e.properties"))
+			overrides.putAll(p)
+		}
 
 		if (System.properties['camunda.rpa.e2e.worker.override']) 
 			new Properties().tap { p ->
