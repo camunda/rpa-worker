@@ -34,15 +34,9 @@ class ZeebeConfiguration {
 				?: System.getenv("CAMUNDA_RPA_E2E_CAMUNDAHOST")
 				?: "camunda.local"
 
-		String clientId = overrides['camunda.rpa.e2e.client-id']
-				?: System.getenv("CAMUNDA_RPA_E2E_CLIENTID")
-				?: System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTID")
-				?: "zeebe"
+		String clientId = System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTID") ?: "zeebe"
 		
-		String clientSecret = overrides['camunda.rpa.e2e.client-secret']
-				?: System.getenv("CAMUNDA_RPA_E2E_CLIENTSECRET")
-				?: System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET")
-				?: "unset"
+		String clientSecret = System.getenv("CAMUNDA_CLIENT_AUTH_CLIENTSECRET") ?: "unset"
 
 		String operateClient = overrides['camunda.rpa.e2e.operate-client']
 				?: System.getenv("CAMUNDA_RPA_E2E_OPERATECLIENT")
