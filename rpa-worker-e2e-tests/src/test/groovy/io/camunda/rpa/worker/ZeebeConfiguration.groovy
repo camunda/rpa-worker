@@ -48,11 +48,9 @@ class ZeebeConfiguration {
 
 		configProperties['json.logging.enabled'] = 'false'
 
-		configProperties["camunda.client.enabled"] = "true"
 //		configProperties["camunda.client.rest-address"] = "http://localhost:8080/zeebe/"
 //		configProperties["camunda.client.grpc-address"] = "http://zeebe.${camundaHost}"
 		
-		configProperties["camunda.client.auth.method"] = "oidc"
 //		configProperties["camunda.client.auth.issuer"] = "http://${camundaHost}/auth/realms/camunda-platform/protocol/openid-connect/token"
 //		configProperties["camunda.client.auth.audience"] = "zeebe.${camundaHost}"
 		if(overrides['camunda.rpa.zeebe.auth-method'] != "cookie") {

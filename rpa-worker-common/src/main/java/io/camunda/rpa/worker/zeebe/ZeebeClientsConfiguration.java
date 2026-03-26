@@ -1,6 +1,5 @@
 package io.camunda.rpa.worker.zeebe;
 
-import io.camunda.client.CamundaClientConfiguration;
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.client.spring.properties.CamundaClientProperties;
 import lombok.RequiredArgsConstructor;
@@ -38,13 +37,12 @@ class ZeebeClientsConfiguration {
 	private final CamundaClientProperties camundaClientProperties;
 	private final ObjectProvider<ZeebeAuthenticationService> zeebeAuthenticationService;
 	private final ZeebeAuthProperties zeebeAuthProperties;
-	private final CamundaClientConfiguration camundaClientConfiguration;
-	
+
 	@Bean
 	public AuthClient authClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
 		AuthClient.InternalClient client = HttpServiceProxyFactory
 				.builderFor(WebClientAdapter.create(webClientBuilder
-						.baseUrl(OidcConfigurationHelper.getTokenUrl(zeebeProperties, camundaClientProperties, WebClient.builder().build()).toString())
+						.baseUrl(OidcConfigurationHelper.getTokenUrl(zeebeProperties, camundaClientProperties, webClientBuilder.build()).toString())
 						.build()))
 				.build()
 				.createClient(AuthClient.InternalClient.class);
@@ -56,7 +54,7 @@ class ZeebeClientsConfiguration {
 	@Bean
 	public C8RunAuthClient c8RunAuthClient(WebClient.Builder webClientBuilder) {
 		return HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(WebClient.builder()
+				.builderFor(WebClientAdapter.create(webClientBuilder
 						.baseUrl(camundaClientProperties.getRestAddress().toString())
 						.build()))
 				.build()
@@ -71,7 +69,7 @@ class ZeebeClientsConfiguration {
 				camundaClientProperties.getAuth().getAudience());
 
 		return HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(WebClient.builder()
+				.builderFor(WebClientAdapter.create(webClientBuilder
 						.baseUrl(camundaClientProperties.getRestAddress() + "/v2/")
 						.filter(zeebeProperties.authMethod().interceptor(authenticator))
 						.build()))
@@ -94,7 +92,7 @@ class ZeebeClientsConfiguration {
 
 			addDeserializer(AuthClient.AuthenticationResponse.class, new ValueDeserializer<>() {
 				@Override
-				public AuthClient.AuthenticationResponse deserialize(tools.jackson.core.JsonParser p, tools.jackson.databind.DeserializationContext ctxt) throws JacksonException {
+				public AuthClient.AuthenticationResponse deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
 					ObjectReadContext codec = p.objectReadContext();
 					Map<String, String> map = codec.readValue(p, new TypeReference<>() {});
 					return new AuthClient.AuthenticationResponse(
