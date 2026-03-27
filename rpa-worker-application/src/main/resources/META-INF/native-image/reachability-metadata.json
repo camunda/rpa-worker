@@ -1698,6 +1698,9 @@
       "type": "groovy.runtime.metaclass.io.camunda.client.impl.CamundaClientFutureImplMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.client.spring.properties.CamundaClientAuthProperties$AuthMethodMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.client.spring.properties.CamundaClientAuthPropertiesMetaClass"
     },
     {
@@ -4167,6 +4170,30 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ConcurrencyFunctionalSpecMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure2$_closure5MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure3MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure4$_closure6MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure4MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.OidcConfigurationHelperMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ResourceClientMetaClass"
     },
     {
@@ -5461,6 +5488,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeMetricsServiceSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeProperties$AuthMethodMetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.ZeebeProperties$ZeebePropertiesBuilderMetaClass"
@@ -7455,6 +7485,15 @@
           "name": "jobWorkerFactory",
           "parameterTypes": [
             "io.camunda.client.api.worker.BackoffSupplier",
+            "io.camunda.client.api.worker.BackoffSupplier",
+            "io.camunda.client.metrics.JobWorkerMetricsFactory",
+            "io.camunda.client.jobhandling.JobExceptionHandlerSupplier"
+          ]
+        },
+        {
+          "name": "jobWorkerFactory",
+          "parameterTypes": [
+            "io.camunda.client.api.worker.BackoffSupplier",
             "io.camunda.client.metrics.JobWorkerMetricsFactory",
             "io.camunda.client.jobhandling.JobExceptionHandlerSupplier"
           ]
@@ -7482,6 +7521,10 @@
           "parameterTypes": [
             "io.camunda.client.jobhandling.result.DocumentResultProcessorFailureHandlingStrategy"
           ]
+        },
+        {
+          "name": "streamNoJobsBackoffSupplier",
+          "parameterTypes": []
         }
       ]
     },
@@ -7692,6 +7735,20 @@
       ]
     },
     {
+      "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$AuthMethod",
+      "fields": [
+        {
+          "name": "oidc"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$AuthMethodBeanInfo"
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$AuthMethodCustomizer"
+    },
+    {
       "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$AuthMethodEditor"
     },
     {
@@ -7703,7 +7760,23 @@
       ]
     },
     {
+      "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$1957515829",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$2080358150",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$440650100",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -7921,7 +7994,23 @@
       ]
     },
     {
+      "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$2049446011",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$488459208",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$593496709",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -28335,6 +28424,155 @@
       "type": "io.camunda.rpa.worker.zeebe.ConcurrencyFunctionalSpecCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec",
+      "fields": [
+        {
+          "name": "OIDC_CONFIG_RESPONSE"
+        }
+      ],
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_feature_1_1",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure1",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure1BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure2",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure2$_closure5",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure2$_closure5BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure2$_closure5Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure2BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure2Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure3",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure3BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure3Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure4",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure4$_closure6",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure4$_closure6BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure4$_closure6Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure4BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure4Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcAuthenticationIntegrationSpecCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcConfigurationHelper",
+      "methods": [
+        {
+          "name": "getTokenUrl",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.zeebe.ZeebeProperties",
+            "io.camunda.client.spring.properties.CamundaClientProperties",
+            "org.springframework.web.reactive.function.client.WebClient"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcConfigurationHelperBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.OidcConfigurationHelperCustomizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ResourceClient",
       "allDeclaredFields": true,
       "methods": [
@@ -36370,6 +36608,20 @@
           "parameterTypes": []
         }
       ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeProperties$AuthMethod",
+      "fields": [
+        {
+          "name": "TOKEN"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeProperties$AuthMethodBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeProperties$AuthMethodCustomizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeProperties$AuthMethodEditor"
@@ -50036,6 +50288,20 @@
     },
     {
       "type": "org.codehaus.groovy.runtime.dgm$148",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$1523",
       "methods": [
         {
           "name": "<init>",
@@ -83314,6 +83580,18 @@
       "glob": "io/camunda/rpa/worker/zeebe/ConcurrencyFunctionalSpec.class"
     },
     {
+      "glob": "io/camunda/rpa/worker/zeebe/OidcAuthenticationIntegrationSpec$__spock_feature_1_0_closure2.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/OidcAuthenticationIntegrationSpec$__spock_feature_1_1_closure4.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/OidcAuthenticationIntegrationSpec.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/OidcConfigurationHelper.class"
+    },
+    {
       "glob": "io/camunda/rpa/worker/zeebe/RpaResource.class"
     },
     {
@@ -83330,6 +83608,9 @@
     },
     {
       "glob": "io/camunda/rpa/worker/zeebe/ZeebeClientsConfiguration$2$2.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/zeebe/ZeebeClientsConfiguration$2$3.class"
     },
     {
       "glob": "io/camunda/rpa/worker/zeebe/ZeebeClientsConfiguration$2.class"

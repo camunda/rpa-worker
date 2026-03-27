@@ -105,9 +105,9 @@ class ZeebeClientsConfiguration {
 				@Override
 				public OidcConfigurationHelper.WellKnownConfiguration deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
 					ObjectReadContext codec = p.objectReadContext();
-					Map<String, String> map = codec.readValue(p, new TypeReference<>() {});
+					Map<String, Object> map = codec.readValue(p, new TypeReference<>() {});
 					return new OidcConfigurationHelper.WellKnownConfiguration(
-							URI.create(map.get("token_endpoint")));
+							URI.create(map.get("token_endpoint").toString()));
 				}
 			});
 		}};
