@@ -1,11 +1,11 @@
 package io.camunda.rpa.worker.zeebe
 
-import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.ZeebeFuture
-import io.camunda.zeebe.client.api.command.ActivateJobsCommandStep1
-import io.camunda.zeebe.client.api.command.FinalCommandStep
-import io.camunda.zeebe.client.api.response.ActivateJobsResponse
-import io.camunda.zeebe.client.api.response.ActivatedJob
+import io.camunda.client.CamundaClient
+import io.camunda.client.api.CamundaFuture
+import io.camunda.client.api.command.ActivateJobsCommandStep1
+import io.camunda.client.api.command.FinalCommandStep
+import io.camunda.client.api.response.ActivateJobsResponse
+import io.camunda.client.api.response.ActivatedJob
 import reactor.core.publisher.Mono
 import reactor.core.publisher.Sinks
 import reactor.core.scheduler.Schedulers
@@ -24,11 +24,10 @@ class ZeebeJobPollerSpec extends Specification {
 	ZeebeProperties zeebeProperties = ZeebeProperties.builder()
 			.rpaTaskPrefix(TASK_PREFIX)
 			.workerTags(["tag-one", "tag-two"].toSet())
-			.authEndpoint("http://auth/".toURI())
 			.maxConcurrentJobs(1)
 			.build()
-	
-	ZeebeClient zeebeClient = Stub() {
+
+	CamundaClient zeebeClient = Stub() {
 		newActivateJobsCommand() >> { activate1 }
 	}
 	ZeebeJobService zeebeJobService = Mock()
@@ -179,7 +178,7 @@ class ZeebeJobPollerSpec extends Specification {
 
 	private ActivateJobsCommandStep1.ActivateJobsCommandStep2 activateJobClientCall(ActivatedJob job = null) {
 		FinalCommandStep activateFinal = Stub() {
-			send() >> Stub(ZeebeFuture) {
+			send() >> Stub(CamundaFuture) {
 				handle(_) >> { BiFunction fn ->
 					Mono.just({ -> job ? [job] : [] } as ActivateJobsResponse)
 							.toFuture()

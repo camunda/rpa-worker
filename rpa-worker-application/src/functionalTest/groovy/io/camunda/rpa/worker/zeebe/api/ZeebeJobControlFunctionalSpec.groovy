@@ -1,8 +1,8 @@
 package io.camunda.rpa.worker.zeebe.api
 
+import io.camunda.client.CamundaClient
+import io.camunda.client.api.command.ThrowErrorCommandStep1
 import io.camunda.rpa.worker.AbstractFunctionalSpec
-import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
 import org.spockframework.spring.SpringBean
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.BodyInserters
 class ZeebeJobControlFunctionalSpec extends AbstractFunctionalSpec {
 	
 	@SpringBean
-	ZeebeClient zeebeClient = Mock()
+	CamundaClient camundaClient = Mock()
 	
 	void "Issues throw error command to Zeebe and returns correct status to client"() {
 		given:
@@ -29,7 +29,7 @@ class ZeebeJobControlFunctionalSpec extends AbstractFunctionalSpec {
 				.toBodilessEntity()
 		
 		then:
-		1 * zeebeClient.newThrowErrorCommand(123456L) >> Mock(ThrowErrorCommandStep1) {
+		1 * camundaClient.newThrowErrorCommand(123456L) >> Mock(ThrowErrorCommandStep1) {
 			1 * errorCode("ERROR_CODE") >> Mock(ThrowErrorCommandStep1.ThrowErrorCommandStep2) {
 				1 * errorMessage("The error message") >> it
 				1 * variables(someVariables) >> it

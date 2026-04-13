@@ -1,10 +1,10 @@
 package io.camunda.rpa.worker.zeebe
 
+import io.camunda.client.api.command.CompleteJobCommandStep1
+import io.camunda.client.api.response.ActivatedJob
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.workspace.Workspace
-import io.camunda.zeebe.client.api.command.CompleteJobCommandStep1
-import io.camunda.zeebe.client.api.response.ActivatedJob
 import org.springframework.test.context.TestPropertySource
 import spock.lang.Ignore
 import spock.lang.IgnoreIf
@@ -79,7 +79,7 @@ Don't do very much
 			handlersDidFinish.awaitRequired(20, TimeUnit.SECONDS)
 
 			then:
-			2 * zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			2 * camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 				it.variables(_) >> it
 				2 * send()
 			}
@@ -107,7 +107,7 @@ Don't do very much
 			}
 
 			and:
-			zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 				variables(_) >> it
 			}
 
@@ -159,7 +159,7 @@ Don't do very much
 			handlerDidFinish.awaitRequired(20, TimeUnit.SECONDS)
 
 			then:
-			zeebeClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
+			camundaClient.newCompleteCommand(_ as ActivatedJob) >> Mock(CompleteJobCommandStep1) {
 				256 * it.variables({ m -> m.containsKey("myJobNumber") }) >> it
 				256 * send()
 			}

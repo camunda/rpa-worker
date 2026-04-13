@@ -1,10 +1,10 @@
 package io.camunda.rpa.worker.zeebe.api
 
+import io.camunda.client.CamundaClient
+import io.camunda.client.api.command.ThrowErrorCommandStep1
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.api.StubbedResponseGenerator
 import io.camunda.rpa.worker.zeebe.ZeebeJobService
-import io.camunda.zeebe.client.ZeebeClient
-import io.camunda.zeebe.client.api.command.ThrowErrorCommandStep1
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.http.ResponseEntity
 import reactor.core.publisher.Mono
@@ -13,9 +13,9 @@ import spock.lang.Subject
 
 class ZeebeJobControllerSpec extends Specification implements PublisherUtils {
 	
-	ZeebeClient zeebeClient = Mock()
+	CamundaClient zeebeClient = Mock()
 	ZeebeJobService zeebeJobService = Mock()
-	ObjectProvider<ZeebeClient> zeebeClientsProvider = Stub() {
+	ObjectProvider<CamundaClient> zeebeClientsProvider = Stub() {
 		getObject() >> zeebeClient
 	}
 	ObjectProvider<ZeebeJobService> zeebeJobServiceProvider = Stub() {

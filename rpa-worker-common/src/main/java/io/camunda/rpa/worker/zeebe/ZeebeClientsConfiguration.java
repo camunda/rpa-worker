@@ -13,9 +13,11 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
 import tools.jackson.core.JacksonException;
 import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
 import tools.jackson.core.ObjectReadContext;
 import tools.jackson.core.Version;
 import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.DeserializationContext;
 import tools.jackson.databind.JacksonModule;
 import tools.jackson.databind.ObjectMapper;
 import tools.jackson.databind.SerializationContext;
@@ -23,6 +25,7 @@ import tools.jackson.databind.ValueDeserializer;
 import tools.jackson.databind.ValueSerializer;
 import tools.jackson.databind.module.SimpleModule;
 
+import java.net.URI;
 import java.util.Map;
 
 @Configuration
@@ -34,12 +37,12 @@ class ZeebeClientsConfiguration {
 	private final CamundaClientProperties camundaClientProperties;
 	private final ObjectProvider<ZeebeAuthenticationService> zeebeAuthenticationService;
 	private final ZeebeAuthProperties zeebeAuthProperties;
-	
+
 	@Bean
 	public AuthClient authClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
 		AuthClient.InternalClient client = HttpServiceProxyFactory
 				.builderFor(WebClientAdapter.create(webClientBuilder
-						.baseUrl(zeebeProperties.authEndpoint().toString())
+						.baseUrl(OidcConfigurationHelper.getTokenUrl(zeebeProperties, camundaClientProperties, webClientBuilder.build()).toString())
 						.build()))
 				.build()
 				.createClient(AuthClient.InternalClient.class);
@@ -51,7 +54,7 @@ class ZeebeClientsConfiguration {
 	@Bean
 	public C8RunAuthClient c8RunAuthClient(WebClient.Builder webClientBuilder) {
 		return HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(WebClient.builder()
+				.builderFor(WebClientAdapter.create(webClientBuilder
 						.baseUrl(camundaClientProperties.getRestAddress().toString())
 						.build()))
 				.build()
@@ -66,7 +69,7 @@ class ZeebeClientsConfiguration {
 				camundaClientProperties.getAuth().getAudience());
 
 		return HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(WebClient.builder()
+				.builderFor(WebClientAdapter.create(webClientBuilder
 						.baseUrl(camundaClientProperties.getRestAddress() + "/v2/")
 						.filter(zeebeProperties.authMethod().interceptor(authenticator))
 						.build()))
@@ -89,12 +92,22 @@ class ZeebeClientsConfiguration {
 
 			addDeserializer(AuthClient.AuthenticationResponse.class, new ValueDeserializer<>() {
 				@Override
-				public AuthClient.AuthenticationResponse deserialize(tools.jackson.core.JsonParser p, tools.jackson.databind.DeserializationContext ctxt) throws JacksonException {
+				public AuthClient.AuthenticationResponse deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
 					ObjectReadContext codec = p.objectReadContext();
 					Map<String, String> map = codec.readValue(p, new TypeReference<>() {});
 					return new AuthClient.AuthenticationResponse(
 							map.get("access_token"),
 							Integer.parseInt(map.get("expires_in")));
+				}
+			});
+			
+			addDeserializer(OidcConfigurationHelper.WellKnownConfiguration.class, new ValueDeserializer<>() {
+				@Override
+				public OidcConfigurationHelper.WellKnownConfiguration deserialize(JsonParser p, DeserializationContext ctxt) throws JacksonException {
+					ObjectReadContext codec = p.objectReadContext();
+					Map<String, Object> map = codec.readValue(p, new TypeReference<>() {});
+					return new OidcConfigurationHelper.WellKnownConfiguration(
+							URI.create(map.get("token_endpoint").toString()));
 				}
 			});
 		}};

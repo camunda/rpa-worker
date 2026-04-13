@@ -1,10 +1,10 @@
 package io.camunda.rpa.worker.zeebe;
 
+import io.camunda.client.CamundaClient;
 import io.camunda.client.spring.properties.CamundaClientAuthProperties;
 import io.camunda.client.spring.properties.CamundaClientProperties;
 import io.camunda.rpa.worker.RpaWorkerApplication;
 import io.camunda.rpa.worker.check.StartupCheck;
-import io.camunda.zeebe.client.ZeebeClient;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ class ZeebeStartupCheck implements StartupCheck<ZeebeReadyEvent> {
 	
 	private static final int NUM_ATTEMPTS = 3;
 	
-	private final ObjectProvider<ZeebeClient> zeebeClient;
+	private final ObjectProvider<CamundaClient> zeebeClient;
 	private final ObjectProvider<CamundaClientProperties> camundaClientProperties;
 	private final ZeebeClientStatus zeebeClientStatus;
 

@@ -3,6 +3,7 @@ plugins {
 	id 'groovy'
 	alias(libs.plugins.spring.boot)
 	alias(libs.plugins.spring.dependencyManagement)
+	id 'rpa-worker.compiler-configuration'
 }
 
 java {

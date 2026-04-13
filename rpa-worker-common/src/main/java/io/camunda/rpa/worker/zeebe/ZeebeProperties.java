@@ -11,7 +11,6 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 import reactor.core.publisher.Mono;
 
-import java.net.URI;
 import java.util.Set;
 
 @ConfigurationProperties("camunda.rpa.zeebe")
@@ -19,7 +18,6 @@ import java.util.Set;
 public record ZeebeProperties(
 		String rpaTaskPrefix,
 		Set<String> workerTags,
-		URI authEndpoint, 
 		int maxConcurrentJobs, 
 		AuthMethod authMethod) { 
 	

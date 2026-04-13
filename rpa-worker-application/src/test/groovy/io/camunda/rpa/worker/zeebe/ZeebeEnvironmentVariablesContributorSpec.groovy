@@ -1,8 +1,8 @@
 package io.camunda.rpa.worker.zeebe
 
+import io.camunda.client.api.response.ActivatedJob
 import io.camunda.rpa.worker.PublisherUtils
 import io.camunda.rpa.worker.robot.EnvironmentVariablesContributor
-import io.camunda.zeebe.client.api.response.ActivatedJob
 import spock.lang.Specification
 import spock.lang.Subject
 
