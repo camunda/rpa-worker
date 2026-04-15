@@ -24,7 +24,7 @@ class ContainerBrowserAutomationE2ESpec extends AbstractE2ESpec {
 	@Delegate
 	WebClient getWebClient() {
 		if ( ! $$webClient)
-			$$webClient = webClientBuilder.baseUrl("http://rpa-worker.local:36228").build()
+			$$webClient = webClientProvisioner.webClient { it.baseUrl("http://rpa-worker.local:36228") }
 
 		return $$webClient
 	}

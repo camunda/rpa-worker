@@ -2,12 +2,12 @@ package io.camunda.rpa.worker.zeebe;
 
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
 import io.camunda.client.spring.properties.CamundaClientProperties;
+import io.camunda.rpa.worker.net.WebClientProvisioner;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
@@ -39,40 +39,37 @@ class ZeebeClientsConfiguration {
 	private final ZeebeAuthProperties zeebeAuthProperties;
 
 	@Bean
-	public AuthClient authClient(WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
+	public AuthClient authClient(WebClientProvisioner webClientProvisioner, ObjectMapper objectMapper) {
 		AuthClient.InternalClient client = HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(webClientBuilder
-						.baseUrl(OidcConfigurationHelper.getTokenUrl(zeebeProperties, camundaClientProperties, webClientBuilder.build()).toString())
-						.build()))
+				.builderFor(WebClientAdapter.create(webClientProvisioner.webClient(b -> b
+						.baseUrl(OidcConfigurationHelper.getTokenUrl(zeebeProperties, camundaClientProperties, webClientProvisioner.webClient()).toString()))))
 				.build()
 				.createClient(AuthClient.InternalClient.class);
 
 		return auth -> client.authenticate(
-				MultiValueMap.fromSingleValue(objectMapper.convertValue(auth, new TypeReference<Map<String, Object>>() {})));
+				MultiValueMap.fromSingleValue(objectMapper.convertValue(auth, new TypeReference<>() {})));
 	}
 
 	@Bean
-	public C8RunAuthClient c8RunAuthClient(WebClient.Builder webClientBuilder) {
+	public C8RunAuthClient c8RunAuthClient(WebClientProvisioner webClientProvisioner) {
 		return HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(webClientBuilder
-						.baseUrl(camundaClientProperties.getRestAddress().toString())
-						.build()))
+				.builderFor(WebClientAdapter.create(webClientProvisioner.webClient(b -> b
+						.baseUrl(camundaClientProperties.getRestAddress().toString()))))
 				.build()
 				.createClient(C8RunAuthClient.class);
 	}
 
 	@Bean
-	public ResourceClient resourceClient(WebClient.Builder webClientBuilder) {
+	public ResourceClient resourceClient(WebClientProvisioner webClientProvisioner) {
 		Mono<String> authenticator = zeebeAuthenticationService.getObject().getAuthToken(
 				zeebeAuthProperties.clientId(),
 				zeebeAuthProperties.clientSecret(),
 				camundaClientProperties.getAuth().getAudience());
 
 		return HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(webClientBuilder
+				.builderFor(WebClientAdapter.create(webClientProvisioner.webClient(b -> b
 						.baseUrl(camundaClientProperties.getRestAddress() + "/v2/")
-						.filter(zeebeProperties.authMethod().interceptor(authenticator))
-						.build()))
+						.filter(zeebeProperties.authMethod().interceptor(authenticator)))))
 				.build()
 				.createClient(ResourceClient.class);
 	}

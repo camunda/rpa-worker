@@ -1,13 +1,12 @@
 package io.camunda.rpa.worker.util;
 
+import io.camunda.rpa.worker.net.WebClientProvisioner;
 import io.netty.channel.ChannelOption;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
 
 import java.time.Duration;
 
@@ -19,17 +18,11 @@ public class InternetConnectivityProvider {
 	
 	private final WebClient webClient;
 	
-	public InternetConnectivityProvider(WebClient.Builder webClientBuilder) {
+	public InternetConnectivityProvider(WebClientProvisioner webClientProvisioner) {
 
-		HttpClient client = HttpClient.create()
+		this.webClient = webClientProvisioner.webClient(_ -> {}, c -> c
 				.responseTimeout(Duration.ofMillis(1_500))
-				.proxyWithSystemProperties()
-				.followRedirect(true)
-				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1_500);
-		
-		this.webClient = webClientBuilder
-				.clientConnector(new ReactorClientHttpConnector(client))
-				.build();
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1_500));
 	}
 	
 	public Mono<Boolean> hasConnectivity() {

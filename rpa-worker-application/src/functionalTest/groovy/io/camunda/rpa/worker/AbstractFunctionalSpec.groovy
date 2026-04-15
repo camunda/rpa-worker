@@ -3,6 +3,7 @@ package io.camunda.rpa.worker
 import groovy.json.JsonOutput
 import groovy.transform.Memoized
 import io.camunda.rpa.worker.io.DefaultIO
+import io.camunda.rpa.worker.net.WebClientProvisioner
 import okhttp3.mockwebserver.Dispatcher
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -42,7 +43,7 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	static final String ZEEBE_CLIENT_SECRET = "the-client-secret"
 
 	@Autowired
-	private WebClient.Builder webClientBuilder
+	private WebClientProvisioner webClientProvisioner
 	
 	@Autowired
 	ObjectMapper objectMapper
@@ -54,7 +55,7 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	@Delegate
 	WebClient getWebClient() {
 		if( ! $$webClient) 
-			$$webClient = webClientBuilder.baseUrl("http://localhost:${serverPort}").build()
+			$$webClient = webClientProvisioner.webClient { it.baseUrl("http://localhost:${serverPort}") }
 		
 		return $$webClient
 	}

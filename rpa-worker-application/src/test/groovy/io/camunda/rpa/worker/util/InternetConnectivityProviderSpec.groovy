@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.util
 
 import io.camunda.rpa.worker.PublisherUtils
+import io.camunda.rpa.worker.net.WebClientProvisioner
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.reactive.function.client.WebClient
@@ -12,13 +13,12 @@ class InternetConnectivityProviderSpec extends Specification implements Publishe
 	
 	WebClient webClient = Mock()
 	
-	WebClient.Builder webClientBuilder = Stub() {
-		clientConnector(_) >> it
-		build() >> webClient
+	WebClientProvisioner webClientProvisioner = Mock() {
+		webClient(_, _) >> webClient
 	}
 	
 	@Subject
-	InternetConnectivityProvider provider = new InternetConnectivityProvider(webClientBuilder)
+	InternetConnectivityProvider provider = new InternetConnectivityProvider(webClientProvisioner)
 	
 	void "Returns true when connectivity check passes"() {
 		when:

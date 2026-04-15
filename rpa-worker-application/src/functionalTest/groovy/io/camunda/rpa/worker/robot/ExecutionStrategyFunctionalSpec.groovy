@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.robot
 
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.io.IO
+import io.camunda.rpa.worker.net.WebClientProvisioner
 import io.camunda.rpa.worker.pexec.ProcessService
 import io.camunda.rpa.worker.python.ExistingEnvironmentProvider
 import io.camunda.rpa.worker.python.PythonInterpreter
@@ -12,7 +13,6 @@ import io.camunda.rpa.worker.util.InternetConnectivityProvider
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext
-import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import spock.lang.Subject
 import spock.util.environment.RestoreSystemProperties
@@ -35,7 +35,7 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 	SystemPythonProvider systemPythonProvider = Stub()
 	
 	@Autowired
-	WebClient.Builder webClientBuilder
+	WebClientProvisioner webClientProvisioner
 	
 	@Autowired
 	IO io
@@ -181,7 +181,7 @@ class ExecutionStrategyFunctionalSpec extends AbstractFunctionalSpec {
 		and:
 		existingEnvironmentProvider.existingPythonEnvironment() >> Optional.empty()
 		systemPythonProvider.getSystemPython() >> Mono.just("python3")
-		InternetConnectivityProvider connectivityProvider = new InternetConnectivityProvider(webClientBuilder) {
+		InternetConnectivityProvider connectivityProvider = new InternetConnectivityProvider(webClientProvisioner) {
 			@Override
 			protected String getTestUrl() {
 				return "http://localhost:4448"
