@@ -1,9 +1,9 @@
 package io.camunda.rpa.worker.robot;
 
+import io.camunda.rpa.worker.net.InternetConnectivityProvider;
 import io.camunda.rpa.worker.python.ExistingEnvironmentProvider;
 import io.camunda.rpa.worker.python.PythonRuntimeProperties;
 import io.camunda.rpa.worker.python.SystemPythonProvider;
-import io.camunda.rpa.worker.util.InternetConnectivityProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;

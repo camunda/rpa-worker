@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.secrets.camunda;
 
 import io.camunda.client.spring.configuration.condition.ConditionalOnCamundaClientEnabled;
+import io.camunda.rpa.worker.net.WebClientProvisioner;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthProperties;
 import io.camunda.rpa.worker.zeebe.ZeebeAuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.reactive.function.client.ClientRequest;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.support.WebClientAdapter;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import reactor.core.publisher.Mono;
@@ -26,14 +26,14 @@ class CamundaSecretsClientConfiguration {
 	private final ZeebeAuthProperties zeebeAuthProperties;
 	
 	@Bean
-	public CamundaSecretsClient secretsClient(WebClient.Builder webClientBuilder, CamundaSecretsClientProperties camundaSecretsClientProperties) {
+	public CamundaSecretsClient secretsClient(WebClientProvisioner webClientProvisioner, CamundaSecretsClientProperties camundaSecretsClientProperties) {
 		Mono<String> authenticator = zeebeAuthenticationService.getObject().getAuthToken(
 				zeebeAuthProperties.clientId(),
 				zeebeAuthProperties.clientSecret(),
 				camundaSecretsClientProperties.tokenAudience());
 
 		return HttpServiceProxyFactory
-				.builderFor(WebClientAdapter.create(WebClient.builder()
+				.builderFor(WebClientAdapter.create(webClientProvisioner.webClient(b -> b
 						.baseUrl(Optional.ofNullable(clientProperties.secretsEndpoint())
 								.map(Object::toString)
 								.orElse("http://no-secrets/"))
@@ -41,8 +41,7 @@ class CamundaSecretsClientConfiguration {
 								.map(token -> ClientRequest.from(request)
 										.header(HttpHeaders.AUTHORIZATION, "Bearer %s".formatted(token))
 										.build())
-								.flatMap(next::exchange))
-						.build()))
+								.flatMap(next::exchange)))))
 				.build()
 				.createClient(CamundaSecretsClient.class);
 	}

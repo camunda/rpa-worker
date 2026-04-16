@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker;
 
+import io.camunda.rpa.worker.net.WebClientProvisioner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -11,9 +12,7 @@ import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.micrometer.metrics.autoconfigure.export.prometheus.PrometheusProperties;
 import org.springframework.boot.micrometer.metrics.export.prometheus.PrometheusPushGatewayManager;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.netty.http.client.HttpClient;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
@@ -37,10 +36,8 @@ public class RpaWorkerApplication {
 	}
 
 	@Bean
-	public WebClient webClient(WebClient.Builder builder) {
-		return builder
-				.clientConnector(new ReactorClientHttpConnector(HttpClient.create().followRedirect(true)))
-				.build();
+	public WebClient webClient(WebClientProvisioner webClientProvisioner) {
+		return webClientProvisioner.webClient();
 	}
 	
 	@Bean

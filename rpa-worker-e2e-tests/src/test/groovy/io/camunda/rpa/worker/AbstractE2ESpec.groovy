@@ -10,6 +10,7 @@ import io.camunda.client.CamundaClient
 import io.camunda.client.api.response.DeploymentEvent
 import io.camunda.client.api.response.ProcessInstanceEvent
 import io.camunda.rpa.worker.files.DocumentClient
+import io.camunda.rpa.worker.net.WebClientProvisioner
 import io.camunda.rpa.worker.operate.OperateClient
 import io.camunda.rpa.worker.operate.OperateClient.GetProcessInstanceResponse
 import io.camunda.rpa.worker.operate.OperateClient.GetVariablesResponse.Item
@@ -85,13 +86,13 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	SpecificationHelper spec = new SpecificationHelper()
 
 	@Autowired
-	protected WebClient.Builder webClientBuilder
+	protected WebClientProvisioner webClientProvisioner
 
 	private WebClient $$webClient
 	@Delegate
 	WebClient getWebClient() {
 		if ( ! $$webClient)
-			$$webClient = webClientBuilder.baseUrl("http://127.0.0.1:36227").build()
+			$$webClient = webClientProvisioner.webClient { it.baseUrl("http://127.0.0.1:36227") }
 
 		return $$webClient
 	}
