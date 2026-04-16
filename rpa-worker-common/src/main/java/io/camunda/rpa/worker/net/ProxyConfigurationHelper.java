@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.apache.commons.lang3.SystemProperties.HTTPS_PROXY_HOST;
@@ -103,7 +104,8 @@ class ProxyConfigurationHelper {
 		source.httpProxyPort().ifPresent(s -> newSystemProperties.put(HTTP_PROXY_PORT, String.valueOf(s)));
 		source.httpsProxyHost().ifPresent(s -> newSystemProperties.put(HTTPS_PROXY_HOST, s));
 		source.httpsProxyPort().ifPresent(s -> newSystemProperties.put(HTTPS_PROXY_PORT, String.valueOf(s)));
-		source.nonProxyHosts().ifPresent(s -> newSystemProperties.put(HTTP_NON_PROXY_HOSTS, String.join("|", s)));
+		source.nonProxyHosts().ifPresent(s -> newSystemProperties.put(HTTP_NON_PROXY_HOSTS,
+				Arrays.stream(s).map(ProxyConfigurationHelper::maybeHandleWildcardForProperties).collect(Collectors.joining("|"))));
 		return newSystemProperties;
 	}
 
@@ -111,7 +113,8 @@ class ProxyConfigurationHelper {
 		Map<String, String> envVars = new HashMap<>();
 		source.httpProxyHost().ifPresent(s -> envVars.put("HTTP_PROXY", uri("http", s, source.httpProxyPort(), 80)));
 		source.httpsProxyHost().ifPresent(s -> envVars.put("HTTPS_PROXY", uri("https", s, source.httpsProxyPort(), 443)));
-		source.nonProxyHosts().ifPresent(s -> envVars.put("NO_PROXY", String.join(",", s)));
+		source.nonProxyHosts().ifPresent(s -> envVars.put("NO_PROXY",
+				Arrays.stream(s).map(ProxyConfigurationHelper::maybeHandleWildcardForEnvVars).collect(Collectors.joining(","))));
 		return envVars;
 	}
 
@@ -207,6 +210,14 @@ class ProxyConfigurationHelper {
 		
 		return host;
 	}
+	private static String maybeHandleWildcardForProperties(String input) {
+		return input.startsWith(".") ? "*" + input : input;
+	}
+	
+	private static String maybeHandleWildcardForEnvVars(String input) {
+		return input.startsWith("*") ? input.substring(1) : input;
+	}
+
 
 	private record ProxyConfigBundle(
 			Optional<String> httpProxyHost,

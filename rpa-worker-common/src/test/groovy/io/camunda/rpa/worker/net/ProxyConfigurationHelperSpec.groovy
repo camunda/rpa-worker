@@ -444,6 +444,49 @@ class ProxyConfigurationHelperSpec extends Specification {
 				HTTPS_PROXY: "https://proxy-host:443",
 		]
 	}
+	
+	@RestoreSystemProperties
+	void "Handles wildcards coming in from Java properties"() {
+		setup:
+		System.properties[SystemProperties.HTTP_PROXY_HOST] = "proxy-host"
+		System.properties[SystemProperties.HTTP_PROXY_PORT] = "8080"
+		System.properties[SystemProperties.HTTP_NON_PROXY_HOSTS] = "localhost|*.internal.domain"
+
+		@Subject ProxyConfigurationHelper proxyConfigurationHelper = new ProxyConfigurationHelper(
+				proxyProperties(ConfigMode.AllOrNothing, PreferredSource.Java),
+				systemPropertySink,
+				[:])
+
+		when:
+		proxyConfigurationHelper.installSystemProperties()
+
+		then:
+		systemPropertySink.isEmpty()
+
+		and:
+		proxyConfigurationHelper.getForwardEnv() == [
+				HTTP_PROXY: "http://proxy-host:8080",
+				NO_PROXY: "localhost,.internal.domain"
+		]
+	}
+	
+	void "Handles wildcards coming in from generic config"() {
+		@Subject ProxyConfigurationHelper proxyConfigurationHelper = new ProxyConfigurationHelper(
+				proxyProperties(ConfigMode.AllOrNothing),
+				systemPropertySink,
+				[
+						HTTP_PROXY: 'http://proxy-host:8080',
+						NO_PROXY: 'localhost,.internal.domain'
+				])
+
+		when:
+		proxyConfigurationHelper.installSystemProperties()
+
+		then:
+		systemPropertySink[SystemProperties.HTTP_PROXY_HOST] == "proxy-host"
+		systemPropertySink[SystemProperties.HTTP_NON_PROXY_HOSTS] == "localhost|*.internal.domain"
+	}
+
 
 	private static proxyProperties(ConfigMode configMode, PreferredSource preferredSource = PreferredSource.Generic) {
 		return new ProxyProperties(configMode, preferredSource)
