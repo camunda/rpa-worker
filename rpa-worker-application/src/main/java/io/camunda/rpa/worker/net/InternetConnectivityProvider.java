@@ -1,6 +1,5 @@
-package io.camunda.rpa.worker.util;
+package io.camunda.rpa.worker.net;
 
-import io.camunda.rpa.worker.net.WebClientProvisioner;
 import io.netty.channel.ChannelOption;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

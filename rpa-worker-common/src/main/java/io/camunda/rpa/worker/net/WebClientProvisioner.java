@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.net;
 
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
@@ -17,14 +18,20 @@ import java.util.function.UnaryOperator;
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 public class WebClientProvisioner {
 	private final ObjectProvider<WebClient.Builder> webClientBuilder;
+	private final ProxyConfigurationHelper proxyConfigurationHelper;
 	
 	private final Consumer<WebClient.Builder> defaultClientConfig;
 	private final UnaryOperator<HttpClient> defaultConnectorConfig;
 	private final Supplier<HttpClient> defaultHttpClientFactory;
 	
 	@Autowired
-	public WebClientProvisioner(ObjectProvider<WebClient.Builder> webClientBuilder) {
-		this(webClientBuilder, _ -> {}, c -> c.followRedirect(true), HttpClient::create);
+	WebClientProvisioner(ObjectProvider<WebClient.Builder> webClientBuilder, ProxyConfigurationHelper proxyConfigurationHelper) {
+		this(webClientBuilder, proxyConfigurationHelper, _ -> {}, c -> c.followRedirect(true).proxyWithSystemProperties(), HttpClient::create);
+	}
+	
+	@PostConstruct
+	void init() {
+		proxyConfigurationHelper.installSystemProperties();
 	}
 	
 	public WebClient webClient(Consumer<WebClient.Builder> clientConfig, UnaryOperator<HttpClient> connectorConfig) {

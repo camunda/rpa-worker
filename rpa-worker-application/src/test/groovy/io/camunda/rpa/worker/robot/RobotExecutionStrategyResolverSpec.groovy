@@ -1,11 +1,10 @@
 package io.camunda.rpa.worker.robot
 
-
+import io.camunda.rpa.worker.net.InternetConnectivityProvider
 import io.camunda.rpa.worker.python.ExistingEnvironmentProvider
 import io.camunda.rpa.worker.python.PythonInterpreter
 import io.camunda.rpa.worker.python.PythonRuntimeProperties
 import io.camunda.rpa.worker.python.SystemPythonProvider
-import io.camunda.rpa.worker.util.InternetConnectivityProvider
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 import spock.lang.Subject
