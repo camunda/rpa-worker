@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.robot
 
 import io.camunda.rpa.worker.AbstractFunctionalSpec
 import io.camunda.rpa.worker.io.IO
+import io.camunda.rpa.worker.net.InternetConnectivityProvider
 import io.camunda.rpa.worker.net.WebClientProvisioner
 import io.camunda.rpa.worker.pexec.ProcessService
 import io.camunda.rpa.worker.python.ExistingEnvironmentProvider
@@ -9,7 +10,6 @@ import io.camunda.rpa.worker.python.PythonInterpreter
 import io.camunda.rpa.worker.python.PythonRuntimeProperties
 import io.camunda.rpa.worker.python.PythonRuntimeProperties.PythonRuntimeEnvironment
 import io.camunda.rpa.worker.python.SystemPythonProvider
-import io.camunda.rpa.worker.util.InternetConnectivityProvider
 import org.springframework.beans.factory.ObjectProvider
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.test.annotation.DirtiesContext

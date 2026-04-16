@@ -1,7 +1,6 @@
-package io.camunda.rpa.worker.util
+package io.camunda.rpa.worker.net
 
 import io.camunda.rpa.worker.PublisherUtils
-import io.camunda.rpa.worker.net.WebClientProvisioner
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.reactive.function.client.WebClient

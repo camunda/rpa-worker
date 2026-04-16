@@ -230,6 +230,21 @@ The RPA Worker makes the following environment variables available to the Robot 
 |Whether the script evaluation API should be available
 |`true`
 
+3+| *Proxy Properties*
+
+|camunda.rpa.proxy.config-mode
+|How proxy configuration from different sources should be combined. Can be `None` (no automatic configuration),
+`AllOrNothing` (use one complete source), or `Merge` (combine sources with preferred-source taking precedence).
+See https://github.com/camunda/rpa-worker/wiki/Proxy-Configuration[Proxy Configuration]
+|`AllOrNothing`
+
+|camunda.rpa.proxy.preferred-source
+|Which proxy configuration source to prefer when config-mode is `AllOrNothing` or `Merge`. Can be `Generic`
+(libcurl environment variables like `HTTP_PROXY`) or `Java` (Java system properties like `http.proxyHost`).
+See https://github.com/camunda/rpa-worker/wiki/Proxy-Configuration[Proxy Configuration]
+|`Generic`
+
+
 3+| *Zeebe Properties*
 |camunda.client.enabled
 |Whether the Zeebe integration should be enabled

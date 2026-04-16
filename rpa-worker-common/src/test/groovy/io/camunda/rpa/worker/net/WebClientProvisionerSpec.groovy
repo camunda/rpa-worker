@@ -6,6 +6,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.netty.http.client.HttpClient
 import spock.lang.Specification
 import spock.lang.Subject
+import spock.util.environment.RestoreSystemProperties
 
 import java.util.function.Consumer
 import java.util.function.Function
@@ -26,9 +27,11 @@ class WebClientProvisionerSpec extends Specification {
 	}
 	HttpClient httpClient = Mock()
 	Supplier<HttpClient> httpClientFactory = { httpClient }
+	
+	ProxyConfigurationHelper proxyConfigurationHelper = Mock()
 
 	@Subject
-	WebClientProvisioner webClientProvisioner = new WebClientProvisioner(webClientBuilderProvider, defaultClientConfig, defaultConnectorConfig, httpClientFactory)
+	WebClientProvisioner webClientProvisioner = new WebClientProvisioner(webClientBuilderProvider, proxyConfigurationHelper, defaultClientConfig, defaultConnectorConfig, httpClientFactory)
 	
 	WebClient expected = Stub()
 
@@ -70,5 +73,14 @@ class WebClientProvisionerSpec extends Specification {
 		
 		and:
 		r == expected
+	}
+	
+	@RestoreSystemProperties
+	void "Installs the System Properties from the ProxyConfigurationHelper on init"() {
+		when:
+		webClientProvisioner.init()
+		
+		then:
+		1 * proxyConfigurationHelper.installSystemProperties()
 	}
 }
