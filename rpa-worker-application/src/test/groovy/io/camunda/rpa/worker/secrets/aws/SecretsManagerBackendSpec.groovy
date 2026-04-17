@@ -1,12 +1,12 @@
 package io.camunda.rpa.worker.secrets.aws
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import io.camunda.rpa.worker.PublisherUtils
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueResponse
 import spock.lang.Specification
 import spock.lang.Subject
+import tools.jackson.databind.ObjectMapper
 
 import java.util.concurrent.CompletableFuture
 import java.util.function.Supplier

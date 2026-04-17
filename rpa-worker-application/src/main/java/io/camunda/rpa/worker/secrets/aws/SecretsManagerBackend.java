@@ -1,7 +1,5 @@
 package io.camunda.rpa.worker.secrets.aws;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.camunda.rpa.worker.secrets.SecretsBackend;
 import io.camunda.rpa.worker.util.MoreCollectors;
 import io.vavr.Lazy;
@@ -12,6 +10,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerAsyncClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.Map;
 import java.util.function.Supplier;
