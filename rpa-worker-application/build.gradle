@@ -71,6 +71,7 @@ dependencies {
 	implementation libs.htmlUnit
 	implementation libs.aws.secretsmanager
 	implementation libs.spring.vault.core
+	implementation libs.fabric8.kubernetesClient
 	
 	// TODO: Forced update to transitive dependency - remove when no longer required
 	implementation libs.commons.lang
