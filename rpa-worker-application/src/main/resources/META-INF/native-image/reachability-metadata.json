@@ -196,6 +196,12 @@
       "type": "ch.qos.logback.core.OutputStreamAppender"
     },
     {
+      "type": "ch.qos.logback.core.encoder.Encoder"
+    },
+    {
+      "type": "ch.qos.logback.core.encoder.LayoutWrappingEncoder"
+    },
+    {
       "type": "char[]"
     },
     {
@@ -943,6 +949,15 @@
     },
     {
       "type": "com.sun.crypto.provider.PBES2Parameters$General",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "com.sun.crypto.provider.PBES2Parameters$HmacSHA256AndAES_256",
       "methods": [
         {
           "name": "<init>",
@@ -3858,6 +3873,78 @@
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.camunda.CamundaSecretsServiceSpecMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_feature_0_0_closure5MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure6$_closure9MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure6MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure7$_closure10MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure7MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure8MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure2$_closure11MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure3$_closure12MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure3MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure4MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sBackendSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$BadCredentials$_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$BadCredentialsMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$HappyPath$_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$HappyPathMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$NoSecret$_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$NoSecretMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$__clinit__closure2MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$_closure1MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelperMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.k8s.K8sPropertiesMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.secrets.vault.VaultBackendMetaClass"
     },
     {
@@ -4030,6 +4117,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.workspace.api.WorkspaceVariablesControllerSpecMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.$Proxy197MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.io.camunda.rpa.worker.zeebe.$Proxy235MetaClass"
@@ -5889,6 +5979,27 @@
       "type": "groovy.runtime.metaclass.io.camunda.zeebe.spring.client.properties.common.ZeebeClientPropertiesMetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.io.fabric8.kubernetes.api.model.SecretMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.fabric8.kubernetes.client.ConfigMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.fabric8.kubernetes.client.KubernetesClientBuilderMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.fabric8.kubernetes.client.KubernetesClientMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.fabric8.kubernetes.client.dsl.MixedOperationMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.fabric8.kubernetes.client.dsl.NonNamespaceOperationMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.io.fabric8.kubernetes.client.dsl.ResourceMetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.io.grpc.ChannelMetaClass"
     },
     {
@@ -6204,6 +6315,9 @@
       "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy143MetaClass"
     },
     {
+      "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy157MetaClass"
+    },
+    {
       "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy221MetaClass"
     },
     {
@@ -6232,6 +6346,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy297MetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy307MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.jdk.proxy3.$Proxy83MetaClass"
@@ -6295,6 +6412,9 @@
     },
     {
       "type": "groovy.runtime.metaclass.org.codehaus.groovy.runtime.DefaultGroovyMethodsMetaClass"
+    },
+    {
+      "type": "groovy.runtime.metaclass.org.codehaus.groovy.runtime.EncodingGroovyMethods$1MetaClass"
     },
     {
       "type": "groovy.runtime.metaclass.org.codehaus.groovy.runtime.GStringImplMetaClass"
@@ -7952,6 +8072,14 @@
       ]
     },
     {
+      "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$1187967325",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$1189546390",
       "fields": [
         {
@@ -7969,6 +8097,14 @@
     },
     {
       "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$1265284346",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientAuthProperties$SpockMock$1870990922",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -8076,6 +8212,14 @@
     },
     {
       "type": "io.camunda.client.spring.properties.CamundaClientCloudProperties$SpockMock$1922282572",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientCloudProperties$SpockMock$210368861",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -8266,6 +8410,14 @@
       ]
     },
     {
+      "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$346223985",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$488459208",
       "fields": [
         {
@@ -8275,6 +8427,14 @@
     },
     {
       "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$593496709",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.client.spring.properties.CamundaClientProperties$SpockMock$761364980",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -9649,6 +9809,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.api.StubbedResponseGenerator$SpockMock$1743514071",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.api.StubbedResponseGenerator$SpockMock$1761941018",
       "fields": [
         {
@@ -10315,6 +10483,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.files.FilesService$SpockMock$2132072921",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.files.FilesService$SpockMock$383771034",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -12626,6 +12802,22 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.net.InternetConnectivityProvider$SpockMock$1386474095",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.net.InternetConnectivityProvider$SpockMock$1390745554",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.net.InternetConnectivityProvider$SpockMock$2071103423",
       "fields": [
         {
@@ -12868,6 +13060,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.net.ProxyConfigurationHelper$SpockMock$1253168570",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.net.ProxyConfigurationHelper$SpockMock$1740595649",
       "fields": [
         {
@@ -12970,6 +13170,14 @@
           "parameterTypes": [
             "java.util.function.Consumer"
           ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.net.WebClientProvisioner$SpockMock$1993586411",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
         }
       ]
     },
@@ -13306,6 +13514,22 @@
     },
     {
       "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1455090895",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1463413039",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.pexec.ProcessService$SpockMock$1464625199",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -14452,6 +14676,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$1824499502",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$1885427008",
       "fields": [
         {
@@ -14525,6 +14757,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$564729577",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.ExistingEnvironmentProvider$SpockMock$590913900",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -15318,6 +15558,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$1534545279",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$1543462435",
       "fields": [
         {
@@ -15431,6 +15679,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$2086684534",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.PythonSetupService$SpockMock$239988665",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -18598,6 +18854,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1411795419",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1556001833",
       "fields": [
         {
@@ -18639,6 +18903,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1734677749",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.python.SystemPythonProvider$SpockMock$1801159006",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -20649,6 +20921,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1956197721",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.robot.RobotService$SpockMock$1981083114",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -24730,6 +25010,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$1052322181",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$107018348",
       "fields": [
         {
@@ -25099,6 +25387,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$608985988",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.SecretsService$SpockMock$609922033",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -25870,6 +26166,537 @@
       "type": "io.camunda.rpa.worker.secrets.camunda.CamundaSecretsServiceSpecCustomizer"
     },
     {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackend",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.k8s.K8sProperties",
+            "org.springframework.context.ApplicationContext"
+          ]
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.camunda.rpa.worker.secrets.k8s.K8sProperties",
+            "org.springframework.context.ApplicationContext",
+            "java.util.function.Function"
+          ]
+        },
+        {
+          "name": "destroy",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec",
+      "methods": [
+        {
+          "name": "$spock_feature_0_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "$spock_initializeFields",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "getKubernetesClient",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSecretsClient",
+          "parameterTypes": []
+        },
+        {
+          "name": "getSecretsClientInNamespace",
+          "parameterTypes": []
+        },
+        {
+          "name": "io_camunda_rpa_worker_PublisherUtils__TIMEOUT$get",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_feature_0_0_closure5",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_feature_0_0_closure5BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_feature_0_0_closure5Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure6",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure6$_closure9",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure6$_closure9BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure6$_closure9Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure6BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure6Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure7",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure7$_closure10",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure7$_closure10BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure7$_closure10Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure7BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure7Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure8",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure8BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1$_closure8Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure2",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure2$_closure11",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure2$_closure11BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure2$_closure11Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure2BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure2Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure3",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure3$_closure12",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure3$_closure12BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure3$_closure12Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure3BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure3Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure4",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure4BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpec$__spock_initializeFields_closure4Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpecBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sBackendSpecCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sHints"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sHints$$SpringCGLIB$$0",
+      "fields": [
+        {
+          "name": "$$beanFactory"
+        },
+        {
+          "name": "CGLIB$CALLBACK_FILTER"
+        },
+        {
+          "name": "CGLIB$FACTORY_DATA"
+        }
+      ],
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "CGLIB$SET_STATIC_CALLBACKS",
+          "parameterTypes": [
+            "org.springframework.cglib.proxy.Callback[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper",
+      "methods": [
+        {
+          "name": "getRealConfigClientFactory",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$BadCredentials",
+      "fields": [
+        {
+          "name": "applicationContext"
+        }
+      ],
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$BadCredentials$_closure1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$BadCredentials$_closure1BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$BadCredentials$_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$BadCredentialsBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$BadCredentialsCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$HappyPath",
+      "fields": [
+        {
+          "name": "applicationContext"
+        }
+      ],
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "propertyMissing",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$HappyPath$_closure1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$HappyPath$_closure1BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$HappyPath$_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$HappyPathBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$HappyPathCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$NoSecret",
+      "fields": [
+        {
+          "name": "applicationContext"
+        }
+      ],
+      "methods": [
+        {
+          "name": "$spock_feature_1_0",
+          "parameterTypes": []
+        },
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "propertyMissing",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$NoSecret$_closure1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$NoSecret$_closure1BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$NoSecret$_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$NoSecretBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$NoSecretCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$__clinit__closure2",
+      "methods": [
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$__clinit__closure2BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$__clinit__closure2Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$_closure1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.Object",
+            "java.lang.Object"
+          ]
+        },
+        {
+          "name": "doCall",
+          "parameterTypes": [
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$_closure1BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelper$_closure1Customizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelperBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sNativeHintsHelperCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sProperties",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sPropertiesBeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.secrets.k8s.K8sPropertiesCustomizer"
+    },
+    {
       "type": "io.camunda.rpa.worker.secrets.vault.VaultBackend",
       "methods": [
         {
@@ -26246,6 +27073,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.util.ApplicationRestarter$SpockMock$1302740199",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.util.ApplicationRestarter$SpockMock$1318614084",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -27314,6 +28149,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1961190145",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$1964922225",
       "fields": [
         {
@@ -27371,6 +28214,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$2064032651",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceCleanupService$SpockMock$208467537",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -27808,6 +28659,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$145505636",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceService$SpockMock$1479759091",
       "fields": [
         {
@@ -28195,6 +29054,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.workspace.WorkspaceVariablesManager$SpockMock$1649364101",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.workspace.WorkspaceVariablesManager$SpockMock$1701073787",
       "fields": [
         {
@@ -28569,6 +29436,12 @@
     },
     {
       "type": "io.camunda.rpa.worker.workspace.api.WorkspaceVariablesControllerSpecCustomizer"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.$Proxy197BeanInfo"
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.$Proxy197Customizer"
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.$Proxy235BeanInfo"
@@ -30362,6 +31235,14 @@
           "parameterTypes": [
             "io.camunda.rpa.worker.workspace.WorkspaceFile"
           ]
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.TaskTestingReportRenderer$SpockMock$1017001457",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
         }
       ]
     },
@@ -35561,6 +36442,14 @@
       ]
     },
     {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$1665814068",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobPoller$SpockMock$1833889486",
       "fields": [
         {
@@ -36540,6 +37429,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$220890858",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeJobService$SpockMock$464386617",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -38116,6 +39013,14 @@
     },
     {
       "type": "io.camunda.rpa.worker.zeebe.ZeebeMetricsService$SpockMock$470046128",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.camunda.rpa.worker.zeebe.ZeebeMetricsService$SpockMock$477020999",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -41938,6 +42843,1677 @@
       "type": "io.camunda.zeebe.util.logging.StackdriverLayout"
     },
     {
+      "type": "io.fabric8.kubernetes.api.builder.Editable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.builder.Visitor"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.APIGroup"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.APIGroupList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.APIResourceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.APIService"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.APIServiceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.APIVersions"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.AuthInfo",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setClientCertificateData",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setClientKeyData",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.AuthProviderConfig"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Binding"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Cluster",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setCertificateAuthorityData",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setServer",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ComponentStatus"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ComponentStatusList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Config",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setApiVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setClusters",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setContexts",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setCurrentContext",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setKind",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setPreferences",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.api.model.Preferences"
+          ]
+        },
+        {
+          "name": "setUsers",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ConfigMap"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ConfigMapList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Context",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setCluster",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setUser",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.CreateOptions"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.DeleteOptions"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Endpoints"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.EndpointsList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Event"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.EventList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ExecConfig"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ExecEnvVar"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.FieldsV1",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setAdditionalProperty",
+          "parameterTypes": [
+            "java.lang.String",
+            "java.lang.Object"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.GetOptions"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.HasMetadata"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.KubernetesList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.KubernetesResource"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.KubernetesResourceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.LimitRange"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.LimitRangeList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ListMeta",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ListOptions"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ManagedFieldsEntry",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setApiVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setFieldsType",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setFieldsV1",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.api.model.FieldsV1"
+          ]
+        },
+        {
+          "name": "setManager",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setOperation",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setTime",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.NamedAuthInfo",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setUser",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.api.model.AuthInfo"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.NamedCluster",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setCluster",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.api.model.Cluster"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.NamedContext",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setContext",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.api.model.Context"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.NamedExtension"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Namespace"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.NamespaceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Namespaced"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Node"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.NodeList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ObjectMeta",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setCreationTimestamp",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setManagedFields",
+          "parameterTypes": [
+            "java.util.List"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setNamespace",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setResourceVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setUid",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.OwnerReference"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.PatchOptions"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.PersistentVolume"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.PersistentVolumeClaim"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.PersistentVolumeClaimList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.PersistentVolumeList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Pod"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.PodExecOptions"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.PodList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.PodTemplate"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.PodTemplateList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Preferences",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ReplicationController"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ReplicationControllerList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ResourceQuota"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ResourceQuotaList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Secret",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setApiVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setData",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        },
+        {
+          "name": "setKind",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setMetadata",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.api.model.ObjectMeta"
+          ]
+        },
+        {
+          "name": "setType",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Secret$SpockMock$2081081153",
+      "serializable": true,
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.SecretBeanInfo"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.SecretCustomizer"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.SecretList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Service"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ServiceAccount"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ServiceAccountList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.ServiceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.Status",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setApiVersion",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setCode",
+          "parameterTypes": [
+            "java.lang.Integer"
+          ]
+        },
+        {
+          "name": "setDetails",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.api.model.StatusDetails"
+          ]
+        },
+        {
+          "name": "setKind",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setMessage",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setMetadata",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.api.model.ListMeta"
+          ]
+        },
+        {
+          "name": "setReason",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setStatus",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.StatusCause"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.StatusDetails",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "setKind",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        },
+        {
+          "name": "setName",
+          "parameterTypes": [
+            "java.lang.String"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.TypeMeta"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.UpdateOptions"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admission.v1.AdmissionReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admission.v1beta1.AdmissionReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1.MutatingWebhookConfiguration"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1.MutatingWebhookConfigurationList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1.ValidatingAdmissionPolicy"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1.ValidatingAdmissionPolicyBinding"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1.ValidatingAdmissionPolicyBindingList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1.ValidatingAdmissionPolicyList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1.ValidatingWebhookConfiguration"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1.ValidatingWebhookConfigurationList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1alpha1.MutatingAdmissionPolicy"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1alpha1.MutatingAdmissionPolicyBinding"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1alpha1.MutatingAdmissionPolicyBindingList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1alpha1.MutatingAdmissionPolicyList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1beta1.MutatingAdmissionPolicy"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1beta1.MutatingAdmissionPolicyBinding"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1beta1.MutatingAdmissionPolicyBindingList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1beta1.MutatingAdmissionPolicyList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1beta1.MutatingWebhookConfiguration"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1beta1.MutatingWebhookConfigurationList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1beta1.ValidatingWebhookConfiguration"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.admissionregistration.v1beta1.ValidatingWebhookConfigurationList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apiextensions.v1.ConversionReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinition"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apiextensions.v1.CustomResourceDefinitionList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinition"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apiextensions.v1beta1.CustomResourceDefinitionList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.ControllerRevision"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.ControllerRevisionList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.DaemonSet"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.DaemonSetList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.Deployment"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.DeploymentList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.ReplicaSet"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.ReplicaSetList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.StatefulSet"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.apps.StatefulSetList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authentication.SelfSubjectReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authentication.TokenRequest"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authentication.TokenReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authentication.v1beta1.TokenReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authorization.v1.LocalSubjectAccessReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authorization.v1.SelfSubjectAccessReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authorization.v1.SelfSubjectRulesReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authorization.v1.SubjectAccessReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authorization.v1beta1.LocalSubjectAccessReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authorization.v1beta1.SelfSubjectAccessReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authorization.v1beta1.SelfSubjectRulesReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.authorization.v1beta1.SubjectAccessReview"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.autoscaling.v1.HorizontalPodAutoscaler"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.autoscaling.v1.HorizontalPodAutoscalerList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.autoscaling.v1.Scale"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.autoscaling.v2.HorizontalPodAutoscaler"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.autoscaling.v2.HorizontalPodAutoscalerList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.autoscaling.v2beta1.HorizontalPodAutoscaler"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.autoscaling.v2beta1.HorizontalPodAutoscalerList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.autoscaling.v2beta2.HorizontalPodAutoscaler"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.autoscaling.v2beta2.HorizontalPodAutoscalerList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.batch.v1.CronJob"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.batch.v1.CronJobList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.batch.v1.Job"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.batch.v1.JobList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.batch.v1beta1.CronJob"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.batch.v1beta1.CronJobList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1.CertificateSigningRequest"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1.CertificateSigningRequestList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1alpha1.ClusterTrustBundle"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1alpha1.ClusterTrustBundleList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1beta1.CertificateSigningRequest"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1beta1.CertificateSigningRequestList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1beta1.ClusterTrustBundle"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1beta1.ClusterTrustBundleList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1beta1.PodCertificateRequest"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.certificates.v1beta1.PodCertificateRequestList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.coordination.v1.Lease"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.coordination.v1.LeaseList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.coordination.v1alpha2.LeaseCandidate"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.coordination.v1alpha2.LeaseCandidateList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.coordination.v1beta1.LeaseCandidate"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.coordination.v1beta1.LeaseCandidateList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.discovery.v1.EndpointSlice"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.discovery.v1.EndpointSliceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.discovery.v1beta1.EndpointSlice"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.discovery.v1beta1.EndpointSliceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.events.v1.Event"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.events.v1.EventList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.events.v1beta1.Event"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.events.v1beta1.EventList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.DaemonSet"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.DaemonSetList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.Deployment"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.DeploymentList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.Ingress"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.IngressList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.NetworkPolicy"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.NetworkPolicyList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.PodSecurityPolicy"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.PodSecurityPolicyList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.ReplicaSet"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.ReplicaSetList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.extensions.Scale"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1.FlowSchema"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1.FlowSchemaList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1.PriorityLevelConfiguration"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1.PriorityLevelConfigurationList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta1.FlowSchema"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta1.FlowSchemaList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta1.PriorityLevelConfiguration"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta1.PriorityLevelConfigurationList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta2.FlowSchema"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta2.FlowSchemaList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta2.PriorityLevelConfiguration"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta2.PriorityLevelConfigurationList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta3.FlowSchema"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta3.FlowSchemaList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta3.PriorityLevelConfiguration"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.flowcontrol.v1beta3.PriorityLevelConfigurationList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.BackendTLSPolicy"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.BackendTLSPolicyList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.GRPCRoute"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.GRPCRouteList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.Gateway"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.GatewayClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.GatewayClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.GatewayList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.HTTPRoute"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1.HTTPRouteList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.GRPCRoute"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.GRPCRouteList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.ReferenceGrant"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.ReferenceGrantList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.TCPRoute"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.TCPRouteList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.TLSRoute"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.TLSRouteList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.UDPRoute"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha2.UDPRouteList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha3.BackendTLSPolicy"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha3.BackendTLSPolicyList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha3.TLSRoute"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1alpha3.TLSRouteList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1beta1.Gateway"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1beta1.GatewayClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1beta1.GatewayClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1beta1.GatewayList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1beta1.HTTPRoute"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1beta1.HTTPRouteList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1beta1.ReferenceGrant"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.gatewayapi.v1beta1.ReferenceGrantList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.metrics.v1beta1.NodeMetrics"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.metrics.v1beta1.NodeMetricsList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetrics"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.metrics.v1beta1.PodMetricsList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.IPAddress"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.IPAddressList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.Ingress"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.IngressClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.IngressClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.IngressList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.NetworkPolicy"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.NetworkPolicyList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.ServiceCIDR"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1.ServiceCIDRList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1beta1.IPAddress"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1beta1.IPAddressList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1beta1.Ingress"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1beta1.IngressClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1beta1.IngressClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1beta1.IngressList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1beta1.ServiceCIDR"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.networking.v1beta1.ServiceCIDRList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.node.v1.RuntimeClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.node.v1.RuntimeClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.node.v1alpha1.RuntimeClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.node.v1alpha1.RuntimeClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.node.v1beta1.RuntimeClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.node.v1beta1.RuntimeClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.policy.v1.Eviction"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.policy.v1.PodDisruptionBudget"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.policy.v1.PodDisruptionBudgetList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.policy.v1beta1.Eviction"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.policy.v1beta1.PodDisruptionBudget"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.policy.v1beta1.PodDisruptionBudgetList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.policy.v1beta1.PodSecurityPolicy"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.policy.v1beta1.PodSecurityPolicyList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.rbac.ClusterRole"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.rbac.ClusterRoleBinding"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.rbac.ClusterRoleBindingList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.rbac.ClusterRoleList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.rbac.Role"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.rbac.RoleBinding"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.rbac.RoleBindingList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.rbac.RoleList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1.DeviceClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1.DeviceClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1.ResourceClaim"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1.ResourceClaimList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1.ResourceClaimTemplate"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1.ResourceClaimTemplateList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1.ResourceSlice"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1.ResourceSliceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.PodSchedulingContext"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.PodSchedulingContextList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClaim"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClaimList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClaimParameters"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClaimParametersList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClaimTemplate"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClaimTemplateList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClassParameters"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceClassParametersList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceSlice"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha2.ResourceSliceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha3.DeviceTaintRule"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1alpha3.DeviceTaintRuleList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta1.DeviceClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta1.DeviceClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta1.ResourceClaim"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta1.ResourceClaimList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta1.ResourceClaimTemplate"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta1.ResourceClaimTemplateList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta1.ResourceSlice"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta1.ResourceSliceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta2.DeviceClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta2.DeviceClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta2.ResourceClaim"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta2.ResourceClaimList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta2.ResourceClaimTemplate"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta2.ResourceClaimTemplateList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta2.ResourceSlice"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.resource.v1beta2.ResourceSliceList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.scheduling.v1.PriorityClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.scheduling.v1.PriorityClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.scheduling.v1alpha1.PriorityClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.scheduling.v1alpha1.PriorityClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.scheduling.v1alpha1.Workload"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.scheduling.v1alpha1.WorkloadList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.scheduling.v1beta1.PriorityClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.scheduling.v1beta1.PriorityClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.CSIDriver"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.CSIDriverList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.CSINode"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.CSINodeList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.CSIStorageCapacity"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.CSIStorageCapacityList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.StorageClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.StorageClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.VolumeAttachment"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.VolumeAttachmentList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.VolumeAttributesClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.VolumeAttributesClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1alpha1.CSIStorageCapacity"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1alpha1.CSIStorageCapacityList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1alpha1.VolumeAttachment"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1alpha1.VolumeAttachmentList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.CSIDriver"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.CSIDriverList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.CSINode"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.CSINodeList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.CSIStorageCapacity"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.CSIStorageCapacityList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.StorageClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.StorageClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.VolumeAttachment"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.VolumeAttachmentList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.VolumeAttributesClass"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storage.v1beta1.VolumeAttributesClassList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storagemigration.v1beta1.StorageVersionMigration"
+    },
+    {
+      "type": "io.fabric8.kubernetes.api.model.storagemigration.v1beta1.StorageVersionMigrationList"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.Client",
+      "methods": [
+        {
+          "name": "close",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.Config",
+      "methods": [
+        {
+          "name": "fromKubeconfig",
+          "parameterTypes": [
+            "java.io.File"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.ConfigBeanInfo"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.ConfigCustomizer"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.FromServerGettable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.GracePeriodConfigurable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.KubernetesClient",
+      "methods": [
+        {
+          "name": "secrets",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.KubernetesClientBeanInfo"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.KubernetesClientBuilder",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        },
+        {
+          "name": "build",
+          "parameterTypes": []
+        },
+        {
+          "name": "withConfig",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.client.Config"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.KubernetesClientBuilderBeanInfo"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.KubernetesClientBuilderCustomizer"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.KubernetesClientCustomizer"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.OAuthTokenProvider"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.PropagationPolicyConfigurable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.SundrioConfig"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.SundrioConfigBeanInfo"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.SundrioConfigCustomizer"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.Watcher"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.AnyNamespaceOperation"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.AnyNamespaceable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.CreateOrReplaceDeletable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.CreateOrReplaceable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Deletable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.DeletableWithOptions"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.DryRunable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.EditReplacePatchable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.FieldValidateable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.FilterWatchListDeletable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Filterable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Gettable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Informable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.ItemReplacable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.ItemWritableOperation"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Listable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.MixedOperation"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.MixedOperationBeanInfo"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.MixedOperationCustomizer"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Nameable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Namespaceable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.NonDeletingOperation"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.NonNamespaceOperation"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.NonNamespaceOperationBeanInfo"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.NonNamespaceOperationCustomizer"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.ReplaceDeletable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Replaceable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Resource"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.ResourceBeanInfo"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.ResourceCustomizer"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Scalable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.ServerSideApplicable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Timeoutable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Updatable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Waitable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.WatchAndWaitable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.Watchable"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.WritableOperation"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.dsl.internal.OperationSupport",
+      "methods": [
+        {
+          "name": "handleResponse",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.client.http.HttpRequest$Builder",
+            "java.lang.Class"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.impl.KubernetesClientImpl",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "io.fabric8.kubernetes.client.http.HttpClient",
+            "io.fabric8.kubernetes.client.Config",
+            "io.fabric8.kubernetes.client.KubernetesClientBuilder$ExecutorSupplier",
+            "io.fabric8.kubernetes.client.utils.KubernetesSerialization"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.informers.ResourceEventHandler"
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.utils.KubernetesSerialization",
+      "methods": [
+        {
+          "name": "unmarshal",
+          "parameterTypes": [
+            "java.io.InputStream",
+            "java.lang.Class"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "io.fabric8.kubernetes.client.vertx.VertxHttpClientFactory"
+    },
+    {
       "type": "io.grpc.Channel"
     },
     {
@@ -41981,6 +44557,14 @@
       ]
     },
     {
+      "type": "io.grpc.Channel$SpockMock$1609407914",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "io.grpc.Channel$SpockMock$614561625",
       "fields": [
         {
@@ -42002,6 +44586,14 @@
     },
     {
       "type": "io.grpc.ClientCall$SpockMock$1430033980",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "io.grpc.ClientCall$SpockMock$145748992",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -43317,6 +45909,9 @@
       "type": "io.netty.handler.ssl.SslHandler"
     },
     {
+      "type": "io.netty.handler.stream.ChunkedWriteHandler"
+    },
+    {
       "type": "io.netty.handler.timeout.IdleStateHandler"
     },
     {
@@ -43765,7 +46360,31 @@
       "type": "io.vavr.CheckedRunnable"
     },
     {
+      "type": "io.vavr.Lazy"
+    },
+    {
       "type": "io.vavr.control.Try"
+    },
+    {
+      "type": "io.vertx.core.eventbus.impl.EventBusImpl"
+    },
+    {
+      "type": "io.vertx.core.logging.SLF4JLogDelegateFactory",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "io.vertx.core.net.impl.ChannelProvider$1"
+    },
+    {
+      "type": "io.vertx.core.net.impl.ChannelProvider$2"
+    },
+    {
+      "type": "io.vertx.core.net.impl.VertxHandler"
     },
     {
       "type": "jakarta.activation.MimeType"
@@ -44995,6 +47614,10 @@
       "type": "java.lang.Thread$Builder",
       "methods": [
         {
+          "name": "factory",
+          "parameterTypes": []
+        },
+        {
           "name": "unstarted",
           "parameterTypes": [
             "java.lang.Runnable"
@@ -45009,6 +47632,13 @@
           "name": "name",
           "parameterTypes": [
             "java.lang.String"
+          ]
+        },
+        {
+          "name": "name",
+          "parameterTypes": [
+            "java.lang.String",
+            "long"
           ]
         }
       ]
@@ -47092,7 +49722,13 @@
     {
       "type": "java.util.LinkedHashMap",
       "allDeclaredFields": true,
-      "serializable": true
+      "serializable": true,
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "java.util.LinkedHashMap$Entry",
@@ -47334,6 +49970,9 @@
     },
     {
       "type": "java.util.OptionalLong"
+    },
+    {
+      "type": "java.util.Properties"
     },
     {
       "type": "java.util.PropertyPermission",
@@ -48482,6 +51121,12 @@
       "type": "jdk.proxy3.$Proxy143Customizer"
     },
     {
+      "type": "jdk.proxy3.$Proxy157BeanInfo"
+    },
+    {
+      "type": "jdk.proxy3.$Proxy157Customizer"
+    },
+    {
       "type": "jdk.proxy3.$Proxy221BeanInfo"
     },
     {
@@ -48540,6 +51185,12 @@
     },
     {
       "type": "jdk.proxy3.$Proxy297Customizer"
+    },
+    {
+      "type": "jdk.proxy3.$Proxy307BeanInfo"
+    },
+    {
+      "type": "jdk.proxy3.$Proxy307Customizer"
     },
     {
       "type": "jdk.proxy3.$Proxy83BeanInfo"
@@ -49675,6 +52326,14 @@
       ]
     },
     {
+      "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$165787594",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.apache.commons.exec.DefaultExecutor$Builder$SpockMock$1735130580",
       "fields": [
         {
@@ -50010,6 +52669,14 @@
     },
     {
       "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$1886007914",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.apache.commons.exec.DefaultExecutor$SpockMock$1906833013",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -51347,6 +54014,21 @@
       "type": "org.codehaus.groovy.runtime.DefaultGroovyStaticMethods"
     },
     {
+      "type": "org.codehaus.groovy.runtime.EncodingGroovyMethods$1",
+      "methods": [
+        {
+          "name": "toString",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.EncodingGroovyMethods$1BeanInfo"
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.EncodingGroovyMethods$1Customizer"
+    },
+    {
       "type": "org.codehaus.groovy.runtime.GStringImpl",
       "allDeclaredFields": true
     },
@@ -51511,6 +54193,34 @@
     },
     {
       "type": "org.codehaus.groovy.runtime.dgm$103",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$1052",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$1053",
       "methods": [
         {
           "name": "<init>",
@@ -51959,6 +54669,20 @@
     },
     {
       "type": "org.codehaus.groovy.runtime.dgm$1298",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.lang.String",
+            "org.codehaus.groovy.reflection.CachedClass",
+            "java.lang.Class",
+            "java.lang.Class[]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.codehaus.groovy.runtime.dgm$1302",
       "methods": [
         {
           "name": "<init>",
@@ -54869,6 +57593,9 @@
     },
     {
       "type": "org.htmlunit.BrowserVersionFeatures"
+    },
+    {
+      "type": "org.htmlunit.WebClient"
     },
     {
       "type": "org.htmlunit.corejs.javascript.Context"
@@ -64588,6 +67315,15 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.File$SpockMock$1445284734",
+      "serializable": true,
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.File$SpockMock$1536683723",
       "fields": [
         {
@@ -64906,6 +67642,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$1751840490",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.FileSystem$SpockMock$1925426379",
       "fields": [
         {
@@ -65115,6 +67859,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.Object$SpockMock$1670199248",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.Object$SpockMock$1690535754",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -65346,6 +68098,14 @@
       ]
     },
     {
+      "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$1861519969",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.spockframework.mock.codegen.OutputStream$SpockMock$1867438703",
       "fields": [
         {
@@ -65547,6 +68307,14 @@
     },
     {
       "type": "org.spockframework.mock.codegen.Process$SpockMock$1340570220",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.spockframework.mock.codegen.Process$SpockMock$1367616336",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -67619,6 +70387,14 @@
     },
     {
       "type": "org.springframework.boot.SpringApplication$SpockMock$1703835717",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "org.springframework.boot.SpringApplication$SpockMock$1706061768",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -76463,6 +79239,15 @@
       ]
     },
     {
+      "type": "org.springframework.context.ApplicationEvent$SpockMock$1537527220",
+      "serializable": true,
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.springframework.context.ApplicationEvent$SpockMock$1549397739",
       "serializable": true,
       "fields": [
@@ -77643,6 +80428,14 @@
       ]
     },
     {
+      "type": "org.springframework.http.ResponseEntity$SpockMock$2115465382",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "org.springframework.http.ResponseEntity$SpockMock$278207156",
       "fields": [
         {
@@ -78452,6 +81245,9 @@
     {
       "type": "org.springframework.validation.beanvalidation.SpringValidatorAdapter",
       "allDeclaredFields": true
+    },
+    {
+      "type": "org.springframework.vault.config.AbstractReactiveVaultConfiguration"
     },
     {
       "type": "org.springframework.vault.core.ReactiveVaultOperations",
@@ -79847,6 +82643,14 @@
       ]
     },
     {
+      "type": "reactor.core.publisher.Flux$SpockMock$1684230289",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
       "type": "reactor.core.publisher.Flux$SpockMock$196178756",
       "fields": [
         {
@@ -80417,6 +83221,14 @@
     },
     {
       "type": "reactor.core.publisher.Mono$SpockMock$1780035369",
+      "fields": [
+        {
+          "name": "$spock_mockInteractionValidator"
+        }
+      ]
+    },
+    {
+      "type": "reactor.core.publisher.Mono$SpockMock$1794713000",
       "fields": [
         {
           "name": "$spock_mockInteractionValidator"
@@ -82785,6 +85597,15 @@
       ]
     },
     {
+      "type": "sun.security.ssl.SSLContextImpl$TLS13Context",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "sun.security.ssl.SSLContextImpl$TLSContext",
       "methods": [
         {
@@ -83799,6 +86620,45 @@
       "type": {
         "proxy": [
           "io.camunda.zeebe.client.api.worker.JobWorkerBuilderStep1$JobWorkerBuilderStep3",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.fabric8.kubernetes.client.KubernetesClient"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.fabric8.kubernetes.client.KubernetesClient",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.fabric8.kubernetes.client.dsl.MixedOperation",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.fabric8.kubernetes.client.dsl.NonNamespaceOperation",
+          "org.spockframework.mock.ISpockMockObject"
+        ]
+      }
+    },
+    {
+      "type": {
+        "proxy": [
+          "io.fabric8.kubernetes.client.dsl.Resource",
           "org.spockframework.mock.ISpockMockObject"
         ]
       }
@@ -85025,6 +87885,12 @@
       "glob": "META-INF/services/io.camunda.client.bean.InfoFactory"
     },
     {
+      "glob": "META-INF/services/io.fabric8.kubernetes.client.extension.ExtensionAdapter"
+    },
+    {
+      "glob": "META-INF/services/io.fabric8.kubernetes.client.http.HttpClient$Factory"
+    },
+    {
       "glob": "META-INF/services/io.grpc.LoadBalancerProvider"
     },
     {
@@ -85032,6 +87898,12 @@
     },
     {
       "glob": "META-INF/services/io.swagger.v3.core.converter.ModelConverter"
+    },
+    {
+      "glob": "META-INF/services/io.vertx.core.spi.VerticleFactory"
+    },
+    {
+      "glob": "META-INF/services/io.vertx.core.spi.VertxServiceProvider"
     },
     {
       "glob": "META-INF/services/jakarta.el.ExpressionFactory"
@@ -85173,6 +88045,9 @@
     },
     {
       "glob": "META-INF/validation.xml"
+    },
+    {
+      "glob": "META-INF/vertx/vertx-version.txt"
     },
     {
       "glob": "SpockConfig.groovy"
@@ -85614,6 +88489,18 @@
     },
     {
       "glob": "config/rpa-worker-e2edebug.yml"
+    },
+    {
+      "glob": "config/rpa-worker-local.properties"
+    },
+    {
+      "glob": "config/rpa-worker-local.xml"
+    },
+    {
+      "glob": "config/rpa-worker-local.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-local.yml"
     },
     {
       "glob": "config/rpa-worker-v87-dev-mine.properties"
@@ -86208,6 +89095,24 @@
     },
     {
       "glob": "io/camunda/rpa/worker/secrets/camunda/CamundaSecretsFunctionalSpec.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/k8s/K8sBackend.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/k8s/K8sHints.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/k8s/K8sNativeHintsHelper$BadCredentials.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/k8s/K8sNativeHintsHelper$HappyPath.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/k8s/K8sNativeHintsHelper$NoSecret.class"
+    },
+    {
+      "glob": "io/camunda/rpa/worker/secrets/k8s/K8sNativeHintsHelper.class"
     },
     {
       "glob": "io/camunda/rpa/worker/secrets/vault/VaultBackend.class"
@@ -89282,6 +92187,18 @@
       "glob": "rpa-worker-e2edebug.yml"
     },
     {
+      "glob": "rpa-worker-local.properties"
+    },
+    {
+      "glob": "rpa-worker-local.xml"
+    },
+    {
+      "glob": "rpa-worker-local.yaml"
+    },
+    {
+      "glob": "rpa-worker-local.yml"
+    },
+    {
       "glob": "rpa-worker-v87-dev-mine.properties"
     },
     {
@@ -89361,6 +92278,9 @@
     },
     {
       "glob": "tasklog.html"
+    },
+    {
+      "glob": "vertx-default-jul-logging.properties"
     },
     {
       "glob": "zeebe-client-legacy-property-mappings.properties"

@@ -321,6 +321,13 @@ for other supported properties_
 3+|See https://docs.spring.io/spring-vault/reference/api/java/org/springframework/vault/config/EnvironmentVaultConfiguration.html[Vault Client Reference Documentation]
 for other supported properties
 
+3+| *Secrets Properties - Kubernetes (`...backend=k8s`)*
+|camunda.rpa.secrets.k8s.secrets
+|The list of secrets objects (merged left-to-right) (format is `secret-name@namespace`)
+|_Empty_
+
+3+|For more information on configuring the Kubernetes client see the 
+https://github.com/fabric8io/kubernetes-client#configuring-the-client[Configuration Reference]
 
 3+| *General Properties*
 |server.address

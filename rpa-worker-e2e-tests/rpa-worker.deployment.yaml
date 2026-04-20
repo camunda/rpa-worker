@@ -15,6 +15,7 @@ spec:
       labels:
         app: rpa-worker
     spec:
+      serviceAccountName: secrets-reader
       containers:
         - name: rpa-worker
           image: ghcr.io/camunda/rpa-worker@999_DIGEST_999
@@ -22,6 +23,10 @@ spec:
           env:
             - name: CAMUNDA_CLIENT_ZEEBE_ENABLED
               value: "false"
+            - name: CAMUNDA_RPA_SECRETS_BACKEND
+              value: "k8s"
+            - name: CAMUNDA_RPA_SECRETS_K8S_SECRETS
+              value: "test-secret@secrets-test"
           startupProbe:
             httpGet:
               port: worker-api
@@ -46,6 +51,31 @@ spec:
       port: 36228
       targetPort: worker-api
   type: LoadBalancer
-    
-      
-    
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: secrets-reader
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: secrets-reader
+rules:
+  - apiGroups: [ "" ]
+    resources: [ "secrets" ]
+    verbs: [ "get", "watch", "list" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: secrets-reader
+subjects:
+  - kind: ServiceAccount
+    name: secrets-reader
+    namespace: rpa-worker
+roleRef:
+  kind: ClusterRole
+  name: secrets-reader
+  apiGroup: rbac.authorization.k8s.io
+  
