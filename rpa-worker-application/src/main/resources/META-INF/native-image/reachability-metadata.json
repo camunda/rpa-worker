@@ -196,6 +196,12 @@
       "type": "ch.qos.logback.core.OutputStreamAppender"
     },
     {
+      "type": "ch.qos.logback.core.encoder.Encoder"
+    },
+    {
+      "type": "ch.qos.logback.core.encoder.LayoutWrappingEncoder"
+    },
+    {
       "type": "char[]"
     },
     {
@@ -46354,6 +46360,9 @@
       "type": "io.vavr.CheckedRunnable"
     },
     {
+      "type": "io.vavr.Lazy"
+    },
+    {
       "type": "io.vavr.control.Try"
     },
     {
@@ -49961,6 +49970,9 @@
     },
     {
       "type": "java.util.OptionalLong"
+    },
+    {
+      "type": "java.util.Properties"
     },
     {
       "type": "java.util.PropertyPermission",
@@ -57581,6 +57593,9 @@
     },
     {
       "type": "org.htmlunit.BrowserVersionFeatures"
+    },
+    {
+      "type": "org.htmlunit.WebClient"
     },
     {
       "type": "org.htmlunit.corejs.javascript.Context"
@@ -81232,6 +81247,9 @@
       "allDeclaredFields": true
     },
     {
+      "type": "org.springframework.vault.config.AbstractReactiveVaultConfiguration"
+    },
+    {
       "type": "org.springframework.vault.core.ReactiveVaultOperations",
       "methods": [
         {
@@ -87867,6 +87885,12 @@
       "glob": "META-INF/services/io.camunda.client.bean.InfoFactory"
     },
     {
+      "glob": "META-INF/services/io.fabric8.kubernetes.client.extension.ExtensionAdapter"
+    },
+    {
+      "glob": "META-INF/services/io.fabric8.kubernetes.client.http.HttpClient$Factory"
+    },
+    {
       "glob": "META-INF/services/io.grpc.LoadBalancerProvider"
     },
     {
@@ -87874,6 +87898,12 @@
     },
     {
       "glob": "META-INF/services/io.swagger.v3.core.converter.ModelConverter"
+    },
+    {
+      "glob": "META-INF/services/io.vertx.core.spi.VerticleFactory"
+    },
+    {
+      "glob": "META-INF/services/io.vertx.core.spi.VertxServiceProvider"
     },
     {
       "glob": "META-INF/services/jakarta.el.ExpressionFactory"
@@ -88015,6 +88045,9 @@
     },
     {
       "glob": "META-INF/validation.xml"
+    },
+    {
+      "glob": "META-INF/vertx/vertx-version.txt"
     },
     {
       "glob": "SpockConfig.groovy"
@@ -88456,6 +88489,18 @@
     },
     {
       "glob": "config/rpa-worker-e2edebug.yml"
+    },
+    {
+      "glob": "config/rpa-worker-local.properties"
+    },
+    {
+      "glob": "config/rpa-worker-local.xml"
+    },
+    {
+      "glob": "config/rpa-worker-local.yaml"
+    },
+    {
+      "glob": "config/rpa-worker-local.yml"
     },
     {
       "glob": "config/rpa-worker-v87-dev-mine.properties"
@@ -92140,6 +92185,18 @@
     },
     {
       "glob": "rpa-worker-e2edebug.yml"
+    },
+    {
+      "glob": "rpa-worker-local.properties"
+    },
+    {
+      "glob": "rpa-worker-local.xml"
+    },
+    {
+      "glob": "rpa-worker-local.yaml"
+    },
+    {
+      "glob": "rpa-worker-local.yml"
     },
     {
       "glob": "rpa-worker-v87-dev-mine.properties"
