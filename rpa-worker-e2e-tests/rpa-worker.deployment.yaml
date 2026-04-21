@@ -58,7 +58,7 @@ metadata:
   name: secrets-reader
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
   name: secrets-reader
 rules:
@@ -67,7 +67,7 @@ rules:
     verbs: [ "get", "watch", "list" ]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+kind: ClusterRoleBinding
 metadata:
   name: secrets-reader
 subjects:
@@ -75,7 +75,7 @@ subjects:
     name: secrets-reader
     namespace: rpa-worker
 roleRef:
-  kind: Role
+  kind: ClusterRole
   name: secrets-reader
   apiGroup: rbac.authorization.k8s.io
   

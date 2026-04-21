@@ -73,10 +73,12 @@ public class K8sBackend implements SecretsBackend {
 								.inNamespace(ref.namespace())
 								.withName(ref.name())
 								.get())
+						.doOnNext(s -> log.atInfo().kv("secret", s).kv("ref", ref).log("Got secret"))
 						.flatMap(Mono::justOrEmpty)
 						.doOnError(thrown -> log.atInfo().setCause(thrown).log("Error fetching secrets from Kubernetes (I)"))
 						.subscribeOn(Schedulers.boundedElastic()))
 				.map(Secret::getData)
+				.doOnNext(d -> log.atInfo().kv("data", d).log("Got secret data"))
 				.flatMapSequential(d -> Flux.fromStream(d.entrySet().stream()))
 				.doOnError(thrown -> log.atInfo().setCause(thrown).log("Error fetching secrets from Kubernetes (II)"))
 				.collect(MoreCollectors.toSequencedMap(
