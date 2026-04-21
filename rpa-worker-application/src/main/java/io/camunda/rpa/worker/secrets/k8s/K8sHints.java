@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.secrets.k8s;
 
+import io.fabric8.kubernetes.api.model.ObjectMeta;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -13,7 +14,7 @@ import java.util.stream.Stream;
 class K8sHints implements RuntimeHintsRegistrar {
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		Stream.<Class<?>>of()
+		Stream.of(ObjectMeta.class)
 				.forEach(klass -> hints
 						.reflection()
 						.registerType(
