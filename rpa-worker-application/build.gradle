@@ -158,6 +158,7 @@ graalvmNative {
 			buildArgs.add("--enable-native-access=ALL-UNNAMED")
 			buildArgs.add("-H:CompilationExpirationPeriod=1500.0")
 			buildArgs.add("-R:CompilationExpirationPeriod=1500.0")
+			buildArgs.add("-H:+AddAllCharsets")
 			if(project.hasProperty("nativePlatform")
 					&& project.hasProperty("nativeArch")
 					&& project.properties.nativePlatform == "darwin"
