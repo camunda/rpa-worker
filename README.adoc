@@ -300,6 +300,11 @@ for other supported properties_
 |The token audience to use when authenticating for secrets
 |`secrets.camunda.io`
 
+3+| *Secrets Properties - AWS Secrets Manager (`...backend=aws-secretsmanager`)*
+|camunda.rpa.secrets.aws.secrets
+|The list of secrets objects (merged left-to-right)
+|_Empty_
+
 
 3+| *General Properties*
 |server.address

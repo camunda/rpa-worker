@@ -9,5 +9,5 @@ import java.util.Map;
 @HttpExchange
 interface CamundaSecretsClient {
 	@GetExchange("/secrets")
-	Mono<Map<String, String>> getSecrets();
+	Mono<Map<String, Object>> getSecrets();
 }
