@@ -164,7 +164,7 @@ graalvmNative {
 					&& project.properties.nativePlatform == "darwin"
 					&& project.properties.nativeArch == "aarch64") {
 				buildArgs.add("-R:MaximumHeapSizePercent=70")
-				buildArgs.add("-H:DeadlockWatchdogInterval=20")
+				buildArgs.add("-H:DeadlockWatchdogInterval=50")
 			}
 		}
 	}
