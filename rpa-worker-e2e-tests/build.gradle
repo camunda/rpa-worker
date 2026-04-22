@@ -225,6 +225,7 @@ tasks.withType(Test).configureEach {
 		it.dependsOn deployWorkerContainer
 		it.dependsOn configureClientSecret
 		it.dependsOn configureVault
+		it.dependsOn installTestSecrets
 	}
 }
 
@@ -252,6 +253,16 @@ tasks.register("configureVault") {
 	
 	doLast {
 		wrapProcess("k3s kubectl exec -n vault sts/vault -- vault kv put secret/test/secret foo=bar baz=bat".execute())
+	}
+}
+
+tasks.register("installTestSecrets") {
+	dependsOn installK3s
+	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
+	
+	doLast {
+		wrapProcess("k3s kubectl create ns secrets-test".execute())
+		wrapProcess("k3s kubectl apply -f rpa-worker-e2e-tests/test-secret.secret.yaml".execute())
 	}
 }
 

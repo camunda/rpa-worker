@@ -14,6 +14,7 @@ rpaRuntime = "0.2.3"
 htmlUnit = "4.21.0"
 awssdk = "2.42.35"
 spring-vault = "4.0.1"
+k8sClient = "7.6.1"
 
 spock = "2.4-groovy-5.0"
 byteBuddy = "1.18.4"
@@ -59,6 +60,7 @@ htmlUnit = { module = "org.htmlunit:htmlunit", version.ref = "htmlUnit" }
 jsoup = { module = "org.jsoup:jsoup", version.ref = "jsoup" }
 aws-secretsmanager = { module = "software.amazon.awssdk:secretsmanager", version.ref = "awssdk" }
 spring-vault-core = { module = "org.springframework.vault:spring-vault-core", version.ref = "spring-vault" }
+fabric8-kubernetesClient = { module = "io.fabric8:kubernetes-client", version.ref = "k8sClient" }
 
 reactor-test = { module = "io.projectreactor:reactor-test" }
 spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }

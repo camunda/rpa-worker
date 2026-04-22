@@ -71,6 +71,7 @@ dependencies {
 	implementation libs.htmlUnit
 	implementation libs.aws.secretsmanager
 	implementation libs.spring.vault.core
+	implementation libs.fabric8.kubernetesClient
 	
 	// TODO: Forced update to transitive dependency - remove when no longer required
 	implementation libs.commons.lang
@@ -155,14 +156,15 @@ graalvmNative {
 			buildArgs.add("--initialize-at-build-time=org.slf4j.jul.JDK14LoggerAdapter")
 			buildArgs.add("--initialize-at-run-time=sun.net.dns.ResolverConfigurationImpl")
 			buildArgs.add("--enable-native-access=ALL-UNNAMED")
-			buildArgs.add("-H:CompilationExpirationPeriod=1500.0")
-			buildArgs.add("-R:CompilationExpirationPeriod=1500.0")
+			buildArgs.add("-H:CompilationExpirationPeriod=5000.0")
+			buildArgs.add("-R:CompilationExpirationPeriod=5000.0")
+			buildArgs.add("-H:+AddAllCharsets")
 			if(project.hasProperty("nativePlatform")
 					&& project.hasProperty("nativeArch")
 					&& project.properties.nativePlatform == "darwin"
 					&& project.properties.nativeArch == "aarch64") {
 				buildArgs.add("-R:MaximumHeapSizePercent=70")
-				buildArgs.add("-H:DeadlockWatchdogInterval=20")
+				buildArgs.add("-H:DeadlockWatchdogInterval=50")
 			}
 		}
 	}
