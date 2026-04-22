@@ -305,6 +305,22 @@ for other supported properties_
 |The list of secrets objects (merged left-to-right)
 |_Empty_
 
+3+| *Secrets Properties - Vault (`...backend=vault`)*
+|camunda.rpa.secrets.vault.secrets
+|The list of secrets objects (merged left-to-right)
+|_Empty_
+
+|vault.uri
+|The URI of the Vault server
+|_None_
+
+|vault.token
+|The token used to authenticate when accessing Vault
+|_None_
+
+3+|See https://docs.spring.io/spring-vault/reference/api/java/org/springframework/vault/config/EnvironmentVaultConfiguration.html[Vault Client Reference Documentation]
+for other supported properties
+
 
 3+| *General Properties*
 |server.address
