@@ -323,6 +323,9 @@ jobs:
           retention-days: 1
           
   e2e:
+    permissions:
+      contents: read
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth
     needs:
       - build
       - native_linux_amd64
@@ -346,12 +349,13 @@ jobs:
 
       - name: Import Secrets for E2E
         id: secrets
-        uses: hashicorp/vault-action@v2.5.0
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc  # v4.0.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: jwt
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
           secrets: |
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clientSecret | CAMUNDA_E2E_SECRETS_CAMUNDA_CLIENTSECRET ;
             secret/data/products/rpa/ci/worker_e2e_secrets_camunda clusterId    | CAMUNDA_E2E_SECRETS_CAMUNDA_CLUSTERID ;
@@ -483,6 +487,7 @@ jobs:
     runs-on: windows-latest
     permissions:
       contents: read
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
@@ -492,12 +497,13 @@ jobs:
 
       - name: Import Secrets for signing
         id: secrets
-        uses: hashicorp/vault-action@v2.5.0
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc  # v4.0.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: jwt
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
           secrets: |
             secret/data/products/rpa/ci/azure CERT_PROFILE_NAME  | AZURE_CERT_PROFILE_NAME ;
             secret/data/products/rpa/ci/azure CLIENT_ID          | AZURE_CLIENT_ID ;
@@ -548,6 +554,7 @@ jobs:
     runs-on: macos-latest
     permissions:
       contents: read
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth
 
     steps:
       # Required for local action
@@ -558,12 +565,13 @@ jobs:
 
       - name: Import Secrets
         id: secrets
-        uses: hashicorp/vault-action@7709c609789c5e27b757a85817483caadbb5939a # v3.3.0
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc  # v4.0.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: jwt
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
           secrets: |
             secret/data/products/distribution/ci APPLE_CERTIFICATE;
             secret/data/products/distribution/ci APPLE_CERTIFICATE_PASSWORD;
@@ -797,6 +805,9 @@ jobs:
             rpa-worker-e2e-tests/build/test-results/**/*.xml
 
   release:
+    permissions:
+      contents: read
+      id-token: write  # mint GitHub OIDC token for Vault JWT auth
     needs:
       - e2e
       - smoke_test_win32
@@ -846,12 +857,13 @@ jobs:
       - name: Import Secrets
         if: github.ref_type == 'tag'
         id: secrets
-        uses: hashicorp/vault-action@v2.5.0
+        uses: hashicorp/vault-action@892a26828f195e65540a40b4768ae4571f51ebfc  # v4.0.0
         with:
           url: ${{ secrets.VAULT_ADDR }}
-          method: approle
-          roleId: ${{ secrets.VAULT_ROLE_ID }}
-          secretId: ${{ secrets.VAULT_SECRET_ID }}
+          method: jwt
+          role: ${{ secrets.VAULT_JWT_ROLE }}
+          path: ${{ secrets.VAULT_JWT_PATH }}
+          jwtGithubAudience: ${{ secrets.VAULT_JWT_AUDIENCE }}
           secrets: |
             secret/data/common/jenkins/downloads-camunda-cloud_google_sa_key DOWNLOAD_CENTER_GCLOUD_KEY_BYTES | GCP_CREDENTIALS_NAME;
 
