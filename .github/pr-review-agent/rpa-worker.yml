@@ -1,0 +1,69 @@
+# Team config for camunda/pr-review-agent (see its docs/configuration.md).
+# Read from the default branch: changes take effect once merged.
+schema_version: 1
+
+# Comment only, never approve.
+shadow_mode: true
+
+vault:
+  anthropic_api_key:
+    # TODO: the Anthropic key is not in Vault yet. This repo's workflows read
+    # secret/data/products/rpa/ci/*; the path below is a proposal.
+    path: secret/data/products/rpa/ci/ai-pr-review
+    field: ANTHROPIC_API_KEY
+
+triggers:
+  opt_in_label: ai-review
+  skip_authors:
+    - renovate[bot]
+    - dependabot[bot]
+
+policy:
+  instructions: |
+    - Gradle multi-project build: rpa-worker-application (Spring Boot app,
+      Java with Groovy/Spock tests), rpa-worker-common, rpa-worker-e2e-tests,
+      element-template, and build logic in buildSrc/. Dependency versions
+      live in gradle/libs.versions.toml.
+    - The worker ships as a GraalVM native image for Linux, Windows and macOS.
+      New reflection, resources, proxies or serialization need native hints
+      (NativeHints.java, the *Hints classes, or
+      rpa-worker-application/src/main/resources/META-INF/native-image/).
+      Flag code that works on the JVM but would break in the native image.
+    - The worker runs Python and Robot Framework scripts on the host
+      (pexec/, python/, robot/, script/). Check process arguments, paths and
+      environment handling for injection and for Windows/macOS/Linux
+      differences.
+    - secrets/ holds the secrets backends (Vault, AWS Secrets Manager,
+      Kubernetes). Secret values must never reach logs, exceptions or
+      job variables.
+    - Configuration is documented in README.adoc and
+      application.sample.properties. A new or changed property must update both.
+    - element-template/rpa-connector.json is the connector template users
+      import. Changes must stay backward compatible.
+
+escalation:
+  # Changed paths that always need a human, whatever the agent says.
+  # `*` also matches `/`.
+  rules:
+    - reason: secrets backends
+      paths: ["rpa-worker-application/src/main/java/io/camunda/rpa/worker/secrets/*"]
+    - reason: script and process execution
+      paths:
+        - "rpa-worker-application/src/main/java/io/camunda/rpa/worker/pexec/*"
+        - "rpa-worker-application/src/main/java/io/camunda/rpa/worker/python/*"
+        - "rpa-worker-application/src/main/java/io/camunda/rpa/worker/robot/*"
+        - "rpa-worker-application/src/main/java/io/camunda/rpa/worker/script/*"
+    - reason: native image config
+      paths:
+        - "rpa-worker-application/src/main/resources/META-INF/native-image/*"
+        - "*Hints.java"
+    - reason: build/signing/release
+      paths: ["Dockerfile", "EnsureToolchains", ".github/actions/*", ".github/workflows/*", "buildSrc/*"]
+    - reason: dependencies
+      paths: ["gradle/libs.versions.toml", "*build.gradle", "settings.gradle", "gradle/wrapper/*"]
+    - reason: connector template
+      paths: ["element-template/*"]
+
+notifications:
+  # Tagged when the agent's session transcript could not be captured.
+  capture_alert_mentions: ["@camunda/ple"]
