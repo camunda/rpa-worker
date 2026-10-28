@@ -51,6 +51,8 @@ escalation:
       paths:
         - "rpa-worker-application/src/main/java/io/camunda/rpa/worker/pexec/*"
         - "rpa-worker-application/src/main/java/io/camunda/rpa/worker/python/*"
+        - "rpa-worker-application/src/main/java/io/camunda/rpa/worker/robot/*"
+        - "rpa-worker-application/src/main/java/io/camunda/rpa/worker/script/*"
     - reason: native image config
       paths:
         - "rpa-worker-application/src/main/resources/META-INF/native-image/*"
