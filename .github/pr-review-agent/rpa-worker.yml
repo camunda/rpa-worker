@@ -55,7 +55,7 @@ escalation:
       paths:
         - "rpa-worker-application/src/main/resources/META-INF/native-image/*"
         - "*Hints.java"
-    - reason: build, signing and release
+    - reason: build/signing/release
       paths: ["Dockerfile", "EnsureToolchains", ".github/actions/*", ".github/workflows/*", "buildSrc/*"]
     - reason: dependencies
       paths: ["gradle/libs.versions.toml", "*build.gradle", "settings.gradle", "gradle/wrapper/*"]
