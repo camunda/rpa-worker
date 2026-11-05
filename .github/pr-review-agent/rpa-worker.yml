@@ -17,6 +17,7 @@ triggers:
   skip_authors:
     - renovate[bot]
     - dependabot[bot]
+  max_auto_reviews: 7
 
 policy:
   instructions: |
