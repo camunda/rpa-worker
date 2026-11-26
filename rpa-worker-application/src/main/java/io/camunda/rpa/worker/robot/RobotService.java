@@ -1,5 +1,6 @@
 package io.camunda.rpa.worker.robot;
 
+import io.camunda.rpa.worker.api.CallbackTokenService;
 import io.camunda.rpa.worker.io.IO;
 import io.camunda.rpa.worker.pexec.ProcessService;
 import io.camunda.rpa.worker.pexec.ProcessTimeoutException;
@@ -51,6 +52,7 @@ public class RobotService {
 	private final ObjectProvider<EnvironmentVariablesContributor> environmentContributors;
 	private final WorkspaceVariablesManager workspaceVariablesManager;
 	private final RobotExecutionStrategy robotExecutionStrategy;
+	private final CallbackTokenService callbackTokenService;
 
 	private record RobotEnvironment(Workspace workspace, Path varsFile, Path outputDir, Path artifactsDir) { }
 
@@ -107,8 +109,9 @@ public class RobotService {
 			String workspaceAffinityKey) {
 
 		return newRobotEnvironment(scripts, variables, workspaceProperties, workspaceAffinityKey)
-				.flatMap(renv ->
-						Flux.fromIterable(scripts)
+				.flatMap(renv -> Mono.using(
+						() -> callbackTokenService.openExecution(renv.workspace()),
+						_ -> Flux.fromIterable(scripts)
 								.concatMap(script -> getEnvironmentVariables(renv, script)
 
 										.flatMap(envVars ->
@@ -145,7 +148,8 @@ public class RobotService {
 										.flatMap(it -> it))
 
 								.doFinally(_ -> executionListeners.forEach(
-										l -> l.afterRobotExecution(renv.workspace()))));
+										l -> l.afterRobotExecution(renv.workspace()))),
+						callbackTokenService::afterRobotExecution));
 	}
 
 	private Mono<RobotEnvironment> newRobotEnvironment(
@@ -220,7 +224,7 @@ public class RobotService {
 						.workDir(renv.workspace().path())
 						.allowExitCodes(ROBOT_TASK_FAILURE_EXIT_CODES)
 
-						.inheritEnv()
+						.env(scriptEnvironment(System.getenv()))
 						.env(envVars)
 
 						.arg("--rpa")
@@ -245,6 +249,15 @@ public class RobotService {
 				.flatMap(xr -> xr.result() != ExecutionResults.Result.PASS
 						? Mono.error(new RobotFailureException(xr))
 						: Mono.just(xr));
+	}
+
+	static Map<String, String> scriptEnvironment(Map<String, String> environment) {
+		return environment.entrySet().stream()
+				.filter(entry -> !entry.getKey().equalsIgnoreCase("CAMUNDA_RPA_API_TOKEN")
+						&& !entry.getKey().equalsIgnoreCase("camunda.rpa.api.token")
+						&& !entry.getKey().equalsIgnoreCase("SPRING_APPLICATION_JSON")
+						&& !entry.getKey().equalsIgnoreCase("spring.application.json"))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	private Map<String, Object> getOutputVariables(RobotEnvironment robotEnvironment) {

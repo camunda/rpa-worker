@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.robot
 
 import io.camunda.rpa.worker.PublisherUtils
+import io.camunda.rpa.worker.api.CallbackTokenService
 import io.camunda.rpa.worker.io.IO
 import io.camunda.rpa.worker.pexec.ExecutionCustomizer
 import io.camunda.rpa.worker.pexec.ProcessService
@@ -32,6 +33,9 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 	WorkspaceVariablesManager workspaceVariablesManager = Mock()
 	RobotProperties robotProperties = new RobotProperties(Duration.ofSeconds(3), true)
 	WorkspaceService workspaceService = Mock()
+	CallbackTokenService callbackTokenService = Mock() {
+		openExecution(_) >> { Workspace workspace -> workspace }
+	}
 	
 	EnvironmentVariablesContributor envVarContributor1 = Mock(EnvironmentVariablesContributor)
 	EnvironmentVariablesContributor envVarContributor2 = Mock(EnvironmentVariablesContributor)
@@ -46,9 +50,25 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 			Schedulers.single(), 
 			envVarContributors, 
 			workspaceVariablesManager, 
-			robotExecutionStrategy)
+			robotExecutionStrategy,
+			callbackTokenService)
 	
 	RobotExecutionListener executionListener = Mock()
+
+	void "Worker credential sources are excluded from the inherited script environment"() {
+		expect:
+		RobotService.scriptEnvironment([
+				(tokenKey): "private",
+				PATH: "/usr/bin",
+				RPA_CALLBACK_TOKEN: "execution-token"
+		]) == [PATH: "/usr/bin", RPA_CALLBACK_TOKEN: "execution-token"]
+
+		where:
+		tokenKey << ["CAMUNDA_RPA_API_TOKEN", "camunda_rpa_api_token",
+					 "camunda.rpa.api.token", "CAMUNDA.RPA.API.TOKEN",
+					 "SPRING_APPLICATION_JSON", "spring_application_json",
+					 "spring.application.json", "SPRING.APPLICATION.JSON"]
+	}
 
 	void "Correctly configures and executes a Robot process"() {
 		given:
@@ -96,7 +116,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionCustomizer.workDir(workDir) >> executionCustomizer
 		1 * executionCustomizer.allowExitCodes(RobotService.ROBOT_TASK_FAILURE_EXIT_CODES) >> executionCustomizer
 		
-		1 * executionCustomizer.inheritEnv() >> executionCustomizer
+		1 * executionCustomizer.env(RobotService.scriptEnvironment(System.getenv())) >> executionCustomizer
 		1 * executionCustomizer.env([ENV_VAR_ONE: 'envVarOneValue', ENV_VAR_TWO: 'envVarTwoValue']) >> executionCustomizer
 
 		1 * executionCustomizer.arg("--rpa") >> executionCustomizer
@@ -128,6 +148,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		1 * executionListener.afterRobotExecution(workspace)
 		1 * workspaceVariablesManager.getVariables(workspace.id()) >> [:]
 		1 * workspaceVariablesManager.afterRobotExecution(workspace)
+		1 * callbackTokenService.afterRobotExecution(workspace)
 	}
 
 	void "Returns output variables"() {
@@ -178,6 +199,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		
 		and:
 		1 * executionListener.afterRobotExecution(workspace)
+		1 * callbackTokenService.afterRobotExecution(workspace)
 	}
 
 	void "Throws correct exception for Robot failure"() {
@@ -203,6 +225,7 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		
 		and:
 		1 * executionListener.afterRobotExecution(workspace)
+		1 * callbackTokenService.afterRobotExecution(workspace)
 	}
 	
 	void "Throws correct exception for Robot execution failure"() {
@@ -228,6 +251,22 @@ class RobotServiceSpec extends Specification implements PublisherUtils {
 		
 		and:
 		1 * executionListener.afterRobotExecution(workspace)
+		1 * callbackTokenService.afterRobotExecution(workspace)
+	}
+
+	void "Revokes callback capabilities when execution is cancelled"() {
+		given:
+		RobotScript script = RobotScript.builder().id("some-script").body("some-script-body").build()
+		Workspace workspace = new Workspace("cancelled", Paths.get("/cancelled"))
+		workspaceService.createWorkspace(null, [:]) >> workspace
+		robotExecutionStrategy.executeRobot(_) >> Mono.never()
+
+		when:
+		def subscription = service.execute(script, [:], null, [], [], null).subscribe()
+		subscription.dispose()
+
+		then:
+		1 * callbackTokenService.afterRobotExecution(workspace)
 	}
 	
 	void "Runs before and after scripts and aggregates results"() {

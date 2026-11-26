@@ -1,6 +1,7 @@
 package io.camunda.rpa.worker.secrets
 
 import io.camunda.rpa.worker.AbstractE2ESpec
+import io.camunda.rpa.worker.WorkerApiCredentials
 import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.script.api.EvaluateRawScriptRequest
 import io.camunda.rpa.worker.script.api.EvaluateScriptResponse
@@ -66,7 +67,10 @@ Assert secrets
 		@Delegate
 		WebClient getWebClient() {
 			if ( ! $$webClient)
-				$$webClient = webClientProvisioner.webClient { it.baseUrl("http://rpa-worker.local:36228") }
+				$$webClient = webClientProvisioner.webClient {
+					it.baseUrl("http://rpa-worker.local:36228")
+							.defaultHeaders { it.setBearerAuth(WorkerApiCredentials.token()) }
+				}
 
 			return $$webClient
 		}

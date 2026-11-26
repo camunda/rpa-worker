@@ -2,6 +2,7 @@ package io.camunda.rpa.worker.files.api
 
 import groovy.json.JsonOutput
 import io.camunda.rpa.worker.AbstractFunctionalSpec
+import io.camunda.rpa.worker.api.CallbackTokenService
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
 import io.camunda.rpa.worker.robot.ExecutionResults
 import io.camunda.rpa.worker.script.api.EvaluateRawScriptRequest
@@ -10,6 +11,8 @@ import io.camunda.rpa.worker.secrets.SecretsService
 import io.camunda.rpa.worker.util.IterableMultiPart
 import io.camunda.rpa.worker.workspace.Workspace
 import io.camunda.rpa.worker.workspace.WorkspaceCleanupService
+import io.camunda.rpa.worker.workspace.WorkspaceService
+import org.springframework.beans.factory.annotation.Autowired
 import okhttp3.MediaType
 import okhttp3.MultipartReader
 import okhttp3.ResponseBody
@@ -62,6 +65,12 @@ Do Nothing
 	@SpringSpy
 	WorkspaceCleanupService workspaceCleanupService
 
+	@Autowired
+	WorkspaceService workspaceService
+
+	@Autowired
+	CallbackTokenService callbackTokens
+
 	@SpringBean
 	SecretsService secretsService = Stub() {
 		getSecrets() >> Mono.just(Collections.emptyMap())
@@ -110,11 +119,9 @@ Do Nothing
 	void "Request to retrieve files downloads from Zeebe into workspace"() {
 		given:
 		bypassZeebeAuth()
-		Workspace theWorkspace
-		workspaceCleanupService.preserveLast(_) >> { Workspace w ->
-			theWorkspace = w
-			return Mono.empty()
-		}
+		Workspace theWorkspace = workspaceService.createWorkspace()
+		callbackTokens.openExecution(theWorkspace)
+		String token = block(callbackTokens.getEnvironmentVariables(theWorkspace, null)).RPA_CALLBACK_TOKEN
 		
 		and:
 		zeebeApi.setDispatcher { rr ->
@@ -130,18 +137,9 @@ Do Nothing
 		}
 
 		when:
-		EvaluateScriptResponse response = block post()
-				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateRawScriptRequest(DO_NOTHING_SCRIPT, [:], null)))
-				.retrieve()
-				.bodyToMono(EvaluateScriptResponse)
-
-		then:
-		response.result() == ExecutionResults.Result.PASS
-
-		when:
 		Map<String, FilesController.RetrieveFileResult> resp = block post()
 				.uri("/file/retrieve/${theWorkspace.path().fileName.toString()}")
+				.headers { it.setBearerAuth(token) }
 				.body(BodyInserters.fromValue([
 						
 						"input/file1.txt": new ZeebeDocumentDescriptor(
@@ -178,33 +176,26 @@ Do Nothing
 						.containsAll(["file1-hash", "file2-hash"])
 			}
 		}
+
+		cleanup:
+		callbackTokens.afterRobotExecution(theWorkspace)
 	}
 	
 	void "Request to store files looks up correct location in workspace"() {
 		given:
 		bypassZeebeAuth()
-		Workspace theWorkspace
-		workspaceCleanupService.preserveLast(_) >> { Workspace w ->
-			theWorkspace = w
-			return Mono.empty()
-		}
+		Workspace theWorkspace = workspaceService.createWorkspace()
+		Files.writeString(theWorkspace.path().resolve("main.robot"), DO_NOTHING_SCRIPT)
+		callbackTokens.openExecution(theWorkspace)
+		String token = block(callbackTokens.getEnvironmentVariables(theWorkspace, null)).RPA_CALLBACK_TOKEN
 
 		and:
 		zeebeApi.dispatcher = this.&copyInputToOutput
 
 		when:
-		EvaluateScriptResponse response = block post()
-				.uri("/script/evaluate")
-				.body(BodyInserters.fromValue(new EvaluateRawScriptRequest(WRITE_SOME_FILES_SCRIPT, [:], null)))
-				.retrieve()
-				.bodyToMono(EvaluateScriptResponse)
-
-		then:
-		response.result() == ExecutionResults.Result.PASS
-
-		when:
 		Map<String, ZeebeDocumentDescriptor> resp = block post()
 				.uri("/file/store/${theWorkspace.path().fileName.toString()}")
+				.headers { it.setBearerAuth(token) }
 				.body(BodyInserters.fromValue(new StoreFilesRequest("*.robot")))
 				.retrieve()
 				.bodyToMono(new ParameterizedTypeReference<Map<String, ZeebeDocumentDescriptor>>() {})
@@ -213,6 +204,9 @@ Do Nothing
 		resp.size() == 1
 		resp['main.robot'].metadata().fileName() == "main.robot"
 		resp.values()*.contentHash().every { it == "content-hash" }
+
+		cleanup:
+		callbackTokens.afterRobotExecution(theWorkspace)
 	}
 
 	private static final String UPLOAD_FILES_WITH_UNNORMALISED_PATHS_SCRIPT = '''\

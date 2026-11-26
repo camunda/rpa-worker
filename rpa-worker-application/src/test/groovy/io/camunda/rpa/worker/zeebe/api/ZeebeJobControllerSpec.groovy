@@ -99,4 +99,34 @@ class ZeebeJobControllerSpec extends Specification implements PublisherUtils {
 		r == stubbedResponse
 	}
 
+	void "Sandbox marker cannot issue a real cluster command"() {
+		given:
+		def responseStub = ResponseEntity.status(501).body("stub")
+		stubbedResponseGenerator.createStubbedResponse("Zeebe", "newThrowErrorCommand", _) >> Mono.just(responseStub)
+
+		when:
+		def response = block controller.throwError(-1L, JobThrowErrorRequest.builder().errorCode("ERROR").build())
+
+		then:
+		response == responseStub
+		0 * zeebeClient._
+		0 * zeebeJobService._
+	}
+
+	void "Other nonpositive job keys cannot issue a real cluster command"() {
+		given:
+		stubbedResponseGenerator.stubbedResponse("Zeebe", "newThrowErrorCommand", _) >> Mono.empty()
+
+		when:
+		def response = block controller.throwError(jobKey, JobThrowErrorRequest.builder().errorCode("ERROR").build())
+
+		then:
+		response.statusCode.value() == 400
+		0 * zeebeClient._
+		0 * zeebeJobService._
+
+		where:
+		jobKey << [0L, -2L]
+	}
+
 }

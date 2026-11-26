@@ -42,4 +42,20 @@ class StubbedResponseGeneratorSpec extends Specification implements PublisherUti
 		then:
 		! r
 	}
+
+	void "Explicit sandbox stub remains available when Zeebe is enabled"() {
+		given:
+		zeebeClientStatus.isZeebeClientEnabled() >> true
+
+		when:
+		def response = block stubbedResponseGenerator.createStubbedResponse("target", "action", aRequest)
+
+		then:
+		response.statusCode == HttpStatus.NOT_IMPLEMENTED
+		with(response.body as StubbedResponse) {
+			target() == "target"
+			action() == "action"
+			request() == aRequest
+		}
+	}
 }

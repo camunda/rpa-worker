@@ -15,6 +15,86 @@ page.
 The RPA Worker can source its configuration either from a configuration file, or environment variables. The RPA Worker
 will look for a file named `rpa-worker.properties` in the current directory.
 
+==== Worker HTTP API security
+
+The script evaluation API executes supplied Robot scripts with the worker's OS
+permissions and inherited environment, including any cluster credentials.
+The name "sandbox" does not imply process, filesystem, or network isolation.
+Only run scripts from trusted authors.
+
+Evaluation requires a separate worker API token. Generate at least 32 random
+bytes, for example with `openssl rand -hex 32`, then set
+`camunda.rpa.api.token` in your protected worker configuration or
+`CAMUNDA_RPA_API_TOKEN` in its environment. Tokens must contain at least 32
+letters, digits, underscores, or hyphens. No token is configured by default;
+evaluation remains inaccessible until one is supplied.
+
+Enter the same token in Modeler's RPA worker configuration under
+*Additional configurations* > *API token*. Clients send
+`Authorization: Bearer <token>` with requests. Do not reuse Camunda cluster
+credentials. Camunda client authentication protects outbound cluster requests,
+not the worker's inbound HTTP API. Protect the worker and Modeler configuration
+files and never put tokens in URLs or scripts.
+
+Desktop builds bind to localhost. Requests must also use a trusted Host
+authority: `localhost`, `127.0.0.1`, or `[::1]`, with the actual listener port.
+For intentional remote use, configure exact additional authorities, including
+ports, through `camunda.rpa.api.allowed-hosts`, and protect the connection with
+HTTPS and network access controls. Wildcards are not supported. Reverse proxies
+must preserve an allowed Host authority; forwarded headers are not an
+authentication mechanism. Modeler permits plain HTTP only for loopback workers.
+
+For production workers, disable evaluation with
+`camunda.rpa.sandbox.enabled=false`. Container images do this by default.
+Disabling evaluation does not disable Python callbacks: each running execution
+receives a separate random `RPA_CALLBACK_TOKEN`, which authorizes only its
+workspace and associated job and is revoked when execution ends, including on
+failure or cancellation. The worker API token cannot authorize callbacks.
+Job keys alone cannot authorize BPMN errors. A sandbox execution may use job key
+`-1` for stubbed error reporting only; it cannot send a real cluster command.
+
+Read-only requests to `/actuator/health` and its subpaths, including
+`/actuator/health/liveness` and `/actuator/health/readiness`, do not require a
+token or trusted Host authority. Kubernetes probes can use pod IPs without
+custom headers. Health groups must be enabled in the Actuator configuration
+when used. API documentation remains readable without a token, subject to Host
+validation. Workspace artifact URLs remain read-only capabilities so reports can
+be embedded in Modeler; keep these URLs private. They remain readable while the
+workspace is retained, independently of callback token revocation.
+
+Upgrade the worker, Python library (`camunda-utils` 1.3.0 or later), bundled
+runtime (0.3.0 or later), and Modeler integration together. Older Python
+libraries do not send execution credentials and their callbacks are rejected;
+there is no unauthenticated compatibility mode. Static runtimes must be rebuilt
+with the updated library.
+
+===== Monitoring upgrade configuration
+
+`/actuator/prometheus`, `/actuator/metrics`, and their subpaths require both the
+worker API token and an allowed Host authority. Existing scrapers must be
+configured before upgrading. Use a stable internal DNS name rather than relying
+on changing pod IPs, and include its port in `camunda.rpa.api.allowed-hosts`.
+If scraping through a reverse proxy, preserve an allowed authority.
+
+For example, allow `rpa-worker.monitoring.svc:36227` and configure Prometheus:
+
+[source,yaml]
+----
+scrape_configs:
+  - job_name: rpa-worker
+    metrics_path: /actuator/prometheus
+    authorization:
+      type: Bearer
+      credentials_file: /etc/prometheus/secrets/rpa-worker-api-token
+    static_configs:
+      - targets: ['rpa-worker.monitoring.svc:36227']
+----
+
+Provision the token file securely with the same value configured on the worker.
+The example assumes a trusted internal network; protect remote connections with
+HTTPS. Health probes remain unauthenticated but a successful health check does
+not establish permission to access metrics or execute scripts.
+
 ==== Zeebe
 
 Connecting to a Camunda cluster requires providing the configuration for the Zeebe client. The RPA Worker uses the
@@ -165,6 +245,10 @@ The RPA Worker makes the following environment variables available to the Robot 
 |`RPA_EXECUTION_KEY`
 |The execution key of the currently executing script
 
+|`RPA_CALLBACK_TOKEN`
+|A sensitive, execution-scoped bearer token used automatically by the Camunda Python library.
+It expires when the execution ends; do not log or persist it.
+
 |`RPA_ZEEBE_JOB_KEY`
 |The Zeebe Job Key which triggered the Robot execution
 
@@ -228,7 +312,20 @@ The RPA Worker makes the following environment variables available to the Robot 
 
 |camunda.rpa.sandbox.enabled
 |Whether the script evaluation API should be available
-|`true`
+|`true` for desktop builds; `false` in the container image. Authentication is always required.
+
+3+| *Worker API Security Properties*
+
+|camunda.rpa.api.token
+|Worker API bearer token. Empty means authenticated API requests are rejected.
+Use a cryptographically random value, distinct from cluster credentials.
+|_Unset_
+
+|camunda.rpa.api.allowed-hosts
+|Comma-separated additional trusted Host authorities, including ports.
+For example `rpa.example.com:443`. Loopback authorities with the listener port
+are always accepted.
+|_None_
 
 3+| *Proxy Properties*
 
@@ -374,7 +471,7 @@ Launching a dev container with Zeebe connection details, mapping the Worker's li
 [source,shell]
 ----
 $ docker run --rm -it \
-    -p 36227:36227 \
+    -p 127.0.0.1:36227:36227 \
     -e CAMUNDA_CLIENT_ENABLED=true \
     -e CAMUNDA_CLIENT_MODE=saas \
     -e CAMUNDA_CLIENT_AUTH_CLIENTID=abc123 \
@@ -384,11 +481,22 @@ $ docker run --rm -it \
     ghcr.io/camunda/rpa-worker:<version>
 ----
 
+This production example leaves evaluation disabled. For local Modeler
+development, explicitly add `-e CAMUNDA_RPA_SANDBOX_ENABLED=true` and
+`-e CAMUNDA_RPA_API_TOKEN` after setting that variable to a random token in your
+shell. Configure the same token in Modeler. Do not publish an evaluation-enabled
+worker on an unrestricted interface or expose it directly to the internet.
 
 === Internal / Advanced Configuration by Environment Variable
 
-All of the RPA Worker's environment variables will also be made available to 
-Python/Robot execution. In addition to any user-specific environment variables,
+The RPA Worker's environment variables, except `CAMUNDA_RPA_API_TOKEN`,
+`camunda.rpa.api.token`, `SPRING_APPLICATION_JSON`, and `spring.application.json`
+(case-insensitive), are
+inherited by Python/Robot execution. This does not isolate scripts from the
+worker account or its configuration files. Both application JSON variables are excluded
+in its entirety because it can contain credentials; scripts must not rely on
+inheriting settings from it. Supply tokens through protected configuration and
+run only trusted scripts. In addition to user-specific environment variables,
 there are two internal variables that may be set:
 
 |===
@@ -405,6 +513,75 @@ when communicating back to the RPA Worker (flag variable)
 |_Unset_
 |===
 
+
+== Local Cross-Repository Development
+
+The repository's `Makefile` builds and tests changes across the worker, Python
+libraries, frozen runtime, and frontend without publishing dependencies remotely.
+Check out compatible branches in this sibling layout:
+
+[source,text]
+----
+workspace/
+  rpa-worker/
+  rpa-python-libraries/
+  rpa-worker-static-runtime/
+  rpa-frontend/
+----
+
+The local runtime and native build goals currently support macOS only.
+Install Python 3.12, JDK 21 for the runtime build, JDK 25 for the worker,
+and Xcode command-line tools. Native compilation uses the Gradle-configured
+GraalVM toolchain. Frontend tests additionally require Node.js, npm dependencies
+installed in `rpa-frontend`, and Chrome (or `CHROME_BIN` pointing to it).
+
+Run these commands from `rpa-worker`:
+
+[source,shell]
+----
+make help
+make check
+make jar
+make build
+make test
+----
+
+`make jar` builds a runnable worker JAR; `make build` builds the native worker
+and distribution ZIP. Both build a local `camunda-utils` wheel and frozen
+runtime first. Set `PYTHON`, `JAVA21_HOME`, `JAVA25_HOME`, `NATIVE_ARCH`,
+`WORKER_VERSION`, or `RUNTIME_VERSION` on the Make command line to override
+the defaults.
+
+`make test` runs Python pytest, frontend lint/browser tests/build, runtime
+build checks, worker unit/functional tests, and infrastructure E2E tests.
+Independent suites continue after a failure, but the command returns nonzero
+if any suite fails. Individual goals are `test-python`, `test-frontend`,
+`test-runtime`, `test-worker`, and `test-e2e`.
+Python test dependencies are installed automatically in an isolated virtual
+environment using `rpa-python-libraries/requirements.txt`.
+
+Infrastructure E2E requires a pre-provisioned environment matching
+`rpa-worker-e2e-tests/build.gradle` and `.github/workflows/build.yml`, including
+the container worker at `rpa-worker.local:36228`, Camunda, Kubernetes test
+secrets, and Vault. Export `CAMUNDA_RPA_E2E_PATHTOWORKER` with an absolute path
+to a compatible native worker and `CAMUNDA_RPA_API_TOKEN` with the same token
+used when provisioning the container. Preserve the harness's `CI`, `E2E`, and
+`CAMUNDA_VERSION` environment settings when rerunning tests.
+The Makefile reports missing prerequisites; it does not provision infrastructure.
+The full harness is designed for a disposable Linux environment, so a complete
+`make test` run is not supported on an unconfigured macOS checkout.
+
+Generated dependencies, virtual environments, and Python/runtime reports live
+in the ignored `.local-build/` directory. Worker test reports remain under each
+module's `build/reports/tests/` directory.
+The Gradle helper substitutes the local wheel into generated functional-test
+requirements without modifying the source fixture.
+
+IMPORTANT: These artifacts reference absolute local wheel paths and are for
+local testing only, not redistribution. Local builds use the sibling
+`camunda-utils` source; other Python packages still resolve from package indexes.
+Runtime goals clean and rebuild the sibling runtime's build directory.
+Do not run concurrent builds or tests against the same checkouts.
 
 == License
 
