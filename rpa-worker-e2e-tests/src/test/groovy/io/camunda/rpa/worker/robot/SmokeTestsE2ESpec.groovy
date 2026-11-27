@@ -41,6 +41,7 @@ abstract class SmokeTestsE2ESpec extends AbstractE2ESpec {
 		String script = SmokeTestsE2ESpec.classLoader.getResource(scriptName + ".robot").text
 		return EvaluateRawScriptRequest.builder()
 				.script(script)
+				.variables([:])
 				.build()
 	}
 	
