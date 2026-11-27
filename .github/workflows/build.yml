@@ -334,7 +334,7 @@ jobs:
       - native_linux_amd64
       - images
     if: github.ref_type == 'tag' || github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
