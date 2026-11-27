@@ -872,7 +872,7 @@ jobs:
 
       - name: Upload to Camunda Download Centre
         if: github.ref_type == 'tag'
-        uses: camunda/infra-global-github-actions/download-center-upload@main
+        uses: camunda/infra-global-github-actions/download-center-upload@7fe5cca167f7826bedbc078ae36ff2e974cc8cb5 # download-center-upload-1.0.2
         with:
           gcp_credentials: ${{ steps.secrets.outputs.GCP_CREDENTIALS_NAME }}
           version: ${{ github.ref_name }}
