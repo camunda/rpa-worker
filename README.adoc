@@ -194,6 +194,10 @@ It will also install, if configured, any additional user-supplied extra requirem
 If the base requirements change, such as a new version of the RPA Worker updating these dependencies, or the extra 
 requirements are updated, then the RPA Worker will update the environment with the new dependencies automatically. 
 
+The container image includes a Python environment with the bundled base requirements installed at image build time.
+Additional requirements are installed at startup when configured. If the environment is replaced or deleted, the worker
+creates it again and installs the base requirements.
+
 As dependencies are fetched from the internet, the Python Runtime requires an internet connection.
 
 ==== The Static Runtime
@@ -550,7 +554,10 @@ make test
 and distribution ZIP. Both build a local `camunda-utils` wheel and frozen
 runtime first. Set `PYTHON`, `JAVA21_HOME`, `JAVA25_HOME`, `NATIVE_ARCH`,
 `WORKER_VERSION`, or `RUNTIME_VERSION` on the Make command line to override
-the defaults.
+the defaults. By default, the worker version comes from `gradle.properties`
+and the runtime version comes from `rpaRuntime` in `gradle/libs.versions.toml`.
+Local worker builds therefore use the checkout's snapshot version unless you
+override `WORKER_VERSION`; no release tags or remote lookups are required.
 
 `make test` runs Python pytest, frontend lint/browser tests/build, runtime
 build checks, worker unit/functional tests, and infrastructure E2E tests.
