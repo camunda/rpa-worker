@@ -2,16 +2,32 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := build
 
 WORKER_DIR := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
-ROOT := $(abspath $(WORKER_DIR)/..)
+ROOT ?= $(abspath $(WORKER_DIR)/..)
 BUILD_DIR := $(WORKER_DIR)/.local-build
 INIT_SCRIPT := $(BUILD_DIR)/local-artifacts.init.gradle
-PYTHON ?= python3.12
-WORKER_VERSION ?= 1.3.3
-RUNTIME_VERSION ?= 0.3.1
-NATIVE_PLATFORM ?= darwin
+PYTHON ?= $(shell if command -v python3.12 >/dev/null 2>&1; then echo python3.12; else echo python3; fi)
+WORKER_VERSION ?= $(shell sed -n 's/^version[[:space:]]*=[[:space:]]*//p' "$(WORKER_DIR)/gradle.properties")
+RUNTIME_VERSION ?= $(shell sed -n 's/^rpaRuntime[[:space:]]*=[[:space:]]*"\([^"]*\)".*/\1/p' "$(WORKER_DIR)/gradle/libs.versions.toml")
+NATIVE_PLATFORM ?= $(shell uname -s | tr '[:upper:]' '[:lower:]')
 NATIVE_ARCH ?= $(shell uname -m | sed -e 's/^arm64$$/aarch64/' -e 's/^x86_64$$/amd64/')
-JAVA21_HOME ?= $(firstword $(wildcard $(HOME)/.sdkman/candidates/java/21*-tem) $(shell /usr/libexec/java_home -v 21 2>/dev/null))
-JAVA25_HOME ?= $(firstword $(wildcard $(HOME)/.sdkman/candidates/java/25*-tem) $(shell /usr/libexec/java_home -v 25 2>/dev/null))
+
+define find_java_home
+$(shell for java in "$${JAVA_HOME:+$$JAVA_HOME/bin/java}" java; do \
+    if [ -n "$$java" ] && command -v "$$java" >/dev/null 2>&1; then \
+        settings=$$("$$java" -XshowSettings:properties -version 2>&1); \
+        version=$$(printf '%s\n' "$$settings" | sed -n 's/^[[:space:]]*java.specification.version = //p'); \
+        if [ "$$version" = "$(1)" ]; then \
+            printf '%s\n' "$$settings" | sed -n 's/^[[:space:]]*java.home = //p'; \
+            exit; \
+        fi; \
+    fi; \
+done; \
+if [ -x /usr/libexec/java_home ]; then /usr/libexec/java_home -v "$(1)" 2>/dev/null || true; fi)
+endef
+
+JAVA21_HOME ?= $(call find_java_home,21)
+JAVA25_HOME ?= $(call find_java_home,25)
+export LOCAL_BUILD_PYTHON := $(PYTHON)
 
 define GRADLE_INIT
 allprojects {
@@ -53,6 +69,9 @@ allprojects {
         if (rootProject.name == "rpa-worker-static-runtime"
                 && project.name == "rpa-worker-static-runtime"
                 && project != rootProject) {
+            tasks.named("createPythonEnvironment") {
+                commandLine System.getenv("LOCAL_BUILD_PYTHON"), "-m", "venv", "venv"
+            }
             publishing.publications.named("maven") {
                 setArtifacts([tasks.named("jar").get()])
             }
@@ -74,17 +93,35 @@ build: runtime
 	@echo "Local testing only: Python requirements reference $(BUILD_DIR)/wheels."
 
 check:
+	@test -n "$(WORKER_VERSION)" || { echo "Cannot read worker version from gradle.properties; set WORKER_VERSION."; exit 1; }
+	@test -n "$(RUNTIME_VERSION)" || { echo "Cannot read runtime version from gradle/libs.versions.toml; set RUNTIME_VERSION."; exit 1; }
 	@test -f "$(ROOT)/rpa-python-libraries/camunda-utils/pyproject.toml" || \
 		{ echo "Clone rpa-python-libraries alongside rpa-worker."; exit 1; }
 	@test -x "$(ROOT)/rpa-worker-static-runtime/gradlew" || \
 		{ echo "Clone rpa-worker-static-runtime alongside rpa-worker."; exit 1; }
 	@command -v "$(PYTHON)" >/dev/null || { echo "Install Python 3.12 or set PYTHON."; exit 1; }
-	@test -x "$(JAVA21_HOME)/bin/java" || { echo "Set JAVA21_HOME to a JDK 21 installation."; exit 1; }
-	@test -x "$(JAVA25_HOME)/bin/java" || { echo "Set JAVA25_HOME to a JDK 25 installation."; exit 1; }
-	@test "$(NATIVE_PLATFORM)" = darwin || { echo "This build currently supports macOS only."; exit 1; }
+	@"$(PYTHON)" -c 'import sys; sys.exit(sys.version_info[:2] != (3, 12))' || \
+		{ echo "PYTHON must identify a Python 3.12 interpreter."; exit 1; }
+	@for spec in "21:$(JAVA21_HOME)" "25:$(JAVA25_HOME)"; do \
+		version="$${spec%%:*}"; home="$${spec#*:}"; \
+		test -x "$$home/bin/java" || { echo "Set JAVA$${version}_HOME to a JDK $$version installation."; exit 1; }; \
+		actual=$$("$$home/bin/java" -XshowSettings:properties -version 2>&1 | \
+			sed -n 's/^[[:space:]]*java.specification.version = //p'); \
+		test "$$actual" = "$$version" || { echo "JAVA$${version}_HOME must point to JDK $$version (found $$actual)."; exit 1; }; \
+	done
+	@test "$(NATIVE_PLATFORM)" = darwin -o "$(NATIVE_PLATFORM)" = linux || \
+		{ echo "Local runtime builds support macOS and Linux."; exit 1; }
+	@test "$(NATIVE_PLATFORM)" = "$$(uname -s | tr '[:upper:]' '[:lower:]')" || \
+		{ echo "NATIVE_PLATFORM must match the host; cross-compilation is not supported."; exit 1; }
 	@test "$(NATIVE_ARCH)" = aarch64 -o "$(NATIVE_ARCH)" = amd64 || \
 		{ echo "Set NATIVE_ARCH to aarch64 or amd64."; exit 1; }
-	@xcode-select -p >/dev/null || { echo "Install Xcode command-line tools: xcode-select --install"; exit 1; }
+	@test "$(NATIVE_ARCH)" = "$$(uname -m | sed -e 's/^arm64$$/aarch64/' -e 's/^x86_64$$/amd64/')" || \
+		{ echo "NATIVE_ARCH must match the host; cross-compilation is not supported."; exit 1; }
+	@if [ "$(NATIVE_PLATFORM)" = darwin ]; then \
+		xcode-select -p >/dev/null || { echo "Install Xcode command-line tools: xcode-select --install"; exit 1; }; \
+	else \
+		command -v gcc >/dev/null || { echo "Install a C compiler (gcc) for native builds."; exit 1; }; \
+	fi
 	@mkdir -p "$(BUILD_DIR)/wheels"
 	@printf '%s\n' "$$GRADLE_INIT" > "$(INIT_SCRIPT)"
 
@@ -180,6 +217,7 @@ test-e2e:
 		:rpa-worker-e2e-tests:test --console=plain
 
 help:
+	@echo "Versions: worker $(WORKER_VERSION) (gradle.properties), runtime $(RUNTIME_VERSION) (dependency catalog)."
 	@echo "make        Build local Python dependencies, bundled runtime, native worker, and ZIP."
 	@echo "make jar    Build local dependencies and a runnable worker JAR with bundled runtime."
 	@echo "make check  Check prerequisites and generate the local Gradle helper."
@@ -191,5 +229,5 @@ help:
 	@echo "E2E requires CAMUNDA_RPA_E2E_PATHTOWORKER and a pre-provisioned Camunda/Kubernetes environment."
 	@echo "Requires frontend npm dependencies and Chrome; Python test dependencies install in a local venv."
 	@echo "Python and runtime reports: $(BUILD_DIR)/test-results; worker reports: */build/reports/tests."
-	@echo "Overrides: JAVA21_HOME, JAVA25_HOME, PYTHON, NATIVE_ARCH, WORKER_VERSION, RUNTIME_VERSION."
+	@echo "Overrides: ROOT, JAVA21_HOME, JAVA25_HOME, PYTHON, NATIVE_PLATFORM, NATIVE_ARCH, WORKER_VERSION, RUNTIME_VERSION."
 	@echo "Artifacts are for local testing only. No remote publication or tracked version edits."

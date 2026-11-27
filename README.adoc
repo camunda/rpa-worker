@@ -533,9 +533,11 @@ workspace/
   rpa-frontend/
 ----
 
-The local runtime and native build goals currently support macOS only.
+The local runtime and native build goals support macOS and Linux on amd64 or
+arm64/aarch64. The platform and architecture must match the host; these goals
+do not cross-compile.
 Install Python 3.12, JDK 21 for the runtime build, JDK 25 for the worker,
-and Xcode command-line tools. Native compilation uses the Gradle-configured
+and Xcode command-line tools on macOS or GCC on Linux. Native compilation uses the Gradle-configured
 GraalVM toolchain. Frontend tests additionally require Node.js, npm dependencies
 installed in `rpa-frontend`, and Chrome (or `CHROME_BIN` pointing to it).
 
@@ -552,9 +554,15 @@ make test
 
 `make jar` builds a runnable worker JAR; `make build` builds the native worker
 and distribution ZIP. Both build a local `camunda-utils` wheel and frozen
-runtime first. Set `PYTHON`, `JAVA21_HOME`, `JAVA25_HOME`, `NATIVE_ARCH`,
-`WORKER_VERSION`, or `RUNTIME_VERSION` on the Make command line to override
-the defaults. By default, the worker version comes from `gradle.properties`
+runtime first. Set `ROOT` to the directory containing the sibling checkouts if
+they are not next to this repository. Set `PYTHON`, `JAVA21_HOME`,
+`JAVA25_HOME`, `NATIVE_PLATFORM`, `NATIVE_ARCH`, `WORKER_VERSION`, or
+`RUNTIME_VERSION` on the Make command line to override the defaults.
+The Makefile detects JDKs from `JAVA_HOME` or `PATH`, and also checks the
+macOS JDK registry. If a required JDK is not detected, set its corresponding
+`JAVA21_HOME` or `JAVA25_HOME` explicitly. `PYTHON` selects Python 3.12 for
+both the local wheel and frozen runtime builds.
+By default, the worker version comes from `gradle.properties`
 and the runtime version comes from `rpaRuntime` in `gradle/libs.versions.toml`.
 Local worker builds therefore use the checkout's snapshot version unless you
 override `WORKER_VERSION`; no release tags or remote lookups are required.
