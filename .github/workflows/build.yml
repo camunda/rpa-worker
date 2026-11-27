@@ -97,6 +97,17 @@ jobs:
             rpa-worker-application/build/test-results/**/*.xml
             rpa-worker-common/build/test-results/**/*.xml
   
+  zizmor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Run zizmor
+        run: |
+          pipx install 'zizmor==1.24.1'
+          zizmor --config .github/zizmor.yml --format=github .
+
   windows_test:
     if: github.event_name != 'workflow_dispatch'
     runs-on: windows-2025
