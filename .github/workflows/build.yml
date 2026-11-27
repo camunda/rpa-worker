@@ -3,6 +3,7 @@ name: Build
 on:
   push: {}
   pull_request: {}
+  workflow_dispatch: {}
   
   
 env:
@@ -20,6 +21,19 @@ jobs:
       pull-requests: write
 
     steps:
+      - name: Validate manual release
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if [ "$GITHUB_REF_TYPE" != "tag" ]; then
+            echo "::error::Manual release requires a non-dev release tag."
+            exit 1
+          fi
+          case "$GITHUB_REF_NAME" in
+            *dev*) echo "::error::Manual release requires a non-dev release tag."; exit 1 ;;
+          esac
+          echo "::warning::Manual release bypasses automated test gates."
+          echo "## Warning: automated tests are bypassed for this manual release" >> "$GITHUB_STEP_SUMMARY"
+
       - uses: actions/checkout@v4
         with: 
           fetch-depth: 0
@@ -34,14 +48,18 @@ jobs:
         run: |
           ./EnsureToolchains
           ./gradlew setVersion
-          ./gradlew build elementTemplate
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            ./gradlew build elementTemplate -x test -x functionalTest
+          else
+            ./gradlew build elementTemplate
+          fi
           ./gradlew -PnativePlatform=linux -PnativeArch=amd64 -PdockerJar assemble
           ./gradlew -PnativePlatform=linux -PnativeArch=aarch64 -PdockerJar assemble
           ./gradlew deletePlainJar
           
       - name: Upload Unit Test Results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && github.event_name != 'workflow_dispatch'
         with:
           name: unit-test-reports
           path: rpa-worker-application/build/reports/tests/test/
@@ -49,7 +67,7 @@ jobs:
           
       - name: Upload Functional Test Results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && github.event_name != 'workflow_dispatch'
         with:
           name: functional-test-reports
           path: rpa-worker-application/build/reports/tests/functionalTest/
@@ -73,15 +91,14 @@ jobs:
       
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        if: always() && github.event_name != 'workflow_dispatch'
         with:
           files: |
             rpa-worker-application/build/test-results/**/*.xml
             rpa-worker-common/build/test-results/**/*.xml
   
   windows_test:
-    # Temporary release bypass: continue running this check on non-tag builds.
-    if: github.ref_type != 'tag'
+    if: github.event_name != 'workflow_dispatch'
     runs-on: windows-2025
     permissions:
       contents: read
@@ -233,7 +250,7 @@ jobs:
       - build
       - windows_test
     runs-on: windows-2025
-    if: ${{ !cancelled() && needs.build.result == 'success' && (github.ref_type == 'tag' || (github.event_name == 'pull_request' && needs.windows_test.result == 'success')) }}
+    if: ${{ !cancelled() && needs.build.result == 'success' && (github.ref_type == 'tag' || github.event_name == 'pull_request') && (needs.windows_test.result == 'success' || (github.event_name == 'workflow_dispatch' && needs.windows_test.result == 'skipped')) }}
     permissions:
       contents: read
 
@@ -335,7 +352,7 @@ jobs:
       - build
       - native_linux_amd64
       - images
-    if: github.event_name == 'pull_request' && github.ref_type != 'tag'
+    if: github.event_name != 'workflow_dispatch' && (github.ref_type == 'tag' || github.event_name == 'pull_request')
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -451,7 +468,7 @@ jobs:
     needs:
       - build
       - native_linux_amd64
-    if: github.event_name == 'pull_request' && github.ref_type != 'tag'
+    if: github.event_name != 'workflow_dispatch' && (github.ref_type == 'tag' || github.event_name == 'pull_request')
     env:
       E2E: "1"
       E2E_SMOKE_TEST_ONLY: "true"
@@ -651,7 +668,7 @@ jobs:
   smoke_test_win32:
     needs:
       - windows_sign
-    if: github.event_name == 'pull_request' && github.ref_type != 'tag'
+    if: ${{ !cancelled() && github.event_name != 'workflow_dispatch' && (github.ref_type == 'tag' || github.event_name == 'pull_request') && needs.windows_sign.result == 'success' }}
     runs-on: windows-2025
     env:
       E2E: "1"
@@ -704,7 +721,7 @@ jobs:
   smoke_test_darwin_amd64:
     needs:
       - macos_sign_and_notarize
-    if: github.event_name == 'pull_request' && github.ref_type != 'tag'
+    if: github.event_name != 'workflow_dispatch' && (github.ref_type == 'tag' || github.event_name == 'pull_request')
     runs-on: macos-15-intel
     env:
       E2E: "1"
@@ -759,7 +776,7 @@ jobs:
   smoke_test_darwin_aarch64:
     needs:
       - macos_sign_and_notarize
-    if: github.event_name == 'pull_request' && github.ref_type != 'tag'
+    if: github.event_name != 'workflow_dispatch' && (github.ref_type == 'tag' || github.event_name == 'pull_request')
     runs-on: macos-latest
     env:
       E2E: "1"
@@ -816,13 +833,29 @@ jobs:
       packages: read  # pull the private job container image
       id-token: write  # mint GitHub OIDC token for Vault JWT auth
     needs:
-      # Temporary release bypass: restore the test gates after this release.
       - build
       - images
       - native_linux_amd64
       - windows_sign
       - macos_sign_and_notarize
-    if: ${{ !cancelled() && github.ref_type == 'tag' && !contains(github.ref_name, 'dev') && needs.build.result == 'success' && needs.images.result == 'success' && needs.native_linux_amd64.result == 'success' && needs.windows_sign.result == 'success' && needs.macos_sign_and_notarize.result == 'success' }}
+      - e2e
+      - runtime_checks
+      - smoke_test_win32
+      - smoke_test_darwin_amd64
+      - smoke_test_darwin_aarch64
+    if: >-
+      ${{ !cancelled() && github.ref_type == 'tag' && !contains(github.ref_name, 'dev') &&
+          needs.build.result == 'success' && needs.images.result == 'success' &&
+          needs.native_linux_amd64.result == 'success' && needs.windows_sign.result == 'success' &&
+          needs.macos_sign_and_notarize.result == 'success' &&
+          ((github.event_name == 'workflow_dispatch' &&
+            needs.e2e.result == 'skipped' && needs.runtime_checks.result == 'skipped' &&
+            needs.smoke_test_win32.result == 'skipped' && needs.smoke_test_darwin_amd64.result == 'skipped' &&
+            needs.smoke_test_darwin_aarch64.result == 'skipped') ||
+           (github.event_name != 'workflow_dispatch' &&
+            needs.e2e.result == 'success' && needs.runtime_checks.result == 'success' &&
+            needs.smoke_test_win32.result == 'success' && needs.smoke_test_darwin_amd64.result == 'success' &&
+            needs.smoke_test_darwin_aarch64.result == 'success')) }}
     runs-on: ubuntu-latest
     container: "ghcr.io/camunda/rpa-worker-base-image:202501291438"
     
