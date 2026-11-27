@@ -31,12 +31,20 @@ class ZeebeJobController {
 	public Mono<ResponseEntity<?>> throwError(
 			@PathVariable long jobKey, 
 			@RequestBody @Valid JobThrowErrorRequest request) {
-		
+
+		if (jobKey == -1)
+			return stubbedResponseGenerator.createStubbedResponse("Zeebe", "newThrowErrorCommand", request);
+
 		return stubbedResponseGenerator.stubbedResponse("Zeebe", "newThrowErrorCommand", request)
 				.switchIfEmpty(Mono.defer(() -> doThrowError(jobKey, request)));
 	}
 
 	private Mono<ResponseEntity<?>> doThrowError(long jobKey, JobThrowErrorRequest request) {
+		if (jobKey <= 0) {
+			log.atWarn().log("Rejected a BPMN error callback without a production job");
+			return Mono.just(ResponseEntity.badRequest().build());
+		}
+
 		ThrowErrorCommandStep1.ThrowErrorCommandStep2 builder = zeebeClient
 				.getObject()
 				.newThrowErrorCommand(jobKey)

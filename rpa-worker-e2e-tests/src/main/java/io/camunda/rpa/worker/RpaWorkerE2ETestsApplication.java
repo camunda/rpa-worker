@@ -28,7 +28,8 @@ public class RpaWorkerE2ETestsApplication {
 	public RpaWorkerClient rpaWorkerClient(WebClientProvisioner webClientProvisioner) {
 		return HttpServiceProxyFactory
 				.builderFor(WebClientAdapter.create(webClientProvisioner.webClient(b -> b
-						.baseUrl("http://localhost:36227/"))))
+						.baseUrl("http://localhost:36227/")
+						.defaultHeaders(headers -> headers.setBearerAuth(WorkerApiCredentials.token())))))
 				.build()
 				.createClient(RpaWorkerClient.class);
 	}

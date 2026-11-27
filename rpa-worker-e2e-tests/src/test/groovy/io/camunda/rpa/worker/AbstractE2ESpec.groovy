@@ -92,13 +92,18 @@ class AbstractE2ESpec extends Specification implements PublisherUtils {
 	@Delegate
 	WebClient getWebClient() {
 		if ( ! $$webClient)
-			$$webClient = webClientProvisioner.webClient { it.baseUrl("http://127.0.0.1:36227") }
+			$$webClient = webClientProvisioner.webClient {
+				it.baseUrl("http://127.0.0.1:36227")
+						.defaultHeaders { it.setBearerAuth(WorkerApiCredentials.token()) }
+			}
 
 		return $$webClient
 	}
 
 	Map<String, String> getEnvironment() {
-		return (zeebeConfiguration.environment + getExtraEnvironment())
+		return (zeebeConfiguration.environment + getExtraEnvironment() + [
+				CAMUNDA_RPA_API_TOKEN: WorkerApiCredentials.token()
+		])
 				.collectEntries { k, v -> [k, v.toString()] }
 	}
 

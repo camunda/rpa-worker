@@ -21,6 +21,10 @@ public class StubbedResponseGenerator {
 		if (zeebeClientStatus.isZeebeClientEnabled())
 			return Mono.empty();
 
+		return createStubbedResponse(target, action, request);
+	}
+
+	public Mono<ResponseEntity<?>> createStubbedResponse(String target, String action, Object request) {
 		return Mono.just(ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED)
 				.body(StubbedResponse.builder()
 						.target(target)

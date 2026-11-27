@@ -55,7 +55,10 @@ abstract class AbstractFunctionalSpec extends Specification implements Publisher
 	@Delegate
 	WebClient getWebClient() {
 		if( ! $$webClient) 
-			$$webClient = webClientProvisioner.webClient { it.baseUrl("http://localhost:${serverPort}") }
+			$$webClient = webClientProvisioner.webClient {
+				it.baseUrl("http://localhost:${serverPort}")
+						.defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer functional-test-api-token-not-for-production")
+			}
 		
 		return $$webClient
 	}

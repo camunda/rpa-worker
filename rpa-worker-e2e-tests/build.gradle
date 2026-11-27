@@ -75,8 +75,11 @@ dependencies {
 	testRuntimeOnly libs.objenesis
 }
 
+String workerApiToken = System.getenv("CAMUNDA_RPA_API_TOKEN") ?: (UUID.randomUUID().toString() + UUID.randomUUID().toString())
+
 tasks.withType(Test).configureEach {
 	useJUnitPlatform()
+	environment("CAMUNDA_RPA_API_TOKEN", workerApiToken)
 
 	java.nio.file.Path workerPath = project.rootDir.toPath().resolve("workerpath.txt")
 	if (Files.exists(workerPath))
@@ -191,11 +194,17 @@ tasks.register("deployWorkerContainer") {
 	onlyIf { ! System.getenv("E2E_SMOKE_TEST_ONLY") }
 
 	doLast {
-		java.nio.file.Path workerSpec = Paths.get("rpa-worker-e2e-tests/rpa-worker.deployment.yaml")
-		String orig = workerSpec.text
-		workerSpec.text = orig.replaceAll("999_DIGEST_999", System.getenv("WORKER_IMAGE_DIGEST"))
+		java.nio.file.Path workerSpec = project.layout.buildDirectory.file("rpa-worker.deployment.yaml").get().asFile.toPath()
+		Files.createDirectories(workerSpec.parent)
+		String orig = project.file("rpa-worker.deployment.yaml").text
+		workerSpec.text = orig.replace("999_DIGEST_999", System.getenv("WORKER_IMAGE_DIGEST"))
+				.replace("999_API_TOKEN_999", workerApiToken)
 		wrapProcess("k3s kubectl create ns rpa-worker".execute())
-		wrapProcess("k3s kubectl apply -n rpa-worker -f rpa-worker-e2e-tests/rpa-worker.deployment.yaml".execute())
+		try {
+			wrapProcess(["k3s", "kubectl", "apply", "-n", "rpa-worker", "-f", workerSpec.toString()].execute())
+		} finally {
+			Files.deleteIfExists(workerSpec)
+		}
 		
 		waitForWithTimeout(
 				"k3s kubectl wait -n rpa-worker --for=condition=Ready pod -l app=rpa-worker",

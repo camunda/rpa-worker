@@ -1,4 +1,4 @@
-camunda-utils >=1.1.1,<2.0.0
+camunda-utils >=1.3.0,<2.0.0
 ## ^ provides robotframework
 
 requests

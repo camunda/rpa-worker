@@ -7,9 +7,21 @@ import spock.lang.Specification
 import spock.lang.Subject
 import spock.util.environment.RestoreSystemProperties
 
+@RestoreSystemProperties
 class ProxyConfigurationHelperSpec extends Specification {
 
 	Properties systemPropertySink = new Properties()
+
+	void setup() {
+		[
+				SystemProperties.HTTP_PROXY_HOST,
+				SystemProperties.HTTP_PROXY_PORT,
+				SystemProperties.HTTPS_PROXY_HOST,
+				SystemProperties.HTTPS_PROXY_PORT,
+				SystemProperties.HTTP_NON_PROXY_HOSTS,
+				SystemProperties.JAVA_NET_USE_SYSTEM_PROXIES
+		].each { System.clearProperty(it) }
+	}
 
 	void "ConfigMode of None sets no system properties and has no env vars to forward"() {
 		@Subject ProxyConfigurationHelper proxyConfigurationHelper = new ProxyConfigurationHelper(

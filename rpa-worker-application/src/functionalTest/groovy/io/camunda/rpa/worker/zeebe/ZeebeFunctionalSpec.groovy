@@ -8,7 +8,6 @@ import io.camunda.client.api.command.UpdateJobCommandStep1
 import io.camunda.client.api.response.ActivatedJob
 import io.camunda.client.impl.CamundaClientFutureImpl
 import io.camunda.rpa.worker.files.ZeebeDocumentDescriptor
-import io.camunda.rpa.worker.files.api.StoreFilesRequest
 import io.camunda.rpa.worker.script.RobotScript
 import io.camunda.rpa.worker.util.IterableMultiPart
 import io.camunda.rpa.worker.workspace.Workspace
@@ -17,11 +16,9 @@ import okhttp3.MultipartReader
 import okhttp3.ResponseBody
 import okhttp3.mockwebserver.MockResponse
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.core.ParameterizedTypeReference
 import org.springframework.core.env.Environment
 import org.springframework.http.HttpHeaders
 import org.springframework.http.codec.multipart.FormFieldPart
-import org.springframework.web.reactive.function.BodyInserters
 import reactor.core.publisher.Mono
 import spock.lang.Tag
 
@@ -114,6 +111,14 @@ Check
 		        RobotScript.builder().id("slow_8s").body(SLOW_ROBOT_SCRIPT_TEMPLATE(8)).build(),
 		        RobotScript.builder().id("env_check").body(ENV_CHECK_ROBOT_SCRIPT).build(),
 		        RobotScript.builder().id("do_nothing").body(DO_NOTHING_SCRIPT).build(),
+		        RobotScript.builder().id("upload_documents").body('''\
+*** Settings ***
+Library    Camunda
+
+*** Tasks ***
+Upload script
+    Upload Documents    *.robot
+''').build(),
 		        RobotScript.builder()
 				        .id("has_additional_files")
 				        .body(CHECK_ADDITIONAL_FILES_SCRIPT)
@@ -388,9 +393,7 @@ Assert input variable
 		CountDownLatch handlersDidFinish = new CountDownLatch(2)
 		
 		and:
-		Workspace theWorkspace
 		workspaceCleanupService.deleteWorkspace(_) >> { Workspace w ->
-			theWorkspace = w
 			handlersDidFinish.countDown()
 			return Mono.empty()
 		}
@@ -420,15 +423,8 @@ Assert input variable
 		}
 
 		when:
-		zeebeJobService.handleJob(anRpaJob([:], "do_nothing")).subscribe()
+		zeebeJobService.handleJob(anRpaJob([:], "upload_documents")).subscribe()
 		handlersDidFinish.awaitRequired(2, TimeUnit.SECONDS)
-
-		and:
-		block post()
-				.uri("/file/store/${theWorkspace.path().fileName.toString()}")
-				.body(BodyInserters.fromValue(new StoreFilesRequest("*.robot")))
-				.retrieve()
-				.bodyToMono(new ParameterizedTypeReference<Map<String, ZeebeDocumentDescriptor>>() {})
 
 		then:
 		with(zeebeApi.takeRequest(1, TimeUnit.SECONDS)) { req ->

@@ -2,6 +2,17 @@ openapi: 3.1.0
 info:
   title: RPA Worker
   version: 1.0.0
+  description: >-
+    Evaluation executes caller-supplied code with worker privileges and environment;
+    it is not OS-isolated. Privileged APIs require a worker bearer token configured
+    with camunda.rpa.api.token. Execution callbacks require a separate per-execution
+    RPA_CALLBACK_TOKEN, revoked when execution ends. Cluster client credentials do
+    not authenticate this API. Read-only Actuator health requests, including
+    liveness and readiness subpaths, require neither a token nor a trusted Host.
+    All other requests are subject to trusted Host validation. Actuator metrics
+    and Prometheus scraping require the worker bearer token as well.
+security:
+  - WorkerApiToken: []
   
 tags:
   - name: Sandbox
@@ -16,11 +27,26 @@ tags:
   - name: Workspace
 
 paths:
+  /api/authentication:
+    get:
+      summary: Verify worker API credentials without executing a script
+      responses:
+        204:
+          description: The worker API token was accepted
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/UntrustedHost'
+
   /script/evaluate:
     post: 
       tags:
         - Sandbox
       summary: Immediately evaluate a raw Robot script
+      description: >-
+        Runs trusted code with the worker's OS privileges and inherited environment.
+        Enabled by default for desktop builds, but requires a configured worker API
+        token. Disabled by default in container images.
       requestBody:
         content:
           application/json:
@@ -30,6 +56,12 @@ paths:
             schema:
               $ref: '#/components/schemas/EvaluateRichScriptRequest'
       responses:
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/UntrustedHost'
+        404:
+          description: Evaluation is disabled
         200:
           description: Script was executed successfully
           content:
@@ -51,6 +83,8 @@ paths:
                 
   /file/store/{workspaceId}:
     post: 
+      security:
+        - ExecutionToken: []
       tags:
         - File Management
       summary: Store files from a Robot workspace in Zeebe
@@ -71,6 +105,10 @@ paths:
             example: 
               files: 'outputs/**/*.pdf'
       responses:
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/UntrustedHost'
         200:
           description: Files were successfully uploaded to Zeebe
           content:
@@ -103,6 +141,8 @@ paths:
                 
   /file/retrieve/{workspaceId}:
     post:
+      security:
+        - ExecutionToken: []
       tags:
         - File Management
       summary: Retrieve files from Zeebe and make them available in the Robot workspace
@@ -131,6 +171,10 @@ paths:
                 storeId: 'gcp'
                 documentId: 'zeebe-document-id-2'
       responses:
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/UntrustedHost'
         200:
           description: The request was processed successfully
           content:
@@ -155,17 +199,25 @@ paths:
                 
   /zeebe/job/{jobKey}/throw:
     post:
+      security:
+        - ExecutionToken: []
       tags:
         - Zeebe & Job Control
       summary: >- 
         Issue a `Throw Error` command to Zeebe for the given Job. The Worker will detach itself from the execution, do 
-        no further processing, and not report any results to Zeebe when the process finishes. 
+        no further processing, and not report any results to Zeebe when the process finishes.
+        The execution token must belong to a running workspace associated with this
+        job. A job key or worker API token alone is insufficient. Remains available
+        when sandbox evaluation is disabled. Sandbox executions can use -1 only
+        for stubbed calls regardless of whether the Camunda client is enabled,
+        never for a real command.
       parameters:
         - in: path
           name: jobKey
           required: true
           schema:
-            type: numeric
+            type: integer
+            format: int64
           description: The Job key
       requestBody:
         content:
@@ -180,8 +232,16 @@ paths:
                 var1: "value1"
                 var2: "value2"
       responses:
+        400:
+          description: A nonpositive job key other than the sandbox marker -1 was supplied
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/UntrustedHost'
         202:
           description: The request was processed successfully, and the command will be sent to Zeebe
+        501:
+          description: A sandbox call using job key -1 returned a stubbed response; no cluster command was sent
         422:
           description: Request body was invalid
           content:
@@ -191,8 +251,12 @@ paths:
                 
   /workspace/{workspaceId}/{path}:
     get:
+      security: []
       tags: [Workspace]
       summary: Proxy a file from a Workspace
+      description: >-
+        Read-only capability URL, retained for embedded reports. Keep the
+        unguessable workspace URL private. Host validation still applies.
       parameters:
         - in: path
           name: workspaceId
@@ -213,8 +277,10 @@ paths:
           
   /workspace/{workspaceId}/variables:
     post:
+      security:
+        - ExecutionToken: []
       tags: [ Workspace ]
-      summary: Attach tags to a Workspace
+      summary: Attach variables to the calling execution's workspace
       parameters:
         - in: path
           name: workspaceId
@@ -229,6 +295,10 @@ paths:
               type: object
               $ref: '#/components/schemas/AttachVariablesRequest'
       responses:
+        401:
+          $ref: '#/components/responses/Unauthorized'
+        403:
+          $ref: '#/components/responses/UntrustedHost'
         200:
           description: The variables were added to the current Workspace
         404:
@@ -241,6 +311,26 @@ paths:
                 $ref: '#/components/schemas/ValidationFailedResponse'
 
 components:
+  securitySchemes:
+    WorkerApiToken:
+      type: http
+      scheme: bearer
+      description: The configured camunda.rpa.api.token; never a cluster client credential.
+    ExecutionToken:
+      type: http
+      scheme: bearer
+      description: >-
+        The RPA_CALLBACK_TOKEN supplied to the execution. Valid only for its
+        workspace and associated job, and revoked when execution ends.
+  responses:
+    Unauthorized:
+      description: Missing, invalid, expired, or incorrectly scoped bearer credential.
+      headers:
+        WWW-Authenticate:
+          schema:
+            type: string
+    UntrustedHost:
+      description: The Host authority is not trusted by the worker.
   schemas:
     DeployScriptRequest:
       type: object
@@ -433,4 +523,3 @@ components:
           additionalProperties: { }
           description: The variables to attach to the Workspace
         
-
